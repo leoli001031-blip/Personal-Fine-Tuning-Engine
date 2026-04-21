@@ -8,18 +8,22 @@ Personal Finetune Engine is a local-first engine for turning user feedback and b
 collect -> curate -> train -> eval -> promote -> serve
 ```
 
-PFE is best understood as infrastructure rather than a turnkey consumer app. The main surface is the `pfe` CLI, with local HTTP and browser companions for serving and observability.
+[Quick Start](#quick-start) • [Core CLI Workflow](#core-cli-workflow) • [Screenshots](#screenshots) • [Platform Support](#platform-support) • [Docs](#docs)
 
-## What PFE Includes
+PFE is best understood as operator infrastructure rather than a turnkey consumer app. The main surface is the `pfe` CLI, with local HTTP and browser companions for serving and observability.
 
-- Local readiness, diagnostics, and operator views
+## What PFE Covers
+
+- Local readiness checks, diagnostics, and operator views
 - Signal collection, curation, and data controls
 - SFT and DPO training paths
 - Evaluation, candidate handling, promotion, and archive workflows
 - Queue, trigger, daemon, and recovery controls
-- OpenAI-compatible local serving plus dashboard / chat surfaces
+- OpenAI-compatible local serving plus dashboard and chat surfaces
 
 ## Quick Start
+
+Bootstrap a local environment:
 
 ```bash
 tools/bootstrap_py311_env.sh
@@ -35,7 +39,7 @@ pfe status --json
 pfe console --cycles 1
 ```
 
-Start the local server:
+Start local serving:
 
 ```bash
 pfe serve --port 8921 --live
@@ -47,7 +51,7 @@ Open observability:
 pfe dashboard
 ```
 
-or visit:
+Default local pages:
 
 ```text
 http://127.0.0.1:8921/dashboard
@@ -57,40 +61,22 @@ http://127.0.0.1:8921/
 Notes:
 
 - `pfe serve --port 8921` without `--live` shows the serve plan only.
-- If no promoted adapter is available, serving can stay in safe / mock mode.
+- `127.0.0.1:8921` is the default local bind, not a fixed requirement.
+- If no promoted adapter is available, serving can stay in safe or mock mode.
 - Real local model loading is gated behind explicit runtime configuration such as `--real-local`.
 
-## Common CLI Commands
+## Core CLI Workflow
 
-- `pfe doctor`
-  Check runtime readiness, backend availability, local model state, and capability blockers.
-- `pfe status --json`
-  Inspect adapters, signals, trigger policy, queue state, observability, and trainer planning.
-- `pfe console`
-  Open the Rich-based operator console for a live terminal view of the system.
-- `pfe serve`
-  Start the local FastAPI / OpenAI-compatible inference surface.
-- `pfe dashboard`
-  Open the observability dashboard in a browser.
-- `pfe train`, `pfe dpo`, `pfe eval`
-  Run the core training and evaluation workflows.
-- `pfe adapter`, `pfe candidate`
-  Manage promotion, archive, and candidate lifecycle operations.
-- `pfe trigger`, `pfe daemon`, `pfe eval-trigger`
-  Control automation gates, worker loops, and recovery flows.
-- `pfe collect`, `pfe data`
-  Manage collection and privacy / data compliance surfaces.
-
-## Typical Workflow
+Typical operator path:
 
 ```bash
-# 1. Check whether the local runtime is actually ready
+# 1. Verify the local runtime
 pfe doctor
 
-# 2. Inspect the current engine state
+# 2. Inspect current engine state
 pfe status --json
 
-# 3. Open the operator console
+# 3. Open the live terminal surface
 pfe console --cycles 1
 
 # 4. Start local serving
@@ -99,6 +85,14 @@ pfe serve --port 8921 --live
 # 5. Open observability
 pfe dashboard
 ```
+
+Command families:
+
+- Inspect: `pfe doctor`, `pfe status --json`, `pfe console`
+- Train and evaluate: `pfe train`, `pfe dpo`, `pfe eval`
+- Lifecycle: `pfe adapter`, `pfe candidate`
+- Automation: `pfe trigger`, `pfe daemon`, `pfe eval-trigger`
+- Collection and data: `pfe collect`, `pfe data`
 
 When your workspace, base model, and adapter flow are configured, continue with:
 
@@ -112,15 +106,33 @@ pfe trigger --help
 
 ## Screenshots
 
-Real screenshots from a local run in this repository:
+Real visuals from a local run in this repository.
 
-`pfe console --cycles 1`
+CLI surfaces generated from real `pfe --help` and `pfe doctor` output:
 
-![PFE CLI console](docs/assets/screenshots/cli-console.png)
+<p align="center">
+  <img src="docs/assets/screenshots/cli-surfaces.png" alt="PFE CLI surfaces" width="1100">
+</p>
 
-`/dashboard` after `pfe serve --port 8921 --live`
+Dashboard at `/dashboard` after `pfe serve --port 8921 --live`:
 
-![PFE dashboard](docs/assets/screenshots/dashboard.png)
+<p align="center">
+  <img src="docs/assets/screenshots/dashboard.png" alt="PFE observability dashboard" width="1100">
+</p>
+
+The browser dashboard is a companion surface. The main control plane remains the CLI.
+
+## Platform Support
+
+- Best-supported local path today: `macOS` on Apple Silicon
+- Also supported in the codebase: `Linux/CUDA` and `CPU-only` fallback paths
+- `Windows` is not currently documented as a primary target
+
+## Default Network Settings
+
+- Default host: `127.0.0.1`
+- Default port: `8921`
+- Both can be overridden, for example: `pfe serve --host 127.0.0.1 --port 3000 --live`
 
 ## HTTP And Browser Surfaces
 
@@ -159,11 +171,8 @@ See [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md) for t
 ## Docs
 
 - [README.zh-CN.md](README.zh-CN.md)
-- [ENGINE_DEV_DOC.md](ENGINE_DEV_DOC.md)
 - [docs/README.md](docs/README.md)
-- [docs/01-overview.md](docs/01-overview.md)
-- [docs/02-architecture.md](docs/02-architecture.md)
-- [docs/04-roadmap.md](docs/04-roadmap.md)
+- [ENGINE_DEV_DOC.md](ENGINE_DEV_DOC.md)
 - [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md)
 
 ## License
