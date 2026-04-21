@@ -19,7 +19,7 @@ As of 2026-04-21:
 - Phase 2 closeout validated with unit, surface, integration, and end-to-end coverage
 - Repository is in a good state for publishing, with local model weights and generated artifacts intentionally excluded
 
-See the closeout note in [docs/11-phase2-closeout-2026-04-21.md](docs/11-phase2-closeout-2026-04-21.md).
+See the closeout note in [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md).
 
 ## License
 
@@ -41,7 +41,7 @@ pfe-core/    Core engine and training pipeline
 pfe-cli/     CLI entrypoints and console workflows
 pfe-server/  FastAPI server and HTTP surfaces
 tests/       Unit, surface, integration, and e2e coverage
-docs/        Architecture, roadmap, handoff, and closeout docs
+docs/        Public docs, guides, references, and archive
 examples/    Example assets and scenarios
 tools/       Small repository-local helper scripts
 ```
@@ -72,10 +72,11 @@ env PFE_DISABLE_AUTO_LOCAL_BASE_MODEL=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 ./.venv
 ## Documentation
 
 - [ENGINE_DEV_DOC.md](ENGINE_DEV_DOC.md)
+- [docs/README.md](docs/README.md)
 - [docs/01-overview.md](docs/01-overview.md)
 - [docs/02-architecture.md](docs/02-architecture.md)
-- [docs/07-development-roadmap-v2.md](docs/07-development-roadmap-v2.md)
-- [docs/11-phase2-closeout-2026-04-21.md](docs/11-phase2-closeout-2026-04-21.md)
+- [docs/04-roadmap.md](docs/04-roadmap.md)
+- [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md)
 
 ## Repository Hygiene
 

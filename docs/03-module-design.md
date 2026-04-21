@@ -67,7 +67,7 @@ Data Curator 在进入训练前，必须先回答“这条信息到底属于 mem
 - accept / edit / reject / regenerate 等行为反馈进入 `signal`
 - 只有经过筛选和配对后的高质量反馈才进入 `SFT / DPO`
 
-详细策略见 [09-data-layering-strategy.md](09-data-layering-strategy.md)。
+详细策略见 [reference/data-layering-strategy.md](reference/data-layering-strategy.md)。
 
 ### 信号评分策略
 

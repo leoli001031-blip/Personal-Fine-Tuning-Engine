@@ -1,8 +1,8 @@
 # Personal Finetune Engine (PFE) — 项目概览
 
-> 版本：v0.0.1-draft | 更新日期：2026-04-10
+> 更新日期：2026-04-21
 >
-> 说明：当前为文档草稿版本。Phase 0 结束后发布 v0.1.0-alpha，Phase 1 结束后发布 v0.2.0-beta。
+> 说明：本文档描述 PFE 的公开定位、核心能力和当前边界。
 
 ## 一、项目定位
 
@@ -104,7 +104,7 @@ pfe adapter rollback -1
 1. **本地优先（Local-first）：** 用户数据默认只存本地；所有云功能默认关闭，只有在用户显式开启后才允许上传脱敏后的文本片段
 2. **渐进式复杂度：** 3 条命令能跑通，深度定制也支持
 3. **可插拔架构：** 每个模块都可以被替换或扩展
-4. **推理兼容优先：** `pfe serve` 兼容 OpenAI Chat Completions，现有前端可零改动接入推理；若要开启个性化闭环，还需额外接入 PFE 的信号上报协议 / SDK。最小接入方式见 `docs/10-openai-closed-loop-integration.md`
+4. **推理兼容优先：** `pfe serve` 兼容 OpenAI Chat Completions，现有前端可零改动接入推理；若要开启个性化闭环，还需额外接入 PFE 的信号上报协议 / SDK。最小接入方式见 `guides/openai-closed-loop-integration.md`
 5. **增量而非全量：** 每次微调基于上一版 adapter 继续训练，而非从头开始
 
 ## 六、隐私与云功能边界

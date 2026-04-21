@@ -224,8 +224,8 @@ MIT — 简洁宽松，对商业使用和社区采用都更友好。
 | Review 问题 | 文档回应位置 | 状态 |
 |-------------|-------------|------|
 | 1. 验证标准缺失 | 03-module-design.md → Evaluator → 验证标准 | ✅ 已补充 |
-| 2. 1.5B-3B 能力下限 | 04-roadmap.md → Phase 0 → 同时测 3B 和 7B | ✅ 已补充 |
-| 3. 无感埋点信号提纯 | 04-roadmap.md → Phase 1 → 信号提纯设计 | ✅ 已补充 |
-| 4. 冷启动解法 | 03-module-design.md → Curator → Day 1 方案；04-roadmap.md → Phase 1 冷启动 | ✅ 已补充 |
+| 2. 1.5B-3B 能力下限 | archive/planning-history.md → 最初规划主线 | ✅ 已补充 |
+| 3. 无感埋点信号提纯 | archive/planning-history.md → 最初规划主线 | ✅ 已补充 |
+| 4. 冷启动解法 | 03-module-design.md → Curator → Day 1 方案；archive/planning-history.md → 最初规划主线 | ✅ 已补充 |
 | 5. 路由层判断逻辑 | 03-module-design.md → Router → 分阶段实现 | ✅ 已补充 |
 | 6. 商业模式 | 05-tech-and-risk.md → 商业模式思考 | ✅ 已补充 |
