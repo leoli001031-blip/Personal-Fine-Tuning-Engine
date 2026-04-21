@@ -1,0 +1,72 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-finetune-engine"
+version = "0.0.1"
+description = "Personal Finetune Engine core skeleton"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+dependencies = [
+  "pydantic>=2.7,<3",
+  "tomli>=2.0,<3; python_version < '3.11'",
+  "typer>=0.12,<1",
+  "rich>=13.7,<14",
+  "fastapi>=0.110,<1",
+  "uvicorn>=0.29,<1",
+  "portalocker>=2.8,<3",
+  "watchdog>=4,<5",
+  "openai>=1.40,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8,<9",
+  "pytest-cov>=5,<6",
+]
+training = [
+  "torch>=2.1",
+  "transformers>=4.36",
+  "peft>=0.7",
+  "trl>=0.7",
+  "datasets>=2.16",
+  "bitsandbytes>=0.41",
+  "safetensors>=0.4",
+]
+mlx = [
+  "mlx>=0.5",
+  "mlx-lm>=0.5",
+]
+eval = [
+  "sentence-transformers>=2.2",
+]
+llama-cpp = [
+  "llama-cpp-python>=0.2",
+]
+
+[project.scripts]
+pfe = "pfe_cli.main:main"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["pfe-core", "pfe-cli", "pfe-server"]
+include = ["pfe_core*", "pfe_cli*", "pfe_server*"]
+namespaces = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "integration: marks tests as integration tests (may require running services)",
+    "slow: marks tests as slow (may take minutes to run)",
+    "e2e: marks tests as end-to-end tests",
+]
+filterwarnings = [
+    "ignore::pytest.PytestUnknownMarkWarning",
+    "ignore:builtin type SwigPyPacked has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type SwigPyObject has no __module__ attribute:DeprecationWarning",
+    "ignore:builtin type swigvarlink has no __module__ attribute:DeprecationWarning",
+]

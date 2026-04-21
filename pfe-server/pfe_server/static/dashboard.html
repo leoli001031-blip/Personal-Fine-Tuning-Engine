@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PFE Observability Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0F172A;
+            --bg-secondary: rgba(30, 41, 59, 0.6);
+            --bg-glass: rgba(34, 39, 53, 0.7);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --accent-gold: #F59E0B;
+            --accent-purple: #8B5CF6;
+            --accent-blue: #3B82F6;
+            --accent-green: #10B981;
+            --accent-red: #EF4444;
+            --shadow-glow: 0 0 40px rgba(245, 158, 11, 0.15);
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+            background-attachment: fixed;
+        }
+
+        .header {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1.25rem 2.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-purple));
+            border-radius: 50%;
+            animation: pulse-glow 2s infinite;
+            box-shadow: 0 0 20px var(--accent-gold);
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; box-shadow: 0 0 20px var(--accent-gold); }
+            50% { opacity: 0.6; box-shadow: 0 0 30px var(--accent-purple); }
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .workspace-selector {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-primary);
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .workspace-selector:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, var(--accent-gold), #D97706);
+            color: #0F172A;
+            border: none;
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        .refresh-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .container {
+            padding: 2.5rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            border: 1px solid var(--border-glass);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-glow), 0 20px 60px rgba(0, 0, 0, 0.4);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-card.warning {
+            border-top: 3px solid var(--accent-gold);
+        }
+
+        .metric-card.success {
+            border-top: 3px solid var(--accent-green);
+        }
+
+        .metric-card.error {
+            border-top: 3px solid var(--accent-red);
+        }
+
+        .metric-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            color: var(--text-secondary);
+        }
+
+        .metric-change.positive {
+            color: var(--accent-green);
+        }
+
+        .metric-change.negative {
+            color: var(--accent-red);
+        }
+
+        .section {
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            border: 1px solid var(--border-glass);
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            border-color: rgba(139, 92, 246, 0.2);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--accent-gold), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-badge.active {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.inactive {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--text-secondary);
+            border: 1px solid rgba(100, 116, 139, 0.3);
+        }
+
+        .status-badge.training {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 0.75rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        th {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        td {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        tr {
+            transition: background 0.2s ease;
+        }
+
+        tr:hover td {
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-purple));
+            border-radius: 5px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            width: 56px;
+            height: 56px;
+            border: 3px solid transparent;
+            border-top-color: var(--accent-gold);
+            border-right-color: var(--accent-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--accent-red);
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .health-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 0.625rem;
+            border: 1px solid var(--border-glass);
+        }
+
+        .health-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .health-dot.healthy {
+            background: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
+            animation: pulse-green 2s infinite;
+        }
+
+        .health-dot.warning {
+            background: var(--accent-gold);
+            box-shadow: 0 0 12px var(--accent-gold);
+            animation: pulse-gold 2s infinite;
+        }
+
+        .health-dot.critical {
+            background: var(--accent-red);
+            box-shadow: 0 0 12px var(--accent-red);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { box-shadow: 0 0 12px var(--accent-green); }
+            50% { box-shadow: 0 0 20px var(--accent-green); }
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 12px var(--accent-gold); }
+            50% { box-shadow: 0 0 20px var(--accent-gold); }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 12px var(--accent-red); }
+            50% { box-shadow: 0 0 20px var(--accent-red); }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 0.75rem;
+        }
+
+        .tab {
+            padding: 0.625rem 1.25rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.625rem;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab.active {
+            color: var(--accent-gold);
+            background: rgba(245, 158, 11, 0.1);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.25rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <header class="header">
+        <h1>PFE Observability Dashboard</h1>
+        <div class="header-actions">
+            <select id="workspaceSelector" class="workspace-selector">
+                <option value="user_default">user_default</option>
+            </select>
+            <button id="refreshBtn" class="refresh-btn">Refresh</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="errorContainer"></div>
+
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Adapters</div>
+                <div class="metric-value" id="totalAdapters">-</div>
+                <div class="metric-change" id="adaptersChange">
+                    <span>Latest: <span id="latestAdapter">-</span></span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Total Signals</div>
+                <div class="metric-value" id="totalSignals">-</div>
+                <div class="metric-change positive" id="signalsChange">
+                    <span>Processed: <span id="processedSignals">-</span></span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">Signal Quality</div>
+                <div class="metric-value" id="avgQuality">-</div>
+                <div class="metric-change" id="qualityChange">
+                    <span>High quality: <span id="highQualityCount">-</span></span>
+                </div>
+            </div>
+
+            <div class="metric-card" id="trainingStatusCard">
+                <div class="metric-label">Training Status</div>
+                <div class="metric-value" id="trainingStatus">-</div>
+                <div class="metric-change" id="trainingProgress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="trainingProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Health -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">System Health</h2>
+                <span id="systemHealthBadge" class="status-badge inactive">Unknown</span>
+            </div>
+            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="health-indicator">
+                    <div id="daemonHealthDot" class="health-dot warning"></div>
+                    <span>Daemon: <span id="daemonStatus">-</span></span>
+                </div>
+                <div class="health-indicator">
+                    <div id="runnerHealthDot" class="health-dot warning"></div>
+                    <span>Runner: <span id="runnerStatus">-</span></span>
+                </div>
+                <div class="health-indicator">
+                    <span>Queue Pending: <span id="queuePending">-</span></span>
+                </div>
+                <div class="health-indicator">
+                    <span>Queue Failed: <span id="queueFailed">-</span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="chart-grid">
+            <!-- Training Metrics -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Training Loss</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="trainingLossChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Signal Quality Distribution -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Signal Quality Distribution</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="signalQualityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Daily Signals -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Daily Signal Volume</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="dailySignalsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Adapter Comparison -->
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Adapter Performance Comparison</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="adapterComparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Adapter Comparison Table -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">Adapter Versions</h2>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Version</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Train Loss</th>
+                            <th>Eval Loss</th>
+                            <th>Style Hit Rate</th>
+                            <th>Samples</th>
+                            <th>Promoted</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adapterTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: #64748B; padding: 2rem;">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Chart instances
+        let trainingLossChart = null;
+        let signalQualityChart = null;
+        let dailySignalsChart = null;
+        let adapterComparisonChart = null;
+
+        // API base URL
+        const API_BASE = '/pfe/dashboard';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            loadDashboardData();
+
+            // Setup refresh button
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                loadDashboardData();
+            });
+
+            // Auto-refresh every 30 seconds
+            setInterval(loadDashboardData, 30000);
+        });
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const container = document.getElementById('errorContainer');
+            container.innerHTML = `<div class="error-message">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function formatOptionalNumber(value, digits = 4) {
+            return Number.isFinite(value) ? Number(value).toFixed(digits) : '-';
+        }
+
+        function formatPercentage(value, digits = 1) {
+            return Number.isFinite(value) ? `${(Number(value) * 100).toFixed(digits)}%` : '-';
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch(`${API_BASE}/metrics`);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Failed to fetch dashboard data:', error);
+                showError('Failed to load dashboard data. Please try again.');
+                return null;
+            }
+        }
+
+        async function loadDashboardData() {
+            showLoading();
+            const data = await fetchDashboardData();
+            if (data) {
+                updateDashboard(data);
+            }
+            hideLoading();
+        }
+
+        function updateDashboard(data) {
+            updateMetrics(data);
+            updateSystemHealth(data.system_health);
+            updateTrainingChart(data.current_training, data.training_history);
+            updateSignalQualityChart(data.signal_quality);
+            updateDailySignalsChart(data.signal_quality?.daily_signal_counts || []);
+            updateAdapterComparisonChart(data.adapter_comparisons);
+            updateAdapterTable(data.adapter_comparisons);
+        }
+
+        function updateMetrics(data) {
+            // Total adapters
+            document.getElementById('totalAdapters').textContent = data.total_adapters || 0;
+            document.getElementById('latestAdapter').textContent = data.latest_adapter_version || 'None';
+
+            // Signals
+            const signalQuality = data.signal_quality || {};
+            document.getElementById('totalSignals').textContent = signalQuality.total_signals || 0;
+            document.getElementById('processedSignals').textContent = signalQuality.processed_signals || 0;
+
+            // Quality
+            const avgConfidence = signalQuality.average_confidence || 0;
+            document.getElementById('avgQuality').textContent = (avgConfidence * 100).toFixed(1) + '%';
+            document.getElementById('highQualityCount').textContent = signalQuality.high_quality_count || 0;
+
+            // Training status
+            const currentTraining = data.current_training;
+            const trainingCard = document.getElementById('trainingStatusCard');
+            if (currentTraining) {
+                document.getElementById('trainingStatus').textContent = currentTraining.status || 'Unknown';
+                const progress = currentTraining.epochs > 0
+                    ? (currentTraining.current_epoch / currentTraining.epochs) * 100
+                    : 0;
+                document.getElementById('trainingProgressBar').style.width = progress + '%';
+
+                // Update card style based on status
+                trainingCard.className = 'metric-card';
+                if (currentTraining.status === 'training') {
+                    trainingCard.classList.add('success');
+                } else if (currentTraining.status === 'failed') {
+                    trainingCard.classList.add('error');
+                }
+            } else {
+                document.getElementById('trainingStatus').textContent = 'No Active Training';
+                document.getElementById('trainingProgressBar').style.width = '0%';
+                trainingCard.className = 'metric-card';
+            }
+        }
+
+        function updateSystemHealth(health) {
+            if (!health) return;
+
+            // Daemon status
+            const daemonActive = health.daemon_active;
+            document.getElementById('daemonStatus').textContent = health.daemon_state || 'Unknown';
+            document.getElementById('daemonHealthDot').className = 'health-dot ' + (daemonActive ? 'healthy' : 'warning');
+
+            // Runner status
+            const runnerActive = health.runner_active;
+            document.getElementById('runnerStatus').textContent = health.runner_state || 'Unknown';
+            document.getElementById('runnerHealthDot').className = 'health-dot ' + (runnerActive ? 'healthy' : 'warning');
+
+            // Queue stats
+            document.getElementById('queuePending').textContent = health.queue_pending_jobs || 0;
+            document.getElementById('queueFailed').textContent = health.queue_failed_jobs || 0;
+
+            // Overall health badge
+            const badge = document.getElementById('systemHealthBadge');
+            if (daemonActive && runnerActive) {
+                badge.textContent = 'Healthy';
+                badge.className = 'status-badge active';
+            } else if (daemonActive || runnerActive) {
+                badge.textContent = 'Degraded';
+                badge.className = 'status-badge training';
+            } else {
+                badge.textContent = 'Inactive';
+                badge.className = 'status-badge inactive';
+            }
+        }
+
+        function updateTrainingChart(currentTraining, trainingHistory) {
+            const ctx = document.getElementById('trainingLossChart').getContext('2d');
+
+            // Prepare data
+            let labels = [];
+            let trainLossData = [];
+            let evalLossData = [];
+
+            if (currentTraining && currentTraining.loss_history) {
+                labels = currentTraining.loss_history.map((h, i) => `Step ${h.step || i}`);
+                trainLossData = currentTraining.loss_history.map(h => h.loss || null);
+                evalLossData = currentTraining.loss_history.map(h => h.eval_loss || null);
+            }
+
+            if (trainingLossChart) {
+                trainingLossChart.destroy();
+            }
+
+            const gradientTrain = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientTrain.addColorStop(0, 'rgba(245, 158, 11, 0.3)');
+            gradientTrain.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
+            const gradientEval = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientEval.addColorStop(0, 'rgba(139, 92, 246, 0.3)');
+            gradientEval.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+
+            trainingLossChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Training Loss',
+                            data: trainLossData,
+                            borderColor: '#F59E0B',
+                            backgroundColor: gradientTrain,
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#F59E0B',
+                            pointBorderColor: '#0F172A',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Eval Loss',
+                            data: evalLossData,
+                            borderColor: '#8B5CF6',
+                            backgroundColor: gradientEval,
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointBackgroundColor: '#8B5CF6',
+                            pointBorderColor: '#0F172A',
+                            pointBorderWidth: 2,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94A3B8', font: { family: 'DM Sans', size: 12 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748B', font: { family: 'DM Sans' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748B', font: { family: 'DM Sans' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateSignalQualityChart(signalQuality) {
+            const ctx = document.getElementById('signalQualityChart').getContext('2d');
+
+            const data = signalQuality ? [
+                signalQuality.high_quality_count || 0,
+                signalQuality.medium_quality_count || 0,
+                signalQuality.low_quality_count || 0
+            ] : [0, 0, 0];
+
+            if (signalQualityChart) {
+                signalQualityChart.destroy();
+            }
+
+            signalQualityChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Quality', 'Medium Quality', 'Low Quality'],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                        borderColor: '#0F172A',
+                        borderWidth: 4,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94A3B8', font: { family: 'DM Sans', size: 12 }, padding: 20 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateDailySignalsChart(dailyCounts) {
+            const ctx = document.getElementById('dailySignalsChart').getContext('2d');
+
+            const labels = dailyCounts.map(d => d.date);
+            const data = dailyCounts.map(d => d.count);
+
+            if (dailySignalsChart) {
+                dailySignalsChart.destroy();
+            }
+
+            const gradientDaily = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientDaily.addColorStop(0, '#F59E0B');
+            gradientDaily.addColorStop(1, 'rgba(245, 158, 11, 0.3)');
+
+            dailySignalsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Signals',
+                        data: data,
+                        backgroundColor: gradientDaily,
+                        borderRadius: 6,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748B', font: { family: 'DM Sans' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748B', font: { family: 'DM Sans' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAdapterComparisonChart(comparisons) {
+            const ctx = document.getElementById('adapterComparisonChart').getContext('2d');
+
+            // Take last 10 versions
+            const recent = (comparisons || []).slice(0, 10).reverse();
+            const labels = recent.map(c => c.version);
+            const trainLosses = recent.map(c => c.final_train_loss);
+            const evalLosses = recent.map(c => c.final_eval_loss);
+            const styleHitRates = recent.map(c => c.style_preference_hit_rate);
+
+            if (adapterComparisonChart) {
+                adapterComparisonChart.destroy();
+            }
+
+            const gradientTrainLoss = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientTrainLoss.addColorStop(0, '#F59E0B');
+            gradientTrainLoss.addColorStop(1, 'rgba(245, 158, 11, 0.4)');
+
+            const gradientEvalLoss = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientEvalLoss.addColorStop(0, '#8B5CF6');
+            gradientEvalLoss.addColorStop(1, 'rgba(139, 92, 246, 0.4)');
+
+            const gradientStyleHitRate = ctx.createLinearGradient(0, 0, 0, 300);
+            gradientStyleHitRate.addColorStop(0, 'rgba(16, 185, 129, 0.95)');
+            gradientStyleHitRate.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+
+            adapterComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Train Loss',
+                            data: trainLosses,
+                            backgroundColor: gradientTrainLoss,
+                            borderRadius: 6,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Eval Loss',
+                            data: evalLosses,
+                            backgroundColor: gradientEvalLoss,
+                            borderRadius: 6,
+                            borderSkipped: false
+                        },
+                        {
+                            type: 'line',
+                            label: 'Style Preference Hit Rate',
+                            data: styleHitRates,
+                            borderColor: '#10B981',
+                            backgroundColor: gradientStyleHitRate,
+                            yAxisID: 'y1',
+                            tension: 0.35,
+                            fill: false,
+                            pointRadius: 4,
+                            pointHoverRadius: 6,
+                            pointBackgroundColor: '#10B981',
+                            pointBorderColor: '#0F172A',
+                            pointBorderWidth: 2,
+                            spanGaps: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94A3B8', font: { family: 'DM Sans', size: 12 } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748B', font: { family: 'DM Sans' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748B', font: { family: 'DM Sans' } }
+                        },
+                        y1: {
+                            position: 'right',
+                            min: 0,
+                            max: 1,
+                            grid: { drawOnChartArea: false },
+                            ticks: {
+                                color: '#64748B',
+                                font: { family: 'DM Sans' },
+                                callback: (value) => `${Math.round(Number(value) * 100)}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateAdapterTable(comparisons) {
+            const tbody = document.getElementById('adapterTableBody');
+
+            if (!comparisons || comparisons.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748B; padding: 2rem;">No adapters found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = comparisons.map(comp => {
+                const statusClass = comp.state === 'promoted' ? 'active' :
+                                   comp.state === 'training' ? 'training' :
+                                   comp.state === 'failed' ? 'error' : 'inactive';
+
+                return `
+                    <tr>
+                        <td>${comp.version}</td>
+                        <td><span class="status-badge ${statusClass}">${comp.state}</span></td>
+                        <td>${comp.created_at ? new Date(comp.created_at).toLocaleDateString() : '-'}</td>
+                        <td>${formatOptionalNumber(comp.final_train_loss)}</td>
+                        <td>${formatOptionalNumber(comp.final_eval_loss)}</td>
+                        <td>${formatPercentage(comp.style_preference_hit_rate)}</td>
+                        <td>${comp.num_training_samples || 0}</td>
+                        <td>${comp.is_promoted ? 'Yes' : 'No'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function initCharts() {
+            // Charts will be initialized when data is loaded
+        }
+    </script>
+</body>
+</html>

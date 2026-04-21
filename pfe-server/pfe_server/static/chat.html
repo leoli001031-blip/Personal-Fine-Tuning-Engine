@@ -1,0 +1,4277 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PFE Local Chat</title>
+    <style>
+      :root {
+        --bg: #f4efe6;
+        --panel: rgba(255, 251, 245, 0.94);
+        --panel-strong: #fff9f0;
+        --panel-soft: rgba(255, 248, 238, 0.72);
+        --border: rgba(79, 52, 34, 0.16);
+        --text: #2c221a;
+        --muted: #7c6656;
+        --accent: #bc5f2c;
+        --accent-soft: rgba(188, 95, 44, 0.12);
+        --user: #f6e2d5;
+        --assistant: #fff7ee;
+        --shadow: 0 20px 60px rgba(65, 40, 22, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(188, 95, 44, 0.18), transparent 30%),
+          radial-gradient(circle at bottom right, rgba(96, 140, 119, 0.16), transparent 28%),
+          linear-gradient(180deg, #f6f1e9 0%, var(--bg) 100%);
+      }
+
+      .shell {
+        width: min(1100px, calc(100vw - 32px));
+        margin: 24px auto;
+        display: grid;
+        grid-template-columns: minmax(360px, 390px) 1fr;
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+
+      .sidebar {
+        padding: 22px 20px;
+        position: sticky;
+        top: 16px;
+        align-self: start;
+        max-height: calc(100vh - 32px);
+        overflow: auto;
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+
+      .ops-title {
+        margin: 0 0 10px;
+        font-size: 32px;
+        line-height: 1;
+      }
+
+      .lede {
+        margin: 0 0 20px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .ops-intro {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .status-section {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+        border-radius: 22px;
+        background: linear-gradient(180deg, rgba(255, 251, 245, 0.95), rgba(255, 248, 240, 0.88));
+        border: 1px solid rgba(79, 52, 34, 0.14);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+      }
+
+      .status-section.alert-section {
+        background: linear-gradient(180deg, rgba(255, 247, 241, 0.98), rgba(255, 242, 234, 0.92));
+        border-color: rgba(188, 95, 44, 0.2);
+      }
+
+      .status-section + .status-section {
+        margin-top: 12px;
+      }
+
+      .section-label {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0;
+      }
+
+      .section-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .section-note {
+        font-size: 12px;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+
+      .status-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .status-item {
+        min-height: 76px;
+        padding: 13px 14px 12px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(255, 251, 245, 0.88));
+        border: 1px solid rgba(79, 52, 34, 0.12);
+        display: grid;
+        gap: 6px;
+      }
+
+      .status-item strong {
+        display: block;
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+
+      .status-item-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .status-item span {
+        display: block;
+        font-size: 15px;
+        line-height: 1.35;
+        white-space: pre-line;
+      }
+
+      .status-item.full {
+        grid-column: 1 / -1;
+      }
+
+      .status-item .timeline-preview {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        line-height: 1.45;
+        color: #4c3a30;
+        white-space: pre-wrap;
+        max-height: 220px;
+        overflow: auto;
+      }
+
+      .workspace {
+        margin-top: 16px;
+      }
+
+      .control-stack {
+        margin-top: 16px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .control-stack button {
+        width: 100%;
+      }
+
+      .status-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .workspace input,
+      .composer textarea,
+      .composer input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.72);
+        padding: 12px 14px;
+        font: inherit;
+        color: var(--text);
+      }
+
+      .workspace label,
+      .composer label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+
+      .chat {
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        min-height: calc(100vh - 48px);
+      }
+
+      .chat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 22px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .chat-header h2 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .chat-subtitle {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .runtime-banner {
+        margin: 0 22px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255, 248, 241, 0.92), rgba(255, 251, 245, 0.98));
+      }
+
+      .runtime-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+      }
+
+      .runtime-pill.mock {
+        background: rgba(165, 81, 40, 0.12);
+        color: #8f3f19;
+        border: 1px solid rgba(165, 81, 40, 0.18);
+      }
+
+      .runtime-pill.real {
+        background: rgba(59, 129, 100, 0.14);
+        color: #235f45;
+        border: 1px solid rgba(59, 129, 100, 0.18);
+      }
+
+      .event-stream-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        padding: 7px 11px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      .event-stream-chip.stable {
+        background: rgba(79, 52, 34, 0.08);
+        color: #5c4a3e;
+        border-color: rgba(79, 52, 34, 0.12);
+      }
+
+      .event-stream-chip.info {
+        background: rgba(70, 109, 117, 0.12);
+        color: #41656b;
+        border-color: rgba(70, 109, 117, 0.18);
+      }
+
+      .event-stream-chip.warn {
+        background: rgba(188, 95, 44, 0.12);
+        color: #8b4d26;
+        border-color: rgba(188, 95, 44, 0.18);
+      }
+
+      .event-stream-chip.critical {
+        background: rgba(144, 54, 38, 0.14);
+        color: #8b2f1d;
+        border-color: rgba(144, 54, 38, 0.22);
+      }
+
+      .inspection-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        width: fit-content;
+        max-width: 100%;
+        padding: 6px 10px;
+        border-radius: 14px;
+        border: 1px solid transparent;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
+      }
+
+      .inspection-chip.stable {
+        background: rgba(79, 52, 34, 0.06);
+        color: #5c4a3e;
+        border-color: rgba(79, 52, 34, 0.1);
+      }
+
+      .inspection-chip.info {
+        background: rgba(70, 109, 117, 0.1);
+        color: #41656b;
+        border-color: rgba(70, 109, 117, 0.16);
+      }
+
+      .inspection-chip.warn {
+        background: rgba(188, 95, 44, 0.12);
+        color: #8b4d26;
+        border-color: rgba(188, 95, 44, 0.18);
+      }
+
+      .inspection-chip.critical {
+        background: rgba(144, 54, 38, 0.14);
+        color: #8b2f1d;
+        border-color: rgba(144, 54, 38, 0.24);
+      }
+
+      .inspection-chip.requires-immediate {
+        box-shadow: 0 0 0 2px rgba(144, 54, 38, 0.14);
+      }
+
+      .inspection-chip.requires-review {
+        border-style: dashed;
+      }
+
+      .inspection-chip.mode-manual-review,
+      .inspection-chip.mode-review-soon {
+        background: rgba(188, 95, 44, 0.1);
+      }
+
+      .inspection-chip.mode-auto-recover,
+      .inspection-chip.mode-auto-remediation {
+        background: rgba(59, 129, 100, 0.12);
+        color: #235f45;
+        border-color: rgba(59, 129, 100, 0.18);
+      }
+
+      .inspection-chip.recovery-present {
+        border-style: solid;
+      }
+
+      .inspection-mini-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 54px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .inspection-mini-badge.stable {
+        background: rgba(79, 52, 34, 0.08);
+        color: #5c4a3e;
+        border-color: rgba(79, 52, 34, 0.12);
+      }
+
+      .inspection-mini-badge.info {
+        background: rgba(70, 109, 117, 0.12);
+        color: #41656b;
+        border-color: rgba(70, 109, 117, 0.18);
+      }
+
+      .inspection-mini-badge.warn {
+        background: rgba(188, 95, 44, 0.12);
+        color: #8b4d26;
+        border-color: rgba(188, 95, 44, 0.18);
+      }
+
+      .inspection-mini-badge.critical {
+        background: rgba(144, 54, 38, 0.14);
+        color: #8b2f1d;
+        border-color: rgba(144, 54, 38, 0.22);
+      }
+
+      .event-stream-attention {
+        color: var(--muted);
+      }
+
+      .runtime-note {
+        margin-top: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .connection-banner {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed rgba(79, 52, 34, 0.12);
+        display: grid;
+        gap: 8px;
+      }
+
+      .connection-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .connection-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+      }
+
+      .connection-pill.idle {
+        background: rgba(79, 52, 34, 0.08);
+        color: #5c4a3e;
+        border-color: rgba(79, 52, 34, 0.12);
+      }
+
+      .connection-pill.ok {
+        background: rgba(59, 129, 100, 0.12);
+        color: #235f45;
+        border-color: rgba(59, 129, 100, 0.18);
+      }
+
+      .connection-pill.auth {
+        background: rgba(188, 95, 44, 0.12);
+        color: #8b4d26;
+        border-color: rgba(188, 95, 44, 0.18);
+      }
+
+      .connection-pill.error {
+        background: rgba(144, 54, 38, 0.14);
+        color: #8b2f1d;
+        border-color: rgba(144, 54, 38, 0.22);
+      }
+
+      .connection-note {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .connection-note code {
+        font-size: 12px;
+      }
+
+      .integration-snapshot {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed rgba(79, 52, 34, 0.12);
+        display: grid;
+        gap: 10px;
+      }
+
+      .integration-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .integration-title {
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .integration-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+      }
+
+      .integration-item {
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.58);
+        border: 1px solid rgba(79, 52, 34, 0.1);
+      }
+
+      .integration-item strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .integration-item span {
+        display: block;
+        font-size: 13px;
+        line-height: 1.45;
+        color: var(--text);
+        word-break: break-word;
+      }
+
+      .example-requests {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed rgba(79, 52, 34, 0.12);
+        display: grid;
+        gap: 10px;
+      }
+
+      .example-grid {
+        display: grid;
+        gap: 10px;
+      }
+
+      .example-card {
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.58);
+        border: 1px solid rgba(79, 52, 34, 0.1);
+        display: grid;
+        gap: 8px;
+      }
+
+      .example-card pre {
+        margin: 0;
+        padding: 12px;
+        border-radius: 12px;
+        background: rgba(44, 34, 26, 0.92);
+        color: #f8efe6;
+        font-size: 12px;
+        line-height: 1.5;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .loop-activity {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed rgba(79, 52, 34, 0.12);
+        display: grid;
+        gap: 10px;
+      }
+
+      .signal-activity {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed rgba(79, 52, 34, 0.12);
+        display: grid;
+        gap: 10px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 11px 16px;
+        font: inherit;
+        cursor: pointer;
+        transition: transform 160ms ease, opacity 160ms ease, background 160ms ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      button.primary {
+        background: var(--accent);
+        color: white;
+      }
+
+      button.secondary {
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+        transform: none;
+      }
+
+      .messages {
+        padding: 22px;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .bubble {
+        max-width: min(760px, 90%);
+        padding: 14px 16px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 24px rgba(60, 39, 22, 0.05);
+        line-height: 1.55;
+        white-space: pre-wrap;
+      }
+
+      .bubble.user {
+        align-self: flex-end;
+        background: var(--user);
+      }
+
+      .bubble.assistant {
+        align-self: flex-start;
+        background: var(--assistant);
+      }
+
+      .bubble.system {
+        align-self: center;
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .meta {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .feedback-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 8px;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .bubble.assistant:hover .feedback-actions {
+        opacity: 1;
+      }
+
+      .feedback-btn {
+        padding: 4px 10px;
+        font-size: 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--panel-soft);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .feedback-btn:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .feedback-btn.accept:hover {
+        background: rgba(76, 175, 80, 0.12);
+        color: #4caf50;
+        border-color: #4caf50;
+      }
+
+      .feedback-btn.reject:hover {
+        background: rgba(244, 67, 54, 0.12);
+        color: #f44336;
+        border-color: #f44336;
+      }
+
+      .feedback-btn.regenerate:hover {
+        background: rgba(255, 152, 0, 0.12);
+        color: #ff9800;
+        border-color: #ff9800;
+      }
+
+      .feedback-btn.edit:hover {
+        background: rgba(33, 150, 243, 0.12);
+        color: #2196f3;
+        border-color: #2196f3;
+      }
+
+      .feedback-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+
+      .composer {
+        padding: 18px 22px 22px;
+        border-top: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255, 251, 245, 0.6), rgba(255, 249, 240, 0.92));
+      }
+
+      .composer-grid {
+        display: grid;
+        grid-template-columns: 1fr 180px 130px;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .composer textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      .composer-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .hint {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 900px) {
+        .shell {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          position: static;
+          max-height: none;
+        }
+
+        .chat {
+          min-height: 72vh;
+        }
+
+        .composer-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+    <body>
+    <div class="shell">
+      <aside class="card sidebar">
+        <div class="ops-intro">
+          <div class="eyebrow">PFE Phase 0</div>
+          <h1 class="ops-title">Operations Console</h1>
+          <p class="lede">
+            一个面向值守和排障的统一运营面板，左侧集中展示运行态、候选轨迹、队列历史和 worker runner 历史。
+            对话仍然直接走 <code>/v1/chat/completions</code>，核心训练闭环保持不变。
+          </p>
+        </div>
+
+        <div class="status-grid">
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Core State / Operations Snapshot</div>
+              <div class="section-note">runtime / adapter / sample pressure</div>
+            </div>
+            <div class="status-item">
+              <strong>Mode</strong>
+              <span id="modeValue">loading</span>
+            </div>
+            <div class="status-item">
+              <strong>Inference</strong>
+              <span id="backendValue">loading</span>
+            </div>
+            <div class="status-item">
+              <strong>Latest Adapter</strong>
+              <span id="adapterValue">none</span>
+            </div>
+            <div class="status-item">
+              <strong>Samples</strong>
+              <span id="sampleValue">train 0 / val 0 / test 0</span>
+            </div>
+            <div class="status-item">
+              <strong>Real Local</strong>
+              <span id="realLocalStatusValue">disabled</span>
+            </div>
+            <div class="status-item full">
+              <strong>Operations</strong>
+              <span id="operationsOverviewValue">loading</span>
+            </div>
+          </section>
+
+          <section class="status-section alert-section">
+            <div class="section-head">
+              <div class="section-label">Alerts / Health</div>
+              <div class="section-note">attention_needed / recovery / action policy / next actions / recent recovery</div>
+            </div>
+            <div class="status-item">
+              <strong>Health</strong>
+              <span id="operationsHealthValue">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Alerts</strong>
+              <span id="operationsAlertsValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item">
+              <strong>Recovery</strong>
+              <span id="operationsRecoveryValue">loading</span>
+            </div>
+            <div class="status-item">
+              <div class="status-item-head">
+                <strong>Current Focus</strong>
+                <span id="operationsCurrentFocusBadgeValue" class="inspection-mini-badge stable">stable</span>
+              </div>
+              <span id="operationsCurrentFocusValue">none</span>
+            </div>
+            <div class="status-item">
+              <div class="status-item-head">
+                <strong>Priority Action</strong>
+                <span id="operationsPriorityActionBadgeValue" class="inspection-mini-badge stable">stable</span>
+              </div>
+              <span id="operationsPriorityActionValue">none</span>
+            </div>
+            <div class="status-item">
+              <div class="status-item-head">
+                <strong>Handling Mode</strong>
+                <span id="operationsHandlingModeBadgeValue" class="inspection-mini-badge stable">stable</span>
+              </div>
+              <span id="operationsHandlingModeValue">none</span>
+            </div>
+            <div class="status-item">
+              <div class="status-item-head">
+                <strong>Latest Recovery</strong>
+                <span id="operationsLatestRecoveryBadgeValue" class="inspection-mini-badge stable">stable</span>
+              </div>
+              <span id="operationsLatestRecoveryValue">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Action Policy</strong>
+              <span id="operationsPolicyDigestValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Inspection Digest</strong>
+              <span id="operationsInspectionDigestValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Daemon Atomic</strong>
+              <span id="operationsDaemonAtomicValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Next Actions</strong>
+              <span id="operationsNextActionsValue" class="timeline-preview">none</span>
+            </div>
+          </section>
+
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Operations Event Stream</div>
+              <div class="section-note">PFE operations event stream / candidate / queue / runner / daemon timeline summary / severity / attention / required_action / escalation_mode / latest_recovery</div>
+            </div>
+            <div class="status-item">
+              <strong>Severity</strong>
+              <span id="operationsEventStreamSeverityValue" class="event-stream-chip stable">stable</span>
+            </div>
+            <div class="status-item full">
+              <strong>Attention</strong>
+              <span id="operationsEventStreamAttentionValue" class="timeline-preview event-stream-attention">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Dashboard Digest</strong>
+              <span id="operationsEventStreamDigestValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Action Policy</strong>
+              <span id="operationsEventStreamPolicyValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Latest Recovery</strong>
+              <span id="operationsEventStreamRecoveryValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Summary</strong>
+              <span id="operationsEventStreamValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-item full">
+              <strong>Recent Stream</strong>
+              <span id="operationsEventStreamRecentValue" class="timeline-preview">none</span>
+            </div>
+          </section>
+
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Auto Trigger</div>
+              <div class="section-note">trigger state and latest action</div>
+            </div>
+            <div class="status-item">
+              <strong>Auto Train</strong>
+              <span id="autoTrainValue">disabled</span>
+            </div>
+            <div class="status-item">
+              <strong>Last Trigger Action</strong>
+              <span id="autoTrainActionValue">none</span>
+            </div>
+          </section>
+
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Candidate / Queue</div>
+              <div class="section-note">Candidate Timeline / latest version and transition trail</div>
+            </div>
+            <div class="status-item">
+              <strong>Candidate</strong>
+              <span id="candidateValue">none</span>
+            </div>
+            <div class="status-item">
+              <strong>Candidate Action</strong>
+              <span id="candidateActionValue">none</span>
+            </div>
+            <div class="status-item">
+              <strong>Candidate History</strong>
+              <span id="candidateHistoryValue" class="timeline-preview">none</span>
+            </div>
+          </section>
+
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Queue History</div>
+              <div class="section-note">queue pressure and review trail</div>
+            </div>
+            <div class="status-item">
+              <strong>Train Queue</strong>
+              <span id="trainQueueValue">count 0</span>
+            </div>
+            <div class="status-item full">
+              <strong>Queue History</strong>
+              <span id="queueHistoryValue" class="timeline-preview">none</span>
+            </div>
+          </section>
+
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Worker Daemon</div>
+              <div class="section-note">long-lived runner control, recovery / restart policy, lock state, last heartbeat, atomic health fields: health_state / lease_state / heartbeat_state / restart_policy_state / recovery_action, and recovery timeline/history with started / recover_requested / restart_requested / stop_requested / completed / stale_lock_takeover events</div>
+            </div>
+            <div class="status-item">
+              <strong>Daemon Status</strong>
+              <span id="workerDaemonValue">inactive</span>
+            </div>
+            <div class="status-item">
+              <strong>Daemon Recovery</strong>
+              <span id="workerDaemonRecoveryValue">idle</span>
+            </div>
+            <div class="status-item full">
+              <strong>Daemon Timeline Focus</strong>
+              <span id="workerDaemonTimelineFocusValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Daemon Latest Anomaly</strong>
+              <span id="workerDaemonTimelineAnomalyValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Daemon Suggested Action</strong>
+              <span id="workerDaemonTimelineActionValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Daemon Atomic</strong>
+              <span id="workerDaemonAtomicValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Daemon History / Recovery Timeline</strong>
+              <span id="workerDaemonHistoryValue" class="timeline-preview">none</span>
+            </div>
+            <div class="status-actions">
+              <button class="secondary" id="refreshDaemonBtn" type="button">刷新 Daemon</button>
+              <button class="secondary" id="runWorkerRunnerDaemonBtn" type="button">启动 Daemon</button>
+              <button class="secondary" id="stopWorkerRunnerDaemonBtn" type="button">停止 Daemon</button>
+              <button class="secondary" id="restartWorkerRunnerDaemonBtn" type="button">重启 Daemon</button>
+              <button class="secondary" id="recoverWorkerRunnerDaemonBtn" type="button">恢复 Daemon</button>
+            </div>
+          </section>
+
+          <section class="status-section">
+            <div class="section-head">
+              <div class="section-label">Worker Loop</div>
+              <div class="section-note">Worker Runner / lease / processed / current focus / recent timeline events</div>
+            </div>
+            <div class="status-item">
+              <strong>Worker Runner</strong>
+              <span id="workerRunnerValue">inactive</span>
+            </div>
+            <div class="status-item full">
+              <strong>Worker Runner Focus</strong>
+              <span id="workerRunnerTimelineFocusValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Worker Runner Latest Anomaly</strong>
+              <span id="workerRunnerTimelineAnomalyValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Worker Runner Suggested Action</strong>
+              <span id="workerRunnerTimelineActionValue" class="timeline-preview">loading</span>
+            </div>
+            <div class="status-item full">
+              <strong>Worker Runner Timeline / History</strong>
+              <span id="workerRunnerHistoryValue" class="timeline-preview">none</span>
+            </div>
+          </section>
+        </div>
+
+        <div class="workspace">
+          <label for="modelInput">Model</label>
+          <input id="modelInput" value="local-default" />
+        </div>
+
+        <div class="workspace">
+          <label for="adapterInput">Adapter Version</label>
+          <input id="adapterInput" placeholder="latest or a specific version" />
+        </div>
+
+        <div class="control-stack">
+          <button class="secondary" id="promoteCandidateBtn" type="button">Promote Candidate</button>
+          <button class="secondary" id="archiveCandidateBtn" type="button">Archive Candidate</button>
+          <button class="secondary" id="approveNextBtn" type="button">批准下一条待确认任务</button>
+          <button class="secondary" id="rejectNextBtn" type="button">拒绝下一条待确认任务</button>
+          <button class="secondary" id="processUntilIdleBtn" type="button">处理队列直到空闲</button>
+          <button class="secondary" id="runWorkerLoopBtn" type="button">运行 Worker Loop</button>
+          <button class="secondary" id="runWorkerRunnerBtn" type="button">运行 Worker Runner</button>
+          <button class="secondary" id="stopWorkerRunnerBtn" type="button">停止 Worker Runner</button>
+          <button class="secondary" id="processBatchBtn" type="button">批量处理队列</button>
+          <button class="secondary" id="processNextBtn" type="button">处理下一条队列任务</button>
+          <button class="secondary" id="retryTriggerBtn" type="button">重试 Auto Train</button>
+          <button class="secondary" id="resetTriggerBtn" type="button">重置 Trigger 状态</button>
+        </div>
+      </aside>
+
+      <main class="card chat">
+        <header class="chat-header">
+          <div>
+            <h2>对话</h2>
+            <div class="chat-subtitle" id="sessionValue">session pending</div>
+          </div>
+          <div class="toolbar">
+            <button class="secondary" id="refreshStatusBtn" type="button">刷新状态</button>
+            <button class="secondary" id="clearBtn" type="button">清空对话</button>
+          </div>
+        </header>
+
+        <div class="runtime-banner">
+          <div class="runtime-pill mock" id="runtimeBadge">Mock Reply Active</div>
+          <div class="runtime-note" id="runtimeNote">
+            当前还在使用模板 fallback。勾选 Real Local 并用 `--real-local` 启动服务后，才会尝试真实本地模型推理。
+          </div>
+          <div class="connection-banner">
+            <div class="connection-row">
+              <div class="connection-pill idle" id="connectionBadge">Connection Idle</div>
+              <div class="connection-note" id="connectionMeta">尚未发出请求</div>
+            </div>
+            <div class="connection-note" id="connectionNote">未检测到鉴权错误。本机模式下可以不填 API Key。</div>
+          </div>
+          <div class="loop-activity">
+            <div class="integration-head">
+              <div class="integration-title">Recent Closed Loop</div>
+              <button class="secondary" id="exportSessionSummaryBtn" type="button">导出 Session 摘要</button>
+            </div>
+            <div class="integration-grid">
+              <div class="integration-item">
+                <strong>Last Chat Request</strong>
+                <span id="loopChatRequestValue">none</span>
+              </div>
+              <div class="integration-item">
+                <strong>Last Feedback</strong>
+                <span id="loopFeedbackValue">none</span>
+              </div>
+              <div class="integration-item">
+                <strong>Loop Status</strong>
+                <span id="loopStatusValue">idle</span>
+              </div>
+            </div>
+            <div class="connection-note" id="loopNoteValue">还没有 chat / feedback 闭环活动。</div>
+          </div>
+          <div class="signal-activity">
+            <div class="integration-head">
+              <div class="integration-title">Signal / Event Chain</div>
+            </div>
+            <div class="integration-grid">
+              <div class="integration-item">
+                <strong>Latest Interaction</strong>
+                <span id="signalInteractionValue">none</span>
+              </div>
+              <div class="integration-item">
+                <strong>Event Chain Ready</strong>
+                <span id="signalChainReadyValue">unknown</span>
+              </div>
+              <div class="integration-item">
+                <strong>Complete Ratio</strong>
+                <span id="signalChainRatioValue">0%</span>
+              </div>
+              <div class="integration-item">
+                <strong>Latest Curation</strong>
+                <span id="signalCurationValue">unknown</span>
+              </div>
+              <div class="integration-item">
+                <strong>Auto-Train Gate</strong>
+                <span id="signalAutoTrainValue">unknown</span>
+              </div>
+              <div class="integration-item">
+                <strong>Eligible Samples</strong>
+                <span id="signalEligibleSamplesValue">0</span>
+              </div>
+              <div class="integration-item">
+                <strong>Remaining To Ready</strong>
+                <span id="signalRemainingSamplesValue">unknown</span>
+              </div>
+              <div class="integration-item">
+                <strong>Training Plan</strong>
+                <span id="signalTrainingPlanValue">unknown</span>
+              </div>
+              <div class="integration-item">
+                <strong>Eligible Sample IDs</strong>
+                <span id="signalSampleIdsValue">none</span>
+              </div>
+              <div class="integration-item">
+                <strong>Gate Blocker</strong>
+                <span id="signalBlockerValue">none</span>
+              </div>
+              <div class="integration-item">
+                <strong>Next Action</strong>
+                <span id="signalNextActionValue">none</span>
+              </div>
+              <div class="integration-item">
+                <strong>Recent Timeline</strong>
+                <span id="signalTimelineValue">none</span>
+              </div>
+            </div>
+            <div class="connection-note" id="signalChainNoteValue">还没有可展示的 signal / event chain 信息。</div>
+          </div>
+          <div class="integration-snapshot">
+            <div class="integration-head">
+              <div class="integration-title">Integration Snapshot</div>
+              <button class="secondary" id="copySnapshotBtn" type="button">复制接入快照</button>
+            </div>
+            <div class="integration-grid">
+              <div class="integration-item">
+                <strong>Base URL</strong>
+                <span id="snapshotBaseUrlValue">loading</span>
+              </div>
+              <div class="integration-item">
+                <strong>Chat Endpoint</strong>
+                <span id="snapshotChatPathValue">loading</span>
+              </div>
+              <div class="integration-item">
+                <strong>Feedback Endpoint</strong>
+                <span id="snapshotFeedbackPathValue">loading</span>
+              </div>
+              <div class="integration-item">
+                <strong>Session</strong>
+                <span id="snapshotSessionValue">loading</span>
+              </div>
+              <div class="integration-item">
+                <strong>Adapter</strong>
+                <span id="snapshotAdapterValue">loading</span>
+              </div>
+              <div class="integration-item">
+                <strong>Auth</strong>
+                <span id="snapshotAuthValue">loading</span>
+              </div>
+            </div>
+          </div>
+          <div class="example-requests">
+            <div class="integration-head">
+              <div class="integration-title">Example Requests</div>
+            </div>
+            <div class="example-grid">
+              <div class="example-card">
+                <div class="integration-head">
+                  <div class="integration-title">curl</div>
+                  <button class="secondary" id="copyCurlExampleBtn" type="button">复制 curl</button>
+                </div>
+                <pre id="curlExampleValue">loading</pre>
+              </div>
+              <div class="example-card">
+                <div class="integration-head">
+                  <div class="integration-title">Python</div>
+                  <button class="secondary" id="copyPythonExampleBtn" type="button">复制 Python</button>
+                </div>
+                <pre id="pythonExampleValue">loading</pre>
+              </div>
+              <div class="example-card">
+                <div class="integration-head">
+                  <div class="integration-title">JavaScript</div>
+                  <button class="secondary" id="copyJsExampleBtn" type="button">复制 JS</button>
+                </div>
+                <pre id="jsExampleValue">loading</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <section class="messages" id="messages"></section>
+
+        <form class="composer" id="chatForm">
+          <div class="composer-grid">
+            <div>
+              <label for="messageInput">Message</label>
+              <textarea id="messageInput" placeholder="输入你想对模型说的话"></textarea>
+            </div>
+            <div>
+              <label for="temperatureInput">Temperature</label>
+              <input id="temperatureInput" type="number" min="0" max="2" step="0.1" value="0.7" />
+            </div>
+            <div>
+              <label for="styleInput">Style Hint</label>
+              <input id="styleInput" value="helpful" />
+            </div>
+            <div>
+              <label for="realLocalInput">Real Local</label>
+              <input id="realLocalInput" type="checkbox" />
+            </div>
+            <div>
+              <label for="apiKeyInput">API Key</label>
+              <input id="apiKeyInput" type="password" placeholder="optional Bearer key" />
+            </div>
+          </div>
+          <div class="composer-footer">
+            <div class="hint" id="footerHint">尚未发送消息</div>
+            <button class="primary" id="sendBtn" type="submit">发送</button>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <script>
+      const state = {
+        sessionId: `sess-${crypto.randomUUID()}`,
+        messages: [],
+        // Tracking for implicit feedback
+        lastInteraction: null,
+        loopActivity: {
+          lastChatRequestId: null,
+          lastFeedbackAction: null,
+          lastFeedbackStatus: null,
+          lastFeedbackRequestId: null,
+          note: "还没有 chat / feedback 闭环活动。",
+        },
+        signalActivity: {
+          interactionStored: false,
+          latestRequestId: null,
+          latestSessionId: null,
+          latestSignalId: null,
+          eventChainReady: null,
+          eventChainCompleteRatio: 0,
+          curationState: null,
+          curationReason: null,
+          curatedSamples: 0,
+          autoTrainState: null,
+          autoTrainReason: null,
+          eligibleTrainSamples: 0,
+          effectiveEligibleTrainSamples: 0,
+          preferenceReinforcedTrainSamples: 0,
+          remainingTrainSamples: null,
+          remainingEffectiveTrainSamples: null,
+          thresholdSummaryLine: null,
+          trainType: null,
+          trainingMethod: null,
+          eligibleTrainSampleIds: [],
+          blockedSummary: null,
+          blockedReasons: [],
+          blockedPrimaryReason: null,
+          blockedPrimaryAction: null,
+          queueGateReason: null,
+          queueGateAction: null,
+          lastChatAt: null,
+          lastFeedbackAt: null,
+          lastCurationAt: null,
+          lastStatusRefreshAt: null,
+          note: "还没有可展示的 signal / event chain 信息。",
+        },
+        connectionStatus: {
+          state: "idle",
+          lastPath: null,
+          lastHttpStatus: null,
+          detail: "尚未发出请求",
+          note: "未检测到鉴权错误。本机模式下可以不填 API Key。",
+          apiKeyPresent: false,
+        },
+      };
+
+      const elements = {
+        messages: document.getElementById("messages"),
+        modelInput: document.getElementById("modelInput"),
+        adapterInput: document.getElementById("adapterInput"),
+        messageInput: document.getElementById("messageInput"),
+        temperatureInput: document.getElementById("temperatureInput"),
+        styleInput: document.getElementById("styleInput"),
+        apiKeyInput: document.getElementById("apiKeyInput"),
+        footerHint: document.getElementById("footerHint"),
+        sessionValue: document.getElementById("sessionValue"),
+        modeValue: document.getElementById("modeValue"),
+        backendValue: document.getElementById("backendValue"),
+        adapterValue: document.getElementById("adapterValue"),
+        sampleValue: document.getElementById("sampleValue"),
+        realLocalStatusValue: document.getElementById("realLocalStatusValue"),
+        operationsOverviewValue: document.getElementById("operationsOverviewValue"),
+        operationsHealthValue: document.getElementById("operationsHealthValue"),
+        operationsAlertsValue: document.getElementById("operationsAlertsValue"),
+        operationsRecoveryValue: document.getElementById("operationsRecoveryValue"),
+        operationsCurrentFocusValue: document.getElementById("operationsCurrentFocusValue"),
+        operationsCurrentFocusBadgeValue: document.getElementById("operationsCurrentFocusBadgeValue"),
+        operationsPriorityActionValue: document.getElementById("operationsPriorityActionValue"),
+        operationsPriorityActionBadgeValue: document.getElementById("operationsPriorityActionBadgeValue"),
+        operationsHandlingModeValue: document.getElementById("operationsHandlingModeValue"),
+        operationsHandlingModeBadgeValue: document.getElementById("operationsHandlingModeBadgeValue"),
+        operationsLatestRecoveryValue: document.getElementById("operationsLatestRecoveryValue"),
+        operationsLatestRecoveryBadgeValue: document.getElementById("operationsLatestRecoveryBadgeValue"),
+        operationsPolicyDigestValue: document.getElementById("operationsPolicyDigestValue"),
+        operationsInspectionDigestValue: document.getElementById("operationsInspectionDigestValue"),
+        operationsDaemonAtomicValue: document.getElementById("operationsDaemonAtomicValue"),
+        operationsNextActionsValue: document.getElementById("operationsNextActionsValue"),
+        operationsEventStreamValue: document.getElementById("operationsEventStreamValue"),
+        operationsEventStreamSeverityValue: document.getElementById("operationsEventStreamSeverityValue"),
+        operationsEventStreamAttentionValue: document.getElementById("operationsEventStreamAttentionValue"),
+        operationsEventStreamDigestValue: document.getElementById("operationsEventStreamDigestValue"),
+        operationsEventStreamPolicyValue: document.getElementById("operationsEventStreamPolicyValue"),
+        operationsEventStreamRecoveryValue: document.getElementById("operationsEventStreamRecoveryValue"),
+        operationsEventStreamRecentValue: document.getElementById("operationsEventStreamRecentValue"),
+        autoTrainValue: document.getElementById("autoTrainValue"),
+        autoTrainActionValue: document.getElementById("autoTrainActionValue"),
+        candidateValue: document.getElementById("candidateValue"),
+        candidateActionValue: document.getElementById("candidateActionValue"),
+        candidateHistoryValue: document.getElementById("candidateHistoryValue"),
+        trainQueueValue: document.getElementById("trainQueueValue"),
+        queueHistoryValue: document.getElementById("queueHistoryValue"),
+        workerDaemonValue: document.getElementById("workerDaemonValue"),
+        workerDaemonRecoveryValue: document.getElementById("workerDaemonRecoveryValue"),
+        workerDaemonTimelineFocusValue: document.getElementById("workerDaemonTimelineFocusValue"),
+        workerDaemonTimelineAnomalyValue: document.getElementById("workerDaemonTimelineAnomalyValue"),
+        workerDaemonTimelineActionValue: document.getElementById("workerDaemonTimelineActionValue"),
+        workerDaemonAtomicValue: document.getElementById("workerDaemonAtomicValue"),
+        workerDaemonHistoryValue: document.getElementById("workerDaemonHistoryValue"),
+        workerRunnerValue: document.getElementById("workerRunnerValue"),
+        workerRunnerTimelineFocusValue: document.getElementById("workerRunnerTimelineFocusValue"),
+        workerRunnerTimelineAnomalyValue: document.getElementById("workerRunnerTimelineAnomalyValue"),
+        workerRunnerTimelineActionValue: document.getElementById("workerRunnerTimelineActionValue"),
+        workerRunnerHistoryValue: document.getElementById("workerRunnerHistoryValue"),
+        sendBtn: document.getElementById("sendBtn"),
+        realLocalInput: document.getElementById("realLocalInput"),
+        runtimeBadge: document.getElementById("runtimeBadge"),
+        runtimeNote: document.getElementById("runtimeNote"),
+        connectionBadge: document.getElementById("connectionBadge"),
+        connectionMeta: document.getElementById("connectionMeta"),
+        connectionNote: document.getElementById("connectionNote"),
+        loopChatRequestValue: document.getElementById("loopChatRequestValue"),
+        loopFeedbackValue: document.getElementById("loopFeedbackValue"),
+        loopStatusValue: document.getElementById("loopStatusValue"),
+        loopNoteValue: document.getElementById("loopNoteValue"),
+        signalInteractionValue: document.getElementById("signalInteractionValue"),
+        signalChainReadyValue: document.getElementById("signalChainReadyValue"),
+        signalChainRatioValue: document.getElementById("signalChainRatioValue"),
+        signalCurationValue: document.getElementById("signalCurationValue"),
+        signalAutoTrainValue: document.getElementById("signalAutoTrainValue"),
+        signalEligibleSamplesValue: document.getElementById("signalEligibleSamplesValue"),
+        signalRemainingSamplesValue: document.getElementById("signalRemainingSamplesValue"),
+        signalTrainingPlanValue: document.getElementById("signalTrainingPlanValue"),
+        signalSampleIdsValue: document.getElementById("signalSampleIdsValue"),
+        signalBlockerValue: document.getElementById("signalBlockerValue"),
+        signalNextActionValue: document.getElementById("signalNextActionValue"),
+        signalTimelineValue: document.getElementById("signalTimelineValue"),
+        signalChainNoteValue: document.getElementById("signalChainNoteValue"),
+        exportSessionSummaryBtn: document.getElementById("exportSessionSummaryBtn"),
+        copySnapshotBtn: document.getElementById("copySnapshotBtn"),
+        snapshotBaseUrlValue: document.getElementById("snapshotBaseUrlValue"),
+        snapshotChatPathValue: document.getElementById("snapshotChatPathValue"),
+        snapshotFeedbackPathValue: document.getElementById("snapshotFeedbackPathValue"),
+        snapshotSessionValue: document.getElementById("snapshotSessionValue"),
+        snapshotAdapterValue: document.getElementById("snapshotAdapterValue"),
+        snapshotAuthValue: document.getElementById("snapshotAuthValue"),
+        copyCurlExampleBtn: document.getElementById("copyCurlExampleBtn"),
+        copyPythonExampleBtn: document.getElementById("copyPythonExampleBtn"),
+        copyJsExampleBtn: document.getElementById("copyJsExampleBtn"),
+        curlExampleValue: document.getElementById("curlExampleValue"),
+        pythonExampleValue: document.getElementById("pythonExampleValue"),
+        jsExampleValue: document.getElementById("jsExampleValue"),
+        promoteCandidateBtn: document.getElementById("promoteCandidateBtn"),
+        archiveCandidateBtn: document.getElementById("archiveCandidateBtn"),
+        approveNextBtn: document.getElementById("approveNextBtn"),
+        rejectNextBtn: document.getElementById("rejectNextBtn"),
+        processUntilIdleBtn: document.getElementById("processUntilIdleBtn"),
+        runWorkerLoopBtn: document.getElementById("runWorkerLoopBtn"),
+        runWorkerRunnerBtn: document.getElementById("runWorkerRunnerBtn"),
+        stopWorkerRunnerBtn: document.getElementById("stopWorkerRunnerBtn"),
+        processBatchBtn: document.getElementById("processBatchBtn"),
+        processNextBtn: document.getElementById("processNextBtn"),
+        retryTriggerBtn: document.getElementById("retryTriggerBtn"),
+        resetTriggerBtn: document.getElementById("resetTriggerBtn"),
+        refreshDaemonBtn: document.getElementById("refreshDaemonBtn"),
+        runWorkerRunnerDaemonBtn: document.getElementById("runWorkerRunnerDaemonBtn"),
+        stopWorkerRunnerDaemonBtn: document.getElementById("stopWorkerRunnerDaemonBtn"),
+        restartWorkerRunnerDaemonBtn: document.getElementById("restartWorkerRunnerDaemonBtn"),
+        recoverWorkerRunnerDaemonBtn: document.getElementById("recoverWorkerRunnerDaemonBtn"),
+      };
+
+      function formatAutoTrainStatus(trigger = {}, action = {}) {
+        const parts = [];
+        if (trigger.state) {
+          parts.push(trigger.state);
+        }
+        if (trigger.ready != null) {
+          parts.push(trigger.ready ? "ready" : "not ready");
+        }
+        if (trigger.reason) {
+          parts.push(`reason=${trigger.reason}`);
+        }
+        if (trigger.queue_mode) {
+          parts.push(`queue=${trigger.queue_mode}`);
+        }
+        if (trigger.queue_dedup_scope) {
+          parts.push(`dedup=${trigger.queue_dedup_scope}`);
+        }
+        if (trigger.queue_priority_policy) {
+          parts.push(`priority=${trigger.queue_priority_policy}`);
+        }
+        if (trigger.eligible_signal_train_samples != null) {
+          parts.push(`signal=${trigger.eligible_signal_train_samples}`);
+        }
+        return parts.join(" | ") || "unknown";
+      }
+
+      function formatAutoTrainAction(action = {}) {
+        const parts = [];
+        if (action.action) {
+          parts.push(action.action);
+        }
+        if (action.status) {
+          parts.push(action.status);
+        }
+        if (action.reason) {
+          parts.push(`reason=${action.reason}`);
+        }
+        if (action.processed_count != null && action.processed_count) {
+          parts.push(`processed=${action.processed_count}`);
+        }
+        if (action.completed_count != null && action.completed_count) {
+          parts.push(`completed=${action.completed_count}`);
+        }
+        if (action.failed_count != null && action.failed_count) {
+          parts.push(`failed=${action.failed_count}`);
+        }
+        if (action.remaining_queued != null && action.action === "process_until_idle") {
+          parts.push(`remaining=${action.remaining_queued}`);
+        }
+        if (action.drained != null && action.action === "process_until_idle") {
+          parts.push(action.drained ? "drained" : "not-drained");
+        }
+        if (action.action === "run_worker_loop") {
+          if (action.loop_cycles != null) {
+            parts.push(`cycles=${action.loop_cycles}`);
+          }
+          if (action.idle_rounds != null) {
+            parts.push(`idle=${action.idle_rounds}`);
+          }
+          if (action.stopped_reason) {
+            parts.push(`stopped=${action.stopped_reason}`);
+          }
+        }
+        if (action.action === "approve_next" || action.action === "reject_next") {
+          if (action.queue_job_id) {
+            parts.push(`job=${action.queue_job_id}`);
+          }
+          if (action.confirmation_reason) {
+            parts.push(`confirm=${action.confirmation_reason}`);
+          }
+        }
+        if (action.approval_reason) {
+          parts.push(`approval=${action.approval_reason}`);
+        }
+        if (action.rejection_reason) {
+          parts.push(`rejection=${action.rejection_reason}`);
+        }
+        if (action.operator_note) {
+          parts.push(`note=${action.operator_note}`);
+        }
+        if (action.triggered_version) {
+          parts.push(`version=${action.triggered_version}`);
+        }
+        if (action.promoted_version) {
+          parts.push(`promoted=${action.promoted_version}`);
+        }
+        return parts.join(" | ") || "none";
+      }
+
+      function formatOperationsOverview(overview = {}) {
+        const parts = [];
+        parts.push("PFE operations overview");
+        if (overview.summary_line) {
+          parts.push(overview.summary_line);
+        }
+        if (overview.attention_needed != null) {
+          parts.push(overview.attention_needed ? "attention-needed" : "stable");
+        }
+        if (overview.attention_reason) {
+          parts.push(`reason=${overview.attention_reason}`);
+        }
+        if (overview.runner_last_event) {
+          parts.push(`runner-last=${overview.runner_last_event}`);
+        }
+        return parts.join("\n") || "none";
+      }
+
+      function formatOperationsHealth(operations = {}, overview = {}, worker = {}, dashboard = {}, alertPolicy = {}) {
+        const health = operations.health || overview.health || {};
+        const parts = [];
+        const status = dashboard.status || health.status;
+        if (status) {
+          parts.push(`status=${status}`);
+        }
+        const severity = _normalizeEventStreamSeverity(dashboard.severity || health.severity);
+        if (severity && severity !== "stable") {
+          parts.push(`severity=${severity}`);
+        }
+        if (operations.attention_needed != null) {
+          parts.push(operations.attention_needed ? "attention-needed" : "stable");
+        } else if (dashboard.attention_needed != null) {
+          parts.push(dashboard.attention_needed ? "attention-needed" : "stable");
+        }
+        if (dashboard.current_focus) {
+          parts.push(`focus=${dashboard.current_focus}`);
+        }
+        if (health.daemon_lock_state) {
+          parts.push(`daemon=${health.daemon_lock_state}`);
+        }
+        if (health.runner_lock_state) {
+          parts.push(`runner=${health.runner_lock_state}`);
+        }
+        if (health.daemon_lease_expires_at) {
+          parts.push(`daemon-lease=${health.daemon_lease_expires_at}`);
+        }
+        if (health.queue_depth != null) {
+          parts.push(`queue=${health.queue_depth}`);
+        }
+        const atomic = formatDaemonAtomic(worker);
+        if (atomic) {
+          parts.push(atomic);
+        }
+        if (alertPolicy.action_priority) {
+          parts.push(`priority=${alertPolicy.action_priority}`);
+        }
+        return parts.join(" | ") || "healthy";
+      }
+
+      function _parseDate(value) {
+        if (!value) {
+          return null;
+        }
+        const parsed = new Date(value);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+      }
+
+      function deriveDaemonHealthState(worker = {}) {
+        const recoveryState = String(worker.recovery_state || "");
+        const lockState = String(worker.lock_state || "");
+        const active = Boolean(worker.active);
+        const stopRequested = Boolean(worker.stop_requested);
+        const canRecover = Boolean(worker.can_recover);
+        if (recoveryState === "restarting" || recoveryState === "recovering") {
+          return "recovering";
+        }
+        if (stopRequested || worker.desired_state === "stopped") {
+          return "stopped";
+        }
+        if (lockState === "stale") {
+          return "stale";
+        }
+        if (active && lockState === "active") {
+          return "healthy";
+        }
+        if (worker.recovery_needed || canRecover) {
+          return "degraded";
+        }
+        return active ? "healthy" : "idle";
+      }
+
+      function deriveLeaseState(worker = {}) {
+        const leaseExpiresAt = _parseDate(worker.lease_expires_at);
+        const heartbeatAge = Number(worker.heartbeat_age_seconds);
+        const timeout = Number(worker.heartbeat_timeout_seconds);
+        if (leaseExpiresAt) {
+          const remaining = leaseExpiresAt.getTime() - Date.now();
+          if (remaining <= 0) {
+            return "expired";
+          }
+          if (remaining <= 5000) {
+            return "expiring";
+          }
+          return "valid";
+        }
+        if (Number.isFinite(heartbeatAge) && Number.isFinite(timeout)) {
+          if (heartbeatAge > timeout) {
+            return "expired";
+          }
+          if (heartbeatAge > timeout * 0.5) {
+            return "expiring";
+          }
+          return "valid";
+        }
+        return worker.active ? "valid" : "unknown";
+      }
+
+      function deriveHeartbeatState(worker = {}) {
+        const heartbeatAge = Number(worker.heartbeat_age_seconds);
+        const interval = Number(worker.heartbeat_interval_seconds);
+        const timeout = Number(worker.heartbeat_timeout_seconds);
+        if (Number.isFinite(heartbeatAge) && Number.isFinite(interval)) {
+          if (heartbeatAge <= interval) {
+            return "fresh";
+          }
+          if (Number.isFinite(timeout) && heartbeatAge > timeout) {
+            return "stale";
+          }
+          return "delayed";
+        }
+        if (Number.isFinite(timeout) && worker.lock_state === "stale") {
+          return "stale";
+        }
+        return worker.active ? "fresh" : "idle";
+      }
+
+      function deriveRestartPolicyState(worker = {}) {
+        if (!worker.auto_restart_enabled) {
+          return "disabled";
+        }
+        if (worker.restart_attempts != null && worker.max_restart_attempts != null && Number(worker.restart_attempts) >= Number(worker.max_restart_attempts)) {
+          return "capped";
+        }
+        if (Number(worker.backoff_remaining_seconds) > 0) {
+          return "backoff";
+        }
+        return "ready";
+      }
+
+      function deriveRecoveryAction(worker = {}) {
+        if (worker.recovery_state === "recovering" || worker.recovery_state === "restarting") {
+          return "restart_required";
+        }
+        if (worker.recovery_needed) {
+          if (worker.auto_recover_enabled && worker.can_recover) {
+            return "auto_recover";
+          }
+          if (worker.can_recover) {
+            return "manual_recover";
+          }
+          return "blocked";
+        }
+        return "none";
+      }
+
+      function formatDaemonAtomic(worker = {}) {
+        const healthState = worker.health_state || deriveDaemonHealthState(worker);
+        const leaseState = worker.lease_state || deriveLeaseState(worker);
+        const heartbeatState = worker.heartbeat_state || deriveHeartbeatState(worker);
+        const restartPolicyState = worker.restart_policy_state || deriveRestartPolicyState(worker);
+        const recoveryAction = worker.recovery_action || deriveRecoveryAction(worker);
+        const parts = [
+          `health_state=${healthState}`,
+          `lease_state=${leaseState}`,
+          `heartbeat_state=${heartbeatState}`,
+          `restart_policy_state=${restartPolicyState}`,
+          `recovery_action=${recoveryAction}`,
+        ];
+        if (worker.last_auto_recovery_reason) {
+          parts.push(`auto_recovery=${worker.last_auto_recovery_reason}`);
+        }
+        if (worker.next_restart_after) {
+          parts.push(`next_restart=${worker.next_restart_after}`);
+        }
+        return parts.join(" | ");
+      }
+
+      function formatOperationsAlerts(operations = {}, overview = {}, dashboard = {}, alertPolicy = {}) {
+        const alerts = Array.isArray(operations.alerts) ? operations.alerts : Array.isArray(overview.alerts) ? overview.alerts : [];
+        if (!alerts.length) {
+          const parts = [];
+          if (dashboard.attention_needed != null) {
+            parts.push(dashboard.attention_needed ? "attention-needed" : "stable");
+          }
+          if (dashboard.attention_reason) {
+            parts.push(`reason=${dashboard.attention_reason}`);
+          }
+          if (dashboard.current_focus) {
+            parts.push(`focus=${dashboard.current_focus}`);
+          }
+          if (alertPolicy.required_action) {
+            parts.push(`action=${alertPolicy.required_action}`);
+          }
+          return parts.length ? parts.join(" | ") : "alerts: none";
+        }
+        return alerts
+          .map((alert) => {
+            const scope = alert.scope || "ops";
+            const level = alert.level || "info";
+            const reason = alert.reason || "unknown";
+            const message = alert.message ? ` — ${alert.message}` : "";
+            return `${level}:${scope}:${reason}${message}`;
+          })
+          .join("\n");
+      }
+
+      function formatOperationsRecovery(operations = {}, overview = {}, worker = {}, dashboard = {}, alertPolicy = {}) {
+        const recovery = operations.recovery || overview.recovery || {};
+        const parts = [];
+        if (recovery.daemon_recovery_needed != null) {
+          parts.push(recovery.daemon_recovery_needed ? "daemon-recovery-needed" : "daemon-recovery-clear");
+        }
+        if (recovery.daemon_recovery_reason) {
+          parts.push(`daemon=${recovery.daemon_recovery_reason}`);
+        }
+        if (recovery.daemon_backoff_remaining_seconds != null) {
+          parts.push(`backoff=${recovery.daemon_backoff_remaining_seconds}s`);
+        }
+        if (recovery.runner_stop_requested != null) {
+          parts.push(recovery.runner_stop_requested ? "runner-stop-requested" : "runner-running");
+        }
+        const recoveryAction = worker.recovery_action || deriveRecoveryAction(worker);
+        if (recoveryAction) {
+          parts.push(`action=${recoveryAction}`);
+        }
+        if (dashboard.last_recovery_event) {
+          parts.push(`last=${dashboard.last_recovery_event}`);
+        }
+        if (dashboard.last_recovery_reason) {
+          parts.push(`reason=${dashboard.last_recovery_reason}`);
+        }
+        if (alertPolicy.primary_action) {
+          parts.push(`primary=${alertPolicy.primary_action}`);
+        }
+        if (alertPolicy.escalation_mode) {
+          parts.push(`mode=${alertPolicy.escalation_mode}`);
+        }
+        return parts.join(" | ") || "recovery: idle";
+      }
+
+      function formatOperationsPolicyDigest(dashboard = {}, alertPolicy = {}) {
+        const parts = [];
+        if (dashboard.current_focus) {
+          parts.push(`focus=${dashboard.current_focus}`);
+        }
+        if (alertPolicy.required_action) {
+          parts.push(`action=${alertPolicy.required_action}`);
+        }
+        if (alertPolicy.action_priority) {
+          parts.push(`priority=${alertPolicy.action_priority}`);
+        }
+        if (alertPolicy.escalation_mode) {
+          parts.push(`mode=${alertPolicy.escalation_mode}`);
+        }
+        if (alertPolicy.requires_immediate_action != null) {
+          parts.push(`immediate=${alertPolicy.requires_immediate_action ? "yes" : "no"}`);
+        }
+        if (alertPolicy.requires_human_review != null) {
+          parts.push(`human=${alertPolicy.requires_human_review ? "yes" : "no"}`);
+        }
+        if (alertPolicy.auto_remediation_allowed != null) {
+          parts.push(`auto=${alertPolicy.auto_remediation_allowed ? "yes" : "no"}`);
+        }
+        if (alertPolicy.remediation_mode) {
+          parts.push(`remediation=${alertPolicy.remediation_mode}`);
+        }
+        if (alertPolicy.operator_guidance) {
+          parts.push(`guidance=${alertPolicy.operator_guidance}`);
+        }
+        return parts.join(" | ") || "none";
+      }
+
+      function formatOperationsInspectionDigest(operations = {}, overview = {}, worker = {}, dashboard = {}, alertPolicy = {}) {
+        if (dashboard.dashboard_digest) {
+          const digestParts = [dashboard.dashboard_digest];
+          if (alertPolicy.operator_guidance) {
+            digestParts.push(`guidance=${alertPolicy.operator_guidance}`);
+          }
+          if (Array.isArray(dashboard.next_actions) && dashboard.next_actions.length) {
+            digestParts.push(`next=${dashboard.next_actions.slice(0, 3).join(" → ")}`);
+          }
+          return digestParts.join(" | ");
+        }
+        const health = operations.health || overview.health || {};
+        const recovery = operations.recovery || overview.recovery || {};
+        const nextActions = Array.isArray(operations.next_actions) ? operations.next_actions : Array.isArray(overview.next_actions) ? overview.next_actions : [];
+        const priorityAction = alertPolicy.primary_action || nextActions[0] || overview.attention_reason || "none";
+        const recoveryAction = worker.recovery_action || deriveRecoveryAction(worker);
+        const recentRecovery = dashboard.last_recovery_event || recovery.daemon_last_recovery_event || worker.last_recovery_event || "none";
+        const parts = [];
+        if (health.status) {
+          parts.push(`health=${health.status}`);
+        }
+        parts.push(`priority=${priorityAction}`);
+        if (recoveryAction) {
+          parts.push(`recovery=${recoveryAction}`);
+        }
+        if (recentRecovery) {
+          parts.push(`recent=${recentRecovery}`);
+        }
+        if (alertPolicy.required_action) {
+          parts.push(`policy=${alertPolicy.required_action}`);
+        }
+        if (alertPolicy.action_priority) {
+          parts.push(`priority_rank=${alertPolicy.action_priority}`);
+        }
+        if (alertPolicy.auto_remediation_allowed != null) {
+          parts.push(`auto=${alertPolicy.auto_remediation_allowed ? "yes" : "no"}`);
+        }
+        if (alertPolicy.requires_human_review != null) {
+          parts.push(`review=${alertPolicy.requires_human_review ? "yes" : "no"}`);
+        }
+        if (alertPolicy.operator_guidance) {
+          parts.push(`guidance=${alertPolicy.operator_guidance}`);
+        }
+        if (nextActions.length) {
+          parts.push(`next=${nextActions.slice(0, 3).join(" → ")}`);
+        }
+        return parts.join(" | ") || "none";
+      }
+
+      function formatOperationsLatestRecovery(dashboard = {}, alertPolicy = {}) {
+        const latestRecovery = dashboard.latest_recovery || alertPolicy.latest_recovery || {};
+        if (latestRecovery && typeof latestRecovery === "object" && Object.keys(latestRecovery).length) {
+          const parts = [];
+          if (latestRecovery.source) {
+            parts.push(`source=${latestRecovery.source}`);
+          }
+          if (latestRecovery.event) {
+            parts.push(`event=${latestRecovery.event}`);
+          }
+          if (latestRecovery.reason) {
+            parts.push(`reason=${latestRecovery.reason}`);
+          }
+          if (latestRecovery.timestamp) {
+            parts.push(`at=${latestRecovery.timestamp}`);
+          }
+          return parts.join(" | ") || "none";
+        }
+        if (dashboard.last_recovery_event) {
+          return `event=${dashboard.last_recovery_event}${dashboard.last_recovery_reason ? ` | reason=${dashboard.last_recovery_reason}` : ""}`;
+        }
+        return "none";
+      }
+
+      function formatOperationsNextActions(operations = {}, overview = {}, dashboard = {}, alertPolicy = {}) {
+        const nextActions = Array.isArray(operations.next_actions) ? operations.next_actions : Array.isArray(overview.next_actions) ? overview.next_actions : [];
+        const actions = nextActions.slice();
+        if (!actions.length && Array.isArray(dashboard.next_actions)) {
+          actions.push(...dashboard.next_actions);
+        }
+        if (alertPolicy.primary_action && !actions.includes(alertPolicy.primary_action)) {
+          actions.unshift(alertPolicy.primary_action);
+        }
+        return actions.length ? actions.join(" → ") : "none";
+      }
+
+      function _normalizeEventStreamSeverity(value) {
+        const normalized = String(value || "").toLowerCase();
+        if (["critical", "error", "fatal"].includes(normalized)) {
+          return "critical";
+        }
+        if (["warn", "warning", "blocked", "degraded", "recovering", "stale", "expired"].includes(normalized)) {
+          return "warn";
+        }
+        if (["info", "attention", "notice", "watch"].includes(normalized)) {
+          return "info";
+        }
+        return "stable";
+      }
+
+      function deriveInspectionSeverity(kind, dashboard = {}, alertPolicy = {}, eventStream = {}) {
+        const streamSeverity = _normalizeEventStreamSeverity(eventStream.severity || dashboard.severity || alertPolicy.severity);
+        if (kind === "handling") {
+          if (alertPolicy.requires_immediate_action) {
+            return "critical";
+          }
+          if (alertPolicy.requires_human_review) {
+            return "warn";
+          }
+          if (alertPolicy.auto_remediation_allowed) {
+            return streamSeverity === "stable" ? "info" : streamSeverity;
+          }
+        }
+        if (kind === "recovery") {
+          if (dashboard.latest_recovery || alertPolicy.latest_recovery || dashboard.last_recovery_event) {
+            return streamSeverity === "stable" ? "info" : streamSeverity;
+          }
+        }
+        return streamSeverity;
+      }
+
+      function deriveInspectionModifiers(kind, dashboard = {}, alertPolicy = {}) {
+        const modifiers = [];
+        if (alertPolicy.requires_immediate_action && (kind === "focus" || kind === "action" || kind === "handling")) {
+          modifiers.push("requires-immediate");
+        }
+        if (alertPolicy.requires_human_review && (kind === "focus" || kind === "action" || kind === "handling")) {
+          modifiers.push("requires-review");
+        }
+        if (kind === "handling") {
+          const remediationMode = String(dashboard.remediation_mode || alertPolicy.remediation_mode || "")
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+          if (remediationMode) {
+            modifiers.push(`mode-${remediationMode}`);
+          }
+        }
+        if (kind === "recovery" && (dashboard.latest_recovery || alertPolicy.latest_recovery || dashboard.last_recovery_event)) {
+          modifiers.push("recovery-present");
+        }
+        return modifiers;
+      }
+
+      function applyInspectionChip(element, kind, dashboard = {}, alertPolicy = {}, eventStream = {}) {
+        if (!element) {
+          return;
+        }
+        const severity = deriveInspectionSeverity(kind, dashboard, alertPolicy, eventStream);
+        const modifiers = deriveInspectionModifiers(kind, dashboard, alertPolicy);
+        element.className = ["inspection-chip", severity, ...modifiers].join(" ");
+      }
+
+      function formatInspectionBadge(kind, dashboard = {}, alertPolicy = {}, eventStream = {}) {
+        const severity = deriveInspectionSeverity(kind, dashboard, alertPolicy, eventStream);
+        if (kind === "handling") {
+          if (alertPolicy.requires_immediate_action) {
+            return "now";
+          }
+          if (alertPolicy.requires_human_review) {
+            return "review";
+          }
+          if (alertPolicy.auto_remediation_allowed) {
+            return "auto";
+          }
+        }
+        if (kind === "action" && alertPolicy.action_priority) {
+          return String(alertPolicy.action_priority).toUpperCase();
+        }
+        if (kind === "recovery" && (dashboard.latest_recovery || alertPolicy.latest_recovery || dashboard.last_recovery_event)) {
+          return "recent";
+        }
+        return severity;
+      }
+
+      function applyInspectionBadge(element, kind, dashboard = {}, alertPolicy = {}, eventStream = {}) {
+        if (!element) {
+          return;
+        }
+        const severity = deriveInspectionSeverity(kind, dashboard, alertPolicy, eventStream);
+        element.textContent = formatInspectionBadge(kind, dashboard, alertPolicy, eventStream);
+        element.className = `inspection-mini-badge ${severity}`;
+      }
+
+      function _severityRank(value) {
+        switch (_normalizeEventStreamSeverity(value)) {
+          case "critical":
+            return 3;
+          case "warn":
+            return 2;
+          case "info":
+            return 1;
+          default:
+            return 0;
+        }
+      }
+
+      function _mergeEventStreamSeverity(current, next) {
+        return _severityRank(next) > _severityRank(current) ? _normalizeEventStreamSeverity(next) : _normalizeEventStreamSeverity(current);
+      }
+
+      function _formatEventStreamAttentionCue(label, event, reason, timestamp) {
+        const parts = [label];
+        if (event && event !== "none") {
+          parts.push(event);
+        }
+        if (reason) {
+          parts.push(reason);
+        }
+        if (timestamp) {
+          parts.push(timestamp);
+        }
+        return parts.join(": ");
+      }
+
+      function _timelineSource(label, timeline = {}) {
+        const item = timeline || {};
+        const candidateStage = item.current_stage || item.stage || item.current_state;
+        const lastTransition = item.last_transition || {};
+        const lastEvent = item.last_event || lastTransition.event || item.last_recovery_event || item.state || item.lock_state || candidateStage || "none";
+        const lastReason = item.last_reason || lastTransition.reason || item.last_recovery_reason || item.recovery_reason || "";
+        const latestTimestamp = item.latest_timestamp || lastTransition.timestamp || item.last_recovery_at || item.last_heartbeat_at || item.started_at || "";
+        return {
+          label,
+          event: String(lastEvent || "none"),
+          reason: String(lastReason || ""),
+          timestamp: String(latestTimestamp || ""),
+        };
+      }
+
+      function formatOperationsEventStream(operations = {}, payload = {}) {
+        const structuredStream = payload.operations_event_stream || operations.event_stream || {};
+        const operationsDashboard = payload.operations_dashboard || operations.dashboard || {};
+        const alertPolicy = payload.operations_alert_policy || structuredStream.policy || operationsDashboard.policy || operations.alert_policy || {};
+        const latestRecovery = structuredStream.latest_recovery || operations.latest_recovery || operationsDashboard.latest_recovery || operations.recovery || {};
+        if (structuredStream && typeof structuredStream === "object" && (structuredStream.count != null || Array.isArray(structuredStream.items))) {
+          const severity = _normalizeEventStreamSeverity(structuredStream.severity || structuredStream.highest_severity);
+          const attentionParts = [];
+          if (structuredStream.attention_needed != null) {
+            attentionParts.push(structuredStream.attention_needed ? "attention-needed" : "stable");
+          }
+          if (structuredStream.attention_reason) {
+            attentionParts.push(`reason=${structuredStream.attention_reason}`);
+          }
+          if (structuredStream.attention_source) {
+            attentionParts.push(`source=${structuredStream.attention_source}`);
+          }
+          if (structuredStream.attention_count != null) {
+            attentionParts.push(`count=${structuredStream.attention_count}`);
+          }
+          const overview = operations.overview || payload.operations_overview || {};
+          const health = operations.health || overview.health || {};
+          const nextActions = Array.isArray(operations.next_actions) ? operations.next_actions : Array.isArray(overview.next_actions) ? overview.next_actions : [];
+          const digestParts = [];
+          if (operationsDashboard && typeof operationsDashboard === "object" && Object.keys(operationsDashboard).length) {
+            digestParts.push(`severity=${_normalizeEventStreamSeverity(operationsDashboard.severity || severity)}`);
+            if (operationsDashboard.status) {
+              digestParts.push(`status=${operationsDashboard.status}`);
+            }
+            if (operationsDashboard.attention_needed != null) {
+              digestParts.push(`attention=${operationsDashboard.attention_needed ? "attention-needed" : "stable"}`);
+            }
+            if (operationsDashboard.current_focus) {
+              digestParts.push(`focus=${operationsDashboard.current_focus}`);
+            }
+            if (Array.isArray(operationsDashboard.next_actions) && operationsDashboard.next_actions.length) {
+              digestParts.push(`next=${operationsDashboard.next_actions.slice(0, 3).join(" → ")}`);
+            }
+          } else {
+            digestParts.push(`severity=${severity}`);
+            if (structuredStream.status) {
+              digestParts.push(`status=${structuredStream.status}`);
+            }
+            if (structuredStream.attention_needed != null) {
+              digestParts.push(`attention=${structuredStream.attention_needed ? "attention-needed" : "stable"}`);
+            }
+            if (health.status) {
+              digestParts.push(`health=${health.status}`);
+            }
+            if (health.daemon_health_state) {
+              digestParts.push(`daemon=${health.daemon_health_state}`);
+            }
+            if (nextActions.length) {
+              digestParts.push(`next=${nextActions.slice(0, 3).join(" → ")}`);
+            }
+          }
+          if (latestRecovery && typeof latestRecovery === "object" && Object.keys(latestRecovery).length) {
+            const latestRecoveryParts = [];
+            if (latestRecovery.state) {
+              latestRecoveryParts.push(`state=${latestRecovery.state}`);
+            }
+            if (latestRecovery.reason) {
+              latestRecoveryParts.push(`reason=${latestRecovery.reason}`);
+            }
+            if (latestRecovery.action) {
+              latestRecoveryParts.push(`action=${latestRecovery.action}`);
+            }
+            if (latestRecovery.note) {
+              latestRecoveryParts.push(`note=${latestRecovery.note}`);
+            }
+            if (latestRecovery.timestamp) {
+              latestRecoveryParts.push(`@${latestRecovery.timestamp}`);
+            }
+            digestParts.push(`latest_recovery=${latestRecoveryParts.join(" | ") || "present"}`);
+          }
+          const items = Array.isArray(structuredStream.items) ? structuredStream.items : [];
+          const recent = items.length
+            ? items
+                .slice(0, 5)
+                .map((item) => {
+                  const parts = [
+                    `${item.source || "ops"}:${item.event || "event"}`,
+                    item.severity ? `[${String(item.severity).toUpperCase()}]` : "",
+                    item.reason ? `(${item.reason})` : "",
+                  ].filter(Boolean);
+                  if (item.timestamp) {
+                    parts.push(`@${item.timestamp}`);
+                  }
+                  return parts.join("");
+                })
+                .join(" → ")
+            : "none";
+          const policyParts = [];
+          if (alertPolicy.required_action) {
+            policyParts.push(`required_action=${alertPolicy.required_action}`);
+          }
+          if (alertPolicy.action_priority) {
+            policyParts.push(`priority=${alertPolicy.action_priority}`);
+          }
+          if (alertPolicy.escalation_mode) {
+            policyParts.push(`escalation_mode=${alertPolicy.escalation_mode}`);
+          }
+          if (alertPolicy.requires_immediate_action != null) {
+            policyParts.push(`immediate=${alertPolicy.requires_immediate_action ? "yes" : "no"}`);
+          }
+          if (alertPolicy.requires_human_review != null) {
+            policyParts.push(`human=${alertPolicy.requires_human_review ? "yes" : "no"}`);
+          }
+          if (alertPolicy.auto_remediation_allowed != null) {
+            policyParts.push(`auto=${alertPolicy.auto_remediation_allowed ? "yes" : "no"}`);
+          }
+          if (latestRecovery && typeof latestRecovery === "object" && Object.keys(latestRecovery).length) {
+            const latestRecoveryParts = [];
+            if (latestRecovery.state) {
+              latestRecoveryParts.push(`state=${latestRecovery.state}`);
+            }
+            if (latestRecovery.reason) {
+              latestRecoveryParts.push(`reason=${latestRecovery.reason}`);
+            }
+            if (latestRecovery.action) {
+              latestRecoveryParts.push(`action=${latestRecovery.action}`);
+            }
+            if (latestRecovery.note) {
+              latestRecoveryParts.push(`note=${latestRecovery.note}`);
+            }
+            if (latestRecovery.timestamp) {
+              latestRecoveryParts.push(`@${latestRecovery.timestamp}`);
+            }
+            policyParts.push(`latest_recovery=${latestRecoveryParts.join(" | ") || "present"}`);
+          }
+          return {
+            severity,
+            attention: attentionParts.join(" | ") || "none",
+            digest: digestParts.join(" | ") || "none",
+            policy: policyParts.join(" | ") || "none",
+            recovery: latestRecovery && typeof latestRecovery === "object" && Object.keys(latestRecovery).length
+              ? [
+                  latestRecovery.state ? `state=${latestRecovery.state}` : null,
+                  latestRecovery.reason ? `reason=${latestRecovery.reason}` : null,
+                  latestRecovery.action ? `action=${latestRecovery.action}` : null,
+                  latestRecovery.note ? `note=${latestRecovery.note}` : null,
+                  latestRecovery.timestamp ? `@${latestRecovery.timestamp}` : null,
+                ].filter(Boolean).join(" | ") || "present"
+              : "none",
+            summary: `summary: ${structuredStream.summary_line || `count=${structuredStream.count || 0}`}`,
+            recent: `recent stream: ${recent}`,
+          };
+        }
+
+        const timelines = operations.timelines || {};
+        const candidate = _timelineSource("candidate", timelines.candidate || payload.candidate_timeline || payload.candidate_history || payload.candidate_summary || {});
+        const queue = _timelineSource("queue", timelines.queue || payload.train_queue?.history_summary || {});
+        const runner = _timelineSource("runner", timelines.runner || payload.runner_timeline || payload.operations_runner_timeline || payload.train_queue?.worker_runner || {});
+        const daemon = _timelineSource("daemon", timelines.daemon || payload.daemon_timeline || payload.operations_daemon_timeline || operations.daemon_timeline || {});
+        const sources = [candidate, queue, runner, daemon].filter((item) => item.event !== "none" || item.reason || item.timestamp);
+        const overview = operations.overview || payload.operations_overview || {};
+        const health = operations.health || overview.health || {};
+        const recovery = operations.recovery || overview.recovery || {};
+        const alerts = Array.isArray(operations.alerts) ? operations.alerts : Array.isArray(overview.alerts) ? overview.alerts : [];
+        const attentionCues = [];
+        let severity = "stable";
+
+        const pushCue = (cueSeverity, cue) => {
+          if (!cue) {
+            return;
+          }
+          severity = _mergeEventStreamSeverity(severity, cueSeverity);
+          attentionCues.push(cue);
+        };
+
+        alerts.forEach((alert) => {
+          const alertSeverity = _normalizeEventStreamSeverity(alert.level || alert.severity);
+          const scope = alert.scope || "ops";
+          const reason = alert.reason || "unknown";
+          const message = alert.message ? `: ${alert.message}` : "";
+          pushCue(alertSeverity, `alert/${scope}/${reason}${message}`);
+        });
+
+        if (operations.attention_needed != null || overview.attention_needed != null) {
+          const attentionNeeded = Boolean(operations.attention_needed ?? overview.attention_needed);
+          severity = _mergeEventStreamSeverity(severity, attentionNeeded ? "warn" : "info");
+          if (attentionNeeded) {
+            pushCue("warn", `attention: ${operations.attention_reason || overview.attention_reason || "needed"}`);
+          }
+        }
+
+        if (health.status) {
+          const healthStatus = String(health.status);
+          if (["critical", "blocked", "expired", "stale"].includes(healthStatus)) {
+            pushCue("critical", `health=${healthStatus}`);
+          } else if (["recovering", "degraded", "delayed"].includes(healthStatus)) {
+            pushCue("warn", `health=${healthStatus}`);
+          }
+        }
+
+        ["daemon_lock_state", "runner_lock_state", "lease_state", "heartbeat_state"].forEach((key) => {
+          const value = String(health[key] || "");
+          if (!value) {
+            return;
+          }
+          if (["stale", "expired"].includes(value)) {
+            pushCue("critical", `${key}=${value}`);
+          } else if (["expiring", "delayed", "blocked"].includes(value)) {
+            pushCue("warn", `${key}=${value}`);
+          }
+        });
+
+        if (recovery.daemon_recovery_needed) {
+          pushCue("warn", `daemon=${recovery.daemon_recovery_reason || "recovery-needed"}`);
+        }
+        if (recovery.runner_stop_requested) {
+          pushCue("warn", "runner=stop-requested");
+        }
+
+        sources.forEach((item) => {
+          const cueText = `${item.label}:${item.event} ${item.reason}`.toLowerCase();
+          if (/(stale|expired|blocked|failed|error|recover|restart)/.test(cueText)) {
+            pushCue(/(failed|error|expired)/.test(cueText) ? "critical" : "warn", _formatEventStreamAttentionCue(item.label, item.event, item.reason, item.timestamp));
+          }
+        });
+
+        if (!sources.length && attentionCues.length === 0) {
+          return {
+            severity: "stable",
+            attention: "none",
+            digest: "none",
+            policy: "none",
+            summary: "none",
+            recent: "none",
+          };
+        }
+
+        if (!attentionCues.length && sources.length) {
+          severity = sources.some((item) => item.event !== "none" || item.reason) ? "info" : "stable";
+          attentionCues.push("none");
+        }
+
+        const summary = sources.map((item) => `${item.label}=${item.event}`).join(" | ");
+        const recent = sources
+          .slice()
+          .sort((a, b) => String(b.timestamp || "").localeCompare(String(a.timestamp || "")))
+          .map((item) => {
+            const parts = [`${item.label}:${item.event}`];
+            if (item.timestamp) {
+              parts.push(`@${item.timestamp}`);
+            }
+            if (item.reason) {
+              parts.push(`(${item.reason})`);
+            }
+            return parts.join("");
+          })
+          .join(" → ");
+        return {
+          severity,
+          attention: attentionCues.join(" | "),
+          digest: `severity=${severity} | attention=${attentionCues.length ? "attention-needed" : "stable"} | health=${health.status || "unknown"}${Array.isArray(operations.next_actions || overview.next_actions) && (operations.next_actions || overview.next_actions).length ? ` | next=${(operations.next_actions || overview.next_actions).slice(0, 3).join(" → ")}` : ""}`,
+          policy: "none",
+          summary: `summary: ${summary}`,
+          recent: `recent stream: ${recent}`,
+        };
+      }
+
+      function formatCandidate(candidate = {}) {
+        const parts = [];
+        if (candidate.candidate_version) {
+          parts.push(candidate.candidate_version);
+        }
+        if (candidate.candidate_state) {
+          parts.push(candidate.candidate_state);
+        }
+        if (candidate.pending_eval_count != null) {
+          parts.push(`pending=${candidate.pending_eval_count}`);
+        }
+        return parts.join(" | ") || "none";
+      }
+
+      function formatCandidateAction(action = {}) {
+        const parts = [];
+        if (action.action) {
+          parts.push(action.action);
+        }
+        if (action.status) {
+          parts.push(action.status);
+        }
+        if (action.reason) {
+          parts.push(`reason=${action.reason}`);
+        }
+        if (action.candidate_version) {
+          parts.push(`candidate=${action.candidate_version}`);
+        }
+        if (action.promoted_version) {
+          parts.push(`promoted=${action.promoted_version}`);
+        }
+        if (action.archived_version) {
+          parts.push(`archived=${action.archived_version}`);
+        }
+        if (action.operator_note) {
+          parts.push(`note=${action.operator_note}`);
+        }
+        return parts.join(" | ") || "none";
+      }
+
+      function deriveCandidateTimelineStage(item = {}) {
+        const action = String(item.action || "");
+        const status = String(item.status || "");
+        if (action === "promote_candidate" && status === "completed") {
+          return "promoted";
+        }
+        if (action === "archive_candidate" && status === "completed") {
+          return "archived";
+        }
+        if (status === "blocked") {
+          return "blocked";
+        }
+        if (status === "noop") {
+          return "noop";
+        }
+        return "candidate_action";
+      }
+
+      function formatCandidateTimelineEntry(item = {}, index = 0) {
+        const parts = [];
+        const timestamp = item.timestamp || "unknown time";
+        const stage = item.stage || deriveCandidateTimelineStage(item);
+        const action = item.action || "candidate_action";
+        const status = item.status || "noop";
+        const version = item.candidate_version || item.promoted_version || item.archived_version;
+        parts.push(`  ${index + 1}. ${timestamp} | stage=${stage} | action=${action} | status=${status}`);
+        if (version) {
+          parts.push(`     version=${version}`);
+        }
+        if (item.promoted_version && item.promoted_version !== version) {
+          parts.push(`     promoted=${item.promoted_version}`);
+        }
+        if (item.archived_version && item.archived_version !== version) {
+          parts.push(`     archived=${item.archived_version}`);
+        }
+        if (item.reason) {
+          parts.push(`     reason=${item.reason}`);
+        }
+        if (item.operator_note) {
+          parts.push(`     note=${item.operator_note}`);
+        }
+        return parts;
+      }
+
+      function formatCandidateHistory(history = {}) {
+        const parts = [];
+        const summaryParts = [];
+        const latestTransition = history.last_transition || {};
+        const stage = history.current_stage || deriveCandidateTimelineStage(latestTransition);
+        const items = Array.isArray(history.items) ? history.items : [];
+
+        parts.push("PFE candidate timeline");
+        parts.push("轨迹预览");
+        if (history.count != null) {
+          summaryParts.push(`count=${history.count}`);
+        }
+        if (history.workspace) {
+          summaryParts.push(`workspace=${history.workspace}`);
+        }
+        if (history.last_action) {
+          summaryParts.push(`last_action=${history.last_action}`);
+        }
+        if (history.last_status) {
+          summaryParts.push(`last_status=${history.last_status}`);
+        }
+        if (history.last_reason) {
+          summaryParts.push(`last_reason=${history.last_reason}`);
+        }
+        if (history.last_note) {
+          summaryParts.push(`last_note=${history.last_note}`);
+        }
+
+        if (summaryParts.length) {
+          parts.push(`summary: ${summaryParts.join(" | ")}`);
+        }
+        if (stage && stage !== "candidate_action") {
+          parts.push(`current stage: ${stage}`);
+        }
+        if (history.last_candidate_version) {
+          parts.push(`current candidate: ${history.last_candidate_version}`);
+        }
+        if (history.latest_timestamp) {
+          parts.push(`latest timestamp: ${history.latest_timestamp}`);
+        }
+        if (items.length) {
+          parts.push("recent transitions:");
+          items.forEach((item, index) => {
+            if (!item || typeof item !== "object") {
+              parts.push(`  ${index + 1}. ${String(item)}`);
+              return;
+            }
+            parts.push(...formatCandidateTimelineEntry(item, index));
+          });
+        } else {
+          parts.push("recent transitions: none");
+        }
+        return parts.join("\n") || "none";
+      }
+
+      function formatQueueHistory(history = {}) {
+        const parts = [];
+        const summaryParts = [];
+        const historySummary = history.history_summary || {};
+        const review = history.review_summary || {};
+        const recentHistory = Array.isArray(history.recent_history) ? history.recent_history : [];
+
+        parts.push("PFE queue history");
+        if (historySummary.transition_count != null) {
+          summaryParts.push(`transitions=${historySummary.transition_count}`);
+        }
+        if (historySummary.last_transition?.event) {
+          summaryParts.push(`last_event=${historySummary.last_transition.event}`);
+        }
+        if (historySummary.last_transition?.reason) {
+          summaryParts.push(`last_reason=${historySummary.last_transition.reason}`);
+        }
+        if (review.last_review_event) {
+          summaryParts.push(`review=${review.last_review_event}`);
+        }
+        if (review.last_review_note) {
+          summaryParts.push(`review_note=${review.last_review_note}`);
+        }
+        if (summaryParts.length) {
+          parts.push(`summary: ${summaryParts.join(" | ")}`);
+        }
+        if (recentHistory.length) {
+          parts.push("recent trail:");
+          recentHistory.slice(-5).forEach((item, index) => {
+            if (!item || typeof item !== "object") {
+              parts.push(`  ${index + 1}. ${String(item)}`);
+              return;
+            }
+            const fields = [];
+            if (item.timestamp) {
+              fields.push(`timestamp=${item.timestamp}`);
+            }
+            if (item.event) {
+              fields.push(`event=${item.event}`);
+            }
+            if (item.state) {
+              fields.push(`state=${item.state}`);
+            }
+            if (item.job_id) {
+              fields.push(`job=${item.job_id}`);
+            }
+            if (item.reason) {
+              fields.push(`reason=${item.reason}`);
+            }
+            if (item.note) {
+              fields.push(`note=${item.note}`);
+            }
+            parts.push(`  ${index + 1}. ${fields.join(" | ") || "unknown"}`);
+          });
+        } else {
+          parts.push("recent trail: none");
+        }
+        return parts.join("\n") || "none";
+      }
+
+      function formatQueue(queue = {}) {
+        const parts = [];
+        if (queue.count != null) {
+          parts.push(`count ${queue.count}`);
+        }
+        if (queue.max_priority != null) {
+          parts.push(`max-priority ${queue.max_priority}`);
+        }
+        const counts = queue.counts || {};
+        const states = Object.keys(counts).sort().map((key) => `${key}:${counts[key]}`).join(", ");
+        if (states) {
+          parts.push(states);
+        }
+        const current = queue.current || {};
+        if (current.priority_source) {
+          parts.push(`current-priority ${current.priority_source}`);
+        }
+        if (current.queue_dedup_scope) {
+          parts.push(`current-dedup ${current.queue_dedup_scope}`);
+        }
+        const confirmation = queue.confirmation_summary || {};
+        if (confirmation.awaiting_confirmation_count != null) {
+          parts.push(`awaiting ${confirmation.awaiting_confirmation_count}`);
+        }
+        if (confirmation.next_confirmation_reason) {
+          parts.push(`next-confirm ${confirmation.next_confirmation_reason}`);
+        }
+        const history = queue.history_summary || {};
+        if (history.transition_count != null) {
+          parts.push(`transitions ${history.transition_count}`);
+        }
+        const lastTransition = history.last_transition || {};
+        if (lastTransition.event) {
+          parts.push(`last-event ${lastTransition.event}`);
+        }
+        const review = queue.review_summary || {};
+        if (review.last_review_event) {
+          parts.push(`review ${review.last_review_event}`);
+        }
+        if (review.last_review_note) {
+          parts.push(`note=${review.last_review_note}`);
+        }
+        const trail = Array.isArray(queue.recent_history)
+          ? queue.recent_history
+              .map((item) => item?.event || item?.state)
+              .filter(Boolean)
+              .slice(-3)
+          : [];
+        if (trail.length) {
+          parts.push(`trail ${trail.join(" → ")}`);
+        }
+        return parts.join("\n") || "count 0";
+      }
+
+      function formatWorkerDaemonStatus(worker = {}) {
+        const parts = [];
+        if (worker.active != null) {
+          parts.push(worker.active ? "active" : "inactive");
+        }
+        if (worker.lock_state) {
+          parts.push(`lock=${worker.lock_state}`);
+        }
+        if (worker.recovery_state) {
+          parts.push(`recovery=${worker.recovery_state}`);
+        }
+        if (worker.stop_requested != null) {
+          parts.push(worker.stop_requested ? "stop-requested" : "stop-not-requested");
+        }
+        if (worker.pid != null) {
+          parts.push(`pid=${worker.pid}`);
+        }
+        if (worker.started_at) {
+          parts.push(`started=${worker.started_at}`);
+        }
+        if (worker.last_heartbeat_at) {
+          parts.push(`heartbeat=${worker.last_heartbeat_at}`);
+        }
+        if (worker.stale_after_seconds != null) {
+          parts.push(`stale-after=${worker.stale_after_seconds}`);
+        }
+        if (worker.processed_count != null) {
+          parts.push(`processed=${worker.processed_count}`);
+        }
+        if (worker.failed_count != null) {
+          parts.push(`failed=${worker.failed_count}`);
+        }
+        if (worker.stopped_reason) {
+          parts.push(`reason=${worker.stopped_reason}`);
+        }
+        if (worker.lease_expires_at) {
+          parts.push(`lease=${worker.lease_expires_at}`);
+        }
+        if (worker.history_count != null) {
+          parts.push(`history=${worker.history_count}`);
+        }
+        if (worker.last_event) {
+          parts.push(`last=${worker.last_event}`);
+        }
+        if (worker.last_event_reason) {
+          parts.push(`reason=${worker.last_event_reason}`);
+        }
+        parts.push(formatDaemonAtomic(worker));
+        return parts.join("\n") || "inactive";
+      }
+
+      function formatWorkerDaemonRecovery(worker = {}) {
+        const parts = [];
+        if (worker.recovery_state) {
+          parts.push(worker.recovery_state);
+        }
+        if (worker.recovery_mode) {
+          parts.push(`mode=${worker.recovery_mode}`);
+        }
+        if (worker.recovery_reason) {
+          parts.push(`reason=${worker.recovery_reason}`);
+        }
+        if (worker.recovery_attempts != null) {
+          parts.push(`attempts=${worker.recovery_attempts}`);
+        }
+        if (worker.recovery_backoff_seconds != null) {
+          parts.push(`backoff=${worker.recovery_backoff_seconds}s`);
+        }
+        if (worker.recovery_next_retry_at) {
+          parts.push(`next=${worker.recovery_next_retry_at}`);
+        }
+        if (worker.recovery_action) {
+          parts.push(`action=${worker.recovery_action}`);
+        } else {
+          parts.push(`action=${deriveRecoveryAction(worker)}`);
+        }
+        return parts.join(" | ") || "idle";
+      }
+
+      function deriveDaemonRecoveryTimelineEvent(item = {}) {
+        const event = String(item.event || item.action || item.state || "").trim();
+        if (event) {
+          return event;
+        }
+        if (item.lock_state === "stale") {
+          return "stale_lock_takeover";
+        }
+        if (item.recovery_state) {
+          return String(item.recovery_state).trim() || "daemon_event";
+        }
+        return "daemon_event";
+      }
+
+      function deriveDaemonRecoveryTimelineAnomaly(history = {}, worker = {}) {
+        const items = Array.isArray(history.items) ? history.items : [];
+        for (let index = items.length - 1; index >= 0; index -= 1) {
+          const item = items[index] || {};
+          const event = deriveDaemonRecoveryTimelineEvent(item);
+          const reason = String(item.reason || item.note || "").trim();
+          const descriptor = `${event} ${reason}`.toLowerCase();
+          if (/(recover_requested|restart_requested|recover_blocked|stale_lock_takeover|start_requested|failed|error|expired|stale)/.test(descriptor)) {
+            return reason ? `${event} (${reason})` : event;
+          }
+        }
+        const healthState = String(worker.health_state || "").trim();
+        if (["stale", "blocked", "recovering", "degraded"].includes(healthState)) {
+          return `health=${healthState}`;
+        }
+        const recoveryReason = String(worker.recovery_reason || "").trim();
+        if (recoveryReason) {
+          return recoveryReason;
+        }
+        return "none";
+      }
+
+      function deriveDaemonRecoveryTimelineSuggestion(history = {}, worker = {}) {
+        const recoveryAction = worker.recovery_action || deriveRecoveryAction(worker);
+        const healthState = String(worker.health_state || "").trim();
+        const restartPolicyState = String(worker.restart_policy_state || "").trim();
+        const anomaly = deriveDaemonRecoveryTimelineAnomaly(history, worker);
+        if (recoveryAction && recoveryAction !== "none") {
+          return recoveryAction;
+        }
+        if (healthState === "stale") {
+          return "recover_worker_daemon";
+        }
+        if (restartPolicyState === "backoff") {
+          return "wait_for_restart_backoff";
+        }
+        if (restartPolicyState === "capped") {
+          return "inspect_restart_policy";
+        }
+        if (anomaly && anomaly !== "none" && anomaly !== "health=healthy") {
+          return "review daemon recovery timeline";
+        }
+        if (healthState === "healthy") {
+          return "monitor heartbeat";
+        }
+        return "monitor daemon state";
+      }
+
+      function formatWorkerDaemonRecoveryTimeline(history = {}, worker = {}) {
+        const parts = [];
+        const summaryParts = [];
+        const items = Array.isArray(history.items) ? history.items : [];
+
+        parts.push("PFE worker daemon recovery timeline");
+        parts.push("recovery timeline / history");
+        parts.push("events: started | recover_requested | restart_requested | stop_requested | completed | stale_lock_takeover");
+        const atomicFocus = formatDaemonAtomic(worker);
+        if (atomicFocus) {
+          parts.push(`current focus: ${atomicFocus}`);
+        }
+        const latestAnomaly = deriveDaemonRecoveryTimelineAnomaly(history, worker);
+        parts.push(`latest anomaly: ${latestAnomaly}`);
+        parts.push(`current suggested action: ${deriveDaemonRecoveryTimelineSuggestion(history, worker)}`);
+
+        if (history.count != null) {
+          summaryParts.push(`count=${history.count}`);
+        }
+        if (history.last_event) {
+          summaryParts.push(`last_event=${history.last_event}`);
+        }
+        if (history.last_reason) {
+          summaryParts.push(`last_reason=${history.last_reason}`);
+        }
+        if (history.last_note) {
+          summaryParts.push(`last_note=${history.last_note}`);
+        }
+        if (history.latest_timestamp) {
+          summaryParts.push(`latest_timestamp=${history.latest_timestamp}`);
+        }
+        const lastTransition = history.last_transition || {};
+        if (lastTransition.event) {
+          summaryParts.push(`last_transition=${lastTransition.event}`);
+        }
+        if (summaryParts.length) {
+          parts.push(`summary: ${summaryParts.join(" | ")}`);
+        }
+        if (items.length) {
+          parts.push("recent recovery events:");
+          items.slice(-6).forEach((item, index) => {
+            if (!item || typeof item !== "object") {
+              parts.push(`  ${index + 1}. ${String(item)}`);
+              return;
+            }
+            const fields = [];
+            const timestamp = item.timestamp || item.created_at || item.recorded_at || item.occurred_at || "unknown time";
+            fields.push(`timestamp=${timestamp}`);
+            fields.push(`event=${deriveDaemonRecoveryTimelineEvent(item)}`);
+            if (item.state) {
+              fields.push(`state=${item.state}`);
+            }
+            if (item.reason) {
+              fields.push(`reason=${item.reason}`);
+            }
+            if (item.note) {
+              fields.push(`note=${item.note}`);
+            }
+            if (item.action) {
+              fields.push(`action=${item.action}`);
+            }
+            parts.push(`  ${index + 1}. ${fields.join(" | ") || "unknown"}`);
+          });
+        } else {
+          parts.push("recent recovery events: none");
+        }
+        return parts.join("\n") || "none";
+      }
+
+      function formatWorkerRunner(worker = {}) {
+        return formatWorkerDaemonStatus(worker);
+      }
+
+      function deriveWorkerRunnerTimelineEvent(item = {}) {
+        const event = String(item.event || item.action || item.state || "").trim();
+        if (event) {
+          return event;
+        }
+        if (item.lock_state === "stale") {
+          return "stale_lock_takeover";
+        }
+        if (item.stop_requested) {
+          return "stop_requested";
+        }
+        if (item.processed_count != null && Number(item.processed_count) > 0) {
+          return "processed";
+        }
+        if (item.failed_count != null && Number(item.failed_count) > 0) {
+          return "failed";
+        }
+        return "worker_event";
+      }
+
+      function deriveWorkerRunnerTimelineAnomaly(history = {}, worker = {}) {
+        const items = Array.isArray(history.items) ? history.items : [];
+        for (let index = items.length - 1; index >= 0; index -= 1) {
+          const item = items[index] || {};
+          const event = deriveWorkerRunnerTimelineEvent(item);
+          const reason = String(item.reason || item.note || "").trim();
+          const descriptor = `${event} ${reason}`.toLowerCase();
+          if (/(blocked_reentry|stale_lock_takeover|failed|error|expired|stale|stop_requested)/.test(descriptor)) {
+            return reason ? `${event} (${reason})` : event;
+          }
+        }
+        if (String(worker.lock_state || "") === "stale") {
+          return "stale_lock";
+        }
+        if (worker.stop_requested) {
+          return "stop_requested";
+        }
+        return "none";
+      }
+
+      function deriveWorkerRunnerTimelineSuggestion(history = {}, worker = {}) {
+        const anomaly = deriveWorkerRunnerTimelineAnomaly(history, worker);
+        if (String(worker.lock_state || "") === "stale") {
+          return "inspect stale lock and restart runner";
+        }
+        if (worker.stop_requested) {
+          return "wait for runner shutdown";
+        }
+        if (anomaly.includes("blocked_reentry")) {
+          return "wait for active runner to finish";
+        }
+        if (anomaly.includes("stale_lock_takeover")) {
+          return "inspect lock takeover and monitor next cycle";
+        }
+        if (anomaly.includes("failed") || anomaly.includes("error")) {
+          return "inspect failure and rerun queue worker";
+        }
+        const lastEvent = String(history.last_event || "").trim();
+        if (lastEvent === "completed") {
+          return "ready for next queue item";
+        }
+        if (lastEvent === "started" || String(worker.active) === "true") {
+          return "monitor heartbeat";
+        }
+        return "runner ready";
+      }
+
+      function formatWorkerRunnerTimeline(history = {}, worker = {}) {
+        const parts = [];
+        parts.push("PFE worker runner timeline");
+        parts.push("timeline / history");
+        parts.push("events: started | queued | running | processed | completed | failed | blocked_reentry | stale_lock_takeover");
+        const atomicFocus = formatWorkerRunner(worker);
+        if (atomicFocus) {
+          parts.push(`current focus: ${atomicFocus}`);
+        }
+        const latestAnomaly = deriveWorkerRunnerTimelineAnomaly(history, worker);
+        parts.push(`latest anomaly: ${latestAnomaly}`);
+        parts.push(`current suggested action: ${deriveWorkerRunnerTimelineSuggestion(history, worker)}`);
+        const summaryParts = [];
+        if (history.count != null) {
+          summaryParts.push(`count=${history.count}`);
+        }
+        if (history.last_event) {
+          summaryParts.push(`last_event=${history.last_event}`);
+        }
+        if (history.last_reason) {
+          summaryParts.push(`last_reason=${history.last_reason}`);
+        }
+        if (history.latest_timestamp) {
+          summaryParts.push(`latest_timestamp=${history.latest_timestamp}`);
+        }
+        if (summaryParts.length) {
+          parts.push(`summary: ${summaryParts.join(" | ")}`);
+        }
+        const items = Array.isArray(history.items) ? history.items : [];
+        if (items.length) {
+          parts.push("recent runner events:");
+          items.slice(-6).forEach((item, index) => {
+            if (!item || typeof item !== "object") {
+              parts.push(`  ${index + 1}. ${String(item)}`);
+              return;
+            }
+            const fields = [];
+            const timestamp = item.timestamp || item.created_at || item.recorded_at || item.occurred_at || "unknown time";
+            fields.push(`timestamp=${timestamp}`);
+            fields.push(`event=${deriveWorkerRunnerTimelineEvent(item)}`);
+            if (item.state) {
+              fields.push(`state=${item.state}`);
+            }
+            if (item.reason) {
+              fields.push(`reason=${item.reason}`);
+            }
+            if (item.note) {
+              fields.push(`note=${item.note}`);
+            }
+            if (item.action) {
+              fields.push(`action=${item.action}`);
+            }
+            parts.push(`  ${index + 1}. ${fields.join(" | ") || "unknown"}`);
+          });
+        } else {
+          parts.push("recent runner events: none");
+        }
+        return parts.join("\n") || "none";
+      }
+
+      function formatWorkerRunnerHistory(history = {}, worker = {}) {
+        return formatWorkerRunnerTimeline(history, worker);
+      }
+
+      function formatWorkerDaemonRecoveryTimelineFocus(worker = {}) {
+        return formatDaemonAtomic(worker) || "none";
+      }
+
+      function formatWorkerDaemonRecoveryTimelineAnomaly(history = {}, worker = {}) {
+        return deriveDaemonRecoveryTimelineAnomaly(history, worker);
+      }
+
+      function formatWorkerDaemonRecoveryTimelineAction(history = {}, worker = {}) {
+        return deriveDaemonRecoveryTimelineSuggestion(history, worker);
+      }
+
+      function formatWorkerRunnerTimelineFocus(worker = {}) {
+        return formatWorkerRunner(worker) || "none";
+      }
+
+      function formatWorkerRunnerTimelineAnomaly(history = {}, worker = {}) {
+        return deriveWorkerRunnerTimelineAnomaly(history, worker);
+      }
+
+      function formatWorkerRunnerTimelineAction(history = {}, worker = {}) {
+        return deriveWorkerRunnerTimelineSuggestion(history, worker);
+      }
+
+      function withOptionalNote(path, label) {
+        const note = window.prompt(`${label} 备注（可留空）`, "") || "";
+        const trimmed = note.trim();
+        if (!trimmed) {
+          return path;
+        }
+        const separator = path.includes("?") ? "&" : "?";
+        return `${path}${separator}note=${encodeURIComponent(trimmed)}`;
+      }
+
+      function setRuntimeBanner({ realLocalEnabled = false, servedBy = "mock", fallbackReason = "", runtimePath = "" } = {}) {
+        const isReal = realLocalEnabled && servedBy === "local";
+        elements.runtimeBadge.className = `runtime-pill ${isReal ? "real" : "mock"}`;
+        elements.runtimeBadge.textContent = isReal ? "Real Local Active" : "Mock Reply Active";
+        if (isReal) {
+          elements.runtimeNote.textContent = runtimePath
+            ? `当前回复已经走真实本地模型推理，runtime=${runtimePath}。`
+            : "当前回复已经走真实本地模型推理。";
+          return;
+        }
+        elements.runtimeNote.textContent = fallbackReason
+          ? `当前仍在使用模板 fallback。原因：${fallbackReason}`
+          : "当前还在使用模板 fallback。勾选 Real Local 并用 `--real-local` 启动服务后，才会尝试真实本地模型推理。";
+      }
+
+      function renderMessages() {
+        elements.messages.innerHTML = "";
+        if (state.messages.length === 0) {
+          appendBubble("system", "聊天页已经准备好。你现在可以直接和本地 PFE 服务对话。");
+          return;
+        }
+        state.messages.forEach((message, index) => appendBubble(message, index));
+      }
+
+      function feedbackLabel(message) {
+        const action = message?.feedback?.action;
+        const status = message?.feedback?.status;
+        if (!action || !status) {
+          return "";
+        }
+        return `feedback ${action} (${status})`;
+      }
+
+      function lineageLabel(message) {
+        if (!message?.regeneratedFromRequestId) {
+          return "";
+        }
+        return `regenerated from ${message.regeneratedFromRequestId}`;
+      }
+
+      function activeApiKey() {
+        return elements.apiKeyInput?.value.trim() || "";
+      }
+
+      function updateConnectionStatus(nextStatus = {}) {
+        state.connectionStatus = {
+          ...state.connectionStatus,
+          ...nextStatus,
+          apiKeyPresent: activeApiKey().length > 0,
+        };
+        const status = state.connectionStatus;
+        const keyLabel = status.apiKeyPresent ? "key loaded" : "no key";
+        elements.connectionBadge.className = `connection-pill ${status.state || "idle"}`;
+        elements.connectionBadge.textContent = `${status.state || "idle"} · ${keyLabel}`;
+        elements.connectionMeta.textContent = status.detail || "尚未发出请求";
+        elements.connectionNote.textContent = status.note || "";
+        renderIntegrationSnapshot();
+      }
+
+      function renderLoopActivity() {
+        const activity = state.loopActivity;
+        elements.loopChatRequestValue.textContent = activity.lastChatRequestId || "none";
+        elements.loopFeedbackValue.textContent = activity.lastFeedbackAction
+          ? `${activity.lastFeedbackAction} (${activity.lastFeedbackRequestId || "no-request-id"})`
+          : "none";
+        elements.loopStatusValue.textContent = activity.lastFeedbackStatus || "idle";
+        elements.loopNoteValue.textContent = activity.note || "还没有 chat / feedback 闭环活动。";
+      }
+
+      function updateLoopActivity(nextActivity = {}) {
+        state.loopActivity = {
+          ...state.loopActivity,
+          ...nextActivity,
+        };
+        renderLoopActivity();
+      }
+
+      function formatActivityTimestamp(value) {
+        if (!value) {
+          return null;
+        }
+        try {
+          return new Date(value).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function renderSignalActivity() {
+        const signal = state.signalActivity;
+        elements.signalInteractionValue.textContent = signal.interactionStored
+          ? `stored (${signal.latestRequestId || "no-request-id"})`
+          : "not stored";
+        elements.signalChainReadyValue.textContent = signal.eventChainReady == null
+          ? "unknown"
+          : (signal.eventChainReady ? "ready" : "not ready");
+        elements.signalChainRatioValue.textContent = `${Math.round((signal.eventChainCompleteRatio || 0) * 100)}%`;
+        elements.signalCurationValue.textContent = signal.curationState
+          ? `${signal.curationState} (${Number(signal.curatedSamples || 0)} samples)`
+          : "unknown";
+        elements.signalAutoTrainValue.textContent = signal.autoTrainState
+          ? `${signal.autoTrainState}${signal.autoTrainReason ? ` (${signal.autoTrainReason})` : ""}`
+          : "unknown";
+        const eligible = Number(signal.eligibleTrainSamples || 0);
+        const effective = Number(signal.effectiveEligibleTrainSamples || 0);
+        const reinforced = Number(signal.preferenceReinforcedTrainSamples || 0);
+        elements.signalEligibleSamplesValue.textContent = effective > eligible
+          ? `${eligible} (effective ${effective}, reinforced ${reinforced})`
+          : `${eligible}${reinforced ? ` (reinforced ${reinforced})` : ""}`;
+        if (signal.remainingTrainSamples == null && signal.remainingEffectiveTrainSamples == null) {
+          elements.signalRemainingSamplesValue.textContent = "unknown";
+        } else {
+          const remaining = Number(signal.remainingTrainSamples ?? 0);
+          const effectiveRemaining = Number(signal.remainingEffectiveTrainSamples ?? remaining);
+          elements.signalRemainingSamplesValue.textContent = effectiveRemaining !== remaining
+            ? `${remaining} raw / ${effectiveRemaining} effective`
+            : `${remaining}`;
+        }
+        elements.signalTrainingPlanValue.textContent = signal.trainType
+          ? `${signal.trainType}${signal.trainingMethod ? ` / ${signal.trainingMethod}` : ""}`
+          : "unknown";
+        elements.signalSampleIdsValue.textContent = Array.isArray(signal.eligibleTrainSampleIds) && signal.eligibleTrainSampleIds.length
+          ? signal.eligibleTrainSampleIds.slice(0, 3).join(", ")
+          : "none";
+        elements.signalBlockerValue.textContent = signal.blockedSummary
+          || signal.blockedPrimaryReason
+          || (Array.isArray(signal.blockedReasons) && signal.blockedReasons.length ? signal.blockedReasons.join(", ") : "none");
+        elements.signalNextActionValue.textContent = signal.queueGateAction
+          || signal.blockedPrimaryAction
+          || signal.queueGateReason
+          || "none";
+        const timelineParts = [
+          signal.lastChatAt ? `chat ${formatActivityTimestamp(signal.lastChatAt)}` : null,
+          signal.lastFeedbackAt ? `feedback ${formatActivityTimestamp(signal.lastFeedbackAt)}` : null,
+          signal.lastCurationAt ? `curator ${formatActivityTimestamp(signal.lastCurationAt)}` : null,
+          signal.lastStatusRefreshAt ? `status ${formatActivityTimestamp(signal.lastStatusRefreshAt)}` : null,
+        ].filter(Boolean);
+        elements.signalTimelineValue.textContent = timelineParts.length ? timelineParts.join(" -> ") : "none";
+        elements.signalChainNoteValue.textContent = signal.note || "还没有可展示的 signal / event chain 信息。";
+      }
+
+      function updateSignalActivity(nextSignal = {}) {
+        state.signalActivity = {
+          ...state.signalActivity,
+          ...nextSignal,
+        };
+        renderSignalActivity();
+      }
+
+      function updateSignalActivityFromThresholdSummary(summary = {}, notePrefix = null) {
+        if (!summary || !Object.keys(summary).length) {
+          return;
+        }
+        const eligibleTrainSamples = Number(summary.eligible_train_samples || 0);
+        const effectiveEligibleTrainSamples = Number(summary.effective_eligible_train_samples || 0);
+        const preferenceReinforcedTrainSamples = Number(summary.preference_reinforced_train_samples || 0);
+        const remainingTrainSamples = summary.remaining_train_samples == null
+          ? null
+          : Number(summary.remaining_train_samples || 0);
+        const remainingEffectiveTrainSamples = summary.remaining_effective_train_samples == null
+          ? null
+          : Number(summary.remaining_effective_train_samples || 0);
+        const summaryLine = summary.summary_line || null;
+        const trainType = summary.train_type || state.signalActivity.trainType;
+        const eligibleTrainSampleIds = Array.isArray(summary.eligible_train_sample_ids)
+          ? summary.eligible_train_sample_ids
+          : state.signalActivity.eligibleTrainSampleIds;
+        const blockedSummary = summary.blocked_summary || state.signalActivity.blockedSummary;
+        const blockedPrimaryReason = summary.blocked_primary_reason || state.signalActivity.blockedPrimaryReason;
+        const blockedPrimaryAction = summary.blocked_primary_action || state.signalActivity.blockedPrimaryAction;
+        const blockedReasons = Array.isArray(summary.blocked_reasons)
+          ? summary.blocked_reasons
+          : state.signalActivity.blockedReasons;
+        const queueGateReason = summary.queue_gate_reason || state.signalActivity.queueGateReason;
+        const queueGateAction = summary.queue_gate_action || state.signalActivity.queueGateAction;
+        updateSignalActivity({
+          eligibleTrainSamples,
+          effectiveEligibleTrainSamples,
+          preferenceReinforcedTrainSamples,
+          remainingTrainSamples,
+          remainingEffectiveTrainSamples,
+          thresholdSummaryLine: summaryLine,
+          trainType,
+          eligibleTrainSampleIds,
+          blockedSummary,
+          blockedPrimaryReason,
+          blockedPrimaryAction,
+          blockedReasons,
+          queueGateReason,
+          queueGateAction,
+          lastStatusRefreshAt: new Date().toISOString(),
+          note: [notePrefix, summaryLine].filter(Boolean).join(" | ") || state.signalActivity.note,
+        });
+      }
+
+      function updateSignalActivityFromFeedback(action, feedbackPayload = {}) {
+        const pipelineIngest = feedbackPayload.metadata?.pipeline_ingest || {};
+        const pipelineMetadata = pipelineIngest.metadata || {};
+        const autoTrain = pipelineMetadata.auto_train || {};
+        const curatedSamples = Number(
+          pipelineMetadata.curated_samples ?? pipelineIngest.curated_samples ?? 0
+        );
+        const curationState = pipelineMetadata.curation_state || null;
+        const curationReason = pipelineMetadata.curation_reason || null;
+        const autoTrainState = autoTrain.state || null;
+        const autoTrainReason = autoTrain.reason || null;
+        const trainingMethod = autoTrain.method || state.signalActivity.trainingMethod;
+        const blockedSummary = autoTrain.blocked_summary || state.signalActivity.blockedSummary;
+        const blockedPrimaryReason = autoTrain.blocked_primary_reason || state.signalActivity.blockedPrimaryReason;
+        const blockedPrimaryAction = autoTrain.blocked_primary_action || state.signalActivity.blockedPrimaryAction;
+        const blockedReasons = Array.isArray(autoTrain.blocked_reasons)
+          ? autoTrain.blocked_reasons
+          : state.signalActivity.blockedReasons;
+        const queueGateReason = autoTrain.queue_gate_reason || state.signalActivity.queueGateReason;
+        const queueGateAction = autoTrain.queue_gate_action || state.signalActivity.queueGateAction;
+        const eventChainComplete = pipelineMetadata.event_chain_complete;
+
+        if (!Object.keys(pipelineIngest).length) {
+          updateSignalActivity({
+            note: `最近一次 ${action} feedback 已发送，但还没有 curator / auto-train 摘要可展示。`,
+          });
+          return;
+        }
+
+        updateSignalActivity({
+          latestSignalId: pipelineIngest.signal_id || state.signalActivity.latestSignalId,
+          latestRequestId: feedbackPayload.request_id || state.signalActivity.latestRequestId,
+          latestSessionId: feedbackPayload.session_id || state.signalActivity.latestSessionId,
+          interactionStored: true,
+          eventChainReady: eventChainComplete == null
+            ? state.signalActivity.eventChainReady
+            : Boolean(eventChainComplete),
+          curationState,
+          curationReason,
+          curatedSamples,
+          autoTrainState,
+          autoTrainReason,
+          trainingMethod,
+          blockedSummary,
+          blockedPrimaryReason,
+          blockedPrimaryAction,
+          blockedReasons,
+          queueGateReason,
+          queueGateAction,
+          lastFeedbackAt: new Date().toISOString(),
+          lastCurationAt: new Date().toISOString(),
+          note: [
+            `最近一次 ${action} feedback 已进入 curator`,
+            curationState ? `curation=${curationState}` : null,
+            `samples=${curatedSamples}`,
+            autoTrainState ? `auto-train=${autoTrainState}` : null,
+            curationReason || autoTrainReason || null,
+          ].filter(Boolean).join(" | "),
+        });
+        updateSignalActivityFromThresholdSummary(
+          autoTrain.threshold_summary || {},
+          `最近一次 ${action} feedback 的 gate 摘要`
+        );
+      }
+
+      function sessionEventSummary() {
+        const turns = [];
+        for (let index = 0; index < state.messages.length; index += 1) {
+          const message = state.messages[index];
+          if (message.role !== "assistant") {
+            continue;
+          }
+          let userMessage = null;
+          for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+            if (state.messages[cursor]?.role === "user") {
+              userMessage = state.messages[cursor];
+              break;
+            }
+          }
+          turns.push({
+            request_id: message.requestId || null,
+            session_id: message.sessionId || state.sessionId,
+            adapter_version: message.adapterVersion || elements.adapterInput.value.trim() || "latest",
+            user_message: userMessage?.content || null,
+            assistant_message: message.content || null,
+            feedback: message.feedback || null,
+            regenerated_from_request_id: message.regeneratedFromRequestId || null,
+            signal_collection: message.signalCollection || null,
+            meta: message.meta || null,
+          });
+        }
+        return {
+          exported_at: new Date().toISOString(),
+          session_id: state.sessionId,
+          adapter_version: elements.adapterInput.value.trim() || "latest",
+          base_url: window.location.origin,
+          auth_present: activeApiKey().length > 0,
+          last_chat_request_id: state.loopActivity.lastChatRequestId || null,
+          last_feedback: state.loopActivity.lastFeedbackAction
+            ? {
+                action: state.loopActivity.lastFeedbackAction,
+                status: state.loopActivity.lastFeedbackStatus,
+                request_id: state.loopActivity.lastFeedbackRequestId,
+              }
+            : null,
+          turn_count: turns.length,
+          turns,
+        };
+      }
+
+      function sessionEventSummaryText() {
+        return JSON.stringify(sessionEventSummary(), null, 2);
+      }
+
+      function integrationSnapshotText() {
+        const baseUrl = window.location.origin;
+        const adapter = elements.adapterInput.value.trim() || "latest";
+        const auth = activeApiKey() ? "Bearer key loaded" : "No API key";
+        return [
+          `Base URL: ${baseUrl}`,
+          `Chat Endpoint: ${baseUrl}/v1/chat/completions`,
+          `Feedback Endpoint: ${baseUrl}/pfe/feedback`,
+          `Session: ${state.sessionId}`,
+          `Adapter: ${adapter}`,
+          `Auth: ${auth}`,
+        ].join("\n");
+      }
+
+      function renderIntegrationSnapshot() {
+        const baseUrl = window.location.origin;
+        elements.snapshotBaseUrlValue.textContent = baseUrl;
+        elements.snapshotChatPathValue.textContent = `${baseUrl}/v1/chat/completions`;
+        elements.snapshotFeedbackPathValue.textContent = `${baseUrl}/pfe/feedback`;
+        elements.snapshotSessionValue.textContent = state.sessionId || "pending";
+        elements.snapshotAdapterValue.textContent = elements.adapterInput.value.trim() || "latest";
+        elements.snapshotAuthValue.textContent = activeApiKey() ? "Bearer key loaded" : "No API key";
+        renderExampleRequests();
+      }
+
+      function examplePromptText() {
+        const latestUser = [...state.messages].reverse().find((message) => message.role === "user")?.content;
+        return latestUser || elements.messageInput.value.trim() || "My name is Alex. Keep answers concise and structured.";
+      }
+
+      function latestAssistantTurn() {
+        return [...state.messages].reverse().find((message) => message.role === "assistant") || null;
+      }
+
+      function authHeaderLines() {
+        const apiKey = activeApiKey();
+        if (!apiKey) {
+          return {
+            curl: "",
+            python: "",
+            js: "",
+          };
+        }
+        return {
+          curl: `  -H 'Authorization: Bearer ${apiKey}' \\\n`,
+          python: `headers["Authorization"] = "Bearer ${apiKey}"\n`,
+          js: `  headers.Authorization = "Bearer ${apiKey}";\n`,
+        };
+      }
+
+      function renderExampleRequests() {
+        const baseUrl = window.location.origin;
+        const chatUrl = `${baseUrl}/v1/chat/completions`;
+        const feedbackUrl = `${baseUrl}/pfe/feedback`;
+        const sessionId = state.sessionId || "sess-example";
+        const adapter = elements.adapterInput.value.trim() || "latest";
+        const prompt = JSON.stringify(examplePromptText());
+        const auth = authHeaderLines();
+        const latestAssistant = latestAssistantTurn();
+        const feedbackRequestId = latestAssistant?.requestId || "req-from-chat-response";
+        const feedbackAssistantText = JSON.stringify(
+          latestAssistant?.content || "Thanks for the heads-up. I will keep future answers concise."
+        );
+
+        elements.curlExampleValue.textContent = [
+          `# 1. chat completion`,
+          `curl -X POST '${chatUrl}' \\`,
+          auth.curl ? auth.curl.trimEnd() : `  -H 'Content-Type: application/json' \\`,
+          auth.curl ? `  -H 'Content-Type: application/json' \\` : null,
+          `  -d '{`,
+          `    "model": "local",`,
+          `    "adapter_version": "${adapter}",`,
+          `    "session_id": "${sessionId}",`,
+          `    "messages": [{"role": "user", "content": ${prompt}}]`,
+          `  }'`,
+          ``,
+          `# 2. feedback (replace request_id with the chat response.request_id if needed)`,
+          `curl -X POST '${feedbackUrl}' \\`,
+          auth.curl ? auth.curl.trimEnd() : `  -H 'Content-Type: application/json' \\`,
+          auth.curl ? `  -H 'Content-Type: application/json' \\` : null,
+          `  -d '{`,
+          `    "session_id": "${sessionId}",`,
+          `    "request_id": "${feedbackRequestId}",`,
+          `    "action": "accept",`,
+          `    "assistant_message": ${feedbackAssistantText}`,
+          `  }'`,
+        ].filter(Boolean).join("\n");
+
+        elements.pythonExampleValue.textContent = [
+          `import requests`,
+          ``,
+          `base_url = "${baseUrl}"`,
+          `headers = {"Content-Type": "application/json"}`,
+          auth.python ? auth.python.trimEnd() : null,
+          `payload = {`,
+          `    "model": "local",`,
+          `    "adapter_version": "${adapter}",`,
+          `    "session_id": "${sessionId}",`,
+          `    "messages": [{"role": "user", "content": ${prompt}}],`,
+          `}`,
+          `chat = requests.post(f"{base_url}/v1/chat/completions", headers=headers, json=payload).json()`,
+          `request_id = chat.get("request_id", "${feedbackRequestId}")`,
+          `feedback_payload = {`,
+          `    "session_id": chat.get("session_id", "${sessionId}"),`,
+          `    "request_id": request_id,`,
+          `    "action": "accept",`,
+          `    "assistant_message": ${feedbackAssistantText},`,
+          `}`,
+          `feedback = requests.post(f"{base_url}/pfe/feedback", headers=headers, json=feedback_payload)`,
+          `print(chat)`,
+          `print(feedback.json())`,
+        ].filter(Boolean).join("\n");
+
+        elements.jsExampleValue.textContent = [
+          `const baseUrl = "${baseUrl}";`,
+          `const headers = { "Content-Type": "application/json" };`,
+          auth.js ? auth.js.trimEnd() : null,
+          `const payload = {`,
+          `  model: "local",`,
+          `  adapter_version: "${adapter}",`,
+          `  session_id: "${sessionId}",`,
+          `  messages: [{ role: "user", content: ${prompt} }],`,
+          `};`,
+          `const response = await fetch(\`\${baseUrl}/v1/chat/completions\`, {`,
+          `  method: "POST",`,
+          `  headers,`,
+          `  body: JSON.stringify(payload),`,
+          `});`,
+          `const chat = await response.json();`,
+          `const feedbackPayload = {`,
+          `  session_id: chat.session_id || "${sessionId}",`,
+          `  request_id: chat.request_id || "${feedbackRequestId}",`,
+          `  action: "accept",`,
+          `  assistant_message: ${feedbackAssistantText},`,
+          `};`,
+          `const feedbackResponse = await fetch(\`\${baseUrl}/pfe/feedback\`, {`,
+          `  method: "POST",`,
+          `  headers,`,
+          `  body: JSON.stringify(feedbackPayload),`,
+          `});`,
+          `console.log(chat);`,
+          `console.log(await feedbackResponse.json());`,
+        ].filter(Boolean).join("\n");
+      }
+
+      async function copyIntegrationSnapshot() {
+        const text = integrationSnapshotText();
+        await copyText(text);
+      }
+
+      async function copyText(text) {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const fallback = document.createElement("textarea");
+        fallback.value = text;
+        fallback.setAttribute("readonly", "");
+        fallback.style.position = "absolute";
+        fallback.style.left = "-9999px";
+        document.body.appendChild(fallback);
+        fallback.select();
+        document.execCommand("copy");
+        document.body.removeChild(fallback);
+      }
+
+      function buildRequestHeaders({ json = false, headers = {} } = {}) {
+        const merged = { ...headers };
+        if (json) {
+          merged["Content-Type"] = "application/json";
+        }
+        const apiKey = activeApiKey();
+        if (apiKey) {
+          merged.Authorization = `Bearer ${apiKey}`;
+        }
+        return merged;
+      }
+
+      function fetchWithAuth(path, options = {}) {
+        const { headers = {}, json = false, ...rest } = options;
+        updateConnectionStatus({
+          apiKeyPresent: activeApiKey().length > 0,
+        });
+        return fetch(path, {
+          ...rest,
+          headers: buildRequestHeaders({ json, headers }),
+        });
+      }
+
+      async function parseJsonSafe(response) {
+        try {
+          return await response.json();
+        } catch (error) {
+          return {};
+        }
+      }
+
+      async function requestJson(path, options = {}) {
+        const response = await fetchWithAuth(path, options);
+        const payload = await parseJsonSafe(response);
+        const httpStatus = Number(response.status || 0);
+        const authBlocked = httpStatus === 401 || httpStatus === 403 || httpStatus === 503;
+        updateConnectionStatus({
+          state: authBlocked ? (httpStatus === 401 ? "auth" : "error") : "ok",
+          lastPath: path,
+          lastHttpStatus: httpStatus,
+          detail: `${path} -> HTTP ${httpStatus || "n/a"}`,
+          note: authBlocked
+            ? (payload.detail || payload.code || "请求被鉴权或访问策略拦截")
+            : `最近一次请求成功。${activeApiKey() ? "当前已附带 API Key。" : "当前未附带 API Key。"}`,
+        });
+        return { response, payload };
+      }
+
+      function appendBubble(messageOrRole, messageIndex = null) {
+        const message = typeof messageOrRole === "string"
+          ? { role: messageOrRole, content: arguments[1], meta: arguments[2] }
+          : messageOrRole;
+        const role = message.role;
+        const content = message.content;
+        const meta = [message.meta, lineageLabel(message), feedbackLabel(message)].filter(Boolean).join(" | ");
+        const wrapper = document.createElement("article");
+        wrapper.className = `bubble ${role}`;
+        wrapper.textContent = content;
+        if (meta) {
+          const metaNode = document.createElement("div");
+          metaNode.className = "meta";
+          metaNode.textContent = meta;
+          wrapper.appendChild(metaNode);
+        }
+
+        // Add feedback actions for assistant messages
+        if (role === "assistant" && messageIndex !== null) {
+          const feedbackDiv = document.createElement("div");
+          feedbackDiv.className = "feedback-actions";
+
+          // Accept button
+          const acceptBtn = document.createElement("button");
+          acceptBtn.className = "feedback-btn accept";
+          acceptBtn.innerHTML = "👍 接受";
+          acceptBtn.title = "接受此回复";
+          acceptBtn.onclick = () => handleFeedback(messageIndex, "accept", acceptBtn);
+
+          // Reject button
+          const rejectBtn = document.createElement("button");
+          rejectBtn.className = "feedback-btn reject";
+          rejectBtn.innerHTML = "👎 拒绝";
+          rejectBtn.title = "拒绝此回复";
+          rejectBtn.onclick = () => handleFeedback(messageIndex, "reject", rejectBtn);
+
+          // Regenerate button
+          const regenerateBtn = document.createElement("button");
+          regenerateBtn.className = "feedback-btn regenerate";
+          regenerateBtn.innerHTML = "🔄 重新生成";
+          regenerateBtn.title = "重新生成回复";
+          regenerateBtn.onclick = () => handleFeedback(messageIndex, "regenerate", regenerateBtn);
+
+          // Edit button
+          const editBtn = document.createElement("button");
+          editBtn.className = "feedback-btn edit";
+          editBtn.innerHTML = "✏️ 编辑";
+          editBtn.title = "编辑此回复";
+          editBtn.onclick = () => handleFeedback(messageIndex, "edit", editBtn);
+
+          feedbackDiv.appendChild(acceptBtn);
+          feedbackDiv.appendChild(rejectBtn);
+          feedbackDiv.appendChild(regenerateBtn);
+          feedbackDiv.appendChild(editBtn);
+          wrapper.appendChild(feedbackDiv);
+        }
+
+        elements.messages.appendChild(wrapper);
+        elements.messages.scrollTop = elements.messages.scrollHeight;
+      }
+
+      function syncSessionBanner() {
+        elements.sessionValue.textContent = `session ${state.sessionId}`;
+      }
+
+      async function refreshStatus() {
+        try {
+          const [statusResult, candidateHistoryResponse, workerRunnerHistoryResponse, workerDaemonHistoryResponse, workerDaemonStatusResponse] = await Promise.all([
+            requestJson("/pfe/status"),
+            fetchWithAuth("/pfe/candidate/history?limit=5"),
+            fetchWithAuth("/pfe/auto-train/worker-runner/history?limit=5"),
+            fetchWithAuth("/pfe/auto-train/worker-daemon/history?limit=5"),
+            fetchWithAuth("/pfe/auto-train/worker-daemon"),
+          ]);
+          const response = statusResult.response;
+          const payload = statusResult.payload;
+          const candidateHistoryDetail = candidateHistoryResponse.ok ? await candidateHistoryResponse.json() : {};
+          const workerRunnerHistoryDetail = workerRunnerHistoryResponse.ok ? await workerRunnerHistoryResponse.json() : {};
+          const workerDaemonHistoryDetail = workerDaemonHistoryResponse.ok ? await workerDaemonHistoryResponse.json() : {};
+          const workerDaemonStatusDetail = workerDaemonStatusResponse.ok ? await workerDaemonStatusResponse.json() : {};
+          if (!response.ok) {
+            throw new Error(payload.detail || "status request failed");
+          }
+          elements.modeValue.textContent = payload.strict_local ? "strict_local" : payload.mode || "unknown";
+          elements.backendValue.textContent = payload.inference_backend || payload.provider || "unknown";
+          const latest = payload.latest_adapter || {};
+          elements.adapterValue.textContent = latest.version ? `${latest.version} (${latest.state || "unknown"})` : "none";
+          if (!elements.adapterInput.value && latest.version) {
+            elements.adapterInput.value = latest.version;
+          }
+          const counts = payload.sample_counts || {};
+          elements.sampleValue.textContent = `train ${counts.train || 0} / val ${counts.val || 0} / test ${counts.test || 0}`;
+          const inference = payload.metadata?.inference || {};
+          const signalRuntime = payload.metadata?.signal || {};
+          const enabled = Boolean(inference.real_local_enabled);
+          const autoTrain = payload.auto_train_trigger || {};
+          const autoTrainAction = payload.auto_train_trigger_action || payload.metadata?.auto_train_trigger_action || {};
+          const operationsOverview = payload.operations_overview || payload.metadata?.operations_overview || {};
+          const triggerThresholdSummary = autoTrain.threshold_summary
+            || operationsOverview.trigger_threshold_summary
+            || payload.metadata?.operations_overview?.trigger_threshold_summary
+            || {};
+          const candidate = payload.candidate_summary || payload.metadata?.candidate_summary || {};
+          const candidateAction = payload.candidate_action || payload.metadata?.candidate_action || {};
+          const candidateHistory = payload.candidate_history || payload.metadata?.candidate_history || {};
+          const trainQueue = payload.train_queue || payload.metadata?.train_queue || {};
+          const operationsConsole = payload.operations_console || payload.metadata?.operations_console || {};
+          const runnerTimelineDetail = operationsConsole.runner_timeline || payload.operations_runner_timeline || workerRunnerHistoryDetail;
+          const operationsDashboard = payload.operations_dashboard || payload.metadata?.operations_dashboard || operationsConsole.dashboard || {};
+          const operationsAlertPolicy = payload.operations_alert_policy || payload.metadata?.operations_alert_policy || operationsConsole.alert_policy || {};
+          const eventStream = formatOperationsEventStream(operationsConsole, payload);
+          elements.realLocalStatusValue.textContent = enabled ? "enabled" : "disabled";
+          elements.operationsOverviewValue.textContent = formatOperationsOverview(operationsOverview);
+          const workerDaemonSurface = workerDaemonStatusDetail || trainQueue.worker_runner || {};
+          elements.operationsHealthValue.textContent = formatOperationsHealth(operationsConsole, operationsOverview, workerDaemonSurface, operationsDashboard, operationsAlertPolicy);
+          elements.operationsAlertsValue.textContent = formatOperationsAlerts(operationsConsole, operationsOverview, operationsDashboard, operationsAlertPolicy);
+          elements.operationsRecoveryValue.textContent = formatOperationsRecovery(operationsConsole, operationsOverview, workerDaemonSurface, operationsDashboard, operationsAlertPolicy);
+          elements.operationsCurrentFocusValue.textContent = operationsDashboard.current_focus || operationsAlertPolicy.current_focus || "none";
+          elements.operationsPriorityActionValue.textContent = operationsDashboard.highest_priority_action || operationsAlertPolicy.highest_priority_action || operationsAlertPolicy.required_action || "none";
+          elements.operationsHandlingModeValue.textContent = operationsDashboard.remediation_mode || operationsAlertPolicy.remediation_mode || "none";
+          elements.operationsLatestRecoveryValue.textContent = formatOperationsLatestRecovery(operationsDashboard, operationsAlertPolicy);
+          applyInspectionChip(elements.operationsCurrentFocusValue, "focus", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionChip(elements.operationsPriorityActionValue, "action", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionChip(elements.operationsHandlingModeValue, "handling", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionChip(elements.operationsLatestRecoveryValue, "recovery", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionBadge(elements.operationsCurrentFocusBadgeValue, "focus", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionBadge(elements.operationsPriorityActionBadgeValue, "action", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionBadge(elements.operationsHandlingModeBadgeValue, "handling", operationsDashboard, operationsAlertPolicy, eventStream);
+          applyInspectionBadge(elements.operationsLatestRecoveryBadgeValue, "recovery", operationsDashboard, operationsAlertPolicy, eventStream);
+          elements.operationsPolicyDigestValue.textContent = formatOperationsPolicyDigest(operationsDashboard, operationsAlertPolicy);
+          elements.operationsInspectionDigestValue.textContent = formatOperationsInspectionDigest(operationsConsole, operationsOverview, workerDaemonSurface, operationsDashboard, operationsAlertPolicy);
+          elements.operationsDaemonAtomicValue.textContent = formatDaemonAtomic(workerDaemonSurface);
+          elements.operationsNextActionsValue.textContent = formatOperationsNextActions(operationsConsole, operationsOverview, operationsDashboard, operationsAlertPolicy);
+          elements.operationsEventStreamSeverityValue.textContent = String(eventStream.severity || "stable").toUpperCase();
+          elements.operationsEventStreamSeverityValue.className = `event-stream-chip ${eventStream.severity || "stable"}`;
+          elements.operationsEventStreamAttentionValue.textContent = eventStream.attention || "none";
+          elements.operationsEventStreamDigestValue.textContent = eventStream.digest || "none";
+          elements.operationsEventStreamPolicyValue.textContent = eventStream.policy || "none";
+          elements.operationsEventStreamRecoveryValue.textContent = eventStream.recovery || "none";
+          elements.operationsEventStreamValue.textContent = eventStream.summary;
+          elements.operationsEventStreamRecentValue.textContent = eventStream.recent;
+          elements.autoTrainValue.textContent = formatAutoTrainStatus(autoTrain, autoTrainAction);
+          elements.autoTrainActionValue.textContent = formatAutoTrainAction(autoTrainAction);
+          elements.candidateValue.textContent = formatCandidate(candidate);
+          elements.candidateActionValue.textContent = formatCandidateAction(candidateAction);
+          elements.candidateHistoryValue.textContent = formatCandidateHistory({
+            ...candidateHistory,
+            items: candidateHistoryDetail.items || candidateHistory.items || [],
+          });
+          elements.trainQueueValue.textContent = formatQueue(trainQueue);
+          elements.queueHistoryValue.textContent = formatQueueHistory({
+            history_summary: trainQueue.history_summary || {},
+            review_summary: trainQueue.review_summary || {},
+            recent_history: trainQueue.recent_history || [],
+          });
+          elements.workerDaemonValue.textContent = formatWorkerDaemonStatus(workerDaemonSurface);
+          elements.workerDaemonRecoveryValue.textContent = formatWorkerDaemonRecovery(workerDaemonSurface);
+          elements.workerDaemonTimelineFocusValue.textContent = formatWorkerDaemonRecoveryTimelineFocus(workerDaemonSurface);
+          elements.workerDaemonTimelineAnomalyValue.textContent = formatWorkerDaemonRecoveryTimelineAnomaly(
+            operationsConsole.daemon_timeline || payload.operations_daemon_timeline || workerDaemonHistoryDetail,
+            workerDaemonSurface
+          );
+          elements.workerDaemonTimelineActionValue.textContent = formatWorkerDaemonRecoveryTimelineAction(
+            operationsConsole.daemon_timeline || payload.operations_daemon_timeline || workerDaemonHistoryDetail,
+            workerDaemonSurface
+          );
+          elements.workerDaemonAtomicValue.textContent = formatDaemonAtomic(workerDaemonSurface);
+          elements.workerDaemonHistoryValue.textContent = formatWorkerDaemonRecoveryTimeline(
+            operationsConsole.daemon_timeline || payload.operations_daemon_timeline || workerDaemonHistoryDetail,
+            workerDaemonSurface
+          );
+          elements.workerRunnerValue.textContent = formatWorkerRunner(trainQueue.worker_runner || {});
+          elements.workerRunnerTimelineFocusValue.textContent = formatWorkerRunnerTimelineFocus(trainQueue.worker_runner || {});
+          elements.workerRunnerTimelineAnomalyValue.textContent = formatWorkerRunnerTimelineAnomaly(
+            runnerTimelineDetail,
+            trainQueue.worker_runner || {}
+          );
+          elements.workerRunnerTimelineActionValue.textContent = formatWorkerRunnerTimelineAction(
+            runnerTimelineDetail,
+            trainQueue.worker_runner || {}
+          );
+          elements.workerRunnerHistoryValue.textContent = formatWorkerRunnerTimeline(runnerTimelineDetail, trainQueue.worker_runner || {});
+          if (!elements.realLocalInput.checked && enabled) {
+            elements.realLocalInput.checked = true;
+          }
+          setRuntimeBanner({
+            realLocalEnabled: enabled,
+            servedBy: inference.served_by || "mock",
+            fallbackReason: inference.generation?.fallback_reason || "",
+            runtimePath: inference.runtime_path || "",
+          });
+          updateSignalActivity({
+            eventChainReady: signalRuntime.event_chain_ready ?? null,
+            eventChainCompleteRatio: Number(signalRuntime.event_chain_complete_ratio || 0),
+            trainingMethod: autoTrain.method || state.signalActivity.trainingMethod,
+            trainType: autoTrain.train_type || state.signalActivity.trainType,
+            autoTrainState: autoTrain.state || state.signalActivity.autoTrainState,
+            autoTrainReason: autoTrain.reason || state.signalActivity.autoTrainReason,
+            blockedSummary: autoTrain.blocked_summary || state.signalActivity.blockedSummary,
+            blockedPrimaryReason: autoTrain.blocked_primary_reason || state.signalActivity.blockedPrimaryReason,
+            blockedPrimaryAction: autoTrain.blocked_primary_action || state.signalActivity.blockedPrimaryAction,
+            blockedReasons: Array.isArray(autoTrain.blocked_reasons)
+              ? autoTrain.blocked_reasons
+              : state.signalActivity.blockedReasons,
+            queueGateReason: autoTrain.queue_gate_reason || state.signalActivity.queueGateReason,
+            queueGateAction: autoTrain.queue_gate_action || state.signalActivity.queueGateAction,
+            lastStatusRefreshAt: new Date().toISOString(),
+            note: signalRuntime.event_chain_ready
+              ? `状态面显示事件链已 ready，complete ratio=${Math.round(Number(signalRuntime.event_chain_complete_ratio || 0) * 100)}%`
+              : `状态面显示事件链尚未 ready，complete ratio=${Math.round(Number(signalRuntime.event_chain_complete_ratio || 0) * 100)}%`,
+          });
+          updateSignalActivityFromThresholdSummary(
+            triggerThresholdSummary,
+            "状态面 trigger threshold 摘要"
+          );
+          elements.footerHint.textContent = "状态已刷新";
+        } catch (error) {
+          elements.footerHint.textContent = `状态刷新失败: ${error.message}`;
+        }
+      }
+
+      async function runAutoTrainAction(path, button, successMessage) {
+        button.disabled = true;
+        elements.footerHint.textContent = "正在执行 auto-train 控制动作...";
+        try {
+          const { response, payload } = await requestJson(path, {
+            method: "POST",
+            json: true,
+            body: "{}",
+          });
+          if (!response.ok) {
+            throw new Error(payload.detail || "request failed");
+          }
+          const action = payload.metadata?.auto_train_trigger_action || {
+            action: payload.action,
+            status: payload.status,
+            reason: payload.reason,
+            triggered_version: payload.triggered_version,
+            promoted_version: payload.promoted_version,
+          };
+          elements.autoTrainValue.textContent = formatAutoTrainStatus(payload.auto_train_trigger || {}, action);
+          elements.autoTrainActionValue.textContent = formatAutoTrainAction(action);
+          elements.footerHint.textContent = successMessage;
+          await refreshStatus();
+        } catch (error) {
+          elements.footerHint.textContent = `auto-train 操作失败: ${error.message}`;
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function runCandidateAction(path, button, successMessage) {
+        button.disabled = true;
+        elements.footerHint.textContent = "正在执行 candidate 控制动作...";
+        try {
+          const { response, payload } = await requestJson(path, {
+            method: "POST",
+            json: true,
+            body: "{}",
+          });
+          if (!response.ok) {
+            throw new Error(payload.detail || "request failed");
+          }
+          const action = payload.metadata?.candidate_action || {
+            action: payload.action,
+            status: payload.status,
+            reason: payload.reason,
+            candidate_version: payload.candidate_version,
+            promoted_version: payload.promoted_version,
+            archived_version: payload.archived_version,
+          };
+          elements.candidateActionValue.textContent = formatCandidateAction(action);
+          if (payload.candidate_summary) {
+            elements.candidateValue.textContent = formatCandidate(payload.candidate_summary);
+          }
+          elements.footerHint.textContent = successMessage;
+          await refreshStatus();
+        } catch (error) {
+          elements.footerHint.textContent = `candidate 操作失败: ${error.message}`;
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      function setMessageFeedbackState(messageIndex, action, status, extra = {}) {
+        const message = state.messages[messageIndex];
+        if (!message) {
+          return;
+        }
+        state.messages[messageIndex] = {
+          ...message,
+          feedback: {
+            ...(message.feedback || {}),
+            ...extra,
+            action,
+            status,
+            updatedAt: new Date().toISOString(),
+          },
+        };
+        renderMessages();
+      }
+
+      async function handleFeedback(messageIndex, action, button) {
+        // Handle feedback button click for a specific message.
+        if (button.disabled) return;
+
+        const message = state.messages[messageIndex];
+
+        if (!message || message.role !== "assistant") {
+          elements.footerHint.textContent = "无法找到对应的消息";
+          return;
+        }
+
+        // Find the preceding user message
+        let userMessage = "";
+        for (let i = messageIndex - 1; i >= 0; i--) {
+          if (state.messages[i].role === "user") {
+            userMessage = state.messages[i].content;
+            break;
+          }
+        }
+
+        if (!message.requestId || !message.sessionId) {
+          elements.footerHint.textContent = "该回复缺少 request_id / session_id，无法提交反馈";
+          return;
+        }
+        if (message.feedback?.action === action && message.feedback?.status === "sent") {
+          elements.footerHint.textContent = `该回复已经提交过 ${action} 反馈`;
+          return;
+        }
+
+        button.disabled = true;
+        setMessageFeedbackState(messageIndex, action, "sending");
+        elements.footerHint.textContent = `正在提交 ${action} 反馈...`;
+
+        try {
+          if (action === "edit") {
+            // For edit, show a prompt to get edited text
+            const editedText = prompt("请编辑回复内容:", message.content);
+            if (editedText === null || editedText === message.content) {
+              button.disabled = false;
+              setMessageFeedbackState(messageIndex, action, "cancelled");
+              elements.footerHint.textContent = "编辑已取消";
+              return;
+            }
+            await sendExplicitFeedback(message, action, userMessage, null, editedText);
+          } else if (action === "regenerate") {
+            await sendExplicitFeedback(message, action, userMessage);
+            setMessageFeedbackState(messageIndex, action, "sent");
+            if (state.lastInteraction?.messageIndex === messageIndex) {
+              state.lastInteraction = null;
+            }
+            elements.footerHint.textContent = "已记录重新生成请求，正在生成新回复...";
+            await regenerateMessage(messageIndex);
+            return;
+          } else {
+            await sendExplicitFeedback(message, action, userMessage);
+          }
+
+          setMessageFeedbackState(messageIndex, action, "sent");
+          if (state.lastInteraction?.messageIndex === messageIndex) {
+            state.lastInteraction = null;
+          }
+          elements.footerHint.textContent = `已提交 ${action} 反馈`;
+        } catch (err) {
+          setMessageFeedbackState(messageIndex, action, "failed", { error: err.message });
+          elements.footerHint.textContent = `反馈提交失败: ${err.message}`;
+          console.error("Feedback error:", err);
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function sendExplicitFeedback(message, action, userMessage, responseTimeSeconds = null, editedText = null) {
+        // Send explicit feedback for a specific message pair.
+        try {
+          const { response, payload } = await requestJson("/pfe/feedback", {
+            method: "POST",
+            json: true,
+            body: JSON.stringify({
+              session_id: message.sessionId,
+              request_id: message.requestId,
+              action: action,
+              response_time_seconds: responseTimeSeconds,
+              next_message: action === "accept" ? userMessage : null,
+              edited_text: editedText,
+              adapter_version: message.adapterVersion || elements.adapterInput.value || null,
+              user_message: userMessage,
+              assistant_message: message.content,
+            }),
+          });
+          if (!response.ok) {
+            throw new Error(payload.detail || "feedback request failed");
+          }
+          updateLoopActivity({
+            lastFeedbackAction: action,
+            lastFeedbackStatus: "sent",
+            lastFeedbackRequestId: message.requestId,
+            note: `最近一次显式反馈已发送: ${action}`,
+          });
+          updateSignalActivityFromFeedback(action, payload || {});
+          refreshStatus().catch(() => {});
+          return payload;
+        } catch (err) {
+          updateLoopActivity({
+            lastFeedbackAction: action,
+            lastFeedbackStatus: "failed",
+            lastFeedbackRequestId: message.requestId,
+            note: `显式反馈失败: ${err.message}`,
+          });
+          console.debug("Feedback submission failed:", err);
+          throw err;
+        }
+      }
+
+      async function sendFeedback(action, options = {}) {
+        // Send implicit feedback for the previous assistant response.
+        if (!state.lastInteraction) return;
+
+        const { nextMessage = null, editedText = null } = options;
+        const now = Date.now();
+        const responseTimeSeconds = state.lastInteraction.receivedAt
+          ? (now - state.lastInteraction.receivedAt) / 1000
+          : null;
+
+        try {
+          const { response, payload } = await requestJson("/pfe/feedback", {
+            method: "POST",
+            json: true,
+            body: JSON.stringify({
+              session_id: state.lastInteraction.sessionId || state.sessionId,
+              request_id: state.lastInteraction.requestId,
+              action: action,
+              response_time_seconds: responseTimeSeconds,
+              next_message: nextMessage,
+              edited_text: editedText,
+              adapter_version: state.lastInteraction.adapterVersion,
+              user_message: state.lastInteraction.userMessage,
+              assistant_message: state.lastInteraction.assistantMessage,
+            }),
+          });
+          if (response.ok && typeof state.lastInteraction.messageIndex === "number") {
+            updateLoopActivity({
+              lastFeedbackAction: action,
+              lastFeedbackStatus: "sent",
+              lastFeedbackRequestId: state.lastInteraction.requestId,
+              note: `最近一次隐式反馈已发送: ${action}`,
+            });
+            updateSignalActivityFromFeedback(action, payload || {});
+            setMessageFeedbackState(state.lastInteraction.messageIndex, action, "sent", {
+              implicit: true,
+            });
+            state.lastInteraction = null;
+            refreshStatus().catch(() => {});
+          }
+        } catch (err) {
+          updateLoopActivity({
+            lastFeedbackAction: action,
+            lastFeedbackStatus: "failed",
+            lastFeedbackRequestId: state.lastInteraction?.requestId || null,
+            note: `隐式反馈失败: ${err.message}`,
+          });
+          // Silently fail - feedback is best-effort
+          console.debug("Feedback submission failed:", err);
+        }
+      }
+
+      function toChatMessages(messages) {
+        return messages
+          .filter((message) => ["system", "user", "assistant"].includes(message.role))
+          .map((message) => ({
+            role: message.role,
+            content: message.content,
+          }));
+      }
+
+      function findPreviousUserIndex(messageIndex) {
+        for (let index = messageIndex - 1; index >= 0; index -= 1) {
+          if (state.messages[index]?.role === "user") {
+            return index;
+          }
+        }
+        return -1;
+      }
+
+      async function executeChatTurn({
+        content,
+        requestMessages = null,
+        userMessageRecord = null,
+        autoAcceptPrevious = true,
+        footerHint = "模型思考中...",
+        lineage = null,
+      }) {
+        if (!content) return null;
+
+        if (autoAcceptPrevious && state.lastInteraction) {
+          await sendFeedback("accept", { nextMessage: content });
+        }
+
+        const messageStartTime = Date.now();
+        const adapterValue = elements.adapterInput.value.trim();
+        const requestId = `req-${crypto.randomUUID()}`;
+        const outgoingMessages = requestMessages || toChatMessages([...state.messages, { role: "user", content }]);
+        const payload = {
+          model: elements.modelInput.value.trim() || "local-default",
+          messages: outgoingMessages,
+          temperature: Number(elements.temperatureInput.value || 0.7),
+          session_id: state.sessionId,
+          request_id: requestId,
+          adapter_version: adapterValue || null,
+          metadata: {
+            style_hint: elements.styleInput.value.trim() || "helpful",
+            source: "pfe-web-ui",
+            enable_real_local: elements.realLocalInput.checked,
+          },
+        };
+
+        if (userMessageRecord) {
+          state.messages.push(userMessageRecord);
+        } else {
+          state.messages.push({ role: "user", content, sessionId: state.sessionId });
+        }
+        renderMessages();
+        elements.sendBtn.disabled = true;
+        elements.footerHint.textContent = footerHint;
+
+        try {
+          const { response, payload: data } = await requestJson("/v1/chat/completions", {
+            method: "POST",
+            json: true,
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            throw new Error(data.detail || "request failed");
+          }
+
+          const reply = data.choices?.[0]?.message?.content || "(empty response)";
+          const servedBy = data.served_by || "unknown";
+          const usage = data.usage?.total_tokens != null ? `tokens ${data.usage.total_tokens}` : "tokens n/a";
+          const inference = data.metadata?.inference || {};
+          const runtimePath = inference.runtime_path ? ` | ${inference.runtime_path}` : "";
+          const resolvedSessionId = data.session_id || state.sessionId;
+          state.sessionId = resolvedSessionId;
+          syncSessionBanner();
+          const signalCollection = data.metadata?.signal_collection || null;
+
+          const assistantMessageIndex = state.messages.length;
+          state.messages.push({
+            role: "assistant",
+            content: reply,
+            meta: `${servedBy}${runtimePath} | ${usage}`,
+            requestId: data.request_id || requestId,
+            sessionId: resolvedSessionId,
+            adapterVersion: data.adapter_version || adapterValue,
+            signalCollection,
+            regeneratedFromRequestId: lineage?.regeneratedFromRequestId || null,
+            feedback: null,
+          });
+          // Record this interaction for future feedback
+          state.lastInteraction = {
+            requestId: data.request_id || requestId,
+            sessionId: resolvedSessionId,
+            adapterVersion: data.adapter_version || adapterValue,
+            userMessage: content,
+            assistantMessage: reply,
+            messageIndex: assistantMessageIndex,
+            sentAt: messageStartTime,
+            receivedAt: Date.now(),
+          };
+          const fallbackReason = inference.generation?.fallback_reason;
+          setRuntimeBanner({
+            realLocalEnabled: Boolean(inference.real_local_enabled),
+            servedBy,
+            fallbackReason: fallbackReason || "",
+            runtimePath: inference.runtime_path || "",
+          });
+          elements.footerHint.textContent = fallbackReason
+            ? `已收到回复，served_by=${servedBy}；${fallbackReason}`
+            : `已收到回复，served_by=${servedBy}`;
+          if (!elements.adapterInput.value && data.adapter_version) {
+            elements.adapterInput.value = data.adapter_version;
+          }
+          updateSignalActivity({
+            interactionStored: Boolean(signalCollection?.interaction_stored),
+            latestRequestId: data.request_id || requestId,
+            latestSessionId: resolvedSessionId,
+            lastChatAt: new Date().toISOString(),
+            note: signalCollection?.interaction_stored
+              ? `最近一轮 interaction 已保存，可用于后续 feedback；request_id=${data.request_id || requestId}`
+              : "最近一轮 interaction 尚未标记为 stored。",
+          });
+          updateLoopActivity({
+            lastChatRequestId: data.request_id || requestId,
+            note: `最近一次 chat 已完成，request_id=${data.request_id || requestId}`,
+          });
+          return data;
+        } catch (error) {
+          updateSignalActivity({
+            note: `最近一次 chat 失败，未拿到新的 signal_collection：${error.message}`,
+          });
+          updateLoopActivity({
+            note: `最近一次 chat 失败: ${error.message}`,
+          });
+          state.messages.push({
+            role: "assistant",
+            content: `请求失败：${error.message}`,
+            meta: "error",
+          });
+          elements.footerHint.textContent = "请求失败";
+          return null;
+        } finally {
+          elements.sendBtn.disabled = false;
+          renderMessages();
+        }
+      }
+
+      async function regenerateMessage(messageIndex) {
+        const assistantMessage = state.messages[messageIndex];
+        const userIndex = findPreviousUserIndex(messageIndex);
+        const userMessage = userIndex >= 0 ? state.messages[userIndex] : null;
+        if (!assistantMessage || assistantMessage.role !== "assistant" || !userMessage) {
+          throw new Error("无法找到可重新生成的上下文");
+        }
+
+        const history = state.messages
+          .slice(0, userIndex)
+          .filter((message) => ["system", "user", "assistant"].includes(message.role));
+        const requestMessages = toChatMessages([
+          ...history,
+          { role: "user", content: userMessage.content },
+        ]);
+
+        return executeChatTurn({
+          content: userMessage.content,
+          requestMessages,
+          userMessageRecord: {
+            role: "user",
+            content: userMessage.content,
+            sessionId: state.sessionId,
+            meta: "regenerate context",
+          },
+          autoAcceptPrevious: false,
+          footerHint: "正在根据上一轮用户输入重新生成...",
+          lineage: {
+            regeneratedFromRequestId: assistantMessage.requestId,
+          },
+        });
+      }
+
+      async function sendMessage(event) {
+        event.preventDefault();
+        const content = elements.messageInput.value.trim();
+        if (!content) return;
+        elements.messageInput.value = "";
+        await executeChatTurn({ content });
+      }
+
+      document.getElementById("chatForm").addEventListener("submit", sendMessage);
+      document.getElementById("refreshStatusBtn").addEventListener("click", refreshStatus);
+      document.getElementById("promoteCandidateBtn").addEventListener("click", () =>
+        runCandidateAction(withOptionalNote("/pfe/candidate/promote", "Promote Candidate"), elements.promoteCandidateBtn, "已 promote candidate")
+      );
+      document.getElementById("archiveCandidateBtn").addEventListener("click", () =>
+        runCandidateAction(withOptionalNote("/pfe/candidate/archive", "Archive Candidate"), elements.archiveCandidateBtn, "已 archive candidate")
+      );
+      document.getElementById("approveNextBtn").addEventListener("click", () =>
+        runAutoTrainAction(withOptionalNote("/pfe/auto-train/approve-next", "Approve Queue Item"), elements.approveNextBtn, "已批准下一条待确认任务")
+      );
+      document.getElementById("rejectNextBtn").addEventListener("click", () =>
+        runAutoTrainAction(withOptionalNote("/pfe/auto-train/reject-next", "Reject Queue Item"), elements.rejectNextBtn, "已拒绝下一条待确认任务")
+      );
+      document.getElementById("processUntilIdleBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/process-until-idle?max_iterations=10", elements.processUntilIdleBtn, "已处理队列直到空闲或达到上限")
+      );
+      document.getElementById("runWorkerLoopBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/run-worker-loop?max_cycles=10&idle_rounds=1&poll_interval_seconds=0", elements.runWorkerLoopBtn, "已运行 worker loop")
+      );
+      document.getElementById("runWorkerRunnerBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/run-worker-runner?max_seconds=5&idle_sleep_seconds=0", elements.runWorkerRunnerBtn, "已运行 worker runner")
+      );
+      document.getElementById("stopWorkerRunnerBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/stop-worker-runner", elements.stopWorkerRunnerBtn, "已请求停止 worker runner")
+      );
+      document.getElementById("processBatchBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/process-batch?limit=5", elements.processBatchBtn, "已批量处理队列任务")
+      );
+      document.getElementById("processNextBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/process-next", elements.processNextBtn, "已处理下一条队列任务")
+      );
+      document.getElementById("retryTriggerBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/retry", elements.retryTriggerBtn, "已执行 auto-train retry")
+      );
+      document.getElementById("resetTriggerBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/reset", elements.resetTriggerBtn, "已重置 auto-train 状态")
+      );
+      document.getElementById("refreshDaemonBtn").addEventListener("click", refreshStatus);
+      document.getElementById("runWorkerRunnerDaemonBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/start-worker-daemon", elements.runWorkerRunnerDaemonBtn, "已启动 daemon")
+      );
+      document.getElementById("stopWorkerRunnerDaemonBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/stop-worker-daemon", elements.stopWorkerRunnerDaemonBtn, "已请求停止 daemon")
+      );
+      document.getElementById("restartWorkerRunnerDaemonBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/restart-worker-daemon", elements.restartWorkerRunnerDaemonBtn, "已请求重启 daemon")
+      );
+      document.getElementById("recoverWorkerRunnerDaemonBtn").addEventListener("click", () =>
+        runAutoTrainAction("/pfe/auto-train/recover-worker-daemon", elements.recoverWorkerRunnerDaemonBtn, "已请求恢复 daemon")
+      );
+      document.getElementById("clearBtn").addEventListener("click", () => {
+        state.messages = [];
+        state.sessionId = `sess-${crypto.randomUUID()}`;
+        state.lastInteraction = null;
+        state.loopActivity = {
+          lastChatRequestId: null,
+          lastFeedbackAction: null,
+          lastFeedbackStatus: null,
+          lastFeedbackRequestId: null,
+          note: "还没有 chat / feedback 闭环活动。",
+        };
+        state.signalActivity = {
+          interactionStored: false,
+          latestRequestId: null,
+          latestSessionId: null,
+          latestSignalId: null,
+          eventChainReady: null,
+          eventChainCompleteRatio: 0,
+          curationState: null,
+          curationReason: null,
+          curatedSamples: 0,
+          autoTrainState: null,
+          autoTrainReason: null,
+          eligibleTrainSamples: 0,
+          effectiveEligibleTrainSamples: 0,
+          preferenceReinforcedTrainSamples: 0,
+          remainingTrainSamples: null,
+          remainingEffectiveTrainSamples: null,
+          thresholdSummaryLine: null,
+          trainType: null,
+          trainingMethod: null,
+          eligibleTrainSampleIds: [],
+          blockedSummary: null,
+          blockedReasons: [],
+          blockedPrimaryReason: null,
+          blockedPrimaryAction: null,
+          queueGateReason: null,
+          queueGateAction: null,
+          lastChatAt: null,
+          lastFeedbackAt: null,
+          lastCurationAt: null,
+          lastStatusRefreshAt: null,
+          note: "还没有可展示的 signal / event chain 信息。",
+        };
+        syncSessionBanner();
+        renderMessages();
+        renderIntegrationSnapshot();
+        renderLoopActivity();
+        renderSignalActivity();
+        elements.footerHint.textContent = "已清空对话";
+      });
+
+      const savedApiKey = window.localStorage?.getItem("pfe.chat.apiKey");
+      if (savedApiKey) {
+        elements.apiKeyInput.value = savedApiKey;
+      }
+      elements.apiKeyInput.addEventListener("input", () => {
+        window.localStorage?.setItem("pfe.chat.apiKey", elements.apiKeyInput.value);
+        updateConnectionStatus();
+      });
+      elements.adapterInput.addEventListener("input", renderIntegrationSnapshot);
+      elements.messageInput.addEventListener("input", renderExampleRequests);
+      elements.copySnapshotBtn.addEventListener("click", async () => {
+        try {
+          await copyIntegrationSnapshot();
+          elements.footerHint.textContent = "已复制当前接入快照";
+        } catch (error) {
+          elements.footerHint.textContent = `复制失败: ${error.message}`;
+        }
+      });
+      elements.copyCurlExampleBtn.addEventListener("click", async () => {
+        try {
+          await copyText(elements.curlExampleValue.textContent);
+          elements.footerHint.textContent = "已复制 curl 示例";
+        } catch (error) {
+          elements.footerHint.textContent = `复制失败: ${error.message}`;
+        }
+      });
+      elements.copyPythonExampleBtn.addEventListener("click", async () => {
+        try {
+          await copyText(elements.pythonExampleValue.textContent);
+          elements.footerHint.textContent = "已复制 Python 示例";
+        } catch (error) {
+          elements.footerHint.textContent = `复制失败: ${error.message}`;
+        }
+      });
+      elements.copyJsExampleBtn.addEventListener("click", async () => {
+        try {
+          await copyText(elements.jsExampleValue.textContent);
+          elements.footerHint.textContent = "已复制 JS 示例";
+        } catch (error) {
+          elements.footerHint.textContent = `复制失败: ${error.message}`;
+        }
+      });
+      elements.exportSessionSummaryBtn.addEventListener("click", async () => {
+        try {
+          await copyText(sessionEventSummaryText());
+          elements.footerHint.textContent = "已复制当前 session 的闭环摘要";
+        } catch (error) {
+          elements.footerHint.textContent = `复制失败: ${error.message}`;
+        }
+      });
+
+      syncSessionBanner();
+      renderMessages();
+      renderIntegrationSnapshot();
+      renderLoopActivity();
+      renderSignalActivity();
+      setRuntimeBanner();
+      updateConnectionStatus();
+      refreshStatus();
+    </script>
+  </body>
+</html>

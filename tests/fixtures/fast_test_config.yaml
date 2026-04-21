@@ -1,0 +1,57 @@
+# Fast test configuration for PFE integration tests
+# This configuration uses smaller models and reduced training parameters
+# to speed up end-to-end testing.
+
+[model]
+base_model = "Qwen/Qwen3-0.5B-Instruct"  # Smaller model for faster testing
+device = "auto"
+
+[training]
+backend = "mock_local"  # Use mock backend for speed, override with "peft" for real tests
+epochs = 1
+batch_size = 1
+learning_rate = 0.0001
+max_steps = 10  # Limit steps for fast tests
+warmup_steps = 2
+save_steps = 5
+eval_steps = 5
+logging_steps = 1
+
+[lora]
+r = 8  # Smaller rank for faster tests
+alpha = 16
+dropout = 0.05
+target_modules = ["q_proj", "v_proj"]
+
+[dpo]
+beta = 0.1
+label_smoothing = 0.0
+
+[train_trigger]
+enabled = true
+min_samples = 10  # Lower threshold for tests
+max_interval_days = 1
+min_trigger_interval_minutes = 1
+failure_backoff_minutes = 1
+
+[eval_gate]
+auto_trigger = true
+trigger_delay_seconds = 5
+eval_split_ratio = 0.2
+min_eval_samples = 2
+max_eval_samples = 10
+
+[promote_gate]
+auto_promote = true
+min_quality_score = 0.5  # Lower threshold for tests
+min_style_match_score = 0.4
+min_preference_alignment_score = 0.4
+
+[signal_quality]
+minimum_confidence = 0.5
+reject_conflicted_signal_quality = false  # Allow more signals for tests
+
+[worker_daemon]
+heartbeat_interval_seconds = 5
+lease_timeout_seconds = 30
+max_retries = 2
