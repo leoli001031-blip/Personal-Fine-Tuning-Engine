@@ -150,9 +150,10 @@
 - Apple Silicon runtime：`Darwin arm64`，`runtime_device=mps`，`mlx=0.31.1`，`mlx_lm=0.31.2`。
 - 原始 MLX 隔离子进程：使用本地 `models/Qwen2.5-0.5B-Instruct-4bit`、1 条样本、1 step，产出 `mlx_output/adapters/adapters.safetensors`、`training_job_result.json`、`diagnostics.json`、stdout/stderr log。
 - CLI 临时 workspace：`pfe generate --num 8` 后执行 `pfe train --backend mlx --real-local --base-model /Users/zcc/Desktop/PFE/models/Qwen2.5-0.5B-Instruct-4bit --epochs 1 --train-type sft`，产出 `adapter_model.safetensors`、`adapter_manifest.json`、`training_meta.json`、`diagnostics.json`。
+- CLI 摘要第一版已收口：训练预览区分 `execution_intent=planned/dry_run/real_local`，结果摘要会显示真实 `execution_backend` 和 runner 状态，避免 MLX 成功训练后显示 `backend=unknown`。
 - 完整测试已覆盖 DPO 真实最小路径：`tests/test_trainer_dpo_real.py`。
 
 后续：
 
 - 在 Linux/CUDA 环境补跑 PEFT/Unsloth 最小训练。
-- 为 CLI 真实训练摘要继续补充更清晰的 execution/export 状态文案。
+- 根据 Linux/CUDA 实机结果补齐 PEFT/Unsloth 诊断样例和文档记录。

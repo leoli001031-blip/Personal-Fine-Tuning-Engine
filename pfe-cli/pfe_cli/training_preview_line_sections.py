@@ -38,14 +38,17 @@ def append_job_execution(lines: list[str], *, plan: TrainingPreviewPlan, deps: T
     planned_executor_mode = (
         deps.pick_first(plan.dispatch_mapping, "executor_mode")
         or deps.pick_first(plan.dispatch_mapping, "execution_mode")
-        or "fallback"
+        or plan.execution_mode
+        or "planned"
     )
+    execution_intent = "dry_run" if plan.dry_run else "real_local" if plan.real_local else "planned"
     lines.append(
         "job-execution: "
         + " | ".join(
             [
                 "status=planned",
                 f"executor_mode={deps.format_scalar(planned_executor_mode)}",
+                f"execution_intent={deps.format_scalar(execution_intent)}",
                 "execution_state=planned",
             ]
         )
@@ -74,7 +77,17 @@ def append_backend_dispatch(lines: list[str], *, plan: TrainingPreviewPlan, deps
 
 def append_export_preview(lines: list[str], *, plan: TrainingPreviewPlan, deps: TrainingPreviewDeps) -> None:
     if plan.export_preview is not None:
-        export_line = deps.format_export_write(plan.export_preview)
+        preview_mapping = deps.coerce_mapping(plan.export_preview)
+        if preview_mapping is not None:
+            preview_mapping = dict(preview_mapping)
+            preview_mapping.pop("dry_run", None)
+            metadata = dict(deps.coerce_mapping(preview_mapping.get("metadata")) or {})
+            metadata.pop("dry_run", None)
+            metadata["execution_intent"] = "dry_run" if plan.dry_run else "real_local" if plan.real_local else "planned"
+            preview_mapping["metadata"] = metadata
+            export_line = deps.format_export_write(preview_mapping)
+        else:
+            export_line = deps.format_export_write(plan.export_preview)
         if export_line is not None:
             lines.append(export_line)
         return

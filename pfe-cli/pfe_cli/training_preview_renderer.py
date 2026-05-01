@@ -16,6 +16,8 @@ def format_train_preview(
     workspace: str | None,
     snapshot_workspace: str | None = None,
     backend_hint: str | None,
+    dry_run: bool = False,
+    real_local: bool = False,
     deps: TrainingPreviewDeps,
 ) -> str:
     """Render a compact training preflight summary without executing training."""
@@ -27,6 +29,8 @@ def format_train_preview(
         train_type=train_type,
         workspace=workspace,
         backend_hint=backend_hint,
+        dry_run=dry_run,
+        real_local=real_local,
         deps=deps,
     )
     return "\n".join(

@@ -54,6 +54,12 @@ def format_export_write(plan: Any) -> str | None:
     parts = [f"gguf_export={gguf_export}"]
     if target_artifact_format is not None:
         parts.append(f"target_artifact_format={format_scalar(target_artifact_format)}")
+    metadata = coerce_mapping(mapping.get("metadata"))
+    execution_intent = pick_first(mapping, "execution_intent")
+    if execution_intent is None:
+        execution_intent = pick_first(metadata, "execution_intent")
+    if execution_intent is not None:
+        parts.append(f"execution_intent={format_scalar(execution_intent)}")
     execution_status = pick_first(mapping, "status", "execution_status")
     if execution_status is None:
         audit = coerce_mapping(mapping.get("audit"))
@@ -75,7 +81,6 @@ def format_export_write(plan: Any) -> str | None:
         parts.append(f"command={format_scalar(command)}")
     write_state = pick_first(mapping, "write_state")
     if write_state is None:
-        metadata = coerce_mapping(mapping.get("metadata"))
         write_state = pick_first(metadata, "write_state")
     if write_state is None:
         write_state = "planned"

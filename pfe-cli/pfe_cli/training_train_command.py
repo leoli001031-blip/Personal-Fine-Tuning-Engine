@@ -81,6 +81,8 @@ def register_train_command(app: typer.Typer, deps: TrainingCommandDeps) -> None:
                 workspace=workspace,
                 snapshot_workspace=workspace or "user_default",
                 backend_hint=backend_hint,
+                dry_run=dry_run,
+                real_local=real_local,
             )
         )
         with real_training_env(real_local=real_local):

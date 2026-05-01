@@ -22,6 +22,8 @@ def make_preview_training_symbols(symbols: dict[str, Any]) -> dict[str, Any]:
         workspace: str | None,
         snapshot_workspace: str | None = None,
         backend_hint: str | None,
+        dry_run: bool = False,
+        real_local: bool = False,
     ) -> str:
         return format_train_preview(
             method=method,
@@ -31,6 +33,8 @@ def make_preview_training_symbols(symbols: dict[str, Any]) -> dict[str, Any]:
             workspace=workspace,
             snapshot_workspace=snapshot_workspace,
             backend_hint=backend_hint,
+            dry_run=dry_run,
+            real_local=real_local,
             deps=call(symbols, "_training_preview_deps"),
         )
 

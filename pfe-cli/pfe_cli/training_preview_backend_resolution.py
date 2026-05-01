@@ -18,6 +18,7 @@ def backend_dispatch(
     backend_plan: Any,
     runtime_mapping: Mapping[str, Any],
     backend_hint: str | None,
+    allow_mock_fallback: bool,
     deps: TrainingPreviewDeps,
 ) -> Any:
     if trainer_service is None or not hasattr(trainer_service, "_dispatch_training_backend"):
@@ -27,7 +28,7 @@ def backend_dispatch(
             backend_plan=deps.coerce_mapping(backend_plan) or {},
             runtime=runtime_mapping,
             backend_hint=backend_hint,
-            allow_mock_fallback=True,
+            allow_mock_fallback=allow_mock_fallback,
         )
     except Exception:
         return None
@@ -40,6 +41,7 @@ def executor_spec(
     backend_plan: Any,
     runtime_mapping: Mapping[str, Any],
     backend_hint: str | None,
+    allow_mock_fallback: bool,
     deps: TrainingPreviewDeps,
 ) -> Any:
     if trainer_service is None or not hasattr(trainer_service, "_resolve_training_executor"):
@@ -49,7 +51,7 @@ def executor_spec(
             backend_dispatch=backend_dispatch_result or deps.coerce_mapping(backend_plan) or {},
             runtime=runtime_mapping,
             backend_hint=backend_hint,
-            allow_mock_fallback=True,
+            allow_mock_fallback=allow_mock_fallback,
         )
     except Exception:
         return None

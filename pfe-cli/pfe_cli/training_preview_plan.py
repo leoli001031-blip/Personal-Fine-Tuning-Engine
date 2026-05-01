@@ -26,6 +26,8 @@ class TrainingPreviewPlan:
     execution_mode: Any
     export_artifact_format: Any
     export_preview: Any
+    dry_run: bool
+    real_local: bool
 
 
 def build_training_preview_plan(
@@ -36,12 +38,15 @@ def build_training_preview_plan(
     train_type: str,
     workspace: str | None,
     backend_hint: str | None,
+    dry_run: bool,
+    real_local: bool,
     deps: TrainingPreviewDeps,
 ) -> TrainingPreviewPlan:
     trainer_service = deps.optional_module_call("pfe_core.trainer", "service")
     runtime = deps.optional_module_call("pfe_core.trainer.runtime", "detect_trainer_runtime")
     runtime_mapping = deps.coerce_mapping(runtime) or {}
     target_backend = target_inference_backend(base_model)
+    allow_mock_fallback = not real_local
     backend_plan = deps.optional_module_call(
         "pfe_core.trainer.runtime",
         "summarize_trainer_backend_plan",
@@ -49,12 +54,14 @@ def build_training_preview_plan(
         runtime=runtime_mapping or None,
         backend_hint=backend_hint,
         target_inference_backend=target_backend,
+        allow_mock_fallback=allow_mock_fallback,
     )
     backend_dispatch_result = backend_dispatch(
         trainer_service=trainer_service,
         backend_plan=backend_plan,
         runtime_mapping=runtime_mapping,
         backend_hint=backend_hint,
+        allow_mock_fallback=allow_mock_fallback,
         deps=deps,
     )
     resolved_executor_spec = executor_spec(
@@ -63,6 +70,7 @@ def build_training_preview_plan(
         backend_plan=backend_plan,
         runtime_mapping=runtime_mapping,
         backend_hint=backend_hint,
+        allow_mock_fallback=allow_mock_fallback,
         deps=deps,
     )
 
@@ -105,6 +113,8 @@ def build_training_preview_plan(
         execution_mode=selected_mode,
         export_artifact_format=export_artifact_format,
         export_preview=export_preview,
+        dry_run=dry_run,
+        real_local=real_local,
     )
 
 

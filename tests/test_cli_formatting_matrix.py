@@ -13,6 +13,7 @@ from pfe_cli.main import (
     _format_eval_result_legacy,
     _format_serve,
     _format_status,
+    _format_train_preview,
     _format_train_result,
 )
 from pfe_core.db.sqlite import resolve_home
@@ -108,6 +109,24 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("mlx | device=mps", clean)
         self.assertIn("execution:", clean)
         self.assertIn("completed", clean)
+
+    def test_train_preview_distinguishes_real_local_from_export_dry_run(self) -> None:
+        text = _format_train_preview(
+            method="qlora",
+            epochs=1,
+            base_model="base-model",
+            train_type="sft",
+            workspace=None,
+            snapshot_workspace="user_default",
+            backend_hint="mock_local",
+            real_local=True,
+        )
+        clean = strip_ansi(text)
+
+        self.assertIn("PFE train plan", clean)
+        self.assertIn("execution_intent=real_local", clean)
+        self.assertIn("export-write:", clean)
+        self.assertNotIn("dry_run=yes", clean)
 
     def test_eval_result_shows_recommendation(self) -> None:
         payload = {
