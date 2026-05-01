@@ -1,16 +1,7 @@
 from __future__ import annotations
 
-import os
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_cli import main as cli_main  # noqa: E402
-
 
 LEGACY_PRIVATE_HELPERS = (
     "_adapter_snapshot_deps",
@@ -138,12 +129,10 @@ LEGACY_PRIVATE_HELPERS = (
     "_yes_no",
 )
 
-
 def test_main_exports_legacy_private_helper_contract() -> None:
     missing = [name for name in LEGACY_PRIVATE_HELPERS if not callable(getattr(cli_main, name, None))]
 
     assert missing == []
-
 
 def test_console_routing_deps_resolve_handler_stays_patchable() -> None:
     original_resolve_handler = cli_main._resolve_handler

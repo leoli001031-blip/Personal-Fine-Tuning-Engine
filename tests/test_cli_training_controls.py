@@ -1,26 +1,17 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from typing import Any
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main  # noqa: E402
-
 
 def _patch_cli_training_surfaces(monkeypatch: Any, service: Any) -> None:
     monkeypatch.setattr(cli_main, "_load_service", lambda *module_names: service)
     monkeypatch.setattr(cli_main, "_format_train_preview", lambda **kwargs: "preview")
     monkeypatch.setattr(cli_main, "_format_train_result", lambda result, *, workspace=None: "result")
     monkeypatch.setattr(cli_main, "_record_train_cli_state", lambda result, workspace=None: None)
-
 
 def test_train_dry_run_backend_and_real_local_are_passed(monkeypatch: Any) -> None:
     calls: list[dict[str, Any]] = []
@@ -42,7 +33,6 @@ def test_train_dry_run_backend_and_real_local_are_passed(monkeypatch: Any) -> No
     assert calls[0]["env"] == "1"
     assert os.environ.get("PFE_REAL_TRAINING") is None
 
-
 def test_dpo_dry_run_routes_to_training_handler(monkeypatch: Any) -> None:
     calls: list[dict[str, Any]] = []
 
@@ -60,7 +50,6 @@ def test_dpo_dry_run_routes_to_training_handler(monkeypatch: Any) -> None:
     assert calls[0]["backend"] == "dpo"
     assert calls[0]["dry_run"] is True
     assert calls[0]["real_local"] is False
-
 
 def test_train_rejects_dpo_backend_for_sft() -> None:
     result = CliRunner().invoke(cli_main.app, ["train", "--backend", "dpo"])

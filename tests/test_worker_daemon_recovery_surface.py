@@ -7,14 +7,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main
-
 
 class WorkerDaemonRecoverySurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -72,7 +65,6 @@ class WorkerDaemonRecoverySurfaceTests(unittest.TestCase):
         self.assertIn("event=recover_blocked", daemon_history.stdout)
         self.assertIn("event=restart_requested", daemon_history.stdout)
         self.assertIn("note=manual_restart", daemon_history.stdout)
-
 
 if __name__ == "__main__":
     unittest.main()

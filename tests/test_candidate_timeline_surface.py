@@ -7,16 +7,9 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 import pfe_cli.main as cli_main
 from pfe_cli.main import _format_candidate_timeline
 from pfe_core.pipeline import PipelineService
-
 
 class CandidateTimelineSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -100,7 +93,6 @@ class CandidateTimelineSurfaceTests(unittest.TestCase):
         self.assertIn("label=archive_candidate:completed", result.stdout)
         self.assertIn(f"candidate_version={promoted_version}", result.stdout)
         self.assertIn(f"candidate_version={archived_version}", result.stdout)
-
 
 if __name__ == "__main__":
     unittest.main()

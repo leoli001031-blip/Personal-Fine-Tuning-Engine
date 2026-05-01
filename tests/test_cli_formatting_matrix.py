@@ -8,13 +8,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli.main import (
     _format_eval_result,
     _format_eval_result_legacy,
@@ -24,12 +17,10 @@ from pfe_cli.main import (
 )
 from pfe_core.db.sqlite import resolve_home
 
-
 def strip_ansi(text: str) -> str:
     """Remove ANSI color codes from text for testing."""
     ansi_pattern = re.compile(r'\x1b\[[0-9;]*m')
     return ansi_pattern.sub('', text)
-
 
 class CLIFormattingMatrixTests(unittest.TestCase):
     """Test CLI formatting with Matrix theme (default)."""
@@ -182,7 +173,6 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("ADAPTER VERSIONS", clean)
         self.assertIn("20260323-001", clean)
         self.assertIn("promoted", clean)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -10,12 +10,6 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.errors import TrainingError  # noqa: E402
 from pfe_core.pipeline import PipelineService  # noqa: E402
 from pfe_core.trainer import detect_trainer_runtime, plan_trainer_backend, trainer_runtime_summary  # noqa: E402
@@ -25,7 +19,6 @@ trainer_runtime_module = importlib.import_module("pfe_core.trainer.runtime")
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
-
 
 class _NoopTrainerStore:
     def __init__(self, version_dir: Path):
@@ -47,7 +40,6 @@ class _NoopTrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         self.pending_eval_calls.append({"version": version, "num_samples": num_samples, "metrics": dict(metrics or {})})
-
 
 class TrainerRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -646,7 +638,6 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertTrue(result.export_execution["success"])
         self.assertTrue(result.export_execution["output_artifact_validation"]["valid"])
         self.assertTrue(result.training_config["pre_export_artifact_sync"]["available"])
-
 
 if __name__ == "__main__":
     unittest.main()

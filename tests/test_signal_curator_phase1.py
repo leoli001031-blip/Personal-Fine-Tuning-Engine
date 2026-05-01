@@ -1,15 +1,7 @@
 from __future__ import annotations
 
-import os
 import unittest
 from datetime import datetime, timezone
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.converters import to_dataclass, to_pydantic
 from pfe_core.curator import RawSignal, SignalSampleCuratorConfig, curate_signals_to_samples, signal_to_sft_sample
@@ -26,7 +18,6 @@ from pfe_core.curator.teacher_client import TeacherClientConfig
 from pfe_core.config import PrivacyConfig
 from pfe_core.models import RawSignal as CoreRawSignal
 from pfe_core.models import SignalQuality, TrainingSample as CoreTrainingSample
-
 
 class SignalCuratorPhase1Tests(unittest.TestCase):
     def _signal(
@@ -507,7 +498,6 @@ class SignalCuratorPhase1Tests(unittest.TestCase):
         # When local_engine is None, similarity should not be in metadata
         self.assertNotIn("local_teacher_similarity", metadata)
         self.assertFalse(metadata.get("prada_filtered", False))
-
 
 if __name__ == "__main__":
     unittest.main()

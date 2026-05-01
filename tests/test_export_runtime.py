@@ -5,12 +5,6 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.adapter_store.lifecycle import AdapterArtifactFormat
 from pfe_core.inference.export_runtime import (
     build_export_runtime_spec,
@@ -26,7 +20,6 @@ from pfe_core.inference.export_runtime import (
     validate_llama_cpp_export_output_artifact,
     write_materialized_export_plan,
 )
-
 
 class ExportRuntimeTests(unittest.TestCase):
     def test_dry_run_export_spec_uses_standard_gguf_directory(self) -> None:
@@ -603,7 +596,6 @@ class ExportRuntimeTests(unittest.TestCase):
             self.assertIn("exit code 1", result.failure_reason or "")
             self.assertIn("LoraTorchTensor", result.failure_reason or "")
             self.assertEqual(result.audit_summary["summary"], "command_failed")
-
 
 if __name__ == "__main__":
     unittest.main()

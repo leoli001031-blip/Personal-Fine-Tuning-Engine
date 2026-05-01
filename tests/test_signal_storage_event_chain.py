@@ -5,15 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.db.sqlite import list_signals, record_signal, status_snapshot
 from pfe_core.pipeline import PipelineService
-
 
 class SignalStorageEventChainTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -117,7 +110,6 @@ class SignalStorageEventChainTests(unittest.TestCase):
         self.assertEqual(signal["source_event_ids"], ["evt-src-3", "evt-3"])
         self.assertEqual(signal["event_chain_ids"], ["evt-src-3", "evt-3"])
         self.assertEqual(signal["lineage"]["event_chain_ids"], ["evt-src-3", "evt-3"])
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,18 +6,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class CandidateTimelineHttpSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -103,7 +96,6 @@ class CandidateTimelineHttpSurfaceTests(unittest.TestCase):
         self.assertEqual(body["candidate_timeline"]["last_candidate_version"], archived_version)
         self.assertEqual(body["metadata"]["candidate_timeline"]["current_stage"], "archived")
         self.assertEqual(body["metadata"]["pipeline"]["candidate_timeline"]["current_stage"], "archived")
-
 
 if __name__ == "__main__":
     unittest.main()

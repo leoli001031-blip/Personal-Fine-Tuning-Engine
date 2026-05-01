@@ -7,20 +7,12 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.config import PFEConfig
 from pfe_core.pipeline import PipelineService
-
 
 class _DummyProcess:
     def __init__(self, pid: int = 45678) -> None:
         self.pid = pid
-
 
 class WorkerDaemonAutoRecoveryTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -178,7 +170,6 @@ class WorkerDaemonAutoRecoveryTests(unittest.TestCase):
         self.assertEqual(summary["heartbeat_state"], "delayed")
         self.assertEqual(summary["restart_policy_state"], "ready")
         self.assertEqual(summary["recovery_action"], "none")
-
 
 if __name__ == "__main__":
     unittest.main()

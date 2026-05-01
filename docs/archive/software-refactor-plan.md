@@ -101,7 +101,7 @@
 
 ## R4：Lint Stabilization
 
-状态：已开始，按风险切片推进。
+状态：已完成。
 
 目标：
 
@@ -126,7 +126,9 @@
 - 全仓库 `F821/F822/F601` 已清理；剩余主要是测试 `E402`、未用 import、未用局部变量等低风险 lint 债。
 - 全仓库 `F811/F402/F541/F841` 已清理。
 - 全仓库 `F401` 已清理；`pfe_core.__init__` 的 router 公开导出已补齐，DPO/MLX 依赖探测改为轻量 `find_spec`，降低仅探测依赖时触发重库初始化的风险。
-- 剩余 lint 债只剩 `E402`，当前统计为 244 个，主要集中在测试文件的路径注入后导入顺序问题。
+- tests 的 `E402` 已清理：重复的 per-file `sys.path` 注入块已删除，统一保留 `tests/conftest.py` 作为测试路径入口。
+- 默认 `ruff check pfe-core pfe-cli pfe-server tests` 已通过。
+- 完整测试 `pytest tests` 已通过：1027 passed。
 
 ## R5：真实训练最小闭环
 

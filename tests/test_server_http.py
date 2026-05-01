@@ -6,14 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_server.app import build_serve_plan, smoke_test_request
-
 
 class ServerHttpSmokeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -570,7 +563,6 @@ class ServerHttpSmokeTests(unittest.TestCase):
                 os.environ.pop("PFE_API_KEY", None)
             else:
                 os.environ["PFE_API_KEY"] = previous_api_key
-
 
 if __name__ == "__main__":
     unittest.main()

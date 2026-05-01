@@ -1,19 +1,10 @@
 from __future__ import annotations
 
-import os
 import unittest
-from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main
-
 
 class CLIDoctorTests(unittest.TestCase):
     def test_doctor_command_reports_compact_readiness_summary(self) -> None:
@@ -289,7 +280,6 @@ class CLIDoctorTests(unittest.TestCase):
             "local model: available=yes | requested_base_model=/Users/lichenhao/Desktop/PFE/models/Qwen3-4B | source_kind=path | source_path=/Users/lichenhao/Desktop/PFE/models/Qwen3-4B | load_mode=from_pretrained",
             result.stdout,
         )
-
 
 if __name__ == "__main__":
     unittest.main()

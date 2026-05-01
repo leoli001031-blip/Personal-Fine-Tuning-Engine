@@ -7,16 +7,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.config import PFEConfig
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import build_serve_plan, smoke_test_request
-
 
 class AutoTriggerHttpControlsTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -135,7 +128,6 @@ class AutoTriggerHttpControlsTests(unittest.TestCase):
         status_body = asyncio.run(status_scenario())
         self.assertTrue(status_body["auto_train_trigger"]["ready"])
         self.assertNotIn("failure_backoff_active", status_body["auto_train_trigger"]["blocked_reasons"])
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -11,18 +11,11 @@ from unittest.mock import patch
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, build_serve_plan, create_app, serve, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 @pytest.mark.slow
 class ServerServeE2ETests(unittest.TestCase):
@@ -107,7 +100,6 @@ class ServerServeE2ETests(unittest.TestCase):
         self.assertEqual(run_calls[0]["host"], "127.0.0.1")
         self.assertEqual(run_calls[0]["port"], 8921)
         self.assertFalse(run_calls[0]["reload"])
-
 
 if __name__ == "__main__":
     unittest.main()

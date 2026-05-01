@@ -5,18 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.evaluator.auto import AutoEvaluator
 from pfe_core.evaluator.judge import EvalReport, compare_eval_reports, make_recommendation
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_core.curator.distillation import TrainingSample
-
 
 class EvaluatorCompareReportsTests(unittest.TestCase):
     def _report(
@@ -369,7 +362,6 @@ class EvaluatorCompareReportsTests(unittest.TestCase):
                 os.environ.pop("PFE_HOME", None)
             else:
                 os.environ["PFE_HOME"] = previous_home
-
 
 if __name__ == "__main__":
     unittest.main()

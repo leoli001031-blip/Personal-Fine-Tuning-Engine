@@ -7,14 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
-
 
 class TrainerPeftReadinessSummaryTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -249,7 +242,6 @@ class TrainerPeftReadinessSummaryTests(unittest.TestCase):
         self.assertEqual(result["execution_mode"], "real_import")
         self.assertEqual(result["real_execution"]["kind"], "real_peft")
         real_import_patch.assert_called_once()
-
 
 if __name__ == "__main__":
     unittest.main()

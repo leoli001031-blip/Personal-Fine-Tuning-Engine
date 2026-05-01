@@ -1,14 +1,6 @@
 from __future__ import annotations
 
-from pathlib import Path
 
-import os
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.pipeline_operations import (  # noqa: E402
     classify_operations_event,
@@ -17,7 +9,6 @@ from pfe_core.pipeline_operations import (  # noqa: E402
     ordered_unique_actions,
     prefer_inspection_summary_for_generic_monitor,
 )
-
 
 def test_classify_operations_event_promotes_daemon_stale_to_critical() -> None:
     payload = classify_operations_event(
@@ -30,7 +21,6 @@ def test_classify_operations_event_promotes_daemon_stale_to_critical() -> None:
     assert payload == {"severity": "critical", "attention": True}
     assert operations_event_severity_rank(payload["severity"]) == 4
 
-
 def test_classify_operations_event_tracks_queue_review_attention() -> None:
     payload = classify_operations_event(
         source="queue",
@@ -41,7 +31,6 @@ def test_classify_operations_event_tracks_queue_review_attention() -> None:
 
     assert payload["severity"] == "info"
     assert payload["attention"] is True
-
 
 def test_prefer_inspection_summary_for_generic_monitor_focuses() -> None:
     summary, inspection = prefer_inspection_summary_for_generic_monitor(
@@ -55,7 +44,6 @@ def test_prefer_inspection_summary_for_generic_monitor_focuses() -> None:
         inspection_summary_line=inspection,
     )
     assert summary == inspection
-
 
 def test_ordered_unique_actions_filters_empty_none_and_duplicates() -> None:
     assert ordered_unique_actions(

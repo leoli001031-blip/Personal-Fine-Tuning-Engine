@@ -1,16 +1,8 @@
 from __future__ import annotations
 
-import os
 import unittest
-from pathlib import Path
 
 from typer.testing import CliRunner
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_cli import main as cli_main
 from pfe_cli.console_app import (
@@ -33,7 +25,6 @@ from pfe_cli.console_app import (
     _prompt_target_hint,
 )
 from rich.console import Console
-
 
 class CLIConsoleSurfaceTests(unittest.TestCase):
     def test_console_command_renders_core_panels(self) -> None:
@@ -3313,7 +3304,6 @@ class CLIConsoleSurfaceTests(unittest.TestCase):
         panel_text = str(panel.renderable)
         self.assertIn("/do trigger-train", panel_text)
         self.assertIn("ready=75/50", panel_text)
-
 
 if __name__ == "__main__":
     unittest.main()

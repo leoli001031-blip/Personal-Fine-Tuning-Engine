@@ -8,12 +8,6 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 import pfe_cli.main as cli_main
 from pfe_cli.main import _format_status
 from pfe_cli.adapter_commands import adapter_app
@@ -21,7 +15,6 @@ from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import build_serve_plan, smoke_test_request
 from tests.matrix_test_compat import strip_ansi
-
 
 class CandidatePromoteArchiveSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -208,7 +201,6 @@ class CandidatePromoteArchiveSurfaceTests(unittest.TestCase):
         self.assertIn("处理下一条队列任务", text)
         self.assertIn("重试 Auto Train", text)
         self.assertIn("重置 Trigger 状态", text)
-
 
 if __name__ == "__main__":
     unittest.main()

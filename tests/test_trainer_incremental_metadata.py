@@ -7,14 +7,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.trainer.service import TrainerService
-
 
 class _IncrementalStore:
     def __init__(self, parent_path: Path):
@@ -24,7 +17,6 @@ class _IncrementalStore:
     def load(self, version: str) -> str:
         self.load_calls.append(version)
         return str(self.parent_path)
-
 
 class TrainerIncrementalMetadataTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -89,7 +81,6 @@ class TrainerIncrementalMetadataTests(unittest.TestCase):
         self.assertEqual(kwargs["incremental_context"]["source_adapter_version"], "20260324-010")
         self.assertEqual(kwargs["incremental_context"]["source_model"], "Qwen/Test-Base")
         self.assertEqual(store.load_calls, ["20260324-010"])
-
 
 if __name__ == "__main__":
     unittest.main()

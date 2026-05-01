@@ -7,18 +7,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.config import PFEConfig, TrainerConfig
 from pfe_core.errors import TrainingError
 from pfe_core.trainer.service import TrainerService
 
 trainer_service_module = __import__("pfe_core.trainer.service", fromlist=["TrainerService"])
-
 
 class _TrainerStore:
     def __init__(self, home: Path, version_dir: Path | None = None, latest_version: str | None = None):
@@ -58,7 +51,6 @@ class _TrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         del version, num_samples, metrics
-
 
 class TrainerDpoIncrementalReplayTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -324,7 +316,6 @@ class TrainerDpoIncrementalReplayTests(unittest.TestCase):
                 ],
                 train_type="dpo",
             )
-
 
 if __name__ == "__main__":
     unittest.main()

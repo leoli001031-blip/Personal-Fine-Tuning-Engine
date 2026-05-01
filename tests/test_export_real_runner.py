@@ -1,22 +1,14 @@
 from __future__ import annotations
 
-import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.adapter_store.lifecycle import AdapterArtifactFormat
 from pfe_core.inference.export_runtime import (
     execute_llama_cpp_export_command,
     validate_llama_cpp_export_output_artifact,
 )
-
 
 class ExportRealRunnerTests(unittest.TestCase):
     def test_validate_output_artifact_rejects_empty_files(self) -> None:
@@ -179,7 +171,6 @@ class ExportRealRunnerTests(unittest.TestCase):
             self.assertEqual(result.failure_category, "tool_missing")
             self.assertFalse(result.success)
             self.assertEqual(result.toolchain_summary["failure_category"], "tool_missing")
-
 
 if __name__ == "__main__":
     unittest.main()

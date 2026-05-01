@@ -6,18 +6,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main
 from pfe_cli.main import _format_serve_preview, _format_status
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from tests.matrix_test_compat import strip_ansi
-
 
 class ClosedLoopObservabilityTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -204,7 +197,6 @@ class ClosedLoopObservabilityTests(unittest.TestCase):
                     self.assertIn("status:                  not_required", clean)
         finally:
             cli_main._optional_module_call = original_optional_call
-
 
 if __name__ == "__main__":
     unittest.main()

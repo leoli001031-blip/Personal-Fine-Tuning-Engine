@@ -6,17 +6,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli.main import _format_status
 from pfe_core.config import PFEConfig
 from pfe_server.app import build_serve_plan, smoke_test_request
 from tests.matrix_test_compat import strip_ansi
-
 
 class AutoTriggerStatusTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -236,7 +229,6 @@ class AutoTriggerStatusTests(unittest.TestCase):
         self.assertEqual(body["auto_train_trigger"]["policy"]["execution_mode"], "inline")
         self.assertEqual(body["auto_train_trigger"]["policy"]["queue_entry_mode"], "disabled")
         self.assertEqual(body["auto_train_trigger"]["policy"]["stop_stage"], "trigger")
-
 
 if __name__ == "__main__":
     unittest.main()

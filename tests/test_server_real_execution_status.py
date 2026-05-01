@@ -8,15 +8,8 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import create_app, smoke_test_request
-
 
 @pytest.mark.slow
 class ServerRealExecutionStatusTests(unittest.TestCase):
@@ -85,7 +78,6 @@ class ServerRealExecutionStatusTests(unittest.TestCase):
         self.assertIn("latest_adapter_exists", lifecycle["serve"])
         self.assertIn("adapter_resolution_state", lifecycle["serve"])
         self.assertIn("using_promoted_adapter", lifecycle["serve"])
-
 
 if __name__ == "__main__":
     unittest.main()

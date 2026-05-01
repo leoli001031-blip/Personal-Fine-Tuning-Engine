@@ -10,17 +10,10 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
-
 
 class TrainingMetaRealExecutionTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -138,7 +131,6 @@ class TrainingMetaRealExecutionTests(unittest.TestCase):
         self.assertEqual(manifest["metadata"]["backend_plan"]["recommended_backend"], "peft")
         self.assertEqual(manifest["artifact_format"], training_meta["export_runtime"]["target_artifact_format"])
         self.assertEqual(manifest["adapter_dir"], str(version_dir))
-
 
 if __name__ == "__main__":
     unittest.main()

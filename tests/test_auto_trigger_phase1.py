@@ -6,16 +6,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.config import PFEConfig
 from pfe_core.db.sqlite import save_samples
 from pfe_core.pipeline import PipelineService
-
 
 class AutoTriggerPhase1Tests(unittest.TestCase):
     def setUp(self) -> None:
@@ -483,7 +476,6 @@ class AutoTriggerPhase1Tests(unittest.TestCase):
         self.assertEqual(trigger["threshold_summary"]["preference_reinforced_train_samples"], 1)
         self.assertIn("effective=4/4", trigger["threshold_summary"]["summary_line"])
         self.assertIn("reinforced=1", trigger["threshold_summary"]["summary_line"])
-
 
 if __name__ == "__main__":
     unittest.main()

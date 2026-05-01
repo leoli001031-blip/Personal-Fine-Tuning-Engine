@@ -8,18 +8,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.collector import ChatCollector, ChatInteraction, CollectorConfig
 from pfe_core.config import PFEConfig
 from pfe_core.pii_audit import PIIAuditLog, PIIWhitelist
 from pfe_core.pii_detector import PIIDetectionResult
 from pfe_core.router import create_router
-
 
 class PathIsolationTests(unittest.TestCase):
     def setUp(self) -> None:

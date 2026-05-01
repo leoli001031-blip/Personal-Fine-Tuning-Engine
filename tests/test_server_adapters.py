@@ -8,18 +8,11 @@ from datetime import timezone
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app
 from pfe_server.auth import ServerSecurityConfig
 from pfe_server.models import ChatCompletionRequest, DistillRunRequest, SignalIngestRequest
-
 
 class ServerAdapterTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -113,7 +106,6 @@ class ServerAdapterTests(unittest.TestCase):
 
         self.assertEqual(request.timestamp.tzinfo, timezone.utc)
         self.assertEqual(request.timestamp.isoformat(), "2026-04-20T12:00:00+00:00")
-
 
 if __name__ == "__main__":
     unittest.main()

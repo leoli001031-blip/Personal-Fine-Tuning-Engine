@@ -9,17 +9,10 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.trainer.service import TrainerService
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
-
 
 class _NoopTrainerStore:
     def __init__(self, version_dir: Path):
@@ -40,7 +33,6 @@ class _NoopTrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         del version, num_samples, metrics
-
 
 class TrainerServiceRealArtifactsTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -145,7 +137,6 @@ class TrainerServiceRealArtifactsTests(unittest.TestCase):
         self.assertEqual(metadata["real_execution_artifacts"]["artifact_dir"], str(artifact_dir))
         self.assertTrue(metadata["artifact_sync"]["available"])
         self.assertEqual(metadata["artifact_sync"]["synced_files"]["adapter_model"]["target"], str(version_dir / "adapter_model.safetensors"))
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,19 +8,12 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 import pfe_cli.main as cli_main
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class ManagementHistorySurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -213,7 +206,6 @@ class ManagementHistorySurfaceTests(unittest.TestCase):
         self.assertIn("Candidate History", text)
         self.assertIn("Queue History", text)
         self.assertIn("Worker Runner Timeline / History", text)
-
 
 if __name__ == "__main__":
     unittest.main()

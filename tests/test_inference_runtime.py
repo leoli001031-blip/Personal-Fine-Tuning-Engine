@@ -7,12 +7,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.inference.engine import (
     InferenceConfig,
     InferenceEngine,
@@ -22,7 +16,6 @@ from pfe_core.inference.engine import (
     resolve_base_model_reference,
 )
 from pfe_core.pipeline import PipelineService
-
 
 class InferenceRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -205,7 +198,6 @@ class InferenceRuntimeTests(unittest.TestCase):
         self.assertIn("[base]", text)
         self.assertEqual(engine.status()["served_by"], "mock")
         self.assertFalse(engine.status()["real_local_enabled"])
-
 
 if __name__ == "__main__":
     unittest.main()

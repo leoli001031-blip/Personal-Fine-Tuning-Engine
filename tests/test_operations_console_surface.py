@@ -7,18 +7,11 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class OperationsConsoleSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -721,7 +714,6 @@ class OperationsConsoleSurfaceTests(unittest.TestCase):
         self.assertIn("queue_review_policy_summary", body["operations_event_stream"]["dashboard"])
         self.assertIn("trigger_policy_summary", body["operations_overview"])
         self.assertIn("queue_review_policy_summary", body["operations_overview"])
-
 
 if __name__ == "__main__":
     unittest.main()

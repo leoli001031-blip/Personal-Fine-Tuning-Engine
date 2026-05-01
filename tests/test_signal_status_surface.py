@@ -8,18 +8,11 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main
 from pfe_cli.main import _format_status
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import build_serve_plan, smoke_test_request
 from tests.matrix_test_compat import strip_ansi
-
 
 class SignalStatusSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -167,7 +160,6 @@ class SignalStatusSurfaceTests(unittest.TestCase):
         self.assertEqual(started.exit_code, 0, started.stdout)
         started_clean = strip_ansi(started.stdout)
         self.assertIn("[ IDLE ]", started_clean)
-
 
 if __name__ == "__main__":
     unittest.main()

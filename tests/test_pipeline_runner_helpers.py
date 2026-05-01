@@ -1,16 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from types import SimpleNamespace
 
-import os
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.pipeline_runner import (  # noqa: E402
     append_runner_history,
@@ -22,7 +14,6 @@ from pfe_core.pipeline_runner import (  # noqa: E402
     worker_summary,
 )
 
-
 def _trigger() -> SimpleNamespace:
     return SimpleNamespace(
         queue_daemon_auto_recover=True,
@@ -32,7 +23,6 @@ def _trigger() -> SimpleNamespace:
         queue_daemon_max_restart_attempts=3,
         queue_daemon_restart_backoff_seconds=15.0,
     )
-
 
 def test_worker_runner_history_and_timeline_helpers() -> None:
     first_at = datetime(2026, 3, 26, 10, 0, tzinfo=timezone.utc)
@@ -61,7 +51,6 @@ def test_worker_runner_history_and_timeline_helpers() -> None:
     assert timeline["last_takeover_event"] == "started"
     assert timeline["latest_timestamp"] == second_at.isoformat()
     assert "note" not in payload["history"][0]
-
 
 def test_daemon_history_and_recovery_timeline_helpers() -> None:
     first_at = datetime(2026, 3, 26, 11, 0, tzinfo=timezone.utc)
@@ -99,7 +88,6 @@ def test_daemon_history_and_recovery_timeline_helpers() -> None:
     assert timeline["last_recovery_note"] == "auto_recovery"
     assert timeline["recent_recovery_events"][0]["note"] == "boot"
 
-
 def test_worker_summary_marks_stale_lock_from_heartbeat_age() -> None:
     heartbeat = datetime(2026, 3, 26, 12, 0, tzinfo=timezone.utc)
     summary = worker_summary(
@@ -120,7 +108,6 @@ def test_worker_summary_marks_stale_lock_from_heartbeat_age() -> None:
     assert summary["lease_expires_at"] == (heartbeat + timedelta(seconds=60)).isoformat()
     assert summary["last_event"] == "started"
     assert summary["last_event_reason"] == "run_worker_runner"
-
 
 def test_daemon_summary_reports_stale_backoff_and_recovery_block() -> None:
     now = datetime(2026, 3, 26, 12, 0, tzinfo=timezone.utc)

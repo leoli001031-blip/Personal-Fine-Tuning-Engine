@@ -7,12 +7,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli.main import _format_status
 from pfe_core.config import PFEConfig
 from pfe_core.pipeline import PipelineService
@@ -20,7 +14,6 @@ from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAda
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
 from tests.matrix_test_compat import strip_ansi
-
 
 class DeferredQueueExecutorTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -695,7 +688,6 @@ class DeferredQueueExecutorTests(unittest.TestCase):
         self.assertEqual(source_priority, (100, "policy:source_default"))
         biased_priority = service._queue_priority(trigger_status=trigger_status, source="signal_auto_train", policy="promotion_bias")
         self.assertEqual(biased_priority, (120, "policy:promotion_bias:auto_promote"))
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,14 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
-
 
 class TrainerRealPeftJobTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -231,7 +224,6 @@ class TrainerRealPeftJobTests(unittest.TestCase):
         self.assertFalse((artifact_dir / "config.json").exists())
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["real_execution"]["kind"], "real_local_peft")
-
 
 if __name__ == "__main__":
     unittest.main()
