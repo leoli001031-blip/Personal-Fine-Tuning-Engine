@@ -87,10 +87,11 @@
 
 - `pfe_core/pipeline_candidate.py`：candidate history entry、history summary、timeline stage、timeline payload。
 - `tests/test_pipeline_candidate_helpers.py`：锁定拆出 helper 的纯函数行为。
+- `pfe_core/pipeline_queue.py`：train queue item history、review summary、review policy summary、queue history payload。
+- `tests/test_pipeline_queue_helpers.py`：锁定 queue helper 的纯函数行为。
 
 下一步：
 
-- 拆 train queue history / timeline summary helper。
 - 再拆 daemon / worker runner summary helper。
 - 最后处理 operations dashboard 中的重复 key 和未定义变量类 lint。
 

@@ -30,6 +30,18 @@ from .pipeline_candidate import (
     candidate_timeline_summary,
     normalize_candidate_history,
 )
+from .pipeline_queue import (
+    normalize_queue_items,
+    queue_history_entry,
+    queue_history_summary,
+    queue_recent_history,
+    queue_review_entries,
+    queue_review_policy_summary,
+    queue_review_summary,
+    queue_sort_key,
+    queue_state_counts,
+    train_queue_history_payload,
+)
 from .storage import list_samples, list_signals, record_signal, resolve_home, save_samples, status_snapshot, write_json, write_jsonl
 from .trainer import summarize_real_training_execution, summarize_training_job_execution
 from .trainer.service import TrainerService
@@ -887,36 +899,11 @@ class PipelineService:
         reason: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        timestamp = (
-            item.get("updated_at")
-            or item.get("triggered_at")
-            or item.get("created_at")
-            or datetime.now(timezone.utc).isoformat()
-        )
-        entry = {
-            "timestamp": str(timestamp),
-            "event": str(event),
-            "state": str(item.get("state") or "unknown"),
-            "job_id": str(item.get("job_id") or ""),
-        }
-        if reason:
-            entry["reason"] = str(reason)
-        if metadata:
-            entry["metadata"] = dict(metadata)
-            if metadata.get("note") is not None:
-                entry["note"] = str(metadata["note"])
-        return entry
+        return queue_history_entry(event=event, item=item, reason=reason, metadata=metadata)
 
     @staticmethod
     def _queue_sort_key(item: dict[str, Any]) -> tuple[int, str]:
-        priority = int(item.get("priority", 0) or 0)
-        ordered_at = str(
-            item.get("triggered_at")
-            or item.get("created_at")
-            or item.get("updated_at")
-            or ""
-        )
-        return (-priority, ordered_at)
+        return queue_sort_key(item)
 
     @staticmethod
     def _queue_priority(
@@ -1058,11 +1045,8 @@ class PipelineService:
     def _train_queue_snapshot(self, *, workspace: str | None = None) -> dict[str, Any]:
         trigger = self._load_config().trainer.trigger
         payload = self._load_train_queue_state(workspace=workspace)
-        items = [dict(item) for item in list(payload.get("items") or [])]
-        counts: dict[str, int] = {}
-        for item in items:
-            state = str(item.get("state") or "unknown")
-            counts[state] = counts.get(state, 0) + 1
+        items = normalize_queue_items(payload.get("items") or [])
+        counts = queue_state_counts(items)
         current_item = next((item for item in items if str(item.get("state")) in {"queued", "running"}), None)
         last_item = dict(payload.get("last_item") or (items[0] if items else {}))
         dedup_scopes = sorted(
@@ -1083,58 +1067,17 @@ class PipelineService:
         queued_item = next((item for item in items if str(item.get("state")) == "queued"), None)
         confirmation_required_count = sum(1 for item in items if bool(item.get("confirmation_required")))
         awaiting_confirmation_count = int(counts.get("awaiting_confirmation", 0) or 0)
-        recent_history: list[dict[str, Any]] = []
-        for item in items:
-            recent_history.extend(list(item.get("history") or [])[-1:])
-        recent_history = sorted(recent_history, key=lambda entry: str(entry.get("timestamp") or ""), reverse=True)[:5]
+        recent_history = queue_recent_history(items, limit=5)
         last_transition = recent_history[0] if recent_history else {}
-        history_summary = {
-            "transition_count": sum(int(item.get("history_count", 0) or 0) for item in items),
-            "last_transition": last_transition,
-            "last_reason": last_transition.get("reason"),
-        }
-        review_entries = [
-            entry
-            for item in items
-            for entry in list(item.get("history") or [])
-            if str(entry.get("event") or "") in {"approved", "rejected"}
-        ]
-        review_entries = sorted(review_entries, key=lambda entry: str(entry.get("timestamp") or ""), reverse=True)
-        last_review = review_entries[0] if review_entries else {}
-        review_required_by_policy = bool(str(trigger.queue_mode) == "deferred" and bool(trigger.require_queue_confirmation))
-        if awaiting_confirmation_count > 0:
-            review_queue_entry_mode = "awaiting_confirmation"
-            review_next_action = "review_queue_confirmation"
-            review_reason = (awaiting_item or {}).get("confirmation_reason")
-        elif queued_item is not None:
-            review_queue_entry_mode = "queued"
-            review_next_action = "process_next_queue_item"
-            review_reason = None
-        elif str(trigger.queue_mode) == "deferred":
-            review_queue_entry_mode = "deferred_idle"
-            review_next_action = "await_new_queue_item"
-            review_reason = None
-        else:
-            review_queue_entry_mode = "inline_execute"
-            review_next_action = "await_signal_trigger"
-            review_reason = None
-        review_mode = "manual_review" if (review_required_by_policy or awaiting_confirmation_count > 0) else "auto_queue"
-        review_policy_summary = {
-            "review_mode": review_mode,
-            "queue_entry_mode": review_queue_entry_mode,
-            "review_required_by_policy": review_required_by_policy,
-            "review_required_now": awaiting_confirmation_count > 0,
-            "review_reason": review_reason,
-            "next_action": review_next_action,
-            "summary_line": " | ".join(
-                [
-                    f"mode={review_mode}",
-                    f"entry={review_queue_entry_mode}",
-                    f"next={review_next_action}",
-                ]
-                + ([f"reason={review_reason}"] if review_reason else [])
-            ),
-        }
+        history_summary = queue_history_summary(items, recent_history)
+        review_entries = queue_review_entries(items)
+        review_policy_summary = queue_review_policy_summary(
+            queue_mode=str(trigger.queue_mode),
+            require_queue_confirmation=bool(trigger.require_queue_confirmation),
+            awaiting_confirmation_count=awaiting_confirmation_count,
+            awaiting_item=awaiting_item,
+            queued_item=queued_item,
+        )
         return {
             "count": len(items),
             "counts": counts,
@@ -1156,16 +1099,7 @@ class PipelineService:
                 "next_job_id": (awaiting_item or {}).get("job_id"),
                 "next_confirmation_reason": (awaiting_item or {}).get("confirmation_reason"),
             },
-            "review_summary": {
-                "reviewed_transition_count": len(review_entries),
-                "approved_transition_count": sum(1 for entry in review_entries if str(entry.get("event")) == "approved"),
-                "rejected_transition_count": sum(1 for entry in review_entries if str(entry.get("event")) == "rejected"),
-                "last_review_event": last_review.get("event"),
-                "last_review_reason": last_review.get("reason"),
-                "last_review_note": last_review.get("note"),
-                "next_job_id": (awaiting_item or {}).get("job_id"),
-                "next_confirmation_reason": (awaiting_item or {}).get("confirmation_reason"),
-            },
+            "review_summary": queue_review_summary(review_entries=review_entries, awaiting_item=awaiting_item),
             "review_policy_summary": review_policy_summary,
             "worker_runner": self._train_queue_worker_summary(workspace=workspace),
             "runner_history": self._runner_timeline_summary(workspace=workspace),
@@ -1193,29 +1127,15 @@ class PipelineService:
         job_id: str | None = None,
         limit: int = 10,
     ) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         payload = self._load_train_queue_state(workspace=workspace)
-        items = [dict(item) for item in list(payload.get("items") or [])]
-        target_item: dict[str, Any] = {}
-        if job_id:
-            for item in items:
-                if str(item.get("job_id") or "") == str(job_id):
-                    target_item = item
-                    break
-        elif items:
-            target_item = dict(payload.get("last_item") or items[0])
-        history = list(target_item.get("history") or [])
-        return {
-            "workspace": workspace or "user_default",
-            "job_id": target_item.get("job_id"),
-            "state": target_item.get("state"),
-            "count": len(history),
-            "limit": bounded_limit,
-            "history": history[-bounded_limit:],
-            "history_count": int(target_item.get("history_count", len(history)) or len(history)),
-            "available_job_ids": [item.get("job_id") for item in items[:10] if item.get("job_id")],
-            "history_summary": dict(self._train_queue_snapshot(workspace=workspace).get("history_summary") or {}),
-        }
+        snapshot = self._train_queue_snapshot(workspace=workspace)
+        return train_queue_history_payload(
+            payload=payload,
+            workspace=workspace,
+            job_id=job_id,
+            limit=limit,
+            history_summary=dict(snapshot.get("history_summary") or {}),
+        )
 
     @staticmethod
     def _candidate_promotion_gate(
