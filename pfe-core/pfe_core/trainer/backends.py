@@ -13,7 +13,7 @@ from platform import system as platform_system
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
 TRAIN_TYPES: Tuple[str, ...] = ("sft", "dpo")
-TRAINING_BACKENDS: Tuple[str, ...] = ("mock_local", "peft", "unsloth", "mlx")
+TRAINING_BACKENDS: Tuple[str, ...] = ("mock_local", "peft", "dpo", "unsloth", "mlx")
 DEFAULT_BACKEND: str = "mock_local"
 SUPPORTED_DEVICE_PREFERENCES: Tuple[str, ...] = ("auto", "cpu", "cuda", "mps")
 LLAMA_CPP_BACKEND: str = "llama_cpp"
@@ -24,6 +24,7 @@ MLX_LORA_FORMAT: str = "mlx_lora"
 BACKEND_ALIASES: Dict[str, Tuple[str, ...]] = {
     "mock_local": ("mock", "mock_local", "local_mock"),
     "peft": ("peft", "hf_peft", "transformers_peft"),
+    "dpo": ("dpo", "trl_dpo"),
     "unsloth": ("unsloth", "fast_lora", "unsloth_lora"),
     "mlx": ("mlx", "mlx_lm", "mlx-lm", "mlx_lora"),
 }
@@ -196,6 +197,24 @@ BACKEND_CAPABILITIES: Dict[str, BackendCapability] = {
             "best default when DPO is requested",
         ),
     ),
+    "dpo": BackendCapability(
+        name="dpo",
+        supports_sft=False,
+        supports_dpo=True,
+        artifact_format=PEFT_LORA_FORMAT,
+        supported_devices=("cpu", "cuda", "mps"),
+        preferred_on=("cpu", "cuda", "mps"),
+        required_dependencies=("torch", "transformers", "peft", "trl", "accelerate"),
+        optional_dependencies=("datasets",),
+        supports_cpu_only=True,
+        supports_cuda=True,
+        supports_apple_silicon=True,
+        requires_export_for_llama_cpp=True,
+        notes=(
+            "TRL Direct Preference Optimization executor",
+            "uses isolated subprocess execution for real DPO training",
+        ),
+    ),
     "unsloth": BackendCapability(
         name="unsloth",
         supports_sft=True,
@@ -317,6 +336,7 @@ def _rank_backends_for_context(
 
     candidates = []
     if train_type == "dpo":
+        candidates.append("dpo")
         if cuda_available:
             candidates.extend(["unsloth", "peft"])
         else:

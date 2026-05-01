@@ -16,10 +16,11 @@ for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
     if package_path not in os.sys.path:
         os.sys.path.insert(0, package_path)
 
-from pfe_core.pipeline import PipelineService
-from pfe_core.errors import TrainingError
-from pfe_core.trainer import detect_trainer_runtime, plan_trainer_backend, trainer_runtime_summary
-from pfe_core.trainer.service import TrainerService
+from pfe_core.errors import TrainingError  # noqa: E402
+from pfe_core.pipeline import PipelineService  # noqa: E402
+from pfe_core.trainer import detect_trainer_runtime, plan_trainer_backend, trainer_runtime_summary  # noqa: E402
+from pfe_core.trainer.service import TrainerService  # noqa: E402
+
 trainer_runtime_module = importlib.import_module("pfe_core.trainer.runtime")
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
 
@@ -276,7 +277,8 @@ class TrainerRuntimeTests(unittest.TestCase):
             execution_plan=plan,
             output_dir=self.pfe_home / "adapters" / "user_default" / "20260323-998",
         )
-        runner_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
+        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}):
+            runner_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
 
         job_json_path = Path(bundle.job_json_path)
         script_path = Path(bundle.script_path)
@@ -617,7 +619,7 @@ class TrainerRuntimeTests(unittest.TestCase):
             )
             tool_path.chmod(0o755)
 
-            with patch.dict(os.environ, {"PFE_LLAMA_CPP_EXPORT_TOOL": str(tool_path)}), patch.object(
+            with patch.dict(os.environ, {"PFE_LLAMA_CPP_EXPORT_TOOL": str(tool_path), "PFE_REAL_TRAINING": "1"}), patch.object(
                 trainer_service_module, "detect_trainer_runtime"
             ) as detect_runtime, patch.object(
                 trainer_service_module.importlib.util,

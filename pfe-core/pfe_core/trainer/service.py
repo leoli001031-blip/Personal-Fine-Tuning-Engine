@@ -14,10 +14,8 @@ from typing import Any, Dict, List, Tuple
 
 from ..adapter_store.store import AdapterStore, create_adapter_store
 from ..config import PFEConfig
-from ..errors import TrainingError
 from ..db.sqlite import save_samples
-from ..storage import list_samples, mark_samples_used, write_json
-from ..profile_extractor import get_user_profile_store
+from ..errors import TrainingError
 from ..inference.export_runtime import (
     build_export_runtime_spec,
     build_llama_cpp_export_command_plan,
@@ -26,6 +24,11 @@ from ..inference.export_runtime import (
     validate_llama_cpp_export_toolchain,
     write_materialized_export_plan,
 )
+from ..profile_extractor import get_user_profile_store
+from ..storage import list_samples, mark_samples_used, write_json
+from .adapter_lineage import get_lineage_tracker
+from .auto_rollback import RollbackDecision, get_auto_rollback_policy
+from .dpo_dataset import DPODatasetBuilder
 from .executors import (
     build_training_execution_recipe,
     materialize_training_job_bundle,
@@ -33,17 +36,12 @@ from .executors import (
     summarize_real_training_execution,
     summarize_training_job_execution,
 )
-from .runtime import detect_trainer_runtime, plan_trainer_backend
-from .dpo_dataset import DPODatasetBuilder, build_dpo_dataset_from_samples
-from .dpo_executor import DPOTrainerExecutor, TrainingResult as DPOTrainingResult
 from .forget_detector import (
-    ForgetDetector,
     ForgetMetrics,
     ReplaySample,
     create_forget_detector,
 )
-from .adapter_lineage import AdapterLineageTracker, LineageDecision, get_lineage_tracker
-from .auto_rollback import AutoRollbackPolicy, RollbackDecision, get_auto_rollback_policy
+from .runtime import detect_trainer_runtime, plan_trainer_backend
 
 
 @dataclass
@@ -1309,6 +1307,9 @@ class TrainerService:
         workspace: str | None = None,
         backend_hint: str | None = None,
         base_adapter: str | None = None,
+        dry_run: bool = False,
+        backend: str | None = None,
+        real_local: bool = False,
     ) -> str:
         result = self.train_result(
             method=method,
@@ -1317,6 +1318,10 @@ class TrainerService:
             train_type=train_type,
             workspace=workspace,
             backend_hint=backend_hint,
+            base_adapter=base_adapter,
+            dry_run=dry_run,
+            backend=backend,
+            real_local=real_local,
         )
         return (
             f"Trained adapter {result.version} with {result.metrics['num_fresh_samples']} fresh sample(s)"
@@ -1334,6 +1339,9 @@ class TrainerService:
         backend_hint: str | None = None,
         base_adapter: str | None = None,
         incremental_context: dict[str, Any] | None = None,
+        dry_run: bool = False,
+        backend: str | None = None,
+        real_local: bool = False,
     ) -> TrainingRunResult:
         if train_type not in {"sft", "dpo"}:
             raise TrainingError(f"unsupported train_type: {train_type}")
@@ -1348,22 +1356,26 @@ class TrainerService:
         )
         target_inference_backend = self._resolve_target_inference_backend(base_model_name=base_model_name)
         runtime = detect_trainer_runtime().to_dict()
+        effective_backend_hint = backend if backend else backend_hint
+        allow_mock_fallback = not real_local
         backend_plan = plan_trainer_backend(
             train_type=train_type,
             runtime=runtime,
+            backend_hint=effective_backend_hint,
             target_inference_backend=target_inference_backend,
+            allow_mock_fallback=allow_mock_fallback,
         ).to_dict()
         backend_dispatch = self._dispatch_training_backend(
             backend_plan=backend_plan,
             runtime=runtime,
-            backend_hint=backend_hint,
-            allow_mock_fallback=True,
+            backend_hint=effective_backend_hint,
+            allow_mock_fallback=allow_mock_fallback,
         )
         executor_spec = self._resolve_training_executor(
             backend_dispatch=backend_dispatch,
             runtime=runtime,
-            backend_hint=backend_hint,
-            allow_mock_fallback=True,
+            backend_hint=effective_backend_hint,
+            allow_mock_fallback=allow_mock_fallback,
         )
         configured_replay_ratio = (
             trainer_config.trainer.dpo_replay_ratio if train_type == "dpo" else trainer_config.trainer.replay_ratio
@@ -1410,9 +1422,16 @@ class TrainerService:
             num_replay_samples=len(replay),
             replay_ratio=dataset_plan["selected_replay_ratio"],
             train_examples=train_samples,
-            allow_mock_fallback=True,
+            allow_mock_fallback=allow_mock_fallback,
             dpo_config=dpo_config,
         )
+        if real_local:
+            execution_recipe = dict(execution_recipe)
+            execution_recipe["job_spec"] = {
+                **dict(execution_recipe.get("job_spec") or {}),
+                "real_local": True,
+                "real_training_enabled": True,
+            }
         executor_spec["backend_recipe"] = execution_recipe["backend_recipe"]
         executor_spec["executor_recipe"] = execution_recipe["executor_recipe"]
         executor_spec["job_spec"] = execution_recipe["job_spec"]
@@ -1470,7 +1489,17 @@ class TrainerService:
             execution_plan=execution_recipe,
             output_dir=version_dir,
         )
-        job_execution = run_materialized_training_job_bundle(job_bundle).to_dict()
+        if dry_run:
+            job_execution = {
+                "outcome": "dry_run",
+                "success": True,
+                "dry_run": True,
+                "output_dir": str(version_dir),
+                "audit": {"status": "dry_run", "reason": "dry_run requested"},
+                "metadata": {"execution_mode": "dry_run"},
+            }
+        else:
+            job_execution = run_materialized_training_job_bundle(job_bundle).to_dict()
         executor_spec["job_bundle"] = job_bundle.to_dict()
         executor_spec["job_execution"] = job_execution
         training_config["job_bundle"] = job_bundle.to_dict()
@@ -1797,7 +1826,6 @@ class TrainerService:
         )
 
         # Phase 2-D: Auto-rollback policy evaluation
-        rollback_performed = False
         rollback_decision: RollbackDecision | None = None
         try:
             all_versions = store.list_version_records(limit=100)
@@ -1829,7 +1857,6 @@ class TrainerService:
                         reason=rollback_decision.reason,
                     )
                     metrics["rollback"] = rollback_result
-                    rollback_performed = rollback_result.get("success", False)
                     # Update lineage node with rollback info
                     lineage_tracker.update_node(
                         version,
@@ -1851,7 +1878,6 @@ class TrainerService:
                     fallback_version=fallback,
                 )
                 metrics["rollback"] = rollback_result
-                rollback_performed = rollback_result.get("success", False)
             except Exception as e:
                 metrics["rollback_error"] = str(e)
 
@@ -1895,6 +1921,10 @@ class TrainerService:
         epochs: int = 1,
         train_type: str = "sft",
         workspace: str | None = None,
+        backend_hint: str | None = None,
+        dry_run: bool = False,
+        backend: str | None = None,
+        real_local: bool = False,
     ) -> TrainingRunResult:
         incremental_context = self._resolve_incremental_parent_context(
             base_adapter=base_adapter,
@@ -1906,7 +1936,11 @@ class TrainerService:
             base_model=str(incremental_context.get("resolved_base_model") or self._default_base_model_name()),
             train_type=train_type,
             workspace=workspace,
+            backend_hint=backend_hint,
             incremental_context=incremental_context,
+            dry_run=dry_run,
+            backend=backend,
+            real_local=real_local,
         )
 
     def train_dpo(
@@ -1920,6 +1954,9 @@ class TrainerService:
         base_adapter: str | None = None,
         base_adapter_path: str | None = None,
         min_confidence: float | None = None,
+        dry_run: bool = False,
+        backend: str | None = None,
+        real_local: bool = False,
     ) -> TrainingRunResult:
         """Execute DPO (Direct Preference Optimization) training.
 
@@ -2011,8 +2048,11 @@ class TrainerService:
             base_model=base_model,
             train_type="dpo",
             workspace=workspace,
-            backend_hint=backend_hint,
+            backend_hint=backend or backend_hint or "dpo",
             incremental_context=incremental_context,
+            dry_run=dry_run,
+            backend=backend or backend_hint or "dpo",
+            real_local=real_local,
         )
 
     def build_dpo_dataset(

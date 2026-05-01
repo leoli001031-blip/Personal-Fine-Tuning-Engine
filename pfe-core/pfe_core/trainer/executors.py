@@ -14,6 +14,8 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import json
+import os
+import signal
 import subprocess
 import sys
 from dataclasses import asdict, dataclass, field
@@ -22,8 +24,7 @@ from typing import Any, Mapping
 from uuid import uuid4
 
 from ..errors import TrainingError
-from .backends import get_backend_capability, normalize_backend_name
-
+from .backends import normalize_backend_name
 
 _BACKEND_IMPORTS: dict[str, tuple[str, ...]] = {
     "mock_local": (),
@@ -191,6 +192,68 @@ class TrainerJobMaterialization:
         return payload
 
 
+def _exit_code_to_signal(returncode: int | None) -> str | None:
+    """Map subprocess return codes to POSIX signal names.
+
+    On Unix-like systems, ``subprocess.run`` encodes direct signal termination
+    as a negative return code (e.g. -9 for SIGKILL).  Shell-mediated aborts can
+    also surface as 128 + signal number (e.g. 134 for SIGABRT).
+    """
+    if returncode is None:
+        return None
+    signal_number = -returncode if returncode < 0 else returncode - 128 if returncode > 128 else None
+    if signal_number is None:
+        return None
+    try:
+        return signal.Signals(signal_number).name
+    except (ValueError, AttributeError):
+        return f"SIG_UNKNOWN({signal_number})"
+
+
+def _classify_failure(returncode: int | None, stderr: str) -> str | None:
+    """Classify a subprocess failure into a stable category string.
+
+    Categories:
+        process_aborted  – SIGABRT (assert / abort / internal error)
+        killed_oom       – SIGKILL, often OOM killer
+        segfault         – SIGSEGV
+        terminated       – SIGTERM or other graceful termination
+        execution_error  – non-zero exit without a known signal
+    """
+    if returncode is None:
+        return None
+    sig = _exit_code_to_signal(returncode)
+    if sig == "SIGABRT":
+        return "process_aborted"
+    if sig == "SIGKILL":
+        return "killed_oom"
+    if sig == "SIGSEGV":
+        return "segfault"
+    if sig is not None:
+        return "terminated"
+    # Positive non-zero exit codes
+    if returncode > 0:
+        stderr_lower = (stderr or "").lower()
+        if returncode == 124 and "timed out" in stderr_lower:
+            return "timeout"
+        if "oom" in stderr_lower or "out of memory" in stderr_lower:
+            return "killed_oom"
+        if "segfault" in stderr_lower or "segmentation fault" in stderr_lower:
+            return "segfault"
+        if "assertion" in stderr_lower or "aborted" in stderr_lower:
+            return "process_aborted"
+        return "execution_error"
+    return None
+
+
+def _process_output_to_text(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, bytes):
+        return value.decode("utf-8", errors="replace")
+    return str(value)
+
+
 @dataclass(frozen=True)
 class TrainerJobRunResult:
     attempted: bool
@@ -205,6 +268,11 @@ class TrainerJobRunResult:
     materialization: dict[str, Any] = field(default_factory=dict)
     audit: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
+    # Phase 3: failure diagnostics
+    failure_category: str | None = None
+    stdout_log: str | None = None
+    stderr_log: str | None = None
+    diagnostics: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         payload = asdict(self)
@@ -213,6 +281,7 @@ class TrainerJobRunResult:
         payload["materialization"] = dict(self.materialization)
         payload["audit"] = dict(self.audit)
         payload["metadata"] = dict(self.metadata)
+        payload["diagnostics"] = dict(self.diagnostics)
         return payload
 
 
@@ -1300,7 +1369,6 @@ def _run_toy_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
     model = get_peft_model(model, peft_config)
 
     recipe = dict(job_spec.get("recipe") or {})
-    training = dict(recipe.get("training") or {})
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     training_args = training_args_cls(
         output_dir=str(output_dir),
@@ -1610,7 +1678,6 @@ def _run_real_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]
         )
 
     recipe = dict(job_spec.get("recipe") or {})
-    training = dict(recipe.get("training") or {})
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     output_dir.mkdir(parents=True, exist_ok=True)
     train_loss: float | None = None
@@ -2000,19 +2067,37 @@ def run_materialized_training_job_bundle(
             metadata={"execution_state": "planned", "ready": materialized.ready},
         )
 
-    completed = subprocess.run(
-        command,
-        cwd=str(Path(materialized.script_path).parent),
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=timeout_seconds,
-    )
+    subprocess_env = os.environ.copy()
+    subprocess_env["PFE_TRAINING_SUBPROCESS"] = "1"
+    job_spec = dict(materialized.job_json.get("job_spec") or {})
+    if job_spec.get("real_local") or job_spec.get("real_training_enabled"):
+        subprocess_env["PFE_REAL_TRAINING"] = "1"
+    try:
+        completed = subprocess.run(
+            command,
+            cwd=str(Path(materialized.script_path).parent),
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout_seconds,
+            env=subprocess_env,
+        )
+    except subprocess.TimeoutExpired as exc:
+        timeout_stdout = _process_output_to_text(exc.stdout)
+        timeout_stderr = _process_output_to_text(exc.stderr)
+        completed = subprocess.CompletedProcess(
+            command,
+            returncode=124,
+            stdout=timeout_stdout,
+            stderr=timeout_stderr + f"\ntraining subprocess timed out after {timeout_seconds} seconds",
+        )
+    completed_stdout = _process_output_to_text(completed.stdout)
+    completed_stderr = _process_output_to_text(completed.stderr)
     runner_result: dict[str, Any] = {}
     result_json_path = Path(materialized.result_json_path) if materialized.result_json_path else None
-    if completed.stdout.strip():
+    if completed_stdout.strip():
         try:
-            payload = json.loads(completed.stdout.strip().splitlines()[-1])
+            payload = json.loads(completed_stdout.strip().splitlines()[-1])
             if isinstance(payload, dict):
                 runner_result = payload
         except Exception:
@@ -2024,6 +2109,42 @@ def run_materialized_training_job_bundle(
                 runner_result = payload
         except Exception:
             runner_result = {}
+
+    # Phase 3: failure diagnostics, log persistence, and signal classification
+    work_dir = Path(materialized.script_path).parent
+    stdout_log_path = work_dir / "training_stdout.log"
+    stderr_log_path = work_dir / "training_stderr.log"
+    diagnostics_path = work_dir / "diagnostics.json"
+
+    try:
+        stdout_log_path.write_text(completed_stdout, encoding="utf-8")
+    except Exception:
+        pass
+    try:
+        stderr_log_path.write_text(completed_stderr, encoding="utf-8")
+    except Exception:
+        pass
+
+    failure_category = _classify_failure(completed.returncode, completed_stderr)
+    diagnostics: dict[str, Any] = {
+        "failure_category": failure_category,
+        "signal_name": _exit_code_to_signal(completed.returncode),
+        "returncode": completed.returncode,
+        "stdout_length": len(completed_stdout),
+        "stderr_length": len(completed_stderr),
+        "stdout_log": str(stdout_log_path),
+        "stderr_log": str(stderr_log_path),
+        "command": command,
+        "cwd": str(work_dir),
+    }
+    try:
+        diagnostics_path.write_text(
+            json.dumps(diagnostics, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    except Exception:
+        pass
+
     success = completed.returncode == 0
     return TrainerJobRunResult(
         attempted=True,
@@ -2032,8 +2153,8 @@ def run_materialized_training_job_bundle(
         command=command,
         returncode=completed.returncode,
         exit_code=completed.returncode,
-        stdout=completed.stdout,
-        stderr=completed.stderr,
+        stdout=completed_stdout,
+        stderr=completed_stderr,
         runner_result=runner_result,
         materialization=materialized.to_dict(),
         audit={
@@ -2041,13 +2162,22 @@ def run_materialized_training_job_bundle(
             "dry_run": False,
             "runner_status": runner_result.get("status"),
             "result_json_path": str(result_json_path) if result_json_path is not None else None,
+            "failure_category": failure_category,
+            "stdout_log": str(stdout_log_path),
+            "stderr_log": str(stderr_log_path),
+            "diagnostics_path": str(diagnostics_path),
         },
         metadata={
             "execution_state": "executed" if success else "failed",
             "ready": materialized.ready,
             "executor_mode": materialized.executor_mode,
             "result_json_path": str(result_json_path) if result_json_path is not None else None,
+            "failure_category": failure_category,
         },
+        failure_category=failure_category,
+        stdout_log=str(stdout_log_path) if stdout_log_path.exists() else None,
+        stderr_log=str(stderr_log_path) if stderr_log_path.exists() else None,
+        diagnostics=diagnostics,
     )
 
 
@@ -2170,9 +2300,9 @@ def _run_real_dpo_training(
         Training results dictionary
     """
     import torch
+    from peft import LoraConfig, PeftModel, TaskType, get_peft_model
     from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
     from trl import DPOTrainer
-    from peft import LoraConfig, get_peft_model, PeftModel, TaskType
 
     if not training_examples:
         raise TrainingError("DPO training requires at least one training example")
@@ -2306,7 +2436,7 @@ def _run_real_dpo_training(
     import inspect
 
     dpo_sig = inspect.signature(DPOTrainer.__init__)
-    dpo_kwargs: Dict[str, Any] = {
+    dpo_kwargs: dict[str, Any] = {
         "model": model,
         "ref_model": ref_model,
         "train_dataset": train_dataset,

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
 import pytest
-
 
 ROOT = Path(__file__).resolve().parents[1]
 for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
@@ -18,6 +18,12 @@ def pfe_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     home = tmp_path / ".pfe"
     monkeypatch.setenv("PFE_HOME", str(home))
     return home
+
+
+@pytest.fixture(scope="session", autouse=True)
+def disable_real_training_by_default() -> None:
+    """Ensure tests never accidentally trigger real training."""
+    os.environ.setdefault("PFE_REAL_TRAINING", "0")
 
 
 @pytest.fixture(scope="session")

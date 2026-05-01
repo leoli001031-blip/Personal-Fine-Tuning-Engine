@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import importlib
 import os
-import tempfile
+import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -189,7 +190,8 @@ class TrainerExecutorRecipeTests(unittest.TestCase):
         self.assertIn("run_training_job_file", bundle.script_text)
         self.assertEqual(bundle.job_json["execution_executor"], "peft")
         self.assertEqual(bundle.audit["execution_executor"], "peft")
-        executed = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
+        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}):
+            executed = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
         self.assertTrue(executed.attempted)
         self.assertTrue(executed.success)
         self.assertEqual(executed.status, "executed")
@@ -231,6 +233,104 @@ class TrainerExecutorRecipeTests(unittest.TestCase):
         self.assertFalse(executed.attempted)
         self.assertTrue(executed.success)
         self.assertEqual(executed.status, "planned")
+
+    def test_materialized_real_local_job_enables_real_training_in_child_env(self) -> None:
+        plan = {
+            "requested_backend": "peft",
+            "execution_backend": "peft",
+            "execution_executor": "peft",
+            "executor_mode": "real_import",
+            "ready": True,
+            "fallback_from": None,
+            "import_probe": {"ready": True},
+            "backend_recipe": {"backend": "peft"},
+            "executor_recipe": {"backend": "peft"},
+            "job_spec": {
+                "execution_executor": "peft",
+                "real_local": True,
+                "real_training_enabled": True,
+            },
+            "executor_kind": "peft_executor",
+            "callable_name": "execute_peft_training",
+            "requires_export_step": False,
+            "export_steps": [],
+            "export_format": None,
+            "export_backend": None,
+            "reasons": [],
+        }
+        bundle = trainer_executor_module.materialize_training_job_bundle(
+            execution_plan=plan,
+            output_dir=self.pfe_home / "adapters" / "user_default" / "20260323-real",
+        )
+        observed_env: dict[str, str] = {}
+
+        def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            observed_env.update(dict(kwargs.get("env") or {}))  # type: ignore[arg-type]
+            return subprocess.CompletedProcess(
+                command,
+                returncode=0,
+                stdout='{"backend":"peft","status":"ready"}\n',
+                stderr="",
+            )
+
+        with patch.object(trainer_executor_module.subprocess, "run", side_effect=fake_run):
+            result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
+
+        self.assertTrue(result.success)
+        self.assertEqual(observed_env.get("PFE_TRAINING_SUBPROCESS"), "1")
+        self.assertEqual(observed_env.get("PFE_REAL_TRAINING"), "1")
+
+    def test_materialized_training_timeout_persists_text_diagnostics(self) -> None:
+        plan = {
+            "requested_backend": "peft",
+            "execution_backend": "peft",
+            "execution_executor": "peft",
+            "executor_mode": "real_import",
+            "ready": True,
+            "fallback_from": None,
+            "import_probe": {"ready": True},
+            "backend_recipe": {"backend": "peft"},
+            "executor_recipe": {"backend": "peft"},
+            "job_spec": {"execution_executor": "peft"},
+            "executor_kind": "peft_executor",
+            "callable_name": "execute_peft_training",
+            "requires_export_step": False,
+            "export_steps": [],
+            "export_format": None,
+            "export_backend": None,
+            "reasons": [],
+        }
+        bundle = trainer_executor_module.materialize_training_job_bundle(
+            execution_plan=plan,
+            output_dir=self.pfe_home / "adapters" / "user_default" / "20260323-timeout",
+        )
+
+        def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            raise subprocess.TimeoutExpired(
+                command,
+                timeout=3,
+                output=b"partial stdout",
+                stderr=b"partial stderr",
+            )
+
+        with patch.object(trainer_executor_module.subprocess, "run", side_effect=fake_run):
+            result = trainer_executor_module.run_materialized_training_job_bundle(
+                bundle,
+                force_dry_run=False,
+                timeout_seconds=3,
+            )
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.returncode, 124)
+        self.assertEqual(result.failure_category, "timeout")
+        self.assertIn("partial stdout", result.stdout)
+        self.assertIn("partial stderr", result.stderr)
+        self.assertIn("timed out after 3 seconds", result.stderr)
+        self.assertTrue(Path(result.stdout_log or "").read_text(encoding="utf-8").startswith("partial stdout"))
+        self.assertIn(
+            "timed out after 3 seconds",
+            Path(result.stderr_log or "").read_text(encoding="utf-8"),
+        )
 
     def test_training_job_spec_materializes_runner_and_export_audit(self) -> None:
         fake_modules = {
