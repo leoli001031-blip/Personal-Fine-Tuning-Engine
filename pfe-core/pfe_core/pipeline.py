@@ -22,7 +22,7 @@ from .curator.teacher_client import TeacherClientConfig, TeacherInferenceClient
 from .errors import EvalError
 from .inference.engine import InferenceConfig, InferenceEngine, resolve_base_model_reference
 from .models import parse_utc_datetime
-from .curator.datasets import SampleFilterConfig, build_signal_quality, signal_quality_filter_reasons, summarize_signal_quality_filters
+from .curator.datasets import SampleFilterConfig, build_signal_quality, signal_quality_filter_reasons
 from .pipeline_candidate import (
     candidate_history_entry,
     candidate_history_payload,
@@ -69,9 +69,6 @@ from .trainer.training_auditor import TrainingAuditor, TrainingAuditReport
 from .observability.trace import (
     TraceStore,
     record_signal_node,
-    append_signal_to_version,
-    trace_signal,
-    trace_version,
     SignalTrace,
 )
 
@@ -7001,7 +6998,7 @@ class PipelineService:
         workspace: str | None = None,
     ) -> dict[str, Any]:
         """Get reliability alerts for monitoring."""
-        from .reliability import AlertManager, AlertLevel
+        from .reliability import AlertManager
         from .models import AlertLevel as AlertLevelEnum
 
         workspace_name = workspace or "user_default"
