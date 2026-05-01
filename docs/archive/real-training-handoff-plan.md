@@ -68,6 +68,8 @@ Owner：DPO trainer
 
 ### RT-3：Apple Silicon MLX 最小真实训练
 
+状态：隔离与诊断已验证；当前机器 16GB 内存无法直接训练本地 `models/Qwen3-4B`，preflight 会以 `insufficient_memory` 阻断。后续需要换更小/量化的 MLX 训练模型，或在更大内存机器上跑成功闭环。
+
 Owner：MLX backend
 
 文件范围：
@@ -78,9 +80,9 @@ Owner：MLX backend
 
 验收：
 
-- 使用本地小样本和明确 base model 路径跑一次最小 MLX 训练。
+- 使用本地小样本和明确 base model 路径跑一次最小 MLX 训练；本地相对模型路径必须在进入子进程前解析为绝对路径。
 - 失败时 `diagnostics.json` 至少包含 `returncode`、`signal_name`、`failure_category`、`stdout_log`、`stderr_log`。
-- 如果出现 `SIGABRT`，父进程仍然正常返回 failed 状态。
+- 如果出现 `SIGABRT`，父进程仍然正常返回 failed 状态；Metal insufficient memory 应归类为 `killed_oom`，并在后续 preflight 中尽量提前 blocked。
 
 ### RT-4：CLI 和文档收口
 

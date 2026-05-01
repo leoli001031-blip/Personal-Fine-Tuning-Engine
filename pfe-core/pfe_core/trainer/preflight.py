@@ -23,6 +23,63 @@ class TrainingPreflight:
         self.base_model = job_spec.get("base_model") or training_recipe.get("base_model") or ""
         self.workspace = job_spec.get("workspace") or "user_default"
 
+    @staticmethod
+    def _available_memory_gb() -> float | None:
+        try:
+            import psutil
+
+            return psutil.virtual_memory().available / (1024**3)
+        except Exception:
+            return None
+
+    @staticmethod
+    def _local_model_weight_size_gb(base_model: str) -> float | None:
+        if not base_model:
+            return None
+        model_path = Path(base_model).expanduser()
+        if not model_path.exists():
+            return None
+        if model_path.is_file():
+            return model_path.stat().st_size / (1024**3)
+
+        direct_weights = [
+            path
+            for pattern in ("*.safetensors", "*.bin")
+            for path in model_path.glob(pattern)
+            if path.is_file()
+        ]
+        weight_files = direct_weights or [
+            path
+            for pattern in ("**/*.safetensors", "**/*.bin")
+            for path in model_path.glob(pattern)
+            if path.is_file()
+        ]
+        if not weight_files:
+            return None
+        return sum(path.stat().st_size for path in weight_files) / (1024**3)
+
+    def _mlx_memory_check(self) -> dict[str, Any]:
+        available_gb = self._available_memory_gb()
+        model_size_gb = self._local_model_weight_size_gb(str(self.base_model))
+        if available_gb is None or model_size_gb is None:
+            return {
+                "ok": True,
+                "status": "skipped",
+                "available_gb": None if available_gb is None else round(available_gb, 2),
+                "model_size_gb": None if model_size_gb is None else round(model_size_gb, 2),
+                "reason": "memory_or_local_model_size_unavailable",
+            }
+
+        required_gb = max(8.0, model_size_gb * 1.5)
+        ok = available_gb >= required_gb
+        return {
+            "ok": ok,
+            "status": "ok" if ok else "blocked",
+            "available_gb": round(available_gb, 2),
+            "model_size_gb": round(model_size_gb, 2),
+            "estimated_required_gb": round(required_gb, 2),
+        }
+
     def check(self) -> dict[str, Any]:
         checks: dict[str, Any] = {}
         reasons: list[str] = []
@@ -105,6 +162,12 @@ class TrainingPreflight:
         checks["disk_space"] = {"ok": disk_ok, "free_gb": round(free_gb, 2)}
         if not disk_ok:
             reasons.append("insufficient_disk_space")
+
+        if self.backend == "mlx":
+            memory_check = self._mlx_memory_check()
+            checks["memory"] = memory_check
+            if not memory_check.get("ok", True):
+                reasons.append("insufficient_memory")
 
         # 8. Training samples > 0
         samples = list(self.job_spec.get("training_examples") or [])

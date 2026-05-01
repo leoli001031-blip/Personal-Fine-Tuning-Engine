@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import os
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
 from pfe_core.trainer import real_execution, runtime_job
+from pfe_core.trainer.preflight import TrainingPreflight
 from pfe_core.trainer.runtime_job import dispatch_training_job
 
 
@@ -233,3 +235,97 @@ class TestExecutionExecutorKey:
     def test_execution_executor_mlx_blocked(self) -> None:
         result = dispatch_training_job({"execution_executor": "mlx"}, dry_run=False)
         assert result.get("status") == "blocked"
+
+
+class TestSubprocessMaterialization:
+    def test_relative_local_paths_are_resolved_before_child_cwd_changes(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Any,
+    ) -> None:
+        monkeypatch.chdir(tmp_path)
+        local_model = tmp_path / "models" / "tiny"
+        local_model.mkdir(parents=True)
+        captured: dict[str, Any] = {}
+
+        class FakeMaterialized:
+            ready = True
+
+            def to_dict(self) -> dict[str, Any]:
+                return {"ready": True}
+
+        def fake_materialize_training_job_bundle(*, execution_plan: dict[str, Any], output_dir: Any) -> FakeMaterialized:
+            captured["execution_plan"] = execution_plan
+            captured["output_dir"] = output_dir
+            return FakeMaterialized()
+
+        def fake_run_materialized_training_job_bundle(*args: Any, **kwargs: Any) -> Any:
+            return SimpleNamespace(
+                success=True,
+                failure_category=None,
+                returncode=0,
+                stdout_log=None,
+                stderr_log=None,
+                diagnostics={},
+                runner_result={"status": "completed"},
+                materialization={},
+            )
+
+        monkeypatch.setattr(
+            real_execution,
+            "materialize_training_job_bundle",
+            fake_materialize_training_job_bundle,
+        )
+        monkeypatch.setattr(
+            real_execution,
+            "run_materialized_training_job_bundle",
+            fake_run_materialized_training_job_bundle,
+        )
+
+        result = real_execution.run_backend_in_subprocess(
+            {
+                "backend": "mlx",
+                "base_model": "models/tiny",
+                "output_dir": "jobs/rt3",
+                "recipe": {"training": {"base_model": "models/tiny", "output_dir": "outputs/mlx"}},
+                "training_examples": [{"instruction": "ping", "output": "pong"}],
+            },
+            backend="mlx",
+            dry_run=False,
+        )
+
+        child_spec = captured["execution_plan"]["job_spec"]
+        assert result["status"] == "completed"
+        assert child_spec["base_model"] == str(local_model.resolve())
+        assert child_spec["recipe"]["training"]["base_model"] == str(local_model.resolve())
+        assert child_spec["output_dir"] == str((tmp_path / "jobs" / "rt3").resolve())
+        assert child_spec["recipe"]["training"]["output_dir"] == str((tmp_path / "outputs" / "mlx").resolve())
+        assert child_spec["_pfe_training_subprocess"] is True
+
+
+class TestMLXPreflight:
+    def test_mlx_local_model_blocks_when_available_memory_is_too_low(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Any,
+    ) -> None:
+        monkeypatch.setenv("PFE_REAL_TRAINING", "1")
+        model_path = tmp_path / "local-model"
+        model_path.mkdir()
+        (model_path / "model.safetensors").write_bytes(b"fake weights")
+        monkeypatch.setattr(TrainingPreflight, "_available_memory_gb", staticmethod(lambda: 1.0))
+        monkeypatch.setattr(TrainingPreflight, "_local_model_weight_size_gb", staticmethod(lambda _: 7.5))
+
+        result = TrainingPreflight(
+            {
+                "backend": "mlx",
+                "base_model": str(model_path),
+                "output_dir": str(tmp_path / "out"),
+                "training_examples": [{"instruction": "ping", "output": "pong"}],
+            }
+        ).check()
+
+        assert result["status"] == "blocked"
+        assert "insufficient_memory" in result["reasons"]
+        assert result["checks"]["memory"]["status"] == "blocked"
+        assert result["checks"]["memory"]["estimated_required_gb"] == 11.25

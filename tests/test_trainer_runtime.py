@@ -165,7 +165,13 @@ class TrainerRuntimeTests(unittest.TestCase):
         def fake_import_module(name: str):
             return fake_modules[name]
 
-        with patch.dict(os.environ, {"PFE_LLAMA_CPP_EXPORT_TOOL": "/tmp/does-not-exist-llama-export-tool"}), patch.object(
+        with patch.dict(
+            os.environ,
+            {
+                "PFE_LLAMA_CPP_EXPORT_TOOL": "/tmp/does-not-exist-llama-export-tool",
+                "PFE_REAL_TRAINING": "1",
+            },
+        ), patch.object(
             trainer_service_module, "detect_trainer_runtime"
         ) as detect_runtime, patch.object(
             trainer_service_module.importlib.util,

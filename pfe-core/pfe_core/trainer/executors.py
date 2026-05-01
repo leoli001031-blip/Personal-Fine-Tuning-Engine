@@ -215,13 +215,21 @@ def _classify_failure(returncode: int | None, stderr: str) -> str | None:
 
     Categories:
         process_aborted  – SIGABRT (assert / abort / internal error)
-        killed_oom       – SIGKILL, often OOM killer
+        killed_oom       – OS/native OOM, including Metal insufficient memory
         segfault         – SIGSEGV
         terminated       – SIGTERM or other graceful termination
         execution_error  – non-zero exit without a known signal
     """
     if returncode is None:
         return None
+    stderr_lower = (stderr or "").lower()
+    if (
+        "oom" in stderr_lower
+        or "out of memory" in stderr_lower
+        or "insufficient memory" in stderr_lower
+        or "kiogpucommandbuffercallbackerroroutofmemory" in stderr_lower
+    ):
+        return "killed_oom"
     sig = _exit_code_to_signal(returncode)
     if sig == "SIGABRT":
         return "process_aborted"
@@ -233,11 +241,8 @@ def _classify_failure(returncode: int | None, stderr: str) -> str | None:
         return "terminated"
     # Positive non-zero exit codes
     if returncode > 0:
-        stderr_lower = (stderr or "").lower()
         if returncode == 124 and "timed out" in stderr_lower:
             return "timeout"
-        if "oom" in stderr_lower or "out of memory" in stderr_lower:
-            return "killed_oom"
         if "segfault" in stderr_lower or "segmentation fault" in stderr_lower:
             return "segfault"
         if "assertion" in stderr_lower or "aborted" in stderr_lower:
@@ -2069,6 +2074,8 @@ def run_materialized_training_job_bundle(
 
     subprocess_env = os.environ.copy()
     subprocess_env["PFE_TRAINING_SUBPROCESS"] = "1"
+    subprocess_env.setdefault("PYTHONFAULTHANDLER", "1")
+    subprocess_env.setdefault("PYTHONUNBUFFERED", "1")
     job_spec = dict(materialized.job_json.get("job_spec") or {})
     if job_spec.get("real_local") or job_spec.get("real_training_enabled"):
         subprocess_env["PFE_REAL_TRAINING"] = "1"
@@ -2126,10 +2133,15 @@ def run_materialized_training_job_bundle(
         pass
 
     failure_category = _classify_failure(completed.returncode, completed_stderr)
+    runner_status = str(runner_result.get("status") or "").lower()
+    runner_failed = runner_status in {"blocked", "error", "failed"}
+    if failure_category is None and runner_failed:
+        failure_category = "runner_failed"
     diagnostics: dict[str, Any] = {
         "failure_category": failure_category,
         "signal_name": _exit_code_to_signal(completed.returncode),
         "returncode": completed.returncode,
+        "runner_status": runner_status or None,
         "stdout_length": len(completed_stdout),
         "stderr_length": len(completed_stderr),
         "stdout_log": str(stdout_log_path),
@@ -2145,7 +2157,7 @@ def run_materialized_training_job_bundle(
     except Exception:
         pass
 
-    success = completed.returncode == 0
+    success = completed.returncode == 0 and not runner_failed
     return TrainerJobRunResult(
         attempted=True,
         success=success,

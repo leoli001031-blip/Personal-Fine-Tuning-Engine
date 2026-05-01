@@ -96,6 +96,43 @@ def _materialization_output_dir(job_spec: Mapping[str, Any]) -> Path:
     return Path(str(raw_output_dir)).expanduser().resolve()
 
 
+def _resolve_existing_local_path(value: Any) -> Any:
+    if not isinstance(value, str) or not value.strip():
+        return value
+    path = Path(value).expanduser()
+    if path.exists():
+        return str(path.resolve())
+    return value
+
+
+def _resolve_output_path(value: Any) -> Any:
+    if not isinstance(value, str) or not value.strip():
+        return value
+    return str(Path(value).expanduser().resolve())
+
+
+def _canonicalize_child_process_paths(job_spec: Mapping[str, Any]) -> dict[str, Any]:
+    """Resolve local paths before the child process changes cwd to the job dir."""
+    prepared = dict(job_spec)
+    for key in ("base_model", "base_adapter", "base_adapter_path"):
+        if key in prepared:
+            prepared[key] = _resolve_existing_local_path(prepared[key])
+    if "output_dir" in prepared:
+        prepared["output_dir"] = _resolve_output_path(prepared["output_dir"])
+
+    recipe = dict(prepared.get("recipe") or {})
+    training = dict(recipe.get("training") or {})
+    if "base_model" in training:
+        training["base_model"] = _resolve_existing_local_path(training["base_model"])
+    if "output_dir" in training:
+        training["output_dir"] = _resolve_output_path(training["output_dir"])
+    if training:
+        recipe["training"] = training
+    if recipe:
+        prepared["recipe"] = recipe
+    return prepared
+
+
 def run_backend_in_subprocess(
     job_spec: Mapping[str, Any],
     *,
@@ -103,11 +140,12 @@ def run_backend_in_subprocess(
     dry_run: bool,
 ) -> dict[str, Any]:
     """Materialize and run a real trainer backend in an isolated Python process."""
-    output_dir = _materialization_output_dir(job_spec)
+    child_job_spec = _canonicalize_child_process_paths(job_spec)
+    output_dir = _materialization_output_dir(child_job_spec)
     output_dir.mkdir(parents=True, exist_ok=True)
 
     execution_plan = {
-        "job_spec": mark_training_subprocess(job_spec),
+        "job_spec": mark_training_subprocess(child_job_spec),
         "backend": backend,
         "execution_backend": backend,
         "execution_executor": backend,
