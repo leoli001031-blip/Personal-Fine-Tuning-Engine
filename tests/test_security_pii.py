@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from pfe_core.security.pii_guard import PIIGuard, PIIScanReport, PIISampleVerdict
 

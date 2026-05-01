@@ -1,6 +1,6 @@
 """Unit tests for TrainingAuditor."""
 
-from pfe_core.trainer.training_auditor import TrainingAuditor, TrainingAuditReport
+from pfe_core.trainer.training_auditor import TrainingAuditor
 
 
 def test_training_auditor_empty():

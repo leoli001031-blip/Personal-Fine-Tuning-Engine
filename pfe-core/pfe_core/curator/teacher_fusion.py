@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Optional, Sequence
 
-from .datasets import _get_attr, _normalize_text, _similarity
+from .datasets import _get_attr, _normalize_text
 
 
 @dataclass

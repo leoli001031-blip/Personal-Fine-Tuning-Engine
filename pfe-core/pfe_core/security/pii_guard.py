@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..data_policy import HIGH_RISK_PII_TYPES, sanitize_for_training
+from ..data_policy import sanitize_for_training
 
 
 # Low-risk PII types that can be tagged but do not require strict isolation

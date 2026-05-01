@@ -2,7 +2,6 @@
 
 from pfe_core.data_policy import (
     HIGH_RISK_PII_TYPES,
-    PIIAuditReport,
     audit_pii_exposure,
     sanitize_for_training,
 )

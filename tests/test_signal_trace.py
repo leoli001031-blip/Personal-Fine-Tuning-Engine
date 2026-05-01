@@ -3,7 +3,6 @@
 from pfe_core.observability.trace import (
     SignalTrace,
     VersionTrace,
-    TraceNode,
     TraceStore,
     trace_signal,
     trace_version,

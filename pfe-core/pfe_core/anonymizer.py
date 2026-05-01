@@ -11,7 +11,7 @@ import hashlib
 import re
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Optional
+from typing import Any
 
 from .pii_detector import PIIDetectionResult, PIIFinding, PIIType
 
@@ -252,7 +252,6 @@ def anonymize_text(
     Returns:
         Tuple of (anonymized_text, detection_result)
     """
-    from .pii_detector import PIIDetector
 
     detection_result = detector.detect(text)
     anonymizer = create_anonymizer(strategy)

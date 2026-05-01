@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-from .pii_detector import PIIDetectionResult, PIIType
+from .pii_detector import PIIDetectionResult
 from .storage import resolve_home
 
 

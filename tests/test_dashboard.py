@@ -1,6 +1,5 @@
 """Tests for Phase 2.5 Observability Dashboard."""
 
-import pytest
 
 
 class TestDashboardMetrics:

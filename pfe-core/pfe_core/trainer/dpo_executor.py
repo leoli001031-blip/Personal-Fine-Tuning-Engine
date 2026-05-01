@@ -6,8 +6,8 @@ Supports QLoRA fine-tuning and incremental training from existing adapters.
 
 from __future__ import annotations
 
-import os
 from dataclasses import dataclass, field
+from importlib.util import find_spec
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 
@@ -60,15 +60,13 @@ class DPOTrainerExecutor:
 
     def _validate_dependencies(self) -> None:
         """Check that required dependencies are available."""
-        try:
-            import torch
-            import transformers
-            from trl import DPOTrainer
-            from peft import LoraConfig, get_peft_model, PeftModel
-        except ImportError as e:
+        required = ("torch", "transformers", "trl", "peft")
+        missing = [module for module in required if find_spec(module) is None]
+        if missing:
             raise TrainingError(
-                f"DPO training requires torch, transformers, trl, and peft: {e}"
-            ) from e
+                "DPO training requires torch, transformers, trl, and peft; "
+                f"missing: {', '.join(missing)}"
+            )
 
     def train(
         self,
@@ -175,7 +173,6 @@ class DPOTrainerExecutor:
         Returns:
             Tuple of (model, tokenizer)
         """
-        import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
         from peft import PeftModel
 
@@ -438,11 +435,7 @@ def check_dpo_dependencies() -> Dict[str, bool]:
     }
 
     for module in result:
-        try:
-            __import__(module)
-            result[module] = True
-        except ImportError:
-            pass
+        result[module] = find_spec(module) is not None
 
     result["all_available"] = all(result.values())
     return result

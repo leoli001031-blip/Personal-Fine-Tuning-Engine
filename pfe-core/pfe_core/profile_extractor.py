@@ -6,15 +6,13 @@ from implicit signals and conversation history to build comprehensive user profi
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from datetime import datetime, timezone
+from typing import Any
 
-from .collector.chat_collector import ChatCollector
 from .models import ImplicitSignal, normalize_utc_datetime, parse_utc_datetime
 from .storage import list_signals
-from .user_profile import PreferenceScore, UserProfile, get_user_profile_store
+from .user_profile import UserProfile, get_user_profile_store
 
 
 def _utc_now() -> datetime:

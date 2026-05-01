@@ -1,7 +1,6 @@
 """Entry point for running pfe_server as a module."""
 
 import argparse
-import sys
 from typing import Optional
 
 from pfe_server.app import serve

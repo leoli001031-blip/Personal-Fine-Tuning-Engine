@@ -8,7 +8,6 @@ from pfe_core.scenarios import ScenarioConfig, BUILTIN_SCENARIOS
 from pfe_core.router import (
     IntentClassifier,
     ScenarioRouter,
-    create_router,
     IntentClassification,
     RoutingResult,
 )
@@ -18,8 +17,8 @@ from pfe_core.router.semantic_classifier import (
     _fallback_similarity,
     _aggregate_scores,
 )
-from pfe_core.user_profile import UserProfile, PreferenceScore
-from pfe_core.config import PFEConfig, RouterConfig
+from pfe_core.user_profile import UserProfile
+from pfe_core.config import PFEConfig
 
 
 class TestSemanticClassifier:

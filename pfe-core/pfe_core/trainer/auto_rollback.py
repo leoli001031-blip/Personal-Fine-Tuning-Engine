@@ -6,7 +6,7 @@ enabling automatic or operator-assisted rollback when forgetting is detected.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 from ..adapter_store.lifecycle import rollback_to_version

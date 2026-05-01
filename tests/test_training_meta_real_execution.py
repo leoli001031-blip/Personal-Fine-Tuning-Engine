@@ -17,7 +17,6 @@ for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
         os.sys.path.insert(0, package_path)
 
 from pfe_core.pipeline import PipelineService
-from pfe_core.trainer.service import TrainerService
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")

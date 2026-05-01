@@ -4,7 +4,7 @@ Tests the ForgetDetector class and its integration with the training service.
 """
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from pfe_core.trainer.forget_detector import (
     ForgetDetector,

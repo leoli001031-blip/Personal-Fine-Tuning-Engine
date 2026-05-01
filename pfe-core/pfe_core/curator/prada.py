@@ -7,7 +7,6 @@ differ significantly, to improve sample efficiency.
 from __future__ import annotations
 
 from difflib import SequenceMatcher
-from typing import Optional
 
 
 def compute_text_similarity(a: str, b: str) -> float:

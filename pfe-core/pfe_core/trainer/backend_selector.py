@@ -22,14 +22,13 @@ Example:
 
 from __future__ import annotations
 
+import importlib.util
 import platform
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
+from typing import Any, Dict, List, Mapping, Optional
 
 from ..errors import TrainingError
 from .backends import (
-    BACKEND_CAPABILITIES,
-    BackendCapability,
     normalize_backend_name,
     normalize_train_type,
 )
@@ -125,10 +124,10 @@ class HardwareProfile:
             except (ImportError, AttributeError):
                 # Try MLX as alternative indicator
                 try:
-                    import mlx.core as mx
-
-                    profile.mps_available = True
-                except ImportError:
+                    profile.mps_available = (
+                        importlib.util.find_spec("mlx.core") is not None
+                    )
+                except Exception:
                     pass
 
         # CPU count
@@ -206,8 +205,6 @@ class DependencyProfile:
 
         for package in packages:
             try:
-                import importlib.util
-
                 available = importlib.util.find_spec(package) is not None
                 setattr(profile, package, available)
             except Exception:

@@ -21,7 +21,7 @@ from pfe_core.eval.personalized_evaluator import (
     _style_preference_hit,
     _style_preference_hints,
 )
-from pfe_core.user_profile import PreferenceScore, UserProfile
+from pfe_core.user_profile import UserProfile
 
 
 # ---------------------------------------------------------------------------

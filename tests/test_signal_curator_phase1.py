@@ -22,7 +22,7 @@ from pfe_core.curator.datasets import (
     normalize_reply_style,
 )
 from pfe_core.curator.distillation import TeacherDistiller, curate_signals_to_preference_samples, signal_to_preference_sample
-from pfe_core.curator.teacher_client import TeacherClientConfig, TeacherInferenceClient
+from pfe_core.curator.teacher_client import TeacherClientConfig
 from pfe_core.config import PrivacyConfig
 from pfe_core.models import RawSignal as CoreRawSignal
 from pfe_core.models import SignalQuality, TrainingSample as CoreTrainingSample

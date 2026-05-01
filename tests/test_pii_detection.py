@@ -1,6 +1,6 @@
 """Tests for PII detection and anonymization."""
 import pytest
-from pfe_core.pii_detector import PIIDetector, PIIType, PIISeverity
+from pfe_core.pii_detector import PIIDetector, PIIType
 from pfe_core.anonymizer import Anonymizer, AnonymizationConfig, AnonymizationStrategy
 
 

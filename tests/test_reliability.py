@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import json
 import time
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
+from datetime import timedelta
 
 import pytest
 
 from pfe_core.models import (
-    AlertEvent,
     AlertLevel,
     AlertThreshold,
     DeadLetterEntry,

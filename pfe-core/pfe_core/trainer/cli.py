@@ -25,27 +25,20 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Optional, Sequence
 
 from .backend_selector import (
     AutoBackendSelector,
     HardwareProfile,
     DependencyProfile,
-    select_optimal_backend,
-    get_backend_selection_summary,
 )
 from .mlx_backend import (
     MLXBackendCapabilities,
-    MLXTrainerBackend,
-    MLXTrainingConfig,
 )
 from .unsloth_backend import (
     UnslothBackendCapabilities,
-    UnslothTrainerBackend,
-    UnslothTrainingConfig,
 )
-from .runtime import detect_trainer_runtime, trainer_runtime_summary
+from .runtime import trainer_runtime_summary
 
 
 def cmd_check(args: argparse.Namespace) -> int:

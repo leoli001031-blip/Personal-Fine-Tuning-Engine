@@ -2,17 +2,12 @@
 
 from __future__ import annotations
 
-import io
-import json
 import os
 import re
-from contextlib import redirect_stdout
 import tempfile
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
 
-from typer.testing import CliRunner
 
 ROOT = Path(__file__).resolve().parents[1]
 for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
@@ -20,21 +15,14 @@ for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
     if package_path not in os.sys.path:
         os.sys.path.insert(0, package_path)
 
-from pfe_cli import adapter_commands, main as cli_main
 from pfe_cli.main import (
     _format_eval_result,
     _format_eval_result_legacy,
     _format_serve,
-    _format_serve_preview,
     _format_status,
-    _format_train_preview,
     _format_train_result,
 )
-from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.db.sqlite import resolve_home
-from pfe_core.pipeline import PipelineService
-from pfe_core.trainer.service import TrainerService
-from pfe_server.app import build_serve_plan
 
 
 def strip_ansi(text: str) -> str:
