@@ -132,7 +132,7 @@
 
 ## R5：真实训练最小闭环
 
-状态：待做。
+状态：已完成 Apple Silicon / MLX 最小闭环；DPO 隔离闭环已由现有真实 DPO 测试覆盖。后续剩 Linux/CUDA 的 PEFT/Unsloth 实机验证。
 
 目标：
 
@@ -144,3 +144,15 @@
 
 - 成功时 adapter 产物可被 manifest 识别。
 - 失败时 diagnostics 包含 `returncode`、`signal_name`、`failure_category`、stdout/stderr log。
+
+已验证：
+
+- Apple Silicon runtime：`Darwin arm64`，`runtime_device=mps`，`mlx=0.31.1`，`mlx_lm=0.31.2`。
+- 原始 MLX 隔离子进程：使用本地 `models/Qwen2.5-0.5B-Instruct-4bit`、1 条样本、1 step，产出 `mlx_output/adapters/adapters.safetensors`、`training_job_result.json`、`diagnostics.json`、stdout/stderr log。
+- CLI 临时 workspace：`pfe generate --num 8` 后执行 `pfe train --backend mlx --real-local --base-model /Users/zcc/Desktop/PFE/models/Qwen2.5-0.5B-Instruct-4bit --epochs 1 --train-type sft`，产出 `adapter_model.safetensors`、`adapter_manifest.json`、`training_meta.json`、`diagnostics.json`。
+- 完整测试已覆盖 DPO 真实最小路径：`tests/test_trainer_dpo_real.py`。
+
+后续：
+
+- 在 Linux/CUDA 环境补跑 PEFT/Unsloth 最小训练。
+- 为 CLI 真实训练摘要继续补充更清晰的 execution/export 状态文案。

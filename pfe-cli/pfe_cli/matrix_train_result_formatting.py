@@ -31,10 +31,29 @@ def format_train_result_matrix(result: Any, *, workspace: str | None = None) -> 
     content.append(format_key_value("samples", num_samples))
 
     backend_plan = _coerce_mapping(mapping.get("backend_plan"))
-    if backend_plan:
-        backend = backend_plan.get("selected_backend", "unknown")
-        device = backend_plan.get("runtime_device", "unknown")
+    backend_dispatch = _coerce_mapping(mapping.get("backend_dispatch"))
+    if backend_plan or backend_dispatch or mapping.get("execution_backend"):
+        backend = (
+            mapping.get("execution_backend")
+            or (backend_dispatch or {}).get("execution_backend")
+            or (backend_plan or {}).get("recommended_backend")
+            or (backend_plan or {}).get("selected_backend")
+            or "unknown"
+        )
+        device = (backend_plan or {}).get("runtime_device") or mapping.get("runtime_device") or "unknown"
         content.append(format_key_value("backend", f"{backend} | device={device}"))
+
+    job_execution = _coerce_mapping(mapping.get("job_execution"))
+    job_audit = _coerce_mapping(job_execution.get("audit")) if job_execution else None
+    if job_execution:
+        runner_status = (
+            job_execution.get("runner_status")
+            or job_execution.get("status")
+            or (job_audit or {}).get("runner_status")
+            or (job_audit or {}).get("status")
+        )
+        if runner_status:
+            content.append(format_key_value("execution", runner_status))
 
     export_runtime = _coerce_mapping(mapping.get("export_runtime"))
     if export_runtime:

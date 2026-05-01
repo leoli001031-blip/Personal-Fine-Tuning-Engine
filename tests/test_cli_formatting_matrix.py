@@ -75,10 +75,17 @@ class CLIFormattingMatrixTests(unittest.TestCase):
             "adapter_path": "/tmp/pfe/adapters/20260323-001",
             "num_samples": 12,
             "backend_plan": {
-                "selected_backend": "mock_local",
+                "recommended_backend": "mlx",
                 "requested_backend": "auto",
-                "runtime_device": "cpu",
+                "runtime_device": "mps",
                 "requires_export_step": False,
+            },
+            "backend_dispatch": {
+                "execution_backend": "mlx",
+            },
+            "execution_backend": "mlx",
+            "job_execution": {
+                "audit": {"runner_status": "completed"},
             },
             "export_runtime": {
                 "required": False,
@@ -98,6 +105,9 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("TRAINING COMPLETE", clean)
         self.assertIn("20260323-001", clean)
         self.assertIn("TRAINING RESULT", clean)
+        self.assertIn("mlx | device=mps", clean)
+        self.assertIn("execution:", clean)
+        self.assertIn("completed", clean)
 
     def test_eval_result_shows_recommendation(self) -> None:
         payload = {
