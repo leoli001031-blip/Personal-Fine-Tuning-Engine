@@ -375,7 +375,7 @@ class TestDPOIntegration:
             result = service.build_dpo_dataset(workspace="test")
             assert "num_pairs" in result
             assert "statistics" in result
-        except Exception as e:
+        except Exception:
             # May fail due to missing config or other issues
             pass
 

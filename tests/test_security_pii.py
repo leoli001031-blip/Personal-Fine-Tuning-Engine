@@ -84,7 +84,7 @@ class TestPIIGuardScanSample:
                 {"role": "assistant", "content": "I cannot help with that."},
             ],
         }
-        verdict = guard.scan_sample(sample)
+        guard.scan_sample(sample)
         # id_card pattern is Chinese; SSN won't match, but we verify messages are scanned
         # by using a phone number inside messages instead
         sample2 = {

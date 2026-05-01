@@ -105,7 +105,6 @@ class AutoRollbackPolicy:
             )
 
         forget_detected = forget_metrics.get("forget_detected", False)
-        loss_delta = forget_metrics.get("loss_delta", 0.0)
         confidence = forget_metrics.get("confidence", 0.0)
         recommendation = forget_metrics.get("recommendation", "continue")
 

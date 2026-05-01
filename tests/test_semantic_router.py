@@ -219,7 +219,7 @@ class TestCLIOptions:
     def test_test_route_strategy_override(self):
         config = PFEConfig()
         config.router.strategy = "keyword"  # type: ignore[misc]
-        router = ScenarioRouter(config=config)
+        ScenarioRouter(config=config)
         # Simulate CLI overriding strategy
         config.router.strategy = "hybrid"  # type: ignore[misc]
         router2 = ScenarioRouter(config=config)

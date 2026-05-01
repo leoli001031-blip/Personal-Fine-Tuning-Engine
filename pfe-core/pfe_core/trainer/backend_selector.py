@@ -522,7 +522,7 @@ class AutoBackendSelector:
         if backend == "unsloth":
             unsloth_prefixes = ["unsloth/"]
             if not any(base_model.startswith(x) for x in unsloth_prefixes):
-                return f"Consider using unsloth/ models for best performance with Unsloth"
+                return "Consider using unsloth/ models for best performance with Unsloth"
 
         return None
 

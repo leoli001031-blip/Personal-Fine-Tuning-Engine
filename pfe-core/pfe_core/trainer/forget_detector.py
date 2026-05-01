@@ -297,7 +297,6 @@ def detect_forget_from_training_result(
 
     # Extract replay samples from training result
     replay_sample_ids = training_result.get("replay_sample_ids", [])
-    dataset_plan = training_result.get("dataset_plan", {})
 
     samples = []
     for sample_id in replay_sample_ids:

@@ -567,10 +567,6 @@ class MockPipelineService:
         del note
         return _fallback_status_snapshot()
 
-    async def process_train_queue_until_idle(self, max_iterations: int | None = None) -> dict[str, Any]:
-        del max_iterations
-        return _fallback_status_snapshot()
-
     async def promote_candidate(self, note: str | None = None) -> dict[str, Any]:
         del note
         snapshot = _fallback_status_snapshot()

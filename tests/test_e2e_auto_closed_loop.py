@@ -62,7 +62,7 @@ class TestFullAutoClosedLoop:
             with TestServer(port=config.port, workspace=config.test_workspace):
                 with TestDaemon(port=config.port, workspace=config.test_workspace):
                     # Get initial adapter version
-                    initial_version = get_latest_adapter(port=config.port)
+                    get_latest_adapter(port=config.port)
 
                     # Step 1: Generate 16 signals (above threshold of 8)
                     signals = simulate_conversations(
@@ -282,7 +282,7 @@ class TestFullAutoClosedLoop:
 
                     # With high threshold, promotion may be blocked
                     # Just verify the system handled it gracefully
-                    latest = get_latest_adapter(port=config.port)
+                    get_latest_adapter(port=config.port)
                     # May or may not be promoted depending on mock quality
 
 
@@ -312,7 +312,7 @@ class TestAutoLoopFailureHandling:
 
             with TestServer(port=config.port, workspace=config.test_workspace):
                 with TestDaemon(port=config.port, workspace=config.test_workspace):
-                    initial_version = get_latest_adapter(port=config.port)
+                    get_latest_adapter(port=config.port)
 
                     # Generate signals
                     simulate_conversations(count=5, port=config.port)
@@ -321,7 +321,7 @@ class TestAutoLoopFailureHandling:
                     # In real failure scenario, verify promotion is blocked
                     # For now, just verify the flow completes
 
-                    latest = get_latest_adapter(port=config.port)
+                    get_latest_adapter(port=config.port)
                     # Version may or may not change depending on training result
 
 
@@ -363,7 +363,7 @@ class TestDPOAutoClosedLoop:
 
             with TestServer(port=config.port, workspace=config.test_workspace):
                 with TestDaemon(port=config.port, workspace=config.test_workspace):
-                    initial_version = get_latest_adapter(port=config.port)
+                    get_latest_adapter(port=config.port)
 
                     # Generate edited signals to create DPO pairs
                     # Need at least 4 DPO pairs to trigger training
