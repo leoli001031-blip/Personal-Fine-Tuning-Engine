@@ -123,6 +123,7 @@
 - `pipeline.py` 的 `F821/F822` 高风险未定义引用已清理：补齐 `Sequence`、模块 logger，并移除不可达 `return snapshot`。
 - `pipeline.py` 的 `F401` 未用 import 已清理。
 - `pipeline.py` 的 `F841/F402` 已清理；该文件默认 `ruff check` 通过。
+- 全仓库 `F821/F822/F601` 已清理；剩余主要是测试 `E402`、未用 import、未用局部变量等低风险 lint 债。
 
 ## R5：真实训练最小闭环
 

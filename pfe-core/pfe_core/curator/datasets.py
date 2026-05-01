@@ -11,10 +11,13 @@ from dataclasses import asdict, dataclass, field, replace
 from difflib import SequenceMatcher
 from hashlib import sha256
 import random
-from typing import Any, Iterable, Iterator, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Iterable, Iterator, Optional, Sequence
 
 from ..pii_detector import PIIDetector, PIIDetectionResult, PIIType
 from ..anonymizer import Anonymizer, AnonymizationConfig, AnonymizationStrategy
+
+if TYPE_CHECKING:
+    from ..models import SignalQuality
 
 ALLOWED_DATASET_SPLITS = ("train", "val", "test")
 ALLOWED_REPLY_STYLES = ("accepted", "rejected", "edited", "other")
@@ -909,7 +912,6 @@ __all__ = [
     "ALLOWED_DATASET_SPLITS",
     "ALLOWED_REPLY_STYLES",
     "SampleFilterConfig",
-    "SplitResult",
     "TrainingDataset",
     "PIIAnonymizationResult",
     "DatasetPIIAnonymizer",

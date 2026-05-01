@@ -57,6 +57,15 @@ CHAT_COLLECTOR_AVAILABLE, ChatCollector, CollectorConfig, ChatInteraction = _try
 _pending_interactions: dict[str, dict[str, Any]] = {}
 
 
+def _default_chat_base_model() -> str:
+    try:
+        from pfe_core.inference.engine import resolve_base_model_reference
+
+        return resolve_base_model_reference("local-default")
+    except Exception:
+        return "local-default"
+
+
 def _resolve_pfe_home() -> Path:
     """Resolve the active PFE home with env/workspace awareness."""
     try:
@@ -1585,14 +1594,7 @@ def _build_operations_event_stream_surface(
     daemon_timeline = dict(snapshot.get("daemon_timeline") or {})
     overview = dict(snapshot.get("operations_overview") or {})
     if not existing_operations_surface:
-        existing_operations_surface = _build_operations_alert_surface(
-            operations_alerts=overview.get("alerts"),
-            operations_health=overview.get("health"),
-            operations_recovery=overview.get("recovery"),
-            operations_next_actions=overview.get("next_actions"),
-            operations_console=console,
-            operations_overview=overview,
-        )
+        existing_operations_surface = _build_status_operations_surface(snapshot)
     alert_surface = dict(existing_operations_surface or {})
     alerts = list(alert_surface.get("alerts") or [])
     health = dict(alert_surface.get("health") or {})
@@ -2652,10 +2654,6 @@ async def handle_status(
             "inference": inference_status,
             "capabilities": dict(snapshot.get("capabilities") or {}),
             "user_modeling": dict(snapshot.get("user_modeling") or {}),
-            "signal": {
-                "count": int((snapshot or {}).get("signal_count", 0) or 0),
-                "latest_signal": dict((snapshot or {}).get("latest_signal") or {}),
-            },
             "auto_train_trigger": dict(snapshot.get("auto_train_trigger") or {}),
             "auto_train_trigger_action": dict(snapshot.get("auto_train_trigger_action") or {}),
             "candidate_summary": dict(snapshot.get("candidate_summary") or {}),
@@ -2684,6 +2682,8 @@ async def handle_status(
             "lifecycle": _build_status_lifecycle_metadata(snapshot, services),
             "server_runtime": _build_status_server_runtime_metadata(services),
             "signal": {
+                "count": int((snapshot or {}).get("signal_count", 0) or 0),
+                "latest_signal": dict((snapshot or {}).get("latest_signal") or {}),
                 "summary": dict(snapshot.get("signal_summary") or {}),
                 "sample_count": int(snapshot.get("signal_sample_count", 0) or 0),
                 "sample_counts": dict(snapshot.get("signal_sample_counts") or {}),
