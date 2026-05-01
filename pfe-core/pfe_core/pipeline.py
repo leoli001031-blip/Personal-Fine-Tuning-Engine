@@ -30,6 +30,14 @@ from .pipeline_candidate import (
     candidate_timeline_summary,
     normalize_candidate_history,
 )
+from .pipeline_operations import (
+    GENERIC_MONITOR_FOCUSES,
+    classify_operations_event,
+    generic_monitor_active,
+    operations_event_severity_rank,
+    ordered_unique_actions,
+    prefer_inspection_summary_for_generic_monitor,
+)
 from .pipeline_queue import (
     normalize_queue_items,
     queue_history_entry,
@@ -213,17 +221,7 @@ class PipelineService:
     """Coordinate generation, training, evaluation, and serving helpers."""
 
     split_defaults = (("train", 0.8), ("val", 0.1), ("test", 0.1))
-    generic_monitor_focuses = {
-        "candidate_idle",
-        "queue_waiting_execution",
-        "queue_backlog",
-        "runner_active",
-        "daemon_active",
-        "candidate_monitoring",
-        "queue_monitoring",
-        "runner_monitoring",
-        "daemon_monitoring",
-    }
+    generic_monitor_focuses = GENERIC_MONITOR_FOCUSES
 
     def __init__(self):
         self.trainer = TrainerService()
@@ -235,8 +233,11 @@ class PipelineService:
 
     @staticmethod
     def _generic_monitor_active(*, focus: Any, inspection_summary_line: Any) -> bool:
-        focus_text = str(focus or "").strip().lower()
-        return bool(inspection_summary_line) and focus_text in PipelineService.generic_monitor_focuses
+        return generic_monitor_active(
+            focus=focus,
+            inspection_summary_line=inspection_summary_line,
+            monitor_focuses=PipelineService.generic_monitor_focuses,
+        )
 
     @staticmethod
     def _prefer_inspection_summary_for_generic_monitor(
@@ -245,12 +246,12 @@ class PipelineService:
         summary_line: Any,
         inspection_summary_line: Any,
     ) -> tuple[Any, Any]:
-        if PipelineService._generic_monitor_active(
+        return prefer_inspection_summary_for_generic_monitor(
             focus=focus,
+            summary_line=summary_line,
             inspection_summary_line=inspection_summary_line,
-        ):
-            return inspection_summary_line, inspection_summary_line
-        return summary_line, inspection_summary_line
+            monitor_focuses=PipelineService.generic_monitor_focuses,
+        )
 
     @staticmethod
     def _auto_trigger_state_path(*, workspace: str | None = None) -> Path:
@@ -2561,17 +2562,12 @@ class PipelineService:
             event_summary_parts.append(f"required_action={alert_policy.get('required_action')}")
             dashboard_summary_parts.append(f"required_action={alert_policy.get('required_action')}")
         event_stream["summary_line"] = " | ".join(event_summary_parts)
-        ordered_next_actions = []
-        for action_name in [
-            alert_policy.get("required_action"),
-            *list(alert_policy.get("secondary_actions") or []),
-            *event_stream_recommended_actions,
-            *next_actions,
-        ]:
-            action_text = str(action_name or "").strip()
-            if not action_text or action_text == "none" or action_text in ordered_next_actions:
-                continue
-            ordered_next_actions.append(action_text)
+        ordered_next_actions = ordered_unique_actions(
+            [alert_policy.get("required_action")],
+            list(alert_policy.get("secondary_actions") or []),
+            event_stream_recommended_actions,
+            next_actions,
+        )
         if ordered_next_actions:
             dashboard_summary_parts.append(f"next={','.join(ordered_next_actions[:3])}")
         dashboard_digest_parts: list[str] = []
@@ -2657,9 +2653,6 @@ class PipelineService:
             "secondary_actions": list(alert_policy.get("secondary_actions") or []),
             "alert_count": len(alerts_section),
             "attention_count": attention_count,
-            "highest_priority_action": highest_priority_action,
-            "active_recovery_hint": active_recovery_hint,
-            "escalated_reasons": escalated_reasons,
             "next_actions": ordered_next_actions,
             "candidate_stage": candidate_section.get("current_stage"),
             "queue_state": (
@@ -2802,19 +2795,11 @@ class PipelineService:
             "event_dashboard": dashboard,
             "dashboard": operations_dashboard,
             "alert_policy": alert_policy,
-            "monitor_focus": monitor_focus,
         }
 
     @staticmethod
     def _operations_event_severity_rank(value: Any) -> int:
-        severity = str(value or "info")
-        if severity == "critical":
-            return 4
-        if severity == "warning":
-            return 3
-        if severity == "info":
-            return 2
-        return 1
+        return operations_event_severity_rank(value)
 
     @staticmethod
     def _classify_operations_event(
@@ -2826,70 +2811,14 @@ class PipelineService:
         status: Any | None = None,
         state: Any | None = None,
     ) -> dict[str, Any]:
-        severity = "info"
-        attention = False
-        normalized_level = str(level or "").strip().lower()
-        if normalized_level == "attention":
-            severity = "info"
-            attention = True
-        elif normalized_level == "warning":
-            severity = "warning"
-            attention = True
-
-        normalized_source = str(source or "operations")
-        normalized_event = str(event or "")
-        normalized_reason = str(reason or "")
-        normalized_status = str(status or "")
-        normalized_state = str(state or "")
-        combined = " ".join(
-            part
-            for part in (
-                normalized_event,
-                normalized_reason,
-                normalized_status,
-                normalized_state,
-            )
-            if part
-        ).lower()
-
-        if "queue_pending_review" in combined:
-            severity = "info"
-            attention = True
-        elif "queue_waiting_execution" in combined:
-            severity = "info"
-            attention = True
-        elif "queue_processing_active" in combined:
-            severity = "info"
-            attention = False
-        elif any(token in combined for token in ("awaiting_confirmation", "manual_review_required")):
-            severity = "info"
-            attention = True
-        elif "candidate_ready_for_promotion" in combined:
-            severity = "info"
-            attention = True
-        elif normalized_source == "daemon" and any(token in combined for token in ("stale", "expired", "failed", "error")):
-            severity = "critical"
-            attention = True
-        elif normalized_source == "daemon" and any(token in combined for token in ("backoff", "capped", "blocked", "recover", "restart", "delayed")):
-            severity = "warning"
-            attention = True
-        elif normalized_source == "runner" and any(token in combined for token in ("stale", "blocked", "failed", "error", "stop_requested")):
-            severity = "warning"
-            attention = True
-        elif any(token in combined for token in ("stale", "expired", "backoff", "capped", "blocked", "failed", "error")):
-            severity = "warning"
-            attention = True
-        elif normalized_source in {"runner", "daemon"} and normalized_event == "alert":
-            severity = "warning"
-            attention = True
-        elif normalized_source == "queue" and normalized_state in {"awaiting_confirmation", "failed"}:
-            severity = "warning" if normalized_state == "failed" else "info"
-            attention = True
-
-        return {
-            "severity": severity,
-            "attention": attention,
-        }
+        return classify_operations_event(
+            source=source,
+            event=event,
+            reason=reason,
+            level=level,
+            status=status,
+            state=state,
+        )
 
     @staticmethod
     def _operations_alert_policy(

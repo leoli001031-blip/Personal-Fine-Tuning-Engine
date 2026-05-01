@@ -91,10 +91,12 @@
 - `tests/test_pipeline_queue_helpers.py`：锁定 queue helper 的纯函数行为。
 - `pfe_core/pipeline_runner.py`：worker runner / daemon history、timeline、状态摘要 helper。
 - `tests/test_pipeline_runner_helpers.py`：锁定 runner / daemon helper 的纯函数行为。
+- `pfe_core/pipeline_operations.py`：operations event 分类、generic monitor summary、ordered actions helper。
+- `tests/test_pipeline_operations_helpers.py`：锁定 operations helper 的纯函数行为。
 
 下一步：
 
-- 拆 operations dashboard / console summary 中的纯函数，优先处理重复 key。
+- 继续拆 operations dashboard / console summary 中的 payload 组装函数。
 - 最后处理 `Sequence` / `logger` / `snapshot` 等未定义变量类 lint。
 
 ## R4：Lint Stabilization
