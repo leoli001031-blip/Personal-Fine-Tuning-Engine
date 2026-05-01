@@ -1,6 +1,6 @@
 # PFE 文档导航
 
-更新时间：2026-04-21
+更新时间：2026-05-02
 
 这套文档按三个层次整理：
 
@@ -34,6 +34,7 @@
 | [guides/auto-loop-policy.md](guides/auto-loop-policy.md) | 自动训练 / 评测 / promote 策略配置 |
 | [guides/chat-collector.md](guides/chat-collector.md) | ChatCollector 的信号采集方式 |
 | [guides/dpo-training.md](guides/dpo-training.md) | DPO 训练的输入和使用方式 |
+| [guides/cuda-real-training-validation.md](guides/cuda-real-training-validation.md) | Linux/CUDA 上 PEFT / Unsloth 真实训练验证入口 |
 
 ## 参考文档
 

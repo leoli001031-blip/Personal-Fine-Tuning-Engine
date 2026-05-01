@@ -132,7 +132,7 @@
 
 ## R5：真实训练最小闭环
 
-状态：已完成 Apple Silicon / MLX 最小闭环；DPO 隔离闭环已由现有真实 DPO 测试覆盖。后续剩 Linux/CUDA 的 PEFT/Unsloth 实机验证。
+状态：已完成 Apple Silicon / MLX 最小闭环；DPO 隔离闭环已由现有真实 DPO 测试覆盖；Linux/CUDA 的 PEFT/Unsloth 已补可执行验证入口，后续剩实机回填结果。
 
 目标：
 
@@ -152,8 +152,9 @@
 - CLI 临时 workspace：`pfe generate --num 8` 后执行 `pfe train --backend mlx --real-local --base-model /Users/zcc/Desktop/PFE/models/Qwen2.5-0.5B-Instruct-4bit --epochs 1 --train-type sft`，产出 `adapter_model.safetensors`、`adapter_manifest.json`、`training_meta.json`、`diagnostics.json`。
 - CLI 摘要第一版已收口：训练预览区分 `execution_intent=planned/dry_run/real_local`，结果摘要会显示真实 `execution_backend` 和 runner 状态，避免 MLX 成功训练后显示 `backend=unknown`。
 - 完整测试已覆盖 DPO 真实最小路径：`tests/test_trainer_dpo_real.py`。
+- Linux/CUDA 验证入口已补：`tools/verify_cuda_real_training.py` 支持 `--backend peft|unsloth|all`，默认 dry-run，显式 `--run` 后走真实训练 gate、preflight、materialized 子进程和 diagnostics；使用说明见 `docs/guides/cuda-real-training-validation.md`。
 
 后续：
 
-- 在 Linux/CUDA 环境补跑 PEFT/Unsloth 最小训练。
+- 在 Linux/CUDA 环境执行 `tools/verify_cuda_real_training.py --backend all --run`，回填 PEFT/Unsloth 最小训练结果。
 - 根据 Linux/CUDA 实机结果补齐 PEFT/Unsloth 诊断样例和文档记录。
