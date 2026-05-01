@@ -75,13 +75,24 @@
 
 ## R3：Pipeline / Operations 拆分
 
-状态：待做。
+状态：进行中。第一刀已完成：`pfe_core.pipeline_candidate` 承接 candidate action history / timeline 的纯计算，`PipelineService` 保留兼容方法。
 
 目标：
 
 - 将 `pipeline.py` 中 operations、candidate、queue、eval/promote、signal summary 分离。
 - 优先拆出纯函数和状态 summary，减少 7000+ 行单文件的交叉依赖。
 - 先修运行时 bug 类 lint：`F821`、`F822`、`F601`。
+
+已完成：
+
+- `pfe_core/pipeline_candidate.py`：candidate history entry、history summary、timeline stage、timeline payload。
+- `tests/test_pipeline_candidate_helpers.py`：锁定拆出 helper 的纯函数行为。
+
+下一步：
+
+- 拆 train queue history / timeline summary helper。
+- 再拆 daemon / worker runner summary helper。
+- 最后处理 operations dashboard 中的重复 key 和未定义变量类 lint。
 
 ## R4：Lint Stabilization
 

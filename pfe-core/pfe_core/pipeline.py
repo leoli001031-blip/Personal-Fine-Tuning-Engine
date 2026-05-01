@@ -22,6 +22,14 @@ from .errors import EvalError
 from .inference.engine import InferenceConfig, InferenceEngine, resolve_base_model_reference
 from .models import parse_utc_datetime
 from .curator.datasets import SampleFilterConfig, build_signal_quality, signal_quality_filter_reasons, summarize_signal_quality_filters
+from .pipeline_candidate import (
+    candidate_history_entry,
+    candidate_history_payload,
+    candidate_history_summary,
+    candidate_timeline_payload,
+    candidate_timeline_summary,
+    normalize_candidate_history,
+)
 from .storage import list_samples, list_signals, record_signal, resolve_home, save_samples, status_snapshot, write_json, write_jsonl
 from .trainer import summarize_real_training_execution, summarize_training_job_execution
 from .trainer.service import TrainerService
@@ -281,128 +289,27 @@ class PipelineService:
 
     @staticmethod
     def _candidate_history_entry(action: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "action": str(action.get("action") or "candidate_action"),
-            "status": str(action.get("status") or "noop"),
-            "reason": str(action.get("reason") or ""),
-            "candidate_version": action.get("candidate_version"),
-            "promoted_version": action.get("promoted_version"),
-            "archived_version": action.get("archived_version"),
-            "operator_note": action.get("operator_note"),
-            "previous_candidate_state": action.get("previous_candidate_state"),
-            "triggered": bool(action.get("triggered", False)),
-        }
+        return candidate_history_entry(action)
 
     def _load_candidate_history(self, *, workspace: str | None = None) -> list[dict[str, Any]]:
         state = self._load_auto_trigger_state(workspace=workspace)
-        raw = state.get("candidate_history") or []
-        if not isinstance(raw, list):
-            return []
-        return [dict(item) for item in raw if isinstance(item, dict)]
+        return normalize_candidate_history(state.get("candidate_history") or [])
 
     def _candidate_history_summary(self, *, workspace: str | None = None) -> dict[str, Any]:
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        return {
-            "count": len(history),
-            "latest_timestamp": latest.get("timestamp"),
-            "last_action": latest.get("action"),
-            "last_status": latest.get("status"),
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "last_note": latest.get("operator_note"),
-            "action_counts": {
-                "promote_candidate": sum(1 for item in history if str(item.get("action")) == "promote_candidate"),
-                "archive_candidate": sum(1 for item in history if str(item.get("action")) == "archive_candidate"),
-            },
-            "items": history[-5:],
-        }
+        return candidate_history_summary(history)
 
     def candidate_history(self, *, workspace: str | None = None, limit: int = 10) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        return {
-            "workspace": workspace or "user_default",
-            "count": len(history),
-            "limit": bounded_limit,
-            "last_action": latest.get("action"),
-            "last_status": latest.get("status"),
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "last_note": latest.get("operator_note"),
-            "latest_timestamp": latest.get("timestamp"),
-            "items": history[-bounded_limit:],
-        }
+        return candidate_history_payload(history=history, workspace=workspace, limit=limit)
 
     def _candidate_timeline_summary(self, *, workspace: str | None = None) -> dict[str, Any]:
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        transitions = sum(1 for item in history if str(item.get("status") or "") in {"completed", "blocked", "noop"})
-        current_stage = "idle"
-        if latest:
-            action = str(latest.get("action") or "")
-            status = str(latest.get("status") or "")
-            if action == "promote_candidate" and status == "completed":
-                current_stage = "promoted"
-            elif action == "archive_candidate" and status == "completed":
-                current_stage = "archived"
-            elif status == "blocked":
-                current_stage = "blocked"
-            elif status == "noop":
-                current_stage = "noop"
-            else:
-                current_stage = "candidate_action"
-        return {
-            "count": len(history),
-            "transition_count": transitions,
-            "current_stage": current_stage,
-            "last_transition": latest,
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "latest_timestamp": latest.get("timestamp"),
-        }
+        return candidate_timeline_summary(history)
 
     def candidate_timeline(self, *, workspace: str | None = None, limit: int = 10) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        items = history[-bounded_limit:]
-        timeline_items: list[dict[str, Any]] = []
-        for item in items:
-            action = str(item.get("action") or "candidate_action")
-            status = str(item.get("status") or "noop")
-            if action == "promote_candidate" and status == "completed":
-                stage = "promoted"
-            elif action == "archive_candidate" and status == "completed":
-                stage = "archived"
-            elif status == "blocked":
-                stage = "blocked"
-            elif status == "noop":
-                stage = "noop"
-            else:
-                stage = "candidate_action"
-            timeline_items.append(
-                {
-                    **dict(item),
-                    "stage": stage,
-                    "label": f"{action}:{status}",
-                }
-            )
-        summary = self._candidate_timeline_summary(workspace=workspace)
-        return {
-            "workspace": workspace or "user_default",
-            "count": len(history),
-            "limit": bounded_limit,
-            "current_stage": summary.get("current_stage"),
-            "transition_count": summary.get("transition_count"),
-            "last_transition": latest,
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "latest_timestamp": latest.get("timestamp"),
-            "items": timeline_items,
-        }
+        return candidate_timeline_payload(history=history, workspace=workspace, limit=limit)
 
     @staticmethod
     def _train_queue_state_path(*, workspace: str | None = None) -> Path:
