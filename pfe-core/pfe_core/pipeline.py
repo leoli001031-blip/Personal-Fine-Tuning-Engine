@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import logging
 import os
 import signal
 import subprocess
@@ -12,7 +13,7 @@ import time
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 from uuid import uuid4
 
 from .adapter_store.store import create_adapter_store
@@ -73,6 +74,9 @@ from .observability.trace import (
     trace_version,
     SignalTrace,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def _default_chat_base_model() -> str:
@@ -6729,7 +6733,6 @@ class PipelineService:
             pass
 
         return summary
-        return snapshot
 
     def run_distillation(
         self,
