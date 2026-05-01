@@ -2332,7 +2332,7 @@ def _run_real_dpo_training(
     model = AutoModelForCausalLM.from_pretrained(
         base_model_name,
         device_map=device_map,
-        torch_dtype=torch_dtype,
+        dtype=torch_dtype,
         trust_remote_code=True,
     )
 
@@ -2345,7 +2345,7 @@ def _run_real_dpo_training(
     ref_model = AutoModelForCausalLM.from_pretrained(
         base_model_name,
         device_map=device_map,
-        torch_dtype=torch_dtype,
+        dtype=torch_dtype,
         trust_remote_code=True,
     )
     if base_adapter_path and Path(base_adapter_path).exists():
@@ -2420,6 +2420,7 @@ def _run_real_dpo_training(
             save_strategy="no",
             fp16=torch.cuda.is_available(),
             remove_unused_columns=False,
+            dataloader_pin_memory=False,
             run_name="pfe-dpo-training",
             report_to="none",
             beta=beta,
@@ -2440,6 +2441,7 @@ def _run_real_dpo_training(
             save_strategy="epoch",
             fp16=torch.cuda.is_available(),
             remove_unused_columns=False,
+            dataloader_pin_memory=False,
             run_name="pfe-dpo-training",
             report_to="none",
         )

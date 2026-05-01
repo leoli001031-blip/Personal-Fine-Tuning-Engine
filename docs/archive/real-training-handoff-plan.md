@@ -49,7 +49,7 @@ Owner：训练 runtime
 
 ### RT-2：补齐 DPO 隔离策略
 
-状态：已完成第一版。DPO 会先在父进程构建 preference pairs，再走 preflight 和子进程隔离；后续仍需做真实 DPO 训练样例验证。
+状态：已完成并验证真实最小闭环。DPO 会先在父进程构建 preference pairs，再走 preflight 和子进程隔离；`sshleifer/tiny-gpt2` + 1 条 preference pair 已成功完成真实 DPO 训练，产出 adapter、manifest、diagnostics。
 
 Owner：DPO trainer
 
@@ -65,6 +65,41 @@ Owner：DPO trainer
 - DPO 在父进程中可以先从 signals 构建 preference pairs。
 - 构建完有效样本后，真实 DPO 训练进入子进程。
 - 无样本、依赖缺失、模型路径缺失时返回 blocked 或 failed diagnostics，而不是崩主进程。
+
+已验证命令：
+
+```bash
+PFE_REAL_TRAINING=1 .venv/bin/python - <<'PY'
+from pathlib import Path
+from pfe_core.trainer.real_execution import run_backend_in_subprocess
+
+model = "sshleifer/tiny-gpt2"
+output_dir = Path("trainer_job_outputs/rt5-dpo-tiny-gpt2").resolve()
+job = {
+    "backend": "dpo",
+    "execution_executor": "dpo",
+    "base_model": model,
+    "output_dir": str(output_dir),
+    "timeout_seconds": 120,
+    "training_examples": [
+        {"instruction": "Say ping.", "chosen": "pong", "rejected": "banana", "sample_type": "dpo"}
+    ],
+    "recipe": {
+        "training": {
+            "base_model": model,
+            "epochs": 1,
+            "max_length": 64,
+            "max_prompt_length": 32,
+            "output_dir": str(output_dir / "dpo_output"),
+        },
+        "peft": {"dpo_config": {"beta": 0.1, "label_smoothing": 0.0, "max_length": 64}},
+    },
+}
+print(run_backend_in_subprocess(job, backend="dpo", dry_run=False))
+PY
+```
+
+结果：`status=completed`、`runner_status=completed`，产物包含 `dpo_output/dpo_adapter/adapter_model.safetensors`、`dpo_job_manifest.json`、`training_job_result.json`、`diagnostics.json`。CLI 临时 workspace 也已通过 `pfe dpo --train --real-local --backend dpo --base-model sshleifer/tiny-gpt2 --epochs 1 --min-confidence 0`，从 accepted/rejected signals 构建 preference pair 并产出 `adapter_model.safetensors` 和 `adapter_manifest.json`。
 
 ### RT-3：Apple Silicon MLX 最小真实训练
 
