@@ -329,3 +329,28 @@ class TestMLXPreflight:
         assert "insufficient_memory" in result["reasons"]
         assert result["checks"]["memory"]["status"] == "blocked"
         assert result["checks"]["memory"]["estimated_required_gb"] == 11.25
+
+    def test_mlx_small_local_model_uses_lower_memory_floor(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        tmp_path: Any,
+    ) -> None:
+        monkeypatch.setenv("PFE_REAL_TRAINING", "1")
+        model_path = tmp_path / "small-model"
+        model_path.mkdir()
+        (model_path / "model.safetensors").write_bytes(b"fake weights")
+        monkeypatch.setattr(TrainingPreflight, "_available_memory_gb", staticmethod(lambda: 3.0))
+        monkeypatch.setattr(TrainingPreflight, "_local_model_weight_size_gb", staticmethod(lambda _: 0.26))
+
+        result = TrainingPreflight(
+            {
+                "backend": "mlx",
+                "base_model": str(model_path),
+                "output_dir": str(tmp_path / "out"),
+                "training_examples": [{"instruction": "ping", "output": "pong"}],
+            }
+        ).check()
+
+        assert result["status"] == "ok"
+        assert result["checks"]["memory"]["status"] == "ok"
+        assert result["checks"]["memory"]["estimated_required_gb"] == 2.0

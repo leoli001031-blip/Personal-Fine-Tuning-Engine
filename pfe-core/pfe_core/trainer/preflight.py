@@ -70,7 +70,7 @@ class TrainingPreflight:
                 "reason": "memory_or_local_model_size_unavailable",
             }
 
-        required_gb = max(8.0, model_size_gb * 1.5)
+        required_gb = max(2.0, model_size_gb * 1.5)
         ok = available_gb >= required_gb
         return {
             "ok": ok,

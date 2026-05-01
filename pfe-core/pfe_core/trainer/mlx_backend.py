@@ -389,10 +389,10 @@ class MLXTrainerBackend:
                 train(model=model, optimizer=optimizer, train_dataset=train_dataset, args=args)
             finally:
                 mx.clear_cache()
-                if hasattr(mx.metal, "set_wired_limit"):
-                    mx.metal.set_wired_limit(0)
-                elif hasattr(mx, "set_wired_limit"):
+                if hasattr(mx, "set_wired_limit"):
                     mx.set_wired_limit(0)
+                elif hasattr(mx.metal, "set_wired_limit"):
+                    mx.metal.set_wired_limit(0)
 
             loss_history = [0.0]  # mlx_lm.train does not expose per-epoch losses directly
             num_steps = args.iters

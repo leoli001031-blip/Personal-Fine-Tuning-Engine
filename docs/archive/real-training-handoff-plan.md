@@ -68,7 +68,7 @@ Owner：DPO trainer
 
 ### RT-3：Apple Silicon MLX 最小真实训练
 
-状态：隔离与诊断已验证；当前机器 16GB 内存无法直接训练本地 `models/Qwen3-4B`，preflight 会以 `insufficient_memory` 阻断。后续需要换更小/量化的 MLX 训练模型，或在更大内存机器上跑成功闭环。
+状态：已完成成功闭环。当前机器 16GB 内存无法直接训练本地 `models/Qwen3-4B`，preflight 会以 `insufficient_memory` 阻断；换用 `mlx-community/Qwen2.5-0.5B-Instruct-4bit` 下载到 `models/Qwen2.5-0.5B-Instruct-4bit` 后，1 条样本 / 1 step 的 MLX 子进程训练已成功产出 adapter。
 
 Owner：MLX backend
 
@@ -83,6 +83,39 @@ Owner：MLX backend
 - 使用本地小样本和明确 base model 路径跑一次最小 MLX 训练；本地相对模型路径必须在进入子进程前解析为绝对路径。
 - 失败时 `diagnostics.json` 至少包含 `returncode`、`signal_name`、`failure_category`、`stdout_log`、`stderr_log`。
 - 如果出现 `SIGABRT`，父进程仍然正常返回 failed 状态；Metal insufficient memory 应归类为 `killed_oom`，并在后续 preflight 中尽量提前 blocked。
+
+已验证命令：
+
+```bash
+PFE_REAL_TRAINING=1 .venv/bin/python - <<'PY'
+from pathlib import Path
+from pfe_core.trainer.real_execution import run_backend_in_subprocess
+
+model = "models/Qwen2.5-0.5B-Instruct-4bit"
+output_dir = Path("trainer_job_outputs/rt3-mlx-qwen05-success").resolve()
+job = {
+    "backend": "mlx",
+    "execution_executor": "mlx",
+    "base_model": model,
+    "output_dir": str(output_dir),
+    "timeout_seconds": 90,
+    "training_examples": [{"instruction": "Say ping.", "output": "pong"}],
+    "recipe": {
+        "training": {
+            "base_model": model,
+            "epochs": 1,
+            "max_seq_length": 64,
+            "learning_rate": 1e-5,
+            "output_dir": str(output_dir / "mlx_output"),
+        },
+        "peft": {"lora_config": {"r": 2, "lora_alpha": 4, "lora_dropout": 0.0}},
+    },
+}
+print(run_backend_in_subprocess(job, backend="mlx", dry_run=False))
+PY
+```
+
+结果：`status=completed`、`runner_status=completed`，产物包含 `mlx_output/adapters/adapters.safetensors`、`training_job_result.json`、`diagnostics.json`、stdout/stderr log。CLI 临时 workspace 也已通过 `pfe train --real-local --backend mlx --base-model models/Qwen2.5-0.5B-Instruct-4bit --epochs 1`，产出 `adapter_model.safetensors` 和 `adapter_manifest.json`。
 
 ### RT-4：CLI 和文档收口
 
