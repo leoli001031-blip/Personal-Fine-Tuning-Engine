@@ -864,7 +864,6 @@ class PipelineService:
                 "action": None,
             }
 
-        left_adapter = str(compare.get("left_adapter") or compare.get("left_adapter_version") or "")
         right_adapter = str(compare.get("right_adapter") or compare.get("right_adapter_version") or "")
         recommendation = str(compare.get("recommendation") or "")
 
@@ -3584,8 +3583,8 @@ class PipelineService:
         filtered_reasons: dict[str, int] = {}
         reply_style_counts: dict[str, int] = {}
 
-        for signal in signals:
-            quality = build_signal_quality(signal)
+        for signal_payload in signals:
+            quality = build_signal_quality(signal_payload)
             evaluated += 1
             reply_style = str(getattr(quality, "reply_style", "other") or "other")
             reply_style_counts[reply_style] = reply_style_counts.get(reply_style, 0) + 1
@@ -4281,6 +4280,10 @@ class PipelineService:
         min_style = promote_policy.min_style_match_score
         min_preference = promote_policy.min_preference_alignment_score
         min_preservation = promote_policy.min_quality_preservation_score
+
+        overall_quality = scores.get("overall", scores.get("quality", 0))
+        if overall_quality < min_quality:
+            return False, f"quality_{overall_quality:.2f}_below_{min_quality}"
 
         if scores.get("quality_preservation", 0) < min_preservation:
             return False, f"quality_preservation_{scores.get('quality_preservation', 0):.2f}_below_{min_preservation}"
@@ -5589,7 +5592,7 @@ class PipelineService:
             snapshot["candidate_action"] = action_payload
             return snapshot
         try:
-            result = store.rollback(version, workspace=workspace)
+            store.rollback(version, workspace=workspace)
             action_payload = {
                 "action": "rollback_candidate",
                 "status": "completed",
