@@ -25,6 +25,8 @@ from pfe_cli.console_app import (
     _prompt_target_hint,
 )
 from rich.console import Console
+from tests.matrix_test_compat import strip_ansi
+
 
 class CLIConsoleSurfaceTests(unittest.TestCase):
     def test_console_command_renders_core_panels(self) -> None:
@@ -186,14 +188,15 @@ class CLIConsoleSurfaceTests(unittest.TestCase):
         result = runner.invoke(cli_main.app, ["console", "--help"])
 
         self.assertEqual(result.exit_code, 0, msg=result.stdout)
-        self.assertIn("Render a Rich-based PFE operations console with optional prompt mode.", result.stdout)
-        self.assertIn("--interactive", result.stdout)
-        self.assertIn("--model", result.stdout)
-        self.assertIn("--adapter", result.stdout)
-        self.assertIn("--real-local", result.stdout)
-        self.assertIn("--watch", result.stdout)
-        self.assertIn("--refresh-seconds", result.stdout)
-        self.assertIn("--cycles", result.stdout)
+        text = strip_ansi(result.stdout)
+        self.assertIn("Render a Rich-based PFE operations console with optional prompt mode.", text)
+        self.assertIn("--interactive", text)
+        self.assertIn("--model", text)
+        self.assertIn("--adapter", text)
+        self.assertIn("--real-local", text)
+        self.assertIn("--watch", text)
+        self.assertIn("--refresh-seconds", text)
+        self.assertIn("--cycles", text)
 
     def test_console_interactive_supports_help_and_quit(self) -> None:
         payload = {
