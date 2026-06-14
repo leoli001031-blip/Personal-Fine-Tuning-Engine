@@ -7,12 +7,13 @@ from typer.testing import CliRunner
 
 from pfe_cli import main as cli_main
 from pfe_core.config import PFEConfig
+from tests.matrix_test_compat import isolated_cwd, strip_ansi
 
 
 class CLIInitTests(unittest.TestCase):
     def test_init_creates_workspace_dirs_and_default_config(self) -> None:
         runner = CliRunner()
-        with runner.isolated_filesystem():
+        with isolated_cwd():
             result = runner.invoke(
                 cli_main.app,
                 [
@@ -59,7 +60,7 @@ class CLIInitTests(unittest.TestCase):
         result = runner.invoke(cli_main.app, ["init", "--help"])
 
         self.assertEqual(result.exit_code, 0, msg=result.stdout)
-        text = result.stdout
+        text = strip_ansi(result.stdout)
         self.assertIn("--workspace", text)
         self.assertIn("--base-model", text)
         self.assertIn("--home", text)

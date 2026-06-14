@@ -8,6 +8,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from pfe_cli import main as cli_main
+from tests.matrix_test_compat import isolated_cwd
 
 
 class CLINextTests(unittest.TestCase):
@@ -22,7 +23,7 @@ class CLINextTests(unittest.TestCase):
 
     def test_next_points_to_init_when_config_is_missing(self) -> None:
         runner = CliRunner()
-        with runner.isolated_filesystem():
+        with isolated_cwd():
             os.environ["PFE_HOME"] = str(Path.cwd() / ".pfe")
 
             result = runner.invoke(cli_main.app, ["next", "--workspace", "alice"])
@@ -37,7 +38,7 @@ class CLINextTests(unittest.TestCase):
 
     def test_next_guides_initialized_workspace_toward_feedback_loop(self) -> None:
         runner = CliRunner()
-        with runner.isolated_filesystem():
+        with isolated_cwd():
             os.environ["PFE_HOME"] = str(Path.cwd() / ".pfe")
             model_dir = Path("models/local-base")
             model_dir.mkdir(parents=True)
@@ -71,7 +72,7 @@ class CLINextTests(unittest.TestCase):
 
     def test_next_surfaces_deferred_queue_work_after_feedback_ingest(self) -> None:
         runner = CliRunner()
-        with runner.isolated_filesystem():
+        with isolated_cwd():
             os.environ["PFE_HOME"] = str(Path.cwd() / ".pfe")
             model_dir = Path("models/local-base")
             model_dir.mkdir(parents=True)

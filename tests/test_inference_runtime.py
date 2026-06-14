@@ -97,9 +97,27 @@ class InferenceRuntimeTests(unittest.TestCase):
         self.assertIn("requires a local base model path", engine.status()["generation"]["fallback_reason"])
 
     def test_llama_cpp_runtime_resolution_prefers_cpu_build(self) -> None:
-        resolution = _resolve_llama_cpp_runtime_binary()
+        repo_root = Path(self.tempdir.name) / "repo"
+        cpu_runtime = repo_root / "tools" / "llama.cpp" / "build-cpu" / "bin" / "llama-completion"
+        generic_runtime = repo_root / "tools" / "llama.cpp" / "build" / "bin" / "llama-completion"
+        for runtime in (cpu_runtime, generic_runtime):
+            runtime.parent.mkdir(parents=True, exist_ok=True)
+            runtime.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            runtime.chmod(0o755)
+
+        with patch("pfe_core.inference.engine._repo_root", return_value=repo_root), patch.dict(
+            os.environ,
+            {
+                "PFE_LLAMA_CPP_RUNTIME_BIN": "",
+                "LLAMA_CPP_RUNTIME_BIN": "",
+                "LLAMA_CPP_BIN": "",
+                "LLAMA_CPP_PATH": "",
+            },
+        ):
+            resolution = _resolve_llama_cpp_runtime_binary()
+
         self.assertTrue(resolution["available"])
-        self.assertIn("build-cpu/bin/llama-completion", str(resolution["path"]))
+        self.assertEqual(str(cpu_runtime), resolution["path"])
 
     def test_generate_prefers_llama_cpp_for_gguf_manifest(self) -> None:
         adapter_dir = Path(self.tempdir.name) / "adapter"
