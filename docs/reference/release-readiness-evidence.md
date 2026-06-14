@@ -1,8 +1,8 @@
 # Release readiness evidence
 
-更新时间：2026-06-15 04:20 CST
+更新时间：2026-06-15 05:05 CST
 
-这份记录只描述当前 checkout 的验证证据，不把未完成项包装成已完成。
+这份记录描述当前分支的验证证据；涉及远端 Actions run 时，以列出的 commit SHA 为准，不把未完成项包装成已完成。
 
 ## 当前结论
 
@@ -19,8 +19,9 @@
 - Release evidence bundle：`bundle-release-evidence` 已可校验 performance report、evidence audit report 和远端 Actions evidence report，并写出带 sha256 / size / status 的 bundle manifest。
 - Remote Actions evidence：`record-remote-release-evidence` 已可在 workflow 推送并跑通后抓取最新成功 GitHub Actions run，写出 run URL / status / conclusion / branch / commit JSON。
 - Remote evidence Markdown：`render-remote-release-evidence` 已可把远端 run JSON 和 bundle manifest 渲染成可写入本文件的 Markdown 摘要。
+- Remote CI：PR fast beta gate 已在最新代码提交上通过；manual `workflow_dispatch` strict release gate 已通过，并已采集远端 run JSON。
 
-因此当前状态是：Phase 2 功能闭环、真实浏览器 UI strict smoke、real-local readiness、real-local happy path 已在本机通过同一条 strict release gate 验证；queue/daemon/server/dashboard 也已有 30 分钟长稳态 soak、性能/内存 budget、dashboard offline-first 和发布材料证据。完整 release-ready 仍需要补远端 CI 执行证据。
+因此当前状态是：Phase 2 功能闭环、真实浏览器 UI strict smoke、real-local readiness、real-local happy path 已在本机和远端 strict release gate 中通过；queue/daemon/server/dashboard 也已有 30 分钟长稳态 soak、性能/内存 budget、dashboard offline-first、发布材料证据和远端 CI 执行证据。当前 release gate 阻塞项为 0；GitHub Actions 的 Node.js 20 deprecation annotation 是后续维护项，不阻塞本轮 Phase 2 release gate。
 
 ## 最新本地复核
 
@@ -115,6 +116,14 @@
 - `benchmark-release` 段：通过，`total=37.439s`；`first_run_full=7.908s / 278.27 MB`，`browser_ui_strict=5.478s / 953.58 MB`，`real_local_happy=5.816s / 717.77 MB`，`release_soak_short=18.237s / 617.66 MB`。
 - `audit-release-evidence-report` 段：通过，本地 blocker 为 0；远端 run URL 与远端 evidence JSON 仍为 warning。
 - `bundle-release-evidence` 段：通过，唯一 warning 为 `remote_actions: status=missing release_ready=False`。
+
+2026-06-15 05:05 CST 远端复核：
+
+- `gh pr checks 1 --watch=false`：PR run `27511838268` 在 commit `48efa93f5da8d0c269e0457359cca679da040a09` 上通过 `Fast beta gate`；`Strict release gate` 在 PR 事件中按 workflow 设计跳过。
+- `gh workflow run "PFE release gates" --ref codex/cli-refactor-checkpoint`：manual `workflow_dispatch` run `27511847250` 在同一 commit 上通过。
+- workflow_dispatch run：`Fast beta gate` 通过，用时 `2m27s`；`Strict release gate` 通过，用时 `6m7s`。
+- `.venv/bin/python tools/github_actions_release_evidence.py --require-success --branch codex/cli-refactor-checkpoint --event workflow_dispatch --output-path /tmp/pfe-github-actions-release-evidence.json`：通过，采集 run URL、status、conclusion、branch、commit JSON。
+- `.venv/bin/python tools/render_remote_release_evidence.py --require-success --remote-evidence-report /tmp/pfe-github-actions-release-evidence.json --output-path /tmp/pfe-remote-release-evidence.md`：通过，生成远端 evidence Markdown 摘要。
 
 本次 strict run 的关键尾部：
 
@@ -336,6 +345,21 @@ budget:
 - workflow 保留 `release-gate`，并限制为非 PR 事件执行。
 - release gate 保留 e2e 安装、Playwright Chromium 安装、tiny model 准备、`PFE_REAL_LOCAL_MODEL`、`test-e2e-mock`、`smoke-release-strict`、`benchmark-release`、`audit-release-evidence-report` 和 `actions/upload-artifact@v4`。
 
+## Remote CI evidence
+
+- status: `passed`
+- release_ready: `yes`
+- workflow: `PFE release gates`
+- repo: `leoli001031-blip/Personal-Fine-Tuning-Engine`
+- run: https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27511847250
+- run status: `completed`
+- conclusion: `success`
+- event: `workflow_dispatch`
+- branch: `codex/cli-refactor-checkpoint`
+- commit: `48efa93f5da8d0c269e0457359cca679da040a09`
+- started: `2026-06-14T20:58:30Z`
+- updated: `2026-06-14T21:04:41Z`
+
 ## Release evidence audit 证据
 
 ```bash
@@ -351,12 +375,13 @@ OK      make_targets: release Makefile targets present
 OK      workflow_targets: workflow make targets valid: ['audit-release-evidence-report', 'benchmark-release', 'bundle-release-evidence', 'smoke-beta', 'smoke-release-strict', 'test-e2e-mock', 'test-surface', 'test-unit']
 OK      workflow_strict_gate: strict workflow gate retained
 OK      dashboard_offline: dashboard is offline-first with OfflineChart
-OK      release_evidence_doc: release evidence records local gates and remote gap
+OK      release_evidence_doc: release evidence records local gates and remote state
 OK      remote_state_recorded: release evidence records remote CI state
 OK      root_pfe_absent: root .pfe absent
 OK      uv_lock_absent: root uv.lock absent
 OK      process_residue: no release smoke/server/daemon process residue
-WARN    remote_ci_run_evidence: GitHub Actions run URL missing from release evidence
+OK      remote_ci_run_evidence: GitHub Actions run evidence recorded
+OK      remote_evidence_report: remote evidence report ready
 ```
 
 远端 run 证据采集：
@@ -366,17 +391,16 @@ make record-remote-release-evidence REMOTE_EVIDENCE_REPORT=/tmp/pfe-github-actio
 make render-remote-release-evidence REMOTE_EVIDENCE_REPORT=/tmp/pfe-github-actions-release-evidence.json BUNDLE_REPORT=/tmp/pfe-release-evidence-bundle.json REMOTE_EVIDENCE_MARKDOWN=/tmp/pfe-remote-release-evidence.md
 ```
 
-该命令要求最新匹配的 `PFE release gates` run 已 `completed/success`。当前 checkout 尚未提交/推送，远端 workflow 仍未注册，因此当前输出为：
+该命令要求最新匹配的 `PFE release gates` run 已 `completed/success`。当前已采集到成功的 `workflow_dispatch` run：
 
 ```text
-GITHUB ACTIONS RELEASE EVIDENCE MISSING
-blocker: matching GitHub Actions run not found
-exit_code=2
+GITHUB ACTIONS RELEASE EVIDENCE PASSED
+report: /tmp/pfe-github-actions-release-evidence.json
+run:    https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27511847250
+state:  status=completed conclusion=success
 ```
 
-这是最终远端证据步骤，不是当前本地通过证据。
-
-成功采集远端 run 后，`render-remote-release-evidence` 会生成可复制进本文件的 Markdown 摘要；它要求远端证据 JSON 为 `status=passed` 且 `release_ready=true`。
+`render-remote-release-evidence` 已用该 JSON 生成本文件中的 `Remote CI evidence` 摘要；它要求远端证据 JSON 为 `status=passed` 且 `release_ready=true`。
 
 机器可读报告：
 
@@ -389,9 +413,7 @@ make audit-release-evidence-report AUDIT_REPORT=/tmp/pfe-release-evidence-audit-
 
 ```text
 status: passed
-summary: blocker=0 | ok=10 | total=12 | warn=2
-warn: remote_ci_run_evidence
-warn: remote_evidence_report
+summary: blocker=0 | ok=12 | total=12 | warn=0
 ```
 
 bundle manifest：
@@ -404,8 +426,7 @@ make bundle-release-evidence PERF_REPORT=/tmp/pfe-release-perf-report-bundle.jso
 
 ```text
 RELEASE EVIDENCE BUNDLE PASSED
-summary: blockers=0 | present=3 | total=3 | warnings=1
-warning: remote_actions: status=missing release_ready=False
+summary: blockers=0 | present=3 | total=3 | warnings=0
 ```
 
 严格 release-ready 复核：
@@ -414,19 +435,18 @@ warning: remote_actions: status=missing release_ready=False
 .venv/bin/python tools/release_evidence_audit.py --require-remote --check-remote --skip-process-check
 ```
 
-当前结果按预期阻塞：
+当前结果：
 
 ```text
-RELEASE EVIDENCE AUDIT BLOCKED
-BLOCKER remote_ci_run_evidence: GitHub Actions run URL missing from release evidence
-BLOCKER remote_evidence_report: remote evidence report not ready: status=missing release_ready=False run=None
-BLOCKER remote_workflow_registered: remote workflow_count=0
-exit_code=2
+RELEASE EVIDENCE AUDIT PASSED
+OK remote_ci_run_evidence: GitHub Actions run evidence recorded
+OK remote_evidence_report: remote evidence report ready
+OK remote_workflow_registered: remote workflow_count=1
 ```
 
 ## 剩余 release-readiness 缺口
 
-1. CI workflow 已定义且本地 contract 已验证，但远端结果未验证。`gh api repos/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/workflows` 当前返回 `workflow_count=0`；当前 checkout 尚未提交/推送，因此仍需要在 GitHub Actions 上跑一次 manual/nightly job，再用 `make record-remote-release-evidence` 采集 run JSON，并把 run URL、结论和关键日志摘要补进 release evidence。
+当前 release gate 阻塞项为 0。后续非阻塞维护项：GitHub Actions 标注了 `actions/checkout@v4`、`actions/setup-python@v5`、`actions/upload-artifact@v4` 的 Node.js 20 deprecation annotation；应在 2026-09-16 前确认对应 action 的 Node.js 24 支持或按 GitHub 建议调整。
 
 ## 复现顺序
 

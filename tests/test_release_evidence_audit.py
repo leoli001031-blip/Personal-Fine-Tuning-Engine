@@ -136,7 +136,12 @@ name: pfe-release-evidence
     ]:
         (root / path).write_text("", encoding="utf-8")
 
-    items = audit.audit_release_evidence(root=root, require_remote=True, check_processes=False)
+    items = audit.audit_release_evidence(
+        root=root,
+        require_remote=True,
+        check_processes=False,
+        remote_evidence_report=tmp_path / "missing-remote-evidence.json",
+    )
 
     blockers = {item.code for item in items if item.status == "blocker"}
     assert blockers == {"remote_ci_run_evidence", "remote_evidence_report"}

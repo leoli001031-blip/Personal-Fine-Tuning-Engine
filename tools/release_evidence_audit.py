@@ -231,7 +231,7 @@ def audit_release_evidence(
     add(
         "release_evidence_doc",
         not missing_evidence,
-        "release evidence records local gates and remote gap"
+        "release evidence records local gates and remote state"
         if not missing_evidence
         else f"missing evidence text: {missing_evidence}",
     )
