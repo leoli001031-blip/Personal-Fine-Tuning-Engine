@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from .doctor_formatting_deps import DoctorFormattingDeps
@@ -40,6 +41,7 @@ def _format_doctor_blocked_capabilities(
 
 def _format_doctor_next_steps(
     *,
+    workspace: str | None,
     trainer_line: str | None,
     local_model_line: str | None,
     export_tool_line: str | None,
@@ -48,9 +50,25 @@ def _format_doctor_next_steps(
     deps: DoctorFormattingDeps,
 ) -> str:
     steps: list[str] = []
+    home = Path(deps.pfe_home(None)).expanduser()
+    config_path = home / "config.toml"
+    config_missing = not config_path.exists()
+
+    if config_missing:
+        steps.append(
+            "initialize local config with "
+            "pfe init --base-model <path-or-model-id> "
+            f"(missing {deps.format_scalar(config_path)})"
+        )
 
     if local_model_line is None or "available=yes" not in local_model_line:
-        steps.append("set a base_model in the latest adapter manifest or pass --base-model")
+        if config_missing:
+            steps.append("or pass --base-model for this doctor run to probe a local base model")
+        else:
+            steps.append(
+                "set a base_model in the latest adapter manifest, "
+                "run pfe init --base-model <path-or-model-id>, or pass --base-model"
+            )
 
     if trainer_line is None or "ready=yes" not in trainer_line:
         steps.append("install torch, transformers, peft, accelerate, trl, and datasets")
@@ -67,6 +85,9 @@ def _format_doctor_next_steps(
 
     if not steps:
         steps.append("run pfe train or pfe eval as needed")
+
+    workspace_name = workspace or "user_default"
+    steps.append(f"run pfe next --workspace {workspace_name} for the current guided path")
 
     return "next steps: " + "; ".join(steps)
 

@@ -1,135 +1,238 @@
 # Phase 2 收尾说明
 
-更新时间：2026-04-21
+更新时间：2026-06-15
 
 ## 1. 结论
 
-截至 **2026-04-21**，`Phase 2` 的已知主线问题已经基本收口，可以将当前状态视为：
+截至 **2026-06-15**，`Phase 2` 的功能性闭环已经打通，可以将当前状态视为：
 
-- `Phase 2` 核心能力完成
-- `Phase 2` 已知 blocker 清零
-- 常规单元 / surface / integration / e2e 验证已补齐
-- 当前更适合转入 `Phase 3` 或 release 收尾，而不是继续把 `Phase 2` 当成进行中阶段
+- `Phase 2` 核心闭环完成
+- 已知功能 blocker 清零
+- CLI / queue / server / dashboard / chat console 的 beta smoke 已补齐
+- 默认验证链保持无下载、无真实训练依赖
+- 真实本地模型 full happy path、浏览器 strict smoke、30 分钟 soak 和 performance budget 已有本机证据
 
-这次收尾不是只基于静态 review，而是基于真实修复和多轮测试结果给出的判断。
+当前判断是：`Phase 2` 可以进入 closeout / release 收尾，不需要继续作为功能研发阶段推进。后续应把远端 CI release gate 的真实执行结果作为 release-ready 的最后关键证据。
 
 ## 2. 本轮收口的关键问题
 
-### 2.1 状态与 latest 指针一致性
+### 2.1 First-run 与 guided next
 
-本轮修复了几类会直接影响状态面板、服务状态和 adapter 生命周期可见性的缺陷：
+新增了面向首次使用者的本地入口：
 
-- `status` 快照在 latest manifest 不可读时可能抛出异常，而不是降级返回
-- `ServerServices.status()` 在非默认 workspace 下读取了错误的 latest adapter
-- `adapters/<workspace>/latest` 如果是普通文件而不是 symlink，会一路落到 `os.readlink()` 报错
-- signal summary 中 `source_event_id_count / request_id_count / session_id_count` 之前错误地等于总 signal 数
+- `pfe init`
+- `pfe next`
+- `make smoke-first-run`
 
-这些问题会让闭环状态看起来“还能跑”，但实际 dashboard、status 和 promote 相关 surface 已经不可信；现在已经统一修正。
+`make smoke-first-run` 在隔离临时目录中跑通：
 
-### 2.2 路径隔离与测试隔离
+```text
+init -> doctor -> next -> generate -> trigger configure -> collect ingest/status/review -> trigger status/process-next -> eval -> promote -> serve preview
+```
 
-这轮也把 `PFE_HOME` 相关的隐式路径问题收紧了：
+这条链路证明用户可以从空 workspace 进入一个可理解、可观测、可继续操作的闭环，而不是靠隐含状态或人工拼命令。
 
-- `chat_collector`
-- `pii_audit`
-- 相关 path isolation 测试
+### 2.2 Auto-train queue 与候选生命周期
 
-目标是让默认持久化都落在可控的 `PFE_HOME` 下，而不是悄悄继承宿主机 home 目录。
+`make smoke-auto-train-queue` 现在覆盖自动训练队列的核心路径：
 
-### 2.3 训练后端 dispatch 稳定性
+- feedback 信号进入队列
+- queue item 完成处理
+- mock-local adapter manifest 可见
+- `pfe next` 能识别 `candidate_ready`
 
-`trainer/service.py` 的 backend dispatch 已做收口，避免在 dispatch 阶段为了探测可选后端而硬导入 `mlx` / `mlx_lm` 这类可能在当前环境直接崩掉的依赖。
+候选 adapter、queue 状态、candidate action 和 operations console 的状态面已经统一到 CLI 与 HTTP surface。
 
-这类问题的危险点在于：用户只是想选择或探测后端，系统却在还没真正执行训练前就因为 import side effect 失败。现在 dispatch 路径已经更稳，也更符合“optional backend 是可选能力”的预期。
+### 2.3 Real-local readiness
 
-### 2.4 UTC 时间语义统一
+新增了 dependency-safe 的 real-local 预检：
 
-最后一轮补掉了两类时间语义问题：
+- `pfe train --backend peft --real-local --preview`
+- `make smoke-real-local-readiness`
 
-- naive timestamp 与 aware timestamp 混用时，冲突检测和后续分析可能崩溃
-- `PII audit` 的文件轮转使用本地月，而报表读取按 UTC 月扫描，月切附近可能漏数
+这条链路不会下载模型，也不会要求安装重训练依赖。它验证的是：
 
-当前收口后的策略是：
+- 本地模型路径发现
+- doctor readiness 输出
+- real-local train plan
+- serve preview real-local 标记
+- console snapshot wiring
 
-- signal 相关时间统一归一到 UTC-aware
-- `PII audit` 日志文件按 UTC 月切
-- legacy naive 时间戳仍尽量兼容读取
-- stale runner 清理也接入统一时间解析 helper
+这解决了一个关键问题：用户在安装重依赖之前，就能知道本地配置是否被系统正确识别。
 
-## 3. 验证结果
+### 2.4 Live server 与 browser-facing surface
 
-### 3.1 定向回归
+新增并通过了两条 live server smoke：
 
-围绕本轮修复点新增并通过了以下回归：
+- `make smoke-server-live`
+- `make smoke-dashboard-console-live`
 
-- naive signal timestamp 归一化
-- mixed naive/aware timestamp 冲突检测不再崩溃
-- `PII audit` UTC 月切文件轮转
-- legacy naive heartbeat 时间戳仍可被 stale runner 清理逻辑处理
+覆盖范围包括：
 
-定向测试结果：
+- `GET /healthz`
+- `GET /pfe/status?detail=full`
+- `GET /dashboard`
+- `GET /pfe/dashboard/metrics`
+- `GET /pfe/dashboard/training`
+- `GET /pfe/dashboard/signals`
+- `GET /pfe/dashboard/adapters`
+- `GET /pfe/dashboard/health`
+- `GET /`
+- `POST /v1/chat/completions`
+- `POST /pfe/feedback`
 
-- `106 passed`（2026-04-20）
+这把 server、dashboard API、chat console 和 feedback 闭环从 in-process 测试推进到真实 loopback HTTP 验证。
 
-### 3.2 中风险大子集
+### 2.5 Browser JS smoke
 
-在不跑 `integration` / `e2e` 的前提下，执行了更大的常规测试子集：
+新增了可选浏览器级验证入口：
 
-- `pytest tests -q -m "not integration and not e2e" --tb=short`
+- `make smoke-browser-ui-live`
+- `tools/browser_ui_live_smoke.py`
+
+未安装 Playwright 时，该目标会跳过并给出 setup 提示；安装 `e2e` extras 并执行 `python -m playwright install chromium` 后，它会在真实 Chromium 中执行：
+
+- dashboard 页面加载
+- dashboard refresh
+- dashboard 指标 DOM 更新
+- chat console 页面加载
+- 输入消息并发送
+- assistant 回复渲染
+- accept feedback 按钮点击
+- feedback 状态进入页面文本
+
+本轮还用 Codex 内置浏览器对临时 live server 做过一次真实 JS 交互验证：
+
+- `/dashboard` 标题为 `PFE Observability Dashboard`
+- dashboard 指标 DOM 从 loading 状态更新
+- `/` chat console 成功发送消息
+- assistant bubble 数量为 1
+- accept feedback 后页面出现 `feedback accept`
+- server log 记录了 `/v1/chat/completions` 与 `/pfe/feedback` 的真实请求
+
+## 3. 当前验证结果
+
+### 3.1 Beta smoke
+
+```bash
+make smoke-beta
+```
+
+结果：通过。
+
+`smoke-beta` 当前包含：
+
+- `smoke-first-run`
+- `smoke-auto-train-queue`
+- `smoke-real-local-readiness`
+- `smoke-server-live`
+- `smoke-dashboard-console-live`
+
+### 3.2 Browser-facing smoke
+
+```bash
+make smoke-dashboard-console-live
+```
+
+结果：通过。
+
+```bash
+make smoke-browser-ui-live
+```
+
+当前本机 `.venv` 已安装 e2e extras 和 Chromium；release evidence 已用 strict 浏览器路径通过 dashboard 与 chat console 的真实 JS smoke。
+
+### 3.3 Real-local happy path
+
+```bash
+make smoke-real-local-happy
+```
+
+当前 release evidence 已设置：
+
+```bash
+PFE_REAL_LOCAL_MODEL=/Users/lichenhao/.cache/pfe/release-models/tiny-gpt2-local
+```
+
+并用可复现 tiny Hugging Face GPT-2 兼容模型跑通 strict PEFT real-local happy path。
+
+本机发现了可选本地模型目录：
+
+```text
+models/Qwen2.5-0.5B-Instruct-4bit
+models/Qwen3-4B
+```
+
+其他机器复现真实 full happy path 时，需要先安装 training/e2e 依赖，再执行：
+
+```bash
+PFE_REAL_LOCAL_MODEL=/abs/path/to/local-model make smoke-real-local-happy
+```
+
+### 3.4 全量默认回归
+
+```bash
+make test
+```
 
 结果：
 
-- `959 passed, 21 deselected`（2026-04-20）
+```text
+990 passed, 16 skipped, 52 deselected
+```
 
-这一步主要用于验证 Phase 2 主线修复没有污染常规 HTTP / CLI / pipeline / status surface。
+### 3.5 工作区卫生
 
-### 3.3 显式 integration / e2e
+已确认：
 
-显式标记的 integration / e2e 套件共有 21 条。
-
-第一次在沙箱内执行时，出现了两类环境性失败：
-
-- 本地监听 `127.0.0.1:9999` 被沙箱拒绝
-- `trainer_dpo_real` 所需的外部模型资源访问受限
-
-在沙箱外使用同一测试命令重跑后，结果为：
-
-- `21 passed, 959 deselected, 16 warnings in 803.59s (0:13:23)`（2026-04-21）
-
-这说明之前那批失败不是 Phase 2 代码回归，而是运行环境边界。
-
-### 3.4 补充慢路径 surface
-
-另外补跑了未标 `integration` 但属于慢速闭环 surface 的几组测试：
-
-- `tests/test_server_serve_e2e.py`
-- `tests/test_trainer_export_server_e2e.py`
-- `tests/test_phase0_lifecycle_e2e.py`
-
-结果：
-
-- `5 passed in 28.32s`（2026-04-21）
+- `git diff --check` 通过
+- `uv.lock` 不存在
+- 项目根目录 `.pfe` 不存在
+- `videos/` 仍为未跟踪本地文件，未纳入本轮改动
 
 ## 4. 当前还剩什么
 
-当前没有发现新的 `Phase 2` blocker，但仍有少量边界应区别对待：
+当前不再有 Phase 2 功能 blocker，但还有几类 release-readiness 边界：
 
-- 依赖栈 warning 仍存在：`torch / peft / dataloader` 在真实训练测试里有非阻塞 warning
-- 尚未做长时间 soak test：当前结论基于功能正确性和闭环可达性，不等于长时间稳定性验证
-- 尚未做专门的性能/内存基准：本轮重点是 correctness 和 surface consistency，不是吞吐或峰值优化
+1. **真实本地模型 full happy path 已有本机 strict 证据**
 
-这些点不影响“`Phase 2` 基本完成”的结论，但如果要进入对外发布或更重真实负载，建议单独作为下一阶段任务处理。
+   当前 release evidence 已使用本地 tiny Hugging Face 兼容模型跑通：
+
+   ```bash
+   PFE_REAL_LOCAL_MODEL=/Users/lichenhao/.cache/pfe/release-models/tiny-gpt2-local make smoke-release-strict
+   ```
+
+2. **Playwright 浏览器 smoke 已有 strict 证据**
+
+   本机已安装 e2e extras 和 Chromium，`smoke-release-strict` 会把浏览器 JS smoke 作为必过 gate。若纳入 CI，需要同样安装：
+
+   ```bash
+   .venv/bin/python -m pip install -e '.[e2e]'
+   .venv/bin/python -m playwright install chromium
+   ```
+
+3. **30 分钟长稳态 soak 已有本机证据**
+
+   `release_soak_smoke.py --duration-seconds 1800 --interval-seconds 2` 已通过，覆盖 30 分钟 queue / daemon / server / dashboard / chat / feedback 长稳态轮询。正式发布前仍可按需补 60 分钟窗口。
+
+4. **性能与内存 budget 已有首版**
+
+   `make benchmark-release` 已记录 first-run、strict browser UI、real-local happy path 和短 soak 的耗时/峰值 RSS，并默认执行 release budget。
+
+5. **Dashboard 外部资源已移除**
+
+   dashboard 已移除外部 Chart.js / Google Fonts，改用内联 `OfflineChart` canvas fallback；live smoke 会拒绝外部资源 URL。
 
 ## 5. 建议的下一步
 
-如果继续推进，优先级建议如下：
+优先级建议：
 
-1. 进入 `Phase 3`：插件体系、多模型兼容、示例应用和文档站
-2. 做 release 收尾：整理 changelog、对外使用说明、升级路径
-3. 单独安排一轮长时稳定性 / 性能验证，而不是继续把功能性问题混在 `Phase 2`
+1. 在 GitHub Actions 上验证 `smoke-release-strict` / `benchmark-release`
+2. 把远端 CI run URL、结论和关键日志摘要补入 `release-readiness-evidence.md`
+3. 进入 Phase 3：多模型兼容、插件体系、示例应用、文档站
 
 ## 6. 最终判断
 
-截至 **2026-04-21**，可以把项目当前状态表述为：
+截至 **2026-06-15**，可以把项目当前状态表述为：
 
-> `Phase 1` 与 `Phase 2` 的主线目标已经完成，`Phase 2` 已知问题基本解决，闭环能力经过真实测试验证，当前进入收尾完成态。
+> `Phase 2` 功能闭环已经完成，默认 beta 验证链已覆盖 CLI、队列、server、dashboard、chat console 和 feedback。strict release gate、真实浏览器 JS smoke、real-local tiny model happy path、30 分钟长稳态 soak、dashboard offline-first、性能/内存 budget 和最终发布材料已有本机证据。剩余工作不再是 Phase 2 功能研发，而是 release-readiness 收尾：远端 CI 证据。

@@ -77,6 +77,8 @@ def format_serve_preview_legacy(
                     command = getattr(preview, "command")
             if command:
                 lines.append(f"command: {deps.format_scalar(command)}")
+            if runtime.get("dry_run") is True:
+                lines.append(f"next: preview only; start the server with pfe serve --port {port} --live")
         plan_snapshots = deps.build_plan_snapshots(workspace, {})
         trainer_line = deps.format_trainer_summary(plan_snapshots.get("trainer"))
         if trainer_line is not None:
@@ -95,6 +97,12 @@ def format_serve_preview_legacy(
         latest_line = deps.format_adapter_snapshot_line("latest promoted", latest_snapshot, include_latest=True)
         if latest_line is not None:
             lines.append(latest_line)
+        elif adapter == "latest":
+            workspace_hint = f" --workspace {workspace}" if workspace else ""
+            lines.append(
+                "adapter next step: no latest promoted snapshot found; "
+                f"train/evaluate/promote an adapter or pass --adapter <version>{workspace_hint}"
+            )
         cached_state = deps.read_cli_state(workspace)
         recent_snapshot = None
         if cached_state is not None:
@@ -104,8 +112,22 @@ def format_serve_preview_legacy(
         recent_lines = deps.format_recent_training_snapshot(recent_snapshot or cached_state)
         if recent_lines is not None:
             lines.extend(recent_lines)
+        recent_map = deps.coerce_mapping(recent_snapshot or cached_state)
+        if recent_map is not None and (
+            recent_map.get("execution_backend") == "mock_local"
+            or recent_map.get("executor_mode") in {"fallback", "phase0_mock"}
+        ):
+            lines.append(
+                "training backend next step: recent snapshot used mock/fallback execution; "
+                "run real local training before expecting personalized local inference"
+            )
         if preview_mapping and preview_mapping.get("uvicorn_module"):
             lines.append(f"uvicorn module: {deps.format_scalar(preview_mapping.get('uvicorn_module'))}")
+    if not real_local:
+        lines.append(
+            "real local inference next step: disabled by default; "
+            "add --real-local only after doctor resolves a base model"
+        )
     return "\n".join(lines)
 
 

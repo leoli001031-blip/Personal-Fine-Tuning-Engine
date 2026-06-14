@@ -10,6 +10,7 @@ from unittest.mock import patch
 import pytest
 
 from pfe_core.adapter_store.store import AdapterStore
+from pfe_core.config import PFEConfig
 from pfe_core.pipeline import PipelineService, _eval_generation_kwargs
 
 @pytest.mark.slow
@@ -161,6 +162,66 @@ class Phase0PipelineTests(unittest.TestCase):
         self.assertEqual(calls.count(("load", "base")), 0)
         self.assertEqual(sum(1 for kind, _value in calls if kind == "load"), 1)
         self.assertEqual(sum(1 for kind, _value in calls if kind == "attach"), 1)
+
+    def test_chat_completion_uses_initialized_base_model_for_local_default(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "/models/init-chat-default"
+        config.save(home=self.pfe_home)
+
+        service = PipelineService()
+        captured_base_models: list[str] = []
+
+        def capture_init(engine, config):  # type: ignore[no-untyped-def]
+            captured_base_models.append(config.base_model)
+            engine.config = config
+
+        with patch("pfe_core.pipeline.InferenceEngine.__init__", new=capture_init), patch(
+            "pfe_core.pipeline.InferenceEngine.generate",
+            return_value="configured model reply",
+        ), patch(
+            "pfe_core.pipeline.InferenceEngine.status",
+            return_value={"served_by": "mock"},
+        ):
+            payload = service.chat_completion(
+                messages=[{"role": "user", "content": "hello"}],
+                model="local-default",
+            )
+
+        self.assertEqual(captured_base_models, ["/models/init-chat-default"])
+        self.assertEqual(payload["choices"][0]["message"]["content"], "configured model reply")
+
+    def test_chat_completion_keeps_adapter_manifest_base_model_ahead_of_config_default(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "/models/init-chat-default"
+        config.save(home=self.pfe_home)
+        store = AdapterStore(home=self.pfe_home)
+        adapter = store.create_training_version(
+            base_model="/models/manifest-base",
+            training_config={"backend": "mock_local", "train_type": "sft"},
+        )
+
+        service = PipelineService()
+        captured_base_models: list[str] = []
+
+        def capture_init(engine, config):  # type: ignore[no-untyped-def]
+            captured_base_models.append(config.base_model)
+            engine.config = config
+
+        with patch("pfe_core.pipeline.InferenceEngine.__init__", new=capture_init), patch(
+            "pfe_core.pipeline.InferenceEngine.generate",
+            return_value="manifest model reply",
+        ), patch(
+            "pfe_core.pipeline.InferenceEngine.status",
+            return_value={"served_by": "mock"},
+        ):
+            payload = service.chat_completion(
+                messages=[{"role": "user", "content": "hello"}],
+                model="local-default",
+                adapter_version=str(adapter["version"]),
+            )
+
+        self.assertEqual(captured_base_models, ["/models/manifest-base"])
+        self.assertEqual(payload["choices"][0]["message"]["content"], "manifest model reply")
 
     def test_eval_generation_kwargs_allows_single_token_smoke_override(self) -> None:
         with patch.dict(os.environ, {"PFE_EVAL_MAX_TOKENS": "1"}, clear=False):

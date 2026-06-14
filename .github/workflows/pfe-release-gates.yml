@@ -1,0 +1,98 @@
+name: PFE release gates
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/pfe-release-gates.yml"
+      - "Makefile"
+      - "pyproject.toml"
+      - "pfe-cli/**"
+      - "pfe-core/**"
+      - "pfe-server/**"
+      - "tests/**"
+      - "tools/**"
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"
+
+jobs:
+  fast-gate:
+    name: Fast beta gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install fast dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -e ".[e2e]"
+
+      - name: Run fast gates
+        run: |
+          make test-unit
+          make test-surface
+          make test-e2e-mock
+          make smoke-beta
+
+  release-gate:
+    name: Strict release gate
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install release dependencies
+        run: |
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -e ".[e2e]"
+          .venv/bin/python -m pip install "torch>=2.1" "transformers>=4.36" "peft>=0.7" "accelerate>=0.23" "safetensors>=0.4"
+          .venv/bin/python -m playwright install --with-deps chromium
+
+      - name: Prepare no-download release model
+        run: |
+          .venv/bin/python tools/prepare_tiny_hf_model.py
+
+      - name: Run strict release smoke
+        run: |
+          export PFE_REAL_LOCAL_MODEL="$HOME/.cache/pfe/release-models/tiny-gpt2-local"
+          make test-e2e-mock
+          make smoke-release-strict
+
+      - name: Run release performance budget
+        run: |
+          export PFE_REAL_LOCAL_MODEL="$HOME/.cache/pfe/release-models/tiny-gpt2-local"
+          make benchmark-release PERF_REPORT=/tmp/pfe-release-perf-report.json
+
+      - name: Run release evidence audit
+        run: |
+          make audit-release-evidence-report AUDIT_REPORT=/tmp/pfe-release-evidence-audit.json
+
+      - name: Bundle release evidence artifacts
+        run: |
+          make bundle-release-evidence \
+            PERF_REPORT=/tmp/pfe-release-perf-report.json \
+            AUDIT_REPORT=/tmp/pfe-release-evidence-audit.json \
+            BUNDLE_REPORT=/tmp/pfe-release-evidence-bundle.json
+
+      - name: Upload release evidence artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pfe-release-evidence
+          path: |
+            /tmp/pfe-release-perf-report.json
+            /tmp/pfe-release-evidence-audit.json
+            /tmp/pfe-release-evidence-bundle.json
+          if-no-files-found: warn

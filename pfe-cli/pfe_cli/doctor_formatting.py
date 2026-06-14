@@ -61,6 +61,7 @@ def format_doctor(
     )
     lines.append(
         _format_doctor_next_steps(
+            workspace=workspace,
             trainer_line=trainer_line,
             local_model_line=local_model_line,
             export_tool_line=export_tool_line,

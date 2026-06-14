@@ -1,5 +1,19 @@
 """Tests for Phase 2.5 Observability Dashboard."""
 
+from typer.testing import CliRunner
+import time
+
+
+
+class _FakeHTTPResponse:
+    def __init__(self, status: int):
+        self.status = status
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return False
 
 
 class TestDashboardMetrics:
@@ -115,6 +129,45 @@ class TestDashboardMetrics:
         assert "adapter_comparisons" in metrics
         assert "total_adapters" in metrics
 
+    def test_system_health_uses_lightweight_queue_counts(self, monkeypatch):
+        """System health should not call the full pipeline status aggregator."""
+        from pfe_core import pipeline as pipeline_module
+        from pfe_server.dashboard.metrics import AdapterMetricsCollector
+
+        class FakePipeline:
+            def train_queue_daemon_status(self):
+                return {"active": True, "observed_state": "healthy"}
+
+            def train_queue_worker_runner_status(self):
+                return {"active": False}
+
+            def _load_train_queue_state(self, *, workspace=None):
+                assert workspace == "user_default"
+                return {
+                    "items": [
+                        {"job_id": "queued-1", "state": "queued"},
+                        {"job_id": "awaiting-1", "state": "awaiting_confirmation"},
+                        {"job_id": "running-1", "state": "running"},
+                        {"job_id": "completed-1", "state": "completed"},
+                        {"job_id": "failed-1", "state": "failed"},
+                    ]
+                }
+
+            def status(self, workspace=None):
+                raise AssertionError("dashboard health should not call full status()")
+
+        monkeypatch.setattr(pipeline_module, "PipelineService", FakePipeline)
+
+        metrics = AdapterMetricsCollector(workspace="user_default").collect_system_health()
+
+        assert metrics.daemon_active is True
+        assert metrics.daemon_state == "healthy"
+        assert metrics.runner_active is False
+        assert metrics.queue_pending_jobs == 2
+        assert metrics.queue_processing_jobs == 1
+        assert metrics.queue_completed_jobs == 1
+        assert metrics.queue_failed_jobs == 1
+
 
 class TestDashboardAPI:
     """Test dashboard API endpoints."""
@@ -151,6 +204,47 @@ class TestDashboardAPI:
         health = api.get_system_health()
         assert isinstance(health, dict)
 
+    def test_dashboard_data_returns_stale_snapshot_when_refresh_times_out(self, monkeypatch):
+        """Dashboard metrics should stay responsive if a refresh is slow."""
+        from pfe_server import dashboard_api as dashboard_api_module
+
+        dashboard_api_module._DASHBOARD_CACHE.clear()
+        dashboard_api_module._DASHBOARD_INFLIGHT.clear()
+        monkeypatch.setenv("PFE_DASHBOARD_METRICS_CACHE_SECONDS", "0")
+        monkeypatch.setenv("PFE_DASHBOARD_METRICS_STALE_TIMEOUT_SECONDS", "0.01")
+        monkeypatch.setenv("PFE_DASHBOARD_METRICS_COLD_TIMEOUT_SECONDS", "0.5")
+
+        class FakeService:
+            def __init__(self, workspace):
+                self.workspace = workspace
+                self.calls = 0
+
+            def get_metrics(self):
+                self.calls += 1
+                if self.calls == 1:
+                    return {"workspace": self.workspace, "value": 1}
+                time.sleep(0.1)
+                return {"workspace": self.workspace, "value": 2}
+
+        fake_service = FakeService("cache_test")
+        monkeypatch.setattr(dashboard_api_module, "DashboardService", lambda workspace: fake_service)
+
+        api = dashboard_api_module.DashboardAPI(workspace="cache_test")
+        first = api.get_dashboard_data()
+        time.sleep(0.02)
+        second = api.get_dashboard_data()
+
+        assert first["value"] == 1
+        assert first["dashboard_cache"]["cached"] is False
+        assert second["value"] == 1
+        assert second["dashboard_cache"]["cached"] is True
+        assert second["dashboard_cache"]["stale"] is True
+        assert second["dashboard_cache"]["refresh_in_progress"] is True
+
+        time.sleep(0.15)
+        dashboard_api_module._DASHBOARD_CACHE.clear()
+        dashboard_api_module._DASHBOARD_INFLIGHT.clear()
+
 
 class TestDashboardCLI:
     """Test dashboard CLI command."""
@@ -162,6 +256,103 @@ class TestDashboardCLI:
         # Check that dashboard command is registered
         # The command is registered via @app.command("dashboard")
         assert app is not None
+
+    def test_dashboard_reports_health_failure_and_start_command(self, monkeypatch):
+        from pfe_cli import main as cli_main
+        from pfe_cli import utility_basic_commands
+
+        opened = []
+        monkeypatch.setattr(
+            utility_basic_commands,
+            "_dashboard_health_check",
+            lambda host, port: (False, "unavailable | refused"),
+        )
+        monkeypatch.setattr(utility_basic_commands.webbrowser, "open", lambda url: opened.append(url))
+
+        result = CliRunner().invoke(cli_main.app, ["dashboard", "--port", "8921"])
+
+        assert result.exit_code == 0
+        assert "Health check: unavailable | refused" in result.stdout
+        assert "Server is not reachable; browser was not opened." in result.stdout
+        assert "Start server: pfe serve --port 8921 --live" in result.stdout
+        assert opened == []
+
+    def test_dashboard_opens_browser_when_health_check_passes(self, monkeypatch):
+        from pfe_cli import main as cli_main
+        from pfe_cli import utility_basic_commands
+
+        opened = []
+        monkeypatch.setattr(
+            utility_basic_commands,
+            "_dashboard_health_check",
+            lambda host, port: (True, "ok | HTTP 200"),
+        )
+        monkeypatch.setattr(utility_basic_commands.webbrowser, "open", lambda url: opened.append(url))
+
+        result = CliRunner().invoke(cli_main.app, ["dashboard", "--port", "8921"])
+
+        assert result.exit_code == 0
+        assert "Health check: ok | HTTP 200" in result.stdout
+        assert "Opening browser..." in result.stdout
+        assert opened == ["http://127.0.0.1:8921/dashboard"]
+
+    def test_dashboard_no_open_keeps_browser_closed_but_reports_health(self, monkeypatch):
+        from pfe_cli import main as cli_main
+        from pfe_cli import utility_basic_commands
+
+        opened = []
+        monkeypatch.setattr(
+            utility_basic_commands,
+            "_dashboard_health_check",
+            lambda host, port: (False, "unavailable | refused"),
+        )
+        monkeypatch.setattr(utility_basic_commands.webbrowser, "open", lambda url: opened.append(url))
+
+        result = CliRunner().invoke(cli_main.app, ["dashboard", "--no-open", "--port", "8921"])
+
+        assert result.exit_code == 0
+        assert "Health check: unavailable | refused" in result.stdout
+        assert "Use --open to launch browser automatically after the server is healthy." in result.stdout
+        assert "Start server: pfe serve --port 8921 --live" in result.stdout
+        assert opened == []
+
+    def test_dashboard_health_check_requires_dashboard_and_metrics(self, monkeypatch):
+        from pfe_cli import utility_basic_commands
+
+        seen_paths = []
+
+        def fake_urlopen(request, timeout=1.0):
+            seen_paths.append(request.full_url)
+            return _FakeHTTPResponse(200)
+
+        monkeypatch.setattr(utility_basic_commands.urllib.request, "urlopen", fake_urlopen)
+
+        healthy, summary = utility_basic_commands._dashboard_health_check("127.0.0.1", 8921)
+
+        assert healthy is True
+        assert seen_paths == [
+            "http://127.0.0.1:8921/healthz",
+            "http://127.0.0.1:8921/dashboard",
+            "http://127.0.0.1:8921/pfe/dashboard/metrics",
+        ]
+        assert "/pfe/dashboard/metrics" in summary
+
+    def test_dashboard_health_check_fails_when_metrics_endpoint_fails(self, monkeypatch):
+        from pfe_cli import utility_basic_commands
+
+        def fake_urlopen(request, timeout=1.0):
+            if request.full_url.endswith("/pfe/dashboard/metrics"):
+                return _FakeHTTPResponse(500)
+            return _FakeHTTPResponse(200)
+
+        monkeypatch.setattr(utility_basic_commands.urllib.request, "urlopen", fake_urlopen)
+
+        healthy, summary = utility_basic_commands._dashboard_health_check("127.0.0.1", 8921)
+
+        assert healthy is False
+        assert "unhealthy" in summary
+        assert "/pfe/dashboard/metrics" in summary
+        assert "HTTP 500" in summary
 
 
 class TestDashboardFrontend:
@@ -194,7 +385,9 @@ class TestDashboardFrontend:
         content = dashboard_path.read_text(encoding="utf-8")
 
         # Check for key elements
-        assert "chart.js" in content.lower()
+        assert "class OfflineChart" in content
+        assert "window.Chart = OfflineChart" in content
+        assert "https://" not in content
         assert "trainingLossChart" in content
         assert "signalQualityChart" in content
         assert "adapterComparisonChart" in content

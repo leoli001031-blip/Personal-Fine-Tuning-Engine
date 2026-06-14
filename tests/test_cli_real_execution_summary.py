@@ -174,6 +174,10 @@ class CLIRealExecutionSummaryTests(unittest.TestCase):
         self.assertIn("status:", clean)
         self.assertIn("executed", clean)
         self.assertIn("not_required", clean)
+        self.assertIn("next: preview only; start the server with pfe serve --port 8921 --live", clean)
+        self.assertIn("adapter: no latest promoted snapshot found", clean)
+        self.assertIn("training backend: recent snapshot used mock/fallback execution", clean)
+        self.assertIn("real local inference: disabled by default", clean)
 
 if __name__ == "__main__":
     unittest.main()

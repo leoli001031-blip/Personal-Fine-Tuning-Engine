@@ -58,6 +58,16 @@ def _default_local_base_model() -> str:
     env_override = os.environ.get("PFE_BASE_MODEL")
     if env_override:
         return env_override
+    try:
+        from ..config import PFEConfig
+
+        config_path = PFEConfig.default_path()
+        if config_path.exists():
+            configured = str(PFEConfig.load(path=config_path).model.base_model or "").strip()
+            if configured and configured not in {"local", "local-default", "base"}:
+                return configured
+    except Exception:
+        pass
     if not _auto_local_base_model_enabled():
         return "Qwen/Qwen2.5-3B-Instruct"
     candidate = _repo_root() / "models" / "Qwen3-4B"
@@ -505,6 +515,12 @@ class InferenceEngine:
             cached = self._runtime_cache.get(cache_key)
             if cached is not None:
                 return cached
+
+        if not _looks_like_local_path(resolved_base_model):
+            raise InferenceError(
+                "real local inference requires a local base model path; "
+                f"resolved_base_model={resolved_base_model}"
+            )
 
         if importlib.util.find_spec("torch") is None or importlib.util.find_spec("transformers") is None:
             raise InferenceError("torch and transformers are required for real local inference")

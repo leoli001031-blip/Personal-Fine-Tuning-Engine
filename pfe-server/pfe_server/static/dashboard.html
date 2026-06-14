@@ -4,10 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PFE Observability Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:,">
     <style>
         * {
             margin: 0;
@@ -31,7 +28,7 @@
         }
 
         body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             background: var(--bg-primary);
             color: var(--text-primary);
             min-height: 100vh;
@@ -57,7 +54,7 @@
         }
 
         .header h1 {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 1.75rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold) 100%);
@@ -202,7 +199,7 @@
         }
 
         .metric-value {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 2.5rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-gold) 100%);
@@ -252,7 +249,7 @@
         }
 
         .section-title {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             font-size: 1.125rem;
             font-weight: 600;
             color: var(--text-primary);
@@ -274,6 +271,12 @@
             position: relative;
             height: 300px;
             margin-bottom: 1rem;
+        }
+
+        .chart-container canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .chart-grid {
@@ -695,6 +698,215 @@
 
         // API base URL
         const API_BASE = '/pfe/dashboard';
+
+        class OfflineChart {
+            constructor(ctx, config) {
+                this.ctx = ctx;
+                this.canvas = ctx.canvas;
+                this.config = config || {};
+                this.draw();
+            }
+
+            destroy() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            draw() {
+                const rect = this.canvas.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                const width = Math.max(320, Math.floor(rect.width || this.canvas.parentElement?.clientWidth || 640));
+                const height = Math.max(220, Math.floor(rect.height || this.canvas.parentElement?.clientHeight || 300));
+                this.canvas.width = Math.floor(width * dpr);
+                this.canvas.height = Math.floor(height * dpr);
+                this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                this.ctx.clearRect(0, 0, width, height);
+                this.ctx.font = '12px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                this.ctx.textBaseline = 'middle';
+
+                if (this.config.type === 'doughnut') {
+                    this.drawDoughnut(width, height);
+                } else {
+                    this.drawCartesian(width, height);
+                }
+            }
+
+            datasets() {
+                return this.config.data?.datasets || [];
+            }
+
+            labels() {
+                return this.config.data?.labels || [];
+            }
+
+            color(value, fallback) {
+                const isGradient = typeof CanvasGradient !== 'undefined' && value instanceof CanvasGradient;
+                return typeof value === 'string' || isGradient ? value : fallback;
+            }
+
+            numericValues() {
+                const values = [];
+                this.datasets().forEach(dataset => {
+                    (dataset.data || []).forEach(value => {
+                        if (Number.isFinite(Number(value))) {
+                            values.push(Number(value));
+                        }
+                    });
+                });
+                return values;
+            }
+
+            drawLegend(items, x, y) {
+                let cursorX = x;
+                this.ctx.font = '12px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                items.forEach(item => {
+                    this.ctx.fillStyle = this.color(item.color, '#94A3B8');
+                    this.ctx.fillRect(cursorX, y - 5, 10, 10);
+                    this.ctx.fillStyle = '#94A3B8';
+                    this.ctx.fillText(item.label, cursorX + 16, y);
+                    cursorX += Math.max(92, String(item.label).length * 7 + 32);
+                });
+            }
+
+            drawAxes(left, top, width, height, maxValue) {
+                this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                this.ctx.lineWidth = 1;
+                this.ctx.fillStyle = '#64748B';
+                this.ctx.font = '11px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                for (let i = 0; i <= 4; i += 1) {
+                    const y = top + height - (height * i / 4);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(left, y);
+                    this.ctx.lineTo(left + width, y);
+                    this.ctx.stroke();
+                    this.ctx.fillText((maxValue * i / 4).toFixed(maxValue <= 1 ? 2 : 1), 8, y);
+                }
+            }
+
+            drawCartesian(width, height) {
+                const labels = this.labels();
+                const datasets = this.datasets();
+                const values = this.numericValues();
+                const maxValue = Math.max(1, ...values) * 1.1;
+                const left = 48;
+                const top = 24;
+                const chartWidth = Math.max(120, width - left - 24);
+                const chartHeight = Math.max(120, height - top - 58);
+                const barDatasets = datasets.filter(dataset => (dataset.type || this.config.type) === 'bar');
+                const lineDatasets = datasets.filter(dataset => (dataset.type || this.config.type) !== 'bar');
+
+                this.drawAxes(left, top, chartWidth, chartHeight, maxValue);
+
+                if (labels.length > 0) {
+                    this.ctx.fillStyle = '#64748B';
+                    labels.forEach((label, index) => {
+                        if (index % Math.ceil(labels.length / 6 || 1) !== 0) return;
+                        const x = left + (labels.length === 1 ? chartWidth / 2 : chartWidth * index / (labels.length - 1));
+                        this.ctx.fillText(String(label).slice(0, 10), x - 20, top + chartHeight + 20);
+                    });
+                }
+
+                barDatasets.forEach((dataset, datasetIndex) => {
+                    const data = dataset.data || [];
+                    const groupWidth = chartWidth / Math.max(1, labels.length || data.length);
+                    const barWidth = Math.max(4, groupWidth / Math.max(1, barDatasets.length + 1));
+                    this.ctx.fillStyle = this.color(dataset.backgroundColor, '#F59E0B');
+                    data.forEach((value, index) => {
+                        const numeric = Number(value);
+                        if (!Number.isFinite(numeric)) return;
+                        const x = left + groupWidth * index + barWidth * datasetIndex + barWidth * 0.5;
+                        const barHeight = chartHeight * numeric / maxValue;
+                        this.ctx.fillRect(x, top + chartHeight - barHeight, barWidth, barHeight);
+                    });
+                });
+
+                lineDatasets.forEach(dataset => {
+                    const data = dataset.data || [];
+                    const stroke = this.color(dataset.borderColor || dataset.backgroundColor, '#F59E0B');
+                    this.ctx.strokeStyle = stroke;
+                    this.ctx.lineWidth = Number(dataset.borderWidth || 2);
+                    this.ctx.beginPath();
+                    let hasPoint = false;
+                    data.forEach((value, index) => {
+                        const numeric = Number(value);
+                        if (!Number.isFinite(numeric)) return;
+                        const x = left + (data.length === 1 ? chartWidth / 2 : chartWidth * index / (data.length - 1));
+                        const y = top + chartHeight - chartHeight * numeric / maxValue;
+                        if (!hasPoint) {
+                            this.ctx.moveTo(x, y);
+                            hasPoint = true;
+                        } else {
+                            this.ctx.lineTo(x, y);
+                        }
+                    });
+                    this.ctx.stroke();
+                    this.ctx.fillStyle = stroke;
+                    data.forEach((value, index) => {
+                        const numeric = Number(value);
+                        if (!Number.isFinite(numeric)) return;
+                        const x = left + (data.length === 1 ? chartWidth / 2 : chartWidth * index / (data.length - 1));
+                        const y = top + chartHeight - chartHeight * numeric / maxValue;
+                        this.ctx.beginPath();
+                        this.ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    });
+                });
+
+                this.drawLegend(
+                    datasets.map(dataset => ({
+                        label: dataset.label || 'Series',
+                        color: dataset.borderColor || dataset.backgroundColor,
+                    })),
+                    left,
+                    height - 18,
+                );
+            }
+
+            drawDoughnut(width, height) {
+                const dataset = this.datasets()[0] || {};
+                const data = (dataset.data || []).map(value => Math.max(0, Number(value) || 0));
+                const labels = this.labels();
+                const colors = dataset.backgroundColor || ['#10B981', '#F59E0B', '#EF4444'];
+                const total = data.reduce((sum, value) => sum + value, 0) || 1;
+                const centerX = width / 2;
+                const centerY = height / 2 - 12;
+                const radius = Math.min(width, height) * 0.28;
+                let start = -Math.PI / 2;
+
+                data.forEach((value, index) => {
+                    const end = start + Math.PI * 2 * (value / total);
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(centerX, centerY);
+                    this.ctx.arc(centerX, centerY, radius, start, end);
+                    this.ctx.closePath();
+                    this.ctx.fillStyle = this.color(colors[index], '#64748B');
+                    this.ctx.fill();
+                    start = end;
+                });
+
+                this.ctx.globalCompositeOperation = 'destination-out';
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, radius * 0.58, 0, Math.PI * 2);
+                this.ctx.fill();
+                this.ctx.globalCompositeOperation = 'source-over';
+
+                this.ctx.fillStyle = '#F8FAFC';
+                this.ctx.font = '700 20px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText(String(data.reduce((sum, value) => sum + value, 0)), centerX, centerY);
+                this.ctx.textAlign = 'left';
+
+                this.drawLegend(
+                    labels.map((label, index) => ({
+                        label,
+                        color: colors[index],
+                    })),
+                    24,
+                    height - 18,
+                );
+            }
+        }
+
+        window.Chart = OfflineChart;
 
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', () => {

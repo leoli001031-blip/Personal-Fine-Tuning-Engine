@@ -39,6 +39,8 @@ def format_status_matrix(result: Any, *, workspace: str | None = None) -> str:
 
     # Footer
     lines.append(draw_separator())
+    guided_workspace = workspace or "user_default"
+    lines.append(f"{MatrixColors.GREEN_DIM}> Next: pfe next --workspace {guided_workspace}{MatrixColors.RESET}")
     lines.append(f"{MatrixColors.GREEN_DIM}> PFE v2.0 // Matrix Terminal Interface{MatrixColors.RESET}")
 
     return "\n".join(lines)

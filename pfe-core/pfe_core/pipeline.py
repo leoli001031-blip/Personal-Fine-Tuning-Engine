@@ -80,6 +80,27 @@ def _default_chat_base_model() -> str:
     return resolve_base_model_reference("local-default")
 
 
+def _adapter_manifest_base_model(adapter_path: str | Path | None) -> str | None:
+    if not adapter_path:
+        return None
+    manifest_path = Path(adapter_path) / "adapter_manifest.json"
+    if not manifest_path.exists():
+        return None
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    configured = str(manifest.get("base_model") or "").strip()
+    return configured or None
+
+
+def _resolve_defaultable_base_model(base_model: str | None, *, adapter_path: str | Path | None = None) -> str:
+    requested = str(base_model or "local-default").strip() or "local-default"
+    if requested not in {"local", "local-default", "base"}:
+        return requested
+    return _adapter_manifest_base_model(adapter_path) or _default_chat_base_model()
+
+
 def _eval_generation_kwargs() -> dict[str, Any]:
     env = importlib.import_module("os").environ
     try:
@@ -502,6 +523,7 @@ class PipelineService:
         log_dir.mkdir(parents=True, exist_ok=True)
         log_path = log_dir / f"train_queue_daemon_{workspace_name}.log"
         env = dict(os.environ)
+        env["PFE_HOME"] = str(resolve_home())
         env["PYTHONPATH"] = os.pathsep.join(
             [str(repo_root / "pfe-core"), str(repo_root / "pfe-cli"), str(repo_root / "pfe-server"), os.environ.get("PYTHONPATH", "")]
         ).strip(os.pathsep)
@@ -754,7 +776,12 @@ class PipelineService:
         self._persist_train_queue_state(payload, workspace=workspace)
         return dict(updated_item)
 
-    def _train_queue_snapshot(self, *, workspace: str | None = None) -> dict[str, Any]:
+    def _train_queue_snapshot(
+        self,
+        *,
+        workspace: str | None = None,
+        allow_daemon_auto_recover: bool = False,
+    ) -> dict[str, Any]:
         trigger = self._load_config().trainer.trigger
         payload = self._load_train_queue_state(workspace=workspace)
         items = normalize_queue_items(payload.get("items") or [])
@@ -815,7 +842,10 @@ class PipelineService:
             "review_policy_summary": review_policy_summary,
             "worker_runner": self._train_queue_worker_summary(workspace=workspace),
             "runner_history": self._runner_timeline_summary(workspace=workspace),
-            "daemon": self.train_queue_daemon_status(workspace=workspace),
+            "daemon": self.train_queue_daemon_status(
+                workspace=workspace,
+                allow_auto_recover=allow_daemon_auto_recover,
+            ),
             "daemon_history": self._daemon_timeline_summary(workspace=workspace),
             "items": items[:5],
         }
@@ -4841,6 +4871,70 @@ class PipelineService:
         self._persist_auto_trigger_action(action_payload, workspace=workspace)
         snapshot["auto_train_trigger_action"] = action_payload
         return snapshot
+
+    def configure_auto_train_trigger(
+        self,
+        *,
+        workspace: str | None = None,
+        enabled: bool | None = None,
+        min_new_samples: int | None = None,
+        max_interval_days: int | None = None,
+        queue_mode: str | None = None,
+        require_queue_confirmation: bool | None = None,
+        epochs: int | None = None,
+        backend: str | None = None,
+    ) -> dict[str, Any]:
+        """Configure the auto-train trigger and persist the updated local config."""
+
+        config = self._load_config_with_workspace(workspace)
+        trigger = config.trainer.trigger
+        changes: dict[str, Any] = {}
+
+        if enabled is not None:
+            trigger.enabled = bool(enabled)
+            changes["enabled"] = trigger.enabled
+        if min_new_samples is not None:
+            if int(min_new_samples) < 1:
+                raise ValueError("min_new_samples must be at least 1")
+            trigger.min_new_samples = int(min_new_samples)
+            changes["min_new_samples"] = trigger.min_new_samples
+        if max_interval_days is not None:
+            if int(max_interval_days) < 0:
+                raise ValueError("max_interval_days must be zero or greater")
+            trigger.max_interval_days = int(max_interval_days)
+            changes["max_interval_days"] = trigger.max_interval_days
+        if queue_mode is not None:
+            normalized_queue_mode = str(queue_mode).strip().lower()
+            if normalized_queue_mode not in {"inline", "deferred"}:
+                raise ValueError("queue_mode must be 'inline' or 'deferred'")
+            trigger.queue_mode = normalized_queue_mode  # type: ignore[assignment]
+            changes["queue_mode"] = trigger.queue_mode
+        if require_queue_confirmation is not None:
+            trigger.require_queue_confirmation = bool(require_queue_confirmation)
+            changes["require_queue_confirmation"] = trigger.require_queue_confirmation
+        if epochs is not None:
+            if int(epochs) < 1:
+                raise ValueError("epochs must be at least 1")
+            config.trainer.epochs = int(epochs)
+            changes["epochs"] = config.trainer.epochs
+        if backend is not None:
+            normalized_backend = str(backend).strip()
+            if not normalized_backend:
+                raise ValueError("backend cannot be empty")
+            config.trainer.backend = normalized_backend
+            changes["backend"] = config.trainer.backend
+
+        self._save_config(config)
+
+        snapshot = self.status(workspace=workspace)
+        action_payload = {
+            "action": "configure",
+            "status": "completed" if changes else "noop",
+            "reason": "auto_train_trigger_configured" if changes else "no_changes_requested",
+            **changes,
+        }
+        self._persist_auto_trigger_action(action_payload, workspace=workspace)
+        snapshot["auto_train_trigger_action"] = action_payload
         return snapshot
 
     def enable_auto_eval_trigger(self, *, workspace: str | None = None) -> dict[str, Any]:
@@ -5388,6 +5482,24 @@ class PipelineService:
         if signaled:
             payload["command_status"] = "signaled"
         self._persist_train_queue_daemon_state(payload, workspace=workspace)
+        if signaled and pid not in (None, os.getpid()):
+            deadline = time.monotonic() + 3.0
+            while time.monotonic() < deadline:
+                if not self._pid_exists(int(pid)):
+                    current = self._load_train_queue_daemon_state(workspace=workspace)
+                    if bool(current.get("active", False)):
+                        current.update(
+                            {
+                                "active": False,
+                                "observed_state": "stopped",
+                                "command_status": "signaled",
+                                "stop_requested": True,
+                                "last_completed_at": datetime.now(timezone.utc).isoformat(),
+                            }
+                        )
+                        self._persist_train_queue_daemon_state(current, workspace=workspace)
+                    break
+                time.sleep(0.1)
         self._append_train_queue_daemon_history(
             workspace=workspace,
             event="stop_requested",
@@ -5442,8 +5554,15 @@ class PipelineService:
             auto_recovery=False,
         )
 
-    def train_queue_daemon_status(self, *, workspace: str | None = None) -> dict[str, Any]:
-        return self._maybe_auto_recover_train_queue_daemon(workspace=workspace)
+    def train_queue_daemon_status(
+        self,
+        *,
+        workspace: str | None = None,
+        allow_auto_recover: bool = False,
+    ) -> dict[str, Any]:
+        if allow_auto_recover:
+            return self._maybe_auto_recover_train_queue_daemon(workspace=workspace)
+        return self._train_queue_daemon_summary(workspace=workspace)
 
     def promote_candidate(self, *, workspace: str | None = None, note: str | None = None) -> dict[str, Any]:
         store = create_adapter_store(workspace=workspace)
@@ -6072,6 +6191,7 @@ class PipelineService:
                 adapter_path = store.load(adapter_version)
             else:
                 raise
+        base_model = _resolve_defaultable_base_model(base_model, adapter_path=adapter_path)
         eval_samples = list_samples(dataset_split="test", limit=num_samples)
         if len(eval_samples) < num_samples:
             eval_samples.extend(
@@ -6229,7 +6349,7 @@ class PipelineService:
                 adapter_path = None
                 resolved_adapter = None
         if model in {"local", "local-default", "base"} and not adapter_path:
-            base_model_name = _default_chat_base_model()
+            base_model_name = _resolve_defaultable_base_model(model, adapter_path=None)
 
         engine = InferenceEngine(
             InferenceConfig(

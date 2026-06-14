@@ -9,17 +9,16 @@ import sys
 from pathlib import Path
 from typing import Any, Mapping
 
+from .backends import get_backend_capability, is_known_backend_name, normalize_backend_name
+
 
 class TrainingPreflight:
     def __init__(self, job_spec: Mapping[str, Any]) -> None:
         self.job_spec = dict(job_spec)
         recipe = dict(job_spec.get("recipe") or {})
         training_recipe = dict(recipe.get("training") or {})
-        self.backend = str(
-            job_spec.get("execution_executor")
-            or job_spec.get("backend")
-            or "mock_local"
-        )
+        self.backend = normalize_backend_name(job_spec.get("execution_executor") or job_spec.get("backend") or "mock_local")
+        self.capability = get_backend_capability(self.backend)
         self.base_model = job_spec.get("base_model") or training_recipe.get("base_model") or ""
         self.workspace = job_spec.get("workspace") or "user_default"
 
@@ -91,8 +90,7 @@ class TrainingPreflight:
             reasons.append("python_version_too_low")
 
         # 2. Backend allowlist
-        allowed = {"mock_local", "mlx", "peft", "unsloth", "dpo"}
-        backend_ok = self.backend in allowed
+        backend_ok = is_known_backend_name(self.backend)
         checks["backend_allowed"] = {"ok": backend_ok, "backend": self.backend}
         if not backend_ok:
             reasons.append(f"backend_not_allowed:{self.backend}")
@@ -114,30 +112,26 @@ class TrainingPreflight:
 
         # 5. Dependency imports
         dep_checks = {}
-        if self.backend == "mlx":
-            if importlib.util.find_spec("mlx") is not None and importlib.util.find_spec("mlx.core") is not None:
-                dep_checks["mlx_import"] = {"ok": True}
-            else:
-                dep_checks["mlx_import"] = {"ok": False}
-                reasons.append("mlx_import_failed")
-        elif self.backend == "peft":
-            if all(importlib.util.find_spec(name) is not None for name in ("torch", "transformers", "peft")):
-                dep_checks["peft_import"] = {"ok": True}
-            else:
-                dep_checks["peft_import"] = {"ok": False}
-                reasons.append("peft_import_failed")
-        elif self.backend == "dpo":
-            if all(importlib.util.find_spec(name) is not None for name in ("torch", "transformers", "peft", "trl")):
-                dep_checks["dpo_import"] = {"ok": True}
-            else:
-                dep_checks["dpo_import"] = {"ok": False}
-                reasons.append("dpo_import_failed")
-        elif self.backend == "unsloth":
-            if importlib.util.find_spec("unsloth") is not None:
-                dep_checks["unsloth_import"] = {"ok": True}
-            else:
-                dep_checks["unsloth_import"] = {"ok": False}
-                reasons.append("unsloth_import_failed")
+        required_dependencies = tuple(self.capability.required_dependencies) if backend_ok else ()
+        if required_dependencies:
+            missing_dependencies = tuple(
+                name
+                for name in required_dependencies
+                if importlib.util.find_spec(name) is None
+            )
+            dependency_ok = not missing_dependencies
+            check = {
+                "ok": dependency_ok,
+                "required_modules": list(required_dependencies),
+                "missing_modules": list(missing_dependencies),
+                "source": "backend_capability",
+            }
+            if not dependency_ok and not self.capability.preflight_dependency_blocking:
+                check["status"] = "warning"
+                check["reason"] = f"{self.backend} runtime import will be validated in the isolated training subprocess"
+            dep_checks[f"{self.backend}_import"] = check
+            if not dependency_ok and self.capability.preflight_dependency_blocking:
+                reasons.append(f"{self.backend}_import_failed")
         checks["dependencies"] = dep_checks
 
         # 6. Output directory writable

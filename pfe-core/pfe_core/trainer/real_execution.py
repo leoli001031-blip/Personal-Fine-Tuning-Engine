@@ -6,14 +6,15 @@ import os
 from pathlib import Path
 from typing import Any, Mapping
 
+from .backends import normalize_backend_name, real_training_backend_names, subprocess_isolated_backend_names
 from .executors import materialize_training_job_bundle, run_materialized_training_job_bundle
 
 REAL_TRAINING_ENV = "PFE_REAL_TRAINING"
 TRAINING_SUBPROCESS_ENV = "PFE_TRAINING_SUBPROCESS"
 TRAINING_SUBPROCESS_MARKER = "_pfe_training_subprocess"
 
-REAL_TRAINING_BACKENDS = frozenset({"mlx", "peft", "unsloth", "dpo"})
-SUBPROCESS_ISOLATED_BACKENDS = frozenset({"mlx", "peft", "unsloth", "dpo"})
+REAL_TRAINING_BACKENDS = real_training_backend_names()
+SUBPROCESS_ISOLATED_BACKENDS = subprocess_isolated_backend_names()
 
 
 def is_real_training_allowed(*, dry_run: bool, environ: Mapping[str, str] | None = None) -> bool:
@@ -56,7 +57,7 @@ def should_isolate_backend(
     environ: Mapping[str, str] | None = None,
 ) -> bool:
     return (
-        backend in SUBPROCESS_ISOLATED_BACKENDS
+        normalize_backend_name(backend) in SUBPROCESS_ISOLATED_BACKENDS
         and not dry_run
         and not is_training_subprocess(job_spec, environ=environ)
     )
@@ -67,7 +68,7 @@ def run_training_preflight(job_spec: Mapping[str, Any], *, backend: str) -> dict
     try:
         from .preflight import TrainingPreflight
 
-        preflight_job = {**dict(job_spec), "backend": backend}
+        preflight_job = {**dict(job_spec), "backend": normalize_backend_name(backend)}
         result = TrainingPreflight(preflight_job).check()
         return {**result, "ready": bool(result.get("ready") or result.get("status") == "ok")}
     except Exception as exc:
@@ -83,7 +84,7 @@ def run_training_preflight(job_spec: Mapping[str, Any], *, backend: str) -> dict
 
 def preflight_blocked_result(*, backend: str, preflight: Mapping[str, Any]) -> dict[str, Any]:
     return {
-        "backend": backend,
+        "backend": normalize_backend_name(backend),
         "dry_run": False,
         "status": "blocked",
         "reason": "preflight failed",

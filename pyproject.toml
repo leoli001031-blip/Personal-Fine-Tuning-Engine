@@ -25,11 +25,19 @@ dependencies = [
 dev = [
   "pytest>=8,<9",
   "pytest-cov>=5,<6",
+  "requests>=2.32,<3",
+]
+e2e = [
+  "pytest>=8,<9",
+  "requests>=2.32,<3",
+  "playwright>=1.45,<2",
+  "psutil>=5.9,<8",
 ]
 training = [
   "torch>=2.1",
   "transformers>=4.36",
   "peft>=0.7",
+  "accelerate>=0.23",
   "trl>=0.7",
   "datasets>=2.16",
   "bitsandbytes>=0.41",

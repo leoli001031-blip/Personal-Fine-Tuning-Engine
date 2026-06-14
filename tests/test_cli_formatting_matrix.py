@@ -69,6 +69,7 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("pending_eval", clean)
         self.assertIn("ADAPTER LIFECYCLE", clean)
         self.assertIn("WORKSPACE: /tmp/pfe", clean)
+        self.assertIn("Next: pfe next --workspace /tmp/pfe", clean)
 
     def test_train_result_includes_version_and_samples(self) -> None:
         payload = {

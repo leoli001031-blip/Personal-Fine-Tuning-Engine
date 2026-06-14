@@ -5,6 +5,22 @@ from __future__ import annotations
 from .doctor_formatting_deps import DoctorFormattingDeps
 
 
+def _configured_base_model(workspace: str | None, deps: DoctorFormattingDeps) -> str | None:
+    try:
+        from pfe_core.config import PFEConfig
+
+        home = deps.pfe_home(workspace)
+        config_path = PFEConfig.default_path(home=home)
+        if not config_path.exists():
+            return None
+        configured = str(PFEConfig.load(path=config_path).model.base_model or "").strip()
+        if configured and configured not in {"local", "local-default", "base"}:
+            return configured
+    except Exception:
+        return None
+    return None
+
+
 def _format_doctor_local_model(
     workspace: str | None,
     base_model: str | None,
@@ -15,6 +31,8 @@ def _format_doctor_local_model(
     requested_base_model = base_model
     if requested_base_model is None and manifest_map is not None:
         requested_base_model = deps.pick_first(manifest_map, "base_model")
+    if requested_base_model is None:
+        requested_base_model = _configured_base_model(workspace, deps)
 
     if requested_base_model is None:
         return "local model: available=no | requested_base_model=n/a | reason=no base model configured"

@@ -40,6 +40,32 @@ class TrainerPeftReadinessSummaryTests(unittest.TestCase):
             ],
         }
 
+    def test_real_local_model_source_rejects_empty_directory(self) -> None:
+        local_model_dir = Path(self.tempdir.name) / "empty-local-model"
+        local_model_dir.mkdir(parents=True, exist_ok=True)
+
+        source = trainer_executor_module._resolve_real_local_model_source(
+            {"base_model": str(local_model_dir)}
+        )
+
+        self.assertFalse(source["available"])
+        self.assertEqual(source["source_kind"], "unavailable")
+        self.assertEqual(source["load_mode"], "unavailable")
+
+    def test_real_local_model_source_accepts_directory_with_config_marker(self) -> None:
+        local_model_dir = Path(self.tempdir.name) / "local-model"
+        local_model_dir.mkdir(parents=True, exist_ok=True)
+        (local_model_dir / "config.json").write_text("{}", encoding="utf-8")
+
+        source = trainer_executor_module._resolve_real_local_model_source(
+            {"base_model": str(local_model_dir)}
+        )
+
+        self.assertTrue(source["available"])
+        self.assertEqual(source["source_kind"], "path")
+        self.assertEqual(source["source_path"], str(local_model_dir))
+        self.assertEqual(source["load_mode"], "from_pretrained")
+
     def test_execute_peft_training_reports_readiness_summary_when_local_model_source_is_missing(self) -> None:
         job_spec = self._job_spec()
         job_spec["audit"] = {"import_probe": {"ready": True, "missing_modules": []}}

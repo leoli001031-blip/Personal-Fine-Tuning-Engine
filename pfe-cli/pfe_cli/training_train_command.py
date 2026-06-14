@@ -27,6 +27,7 @@ def register_train_command(app: typer.Typer, deps: TrainingCommandDeps) -> None:
         train_type: str = typer.Option("sft", "--train-type", help="Training type, e.g. sft or dpo."),
         workspace: Optional[str] = typer.Option(None, "--workspace", help="Workspace label."),
         backend: str = typer.Option("auto", "--backend", help="Training backend: auto, mock_local, peft, dpo, unsloth, mlx."),
+        preview: bool = typer.Option(False, "--preview", help="Show the training plan and exit without creating artifacts."),
         dry_run: bool = typer.Option(False, "--dry-run", help="Plan/materialize training without launching real training."),
         real_local: bool = typer.Option(False, "--real-local", help="Enable real local training for this invocation."),
     ) -> None:
@@ -72,19 +73,21 @@ def register_train_command(app: typer.Typer, deps: TrainingCommandDeps) -> None:
                 backend_hint=backend_hint,
             )
 
-        typer.echo(
-            deps.format_train_preview(
-                method=method,
-                epochs=epochs,
-                base_model=base_model,
-                train_type=train_type,
-                workspace=workspace,
-                snapshot_workspace=workspace or "user_default",
-                backend_hint=backend_hint,
-                dry_run=dry_run,
-                real_local=real_local,
-            )
+        preview_text = deps.format_train_preview(
+            method=method,
+            epochs=epochs,
+            base_model=base_model,
+            train_type=train_type,
+            workspace=workspace,
+            snapshot_workspace=workspace or "user_default",
+            backend_hint=backend_hint,
+            dry_run=dry_run,
+            real_local=real_local,
         )
+        typer.echo(preview_text)
+        if preview:
+            return
+
         with real_training_env(real_local=real_local):
             deps.run_handler(
                 "train",

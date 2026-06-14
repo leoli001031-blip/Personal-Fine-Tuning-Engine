@@ -11,6 +11,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from pfe_core.errors import TrainingError  # noqa: E402
+from pfe_core.config import PFEConfig  # noqa: E402
 from pfe_core.pipeline import PipelineService  # noqa: E402
 from pfe_core.trainer import detect_trainer_runtime, plan_trainer_backend, trainer_runtime_summary  # noqa: E402
 from pfe_core.trainer.service import TrainerService  # noqa: E402
@@ -243,6 +244,30 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertEqual(training_meta["export_runtime"]["dry_run"], True)
         self.assertEqual(training_meta["export_execution"]["audit"]["status"], "tool_missing")
         self.assertEqual(training_meta["export_artifact_summary"]["status"], result.export_execution["audit"]["status"])
+
+    def test_train_result_defaults_base_model_from_initialized_config(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "/models/init-default"
+        config.save(home=self.pfe_home)
+
+        pipeline = PipelineService()
+        pipeline.generate(scenario="life-coach", style="温和、共情", num_samples=8)
+
+        version_dir = self.pfe_home / "adapters" / "user_default" / "20260323-999"
+        store = _NoopTrainerStore(version_dir)
+        trainer = TrainerService(store=store)
+
+        result = trainer.train_result(
+            method="qlora",
+            epochs=1,
+            train_type="sft",
+            backend_hint="mock_local",
+        )
+
+        self.assertEqual(result.training_config["executor_recipe"]["training"]["base_model"], "/models/init-default")
+        self.assertEqual(store.created_training_config["execution_summary"]["base_model"], "/models/init-default")
+        manifest = json.loads((version_dir / "adapter_manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["base_model"], "/models/init-default")
 
     def test_materialized_training_job_bundle_writes_runner_and_result_files(self) -> None:
         backend_dispatch = {
@@ -593,6 +618,10 @@ class TrainerRuntimeTests(unittest.TestCase):
 
         local_qwen_dir = Path(self.tempdir.name) / "Qwen3-4B"
         local_qwen_dir.mkdir(parents=True, exist_ok=True)
+        (local_qwen_dir / "config.json").write_text(
+            json.dumps({"model_type": "qwen2", "vocab_size": 128}) + "\n",
+            encoding="utf-8",
+        )
 
         with tempfile.TemporaryDirectory() as tool_dir:
             tool_path = Path(tool_dir) / "convert_lora_to_gguf"

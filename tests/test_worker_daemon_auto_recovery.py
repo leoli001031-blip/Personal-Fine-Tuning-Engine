@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import signal
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -57,7 +58,7 @@ class WorkerDaemonAutoRecoveryTests(unittest.TestCase):
             "_pid_exists",
             return_value=False,
         ):
-            summary = service.train_queue_daemon_status(workspace="user_default")
+            summary = service.train_queue_daemon_status(workspace="user_default", allow_auto_recover=True)
 
         self.assertEqual(summary["requested_action"], "recover")
         self.assertEqual(summary["command_status"], "spawned")
@@ -69,6 +70,45 @@ class WorkerDaemonAutoRecoveryTests(unittest.TestCase):
         history = service.train_queue_daemon_history(workspace="user_default", limit=10)
         self.assertEqual(history["last_event"], "recover_requested")
         self.assertEqual(history["last_reason"], "daemon_stale")
+
+    def test_pipeline_status_does_not_auto_recover_stale_daemon(self) -> None:
+        service = self._service()
+        stale_time = (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()
+        service._persist_train_queue_daemon_state(
+            {
+                "workspace": "user_default",
+                "desired_state": "running",
+                "observed_state": "running",
+                "command_status": "running",
+                "active": True,
+                "pid": 999999,
+                "started_at": stale_time,
+                "last_heartbeat_at": stale_time,
+                "auto_restart_enabled": True,
+                "restart_attempts": 0,
+                "max_restart_attempts": 3,
+                "restart_backoff_seconds": 15.0,
+            },
+            workspace="user_default",
+        )
+
+        with patch.object(PipelineService, "_spawn_train_queue_daemon") as spawn_mock, patch.object(
+            PipelineService,
+            "_pid_exists",
+            return_value=False,
+        ):
+            snapshot = service.status(workspace="user_default")
+
+        spawn_mock.assert_not_called()
+        daemon = snapshot["train_queue"]["daemon"]
+        self.assertEqual(daemon["lock_state"], "stale")
+        self.assertTrue(daemon["recovery_needed"])
+        self.assertTrue(daemon["can_recover"])
+        self.assertTrue(daemon["auto_recover_enabled"])
+        self.assertEqual(daemon["auto_recovery_count"], 0)
+        self.assertEqual(daemon["recovery_action"], "auto_recover")
+        history = service.train_queue_daemon_history(workspace="user_default", limit=10)
+        self.assertEqual(history["count"], 0)
 
     def test_daemon_status_respects_auto_recover_disabled_config(self) -> None:
         config = PFEConfig()
@@ -128,11 +168,43 @@ class WorkerDaemonAutoRecoveryTests(unittest.TestCase):
             summary = service.start_train_queue_daemon(workspace="user_default")
 
         command = popen_mock.call_args.args[0]
+        env = popen_mock.call_args.kwargs["env"]
         self.assertIn("--heartbeat-interval-seconds", command)
         self.assertIn("--lease-timeout-seconds", command)
+        self.assertEqual(env["PFE_HOME"], str(self.pfe_home))
         self.assertEqual(summary["heartbeat_interval_seconds"], 1.5)
         self.assertEqual(summary["lease_timeout_seconds"], 12.0)
         self.assertTrue(summary["auto_recover_enabled"])
+
+    def test_stop_daemon_waits_for_pid_exit_and_marks_state_inactive(self) -> None:
+        service = self._service()
+        now = datetime.now(timezone.utc).isoformat()
+        service._persist_train_queue_daemon_state(
+            {
+                "workspace": "user_default",
+                "desired_state": "running",
+                "observed_state": "running",
+                "command_status": "running",
+                "active": True,
+                "pid": 123456,
+                "last_heartbeat_at": now,
+                "lease_renewed_at": now,
+            },
+            workspace="user_default",
+        )
+
+        with patch("pfe_core.pipeline.os.kill") as kill_mock, patch.object(
+            PipelineService,
+            "_pid_exists",
+            side_effect=[True, False],
+        ):
+            summary = service.stop_train_queue_daemon(workspace="user_default")
+
+        kill_mock.assert_called_once_with(123456, signal.SIGTERM)
+        self.assertFalse(summary["active"])
+        self.assertEqual(summary["lock_state"], "idle")
+        self.assertEqual(summary["observed_state"], "stopped")
+        self.assertTrue(summary["stop_requested"])
 
     def test_daemon_status_surfaces_atomic_health_states(self) -> None:
         config = PFEConfig()

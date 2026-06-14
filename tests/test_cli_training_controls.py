@@ -33,6 +33,24 @@ def test_train_dry_run_backend_and_real_local_are_passed(monkeypatch: Any) -> No
     assert calls[0]["env"] == "1"
     assert os.environ.get("PFE_REAL_TRAINING") is None
 
+def test_train_preview_real_local_exits_before_handler(monkeypatch: Any) -> None:
+    calls: list[dict[str, Any]] = []
+
+    class FakeService:
+        def train_result(self, **kwargs: Any) -> dict[str, Any]:
+            calls.append(dict(kwargs))
+            return {"version": "v-test"}
+
+    monkeypatch.delenv("PFE_REAL_TRAINING", raising=False)
+    _patch_cli_training_surfaces(monkeypatch, FakeService())
+
+    result = CliRunner().invoke(cli_main.app, ["train", "--backend", "peft", "--real-local", "--preview"])
+
+    assert result.exit_code == 0, result.stdout
+    assert "preview" in result.stdout
+    assert calls == []
+    assert os.environ.get("PFE_REAL_TRAINING") is None
+
 def test_dpo_dry_run_routes_to_training_handler(monkeypatch: Any) -> None:
     calls: list[dict[str, Any]] = []
 

@@ -28,6 +28,15 @@ from ..profile_extractor import get_user_profile_store
 from ..storage import list_samples, mark_samples_used, write_json
 from .adapter_lineage import get_lineage_tracker
 from .auto_rollback import RollbackDecision, get_auto_rollback_policy
+from .backends import (
+    backend_availability_map,
+    backend_executor_imports,
+    backend_is_supported_on_runtime,
+    backend_missing_dependencies,
+    get_backend_capability,
+    is_known_backend_name,
+    normalize_backend_name,
+)
 from .dpo_dataset import DPODatasetBuilder
 from .executors import (
     build_training_execution_recipe,
@@ -198,13 +207,7 @@ def _read_json_file(path: Path) -> dict[str, Any]:
 class TrainerService:
     """Create standard adapter artifacts without invoking a real finetuning backend."""
 
-    EXECUTOR_IMPORTS: dict[str, tuple[str, ...]] = {
-        "mock_local": (),
-        "peft": ("torch", "transformers", "peft", "accelerate"),
-        "dpo": ("torch", "transformers", "peft", "trl", "accelerate"),
-        "unsloth": ("torch", "transformers", "unsloth"),
-        "mlx": ("mlx", "mlx_lm"),
-    }
+    EXECUTOR_IMPORTS: dict[str, tuple[str, ...]] = backend_executor_imports()
     DISPATCH_FIND_SPEC_ONLY_IMPORTS = frozenset({"mlx", "mlx_lm"})
 
     def __init__(self, store: AdapterStore | None = None):
@@ -214,6 +217,13 @@ class TrainerService:
     @staticmethod
     def _default_base_model_name() -> str:
         return "Qwen/Qwen2.5-3B-Instruct"
+
+    @staticmethod
+    def _configured_base_model_name(config: PFEConfig) -> str | None:
+        configured = str(getattr(config.model, "base_model", "") or "").strip()
+        if configured and configured not in {"local", "local-default", "base"}:
+            return configured
+        return None
 
     def _load_trainer_config(self) -> PFEConfig:
         home = getattr(self.store, "home", None) if self.store is not None else None
@@ -354,7 +364,11 @@ class TrainerService:
 
         manifest_path = parent_path / "adapter_manifest.json"
         parent_manifest = _read_json_file(manifest_path) if manifest_path.exists() else {}
-        parent_base_model = str(parent_manifest.get("base_model") or self._default_base_model_name())
+        parent_base_model = str(
+            parent_manifest.get("base_model")
+            or self._configured_base_model_name(trainer_config)
+            or self._default_base_model_name()
+        )
         parent_artifact_format = str(
             parent_manifest.get("artifact_format")
             or parent_manifest.get("artifactFormat")
@@ -582,51 +596,39 @@ class TrainerService:
         base_adapter: str | None = None,
         allow_mock_fallback: bool = True,
     ) -> Dict[str, Any]:
-        requested_backend = backend_hint or backend_plan.get("recommended_backend") or "mock_local"
-        runtime_packages = runtime.get("installed_packages", {})
-        if not isinstance(runtime_packages, dict):
-            runtime_packages = {}
-        available = {
-            "mock_local": True,
-            "peft": all(bool(runtime_packages.get(name, False)) for name in ("torch", "transformers", "peft", "accelerate")),
-            "dpo": all(bool(runtime_packages.get(name, False)) for name in ("torch", "transformers", "peft", "trl", "accelerate")),
-            "unsloth": bool(runtime_packages.get("unsloth", False)) and bool(runtime.get("cuda_available", False)),
-            "mlx": bool(runtime_packages.get("mlx", False)) or bool(runtime_packages.get("mlx_lm", False)),
-        }
-        capability_map = {
-            "mock_local": {
-                "supports_sft": True,
-                "supports_dpo": True,
-                "artifact_format": "peft_lora",
-            },
-            "peft": {
-                "supports_sft": True,
-                "supports_dpo": True,
-                "artifact_format": "peft_lora",
-            },
-            "dpo": {
-                "supports_sft": False,
-                "supports_dpo": True,
-                "artifact_format": "peft_lora",
-            },
-            "unsloth": {
-                "supports_sft": True,
-                "supports_dpo": False,
-                "artifact_format": "peft_lora",
-            },
-            "mlx": {
-                "supports_sft": True,
-                "supports_dpo": False,
-                "artifact_format": "mlx_lora",
-            },
-        }
         train_type = str(backend_plan.get("train_type") or "sft")
-        requested_known = requested_backend in capability_map
+        device_preference = str(backend_plan.get("device_preference") or "auto")
+        requested_backend = normalize_backend_name(backend_hint or backend_plan.get("recommended_backend") or "mock_local")
+        requested_known = is_known_backend_name(requested_backend)
+        available = backend_availability_map(
+            train_type=train_type,
+            runtime=runtime,
+            device_preference=device_preference,
+        )
         dispatch_reasons = []
-        if requested_known and not capability_map[requested_backend][f"supports_{train_type}"]:
+        if requested_known:
+            requested_capability = get_backend_capability(requested_backend)
+            requested_supports_train_type = requested_capability.supports_train_type(train_type)
+            requested_missing_dependencies = backend_missing_dependencies(requested_backend, runtime)
+            requested_supported_on_runtime = backend_is_supported_on_runtime(
+                requested_backend,
+                train_type=train_type,
+                runtime=runtime,
+                device_preference=device_preference,
+            )
+        else:
+            requested_capability = None
+            requested_supports_train_type = False
+            requested_missing_dependencies = ()
+            requested_supported_on_runtime = False
+        if requested_known and not requested_supports_train_type:
             dispatch_reasons.append(f"{requested_backend} does not support {train_type}")
-        if requested_known and not available.get(requested_backend, False):
+        if requested_known and requested_supports_train_type and not available.get(requested_backend, False):
             dispatch_reasons.append(f"{requested_backend} dependencies unavailable")
+            if requested_missing_dependencies:
+                dispatch_reasons.append("missing dependencies: " + ", ".join(requested_missing_dependencies))
+            elif not requested_supported_on_runtime:
+                dispatch_reasons.append(f"{requested_backend} is not supported on this runtime")
 
         # DPO-specific rerouting: use dedicated dpo executor when train_type is dpo
         # Respect explicit mock_local requests for testing
@@ -634,7 +636,8 @@ class TrainerService:
             train_type == "dpo"
             and requested_backend != "mock_local"
             and requested_known
-            and capability_map[requested_backend]["supports_dpo"]
+            and requested_capability is not None
+            and requested_capability.supports_dpo
             and available.get("dpo", False)
         ):
             execution_backend = "dpo"
@@ -656,7 +659,7 @@ class TrainerService:
                 f"backend {requested_backend} is unavailable on this runtime and mock fallback is disabled"
             )
 
-        execution_capability = capability_map[execution_backend]
+        execution_capability = get_backend_capability(execution_backend).to_dict()
         importable_modules = self.EXECUTOR_IMPORTS.get(execution_backend, ())
         import_attempts = []
         imported_modules = []
@@ -682,7 +685,7 @@ class TrainerService:
                     dispatch_reasons.append(f"import failed for {module_name}")
                     if allow_mock_fallback:
                         execution_backend = "mock_local"
-                        execution_capability = capability_map[execution_backend]
+                        execution_capability = get_backend_capability(execution_backend).to_dict()
                         imported_modules = []
                         executor_mode = "fallback"
                         break
@@ -1352,6 +1355,7 @@ class TrainerService:
         base_model_name = base_model or str(
             incremental_context.get("resolved_base_model")
             or incremental_context.get("parent_base_model")
+            or self._configured_base_model_name(trainer_config)
             or self._default_base_model_name()
         )
         target_inference_backend = self._resolve_target_inference_backend(base_model_name=base_model_name)

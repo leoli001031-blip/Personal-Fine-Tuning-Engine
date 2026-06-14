@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from . import real_execution
+from .backends import normalize_backend_name
 from .dpo_dataset import DPODatasetBuilder
 from .executors import (
     execute_dpo_training,
@@ -62,13 +63,13 @@ def dispatch_training_job(job_spec: Mapping[str, Any], *, dry_run: bool) -> dict
     subprocesses with preflight checks and structured failure diagnostics.
     Phase 6: Real training execution gate via PFE_REAL_TRAINING env var.
     """
-    backend = str(job_spec.get("execution_executor") or job_spec.get("backend") or "mock_local")
+    backend = normalize_backend_name(job_spec.get("execution_executor") or job_spec.get("backend") or "mock_local")
 
     # Phase 6: Enforce real training execution gate for non-mock backends
     if backend in real_execution.REAL_TRAINING_BACKENDS and not real_execution.is_real_training_allowed(dry_run=dry_run):
         return real_execution.real_training_disabled_result(backend=backend, dry_run=dry_run)
 
-    if backend == "dpo":
+    if backend == "dpo" and not real_execution.is_training_subprocess(job_spec):
         job_spec = _with_dpo_training_examples(job_spec, dry_run=dry_run)
 
     # Phase 3: Isolate real training in subprocesses with preflight checks.
