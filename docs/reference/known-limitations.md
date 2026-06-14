@@ -58,9 +58,9 @@
 
 `make benchmark-release` 默认执行当前 release budget：
 
-- `first_run_full <= 20.0s / 600.0 MB`
-- `browser_ui_strict <= 20.0s / 1500.0 MB`
-- `real_local_happy <= 30.0s / 1200.0 MB`
-- `release_soak_short <= 35.0s / 1000.0 MB`
+- `first_run_full <= 30.0s / 800.0 MB`
+- `browser_ui_strict <= 30.0s / 1600.0 MB`
+- `real_local_happy <= 45.0s / 1800.0 MB`
+- `release_soak_short <= 45.0s / 1400.0 MB`
 
 这些预算是本地 release candidate 预算，不是所有硬件上的 SLA。新机器若需要采样原始 baseline，可以运行 `tools/release_perf_benchmark.py --no-thresholds`，但不能把它当作 release 通过证据。

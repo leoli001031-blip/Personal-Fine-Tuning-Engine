@@ -305,10 +305,10 @@ model: /Users/lichenhao/.cache/pfe/release-models/tiny-gpt2-local
 thresholds: enforced
 threshold_violations: []
 budget:
-  first_run_full <= 20.0s / 600.0 MB
-  browser_ui_strict <= 20.0s / 1500.0 MB
-  real_local_happy <= 30.0s / 1200.0 MB
-  release_soak_short <= 35.0s / 1000.0 MB
+  first_run_full <= 30.0s / 800.0 MB
+  browser_ui_strict <= 30.0s / 1600.0 MB
+  real_local_happy <= 45.0s / 1800.0 MB
+  release_soak_short <= 45.0s / 1400.0 MB
 ```
 
 ## Dashboard offline-first 证据

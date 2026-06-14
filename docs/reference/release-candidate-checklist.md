@@ -46,10 +46,10 @@ PFE_REAL_LOCAL_MODEL=$HOME/.cache/pfe/release-models/tiny-gpt2-local make releas
 
 | Task | Max elapsed | Max peak RSS |
 |------|-------------|--------------|
-| `first_run_full` | `20.0s` | `600.0 MB` |
-| `browser_ui_strict` | `20.0s` | `1500.0 MB` |
-| `real_local_happy` | `30.0s` | `1200.0 MB` |
-| `release_soak_short` | `35.0s` | `1000.0 MB` |
+| `first_run_full` | `30.0s` | `800.0 MB` |
+| `browser_ui_strict` | `30.0s` | `1600.0 MB` |
+| `real_local_happy` | `45.0s` | `1800.0 MB` |
+| `release_soak_short` | `45.0s` | `1400.0 MB` |
 
 如果只是采样新机器的原始 baseline，可以显式运行：
 

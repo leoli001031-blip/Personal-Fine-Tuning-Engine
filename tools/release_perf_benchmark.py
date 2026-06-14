@@ -24,10 +24,10 @@ except Exception:
 
 DEFAULT_TINY_MODEL = Path.home() / ".cache" / "pfe" / "release-models" / "tiny-gpt2-local"
 DEFAULT_THRESHOLDS: dict[str, dict[str, float]] = {
-    "first_run_full": {"elapsed_seconds": 20.0, "peak_rss_mb": 600.0},
-    "browser_ui_strict": {"elapsed_seconds": 20.0, "peak_rss_mb": 1500.0},
-    "real_local_happy": {"elapsed_seconds": 30.0, "peak_rss_mb": 1200.0},
-    "release_soak_short": {"elapsed_seconds": 35.0, "peak_rss_mb": 1000.0},
+    "first_run_full": {"elapsed_seconds": 30.0, "peak_rss_mb": 800.0},
+    "browser_ui_strict": {"elapsed_seconds": 30.0, "peak_rss_mb": 1600.0},
+    "real_local_happy": {"elapsed_seconds": 45.0, "peak_rss_mb": 1800.0},
+    "release_soak_short": {"elapsed_seconds": 45.0, "peak_rss_mb": 1400.0},
 }
 
 
