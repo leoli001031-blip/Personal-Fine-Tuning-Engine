@@ -9,14 +9,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
-
 
 class TrainerRealExecutionTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -170,7 +163,6 @@ class TrainerRealExecutionTests(unittest.TestCase):
         self.assertTrue(run_result.runner_result["real_execution"]["success"])
         self.assertEqual(run_result.metadata["result_json_path"], str(result_json_path))
         self.assertEqual(run_result.audit["result_json_path"], str(result_json_path))
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,7 +3,6 @@
 from pfe_core.observability.trace import (
     SignalTrace,
     VersionTrace,
-    TraceNode,
     TraceStore,
     trace_signal,
     trace_version,
@@ -81,13 +80,13 @@ def test_trace_version_creates_new():
 
 
 def test_record_signal_node_persists(tmp_path):
-    store = TraceStore(store_dir=tmp_path)
+    TraceStore(store_dir=tmp_path)
     st = record_signal_node("sig-4", "promote", "completed", {"note": "done"})
     assert st.nodes[-1].node == "promote"
 
 
 def test_append_signal_to_version(tmp_path):
-    store = TraceStore(store_dir=tmp_path)
+    TraceStore(store_dir=tmp_path)
     vt = append_signal_to_version("v3", "sig-5")
     assert any(t.signal_id == "sig-5" for t in vt.signal_traces)
 

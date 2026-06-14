@@ -1,16 +1,8 @@
 from __future__ import annotations
 
-import os
 import unittest
-from pathlib import Path
 
 from typer.testing import CliRunner
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_cli import main as cli_main
 from pfe_cli.main import (
@@ -22,7 +14,6 @@ from pfe_cli.main import (
     _format_status,
 )
 from tests.matrix_test_compat import strip_ansi
-
 
 class CLIOperationsConsoleDigestTests(unittest.TestCase):
     def test_ops_attention_prefers_generic_monitor_summary_over_legacy_queue_bits(self) -> None:
@@ -617,7 +608,6 @@ class CLIOperationsConsoleDigestTests(unittest.TestCase):
         self.assertIn("recovery event count:    2", clean)
         self.assertIn("last recovery event:     recover_requested", clean)
         self.assertIn("next actions:            promote_candidate, archive_candidate", clean)
-
 
 if __name__ == "__main__":
     unittest.main()

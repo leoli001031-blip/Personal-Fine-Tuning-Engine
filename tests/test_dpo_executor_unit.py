@@ -5,7 +5,6 @@ a full server or external dependencies.
 """
 
 import pytest
-from unittest.mock import patch, MagicMock
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:`torch\\.jit\\.script_method` is deprecated.*:DeprecationWarning"

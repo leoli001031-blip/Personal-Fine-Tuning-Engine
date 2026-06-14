@@ -25,27 +25,20 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Optional, Sequence
 
 from .backend_selector import (
     AutoBackendSelector,
     HardwareProfile,
     DependencyProfile,
-    select_optimal_backend,
-    get_backend_selection_summary,
 )
 from .mlx_backend import (
     MLXBackendCapabilities,
-    MLXTrainerBackend,
-    MLXTrainingConfig,
 )
 from .unsloth_backend import (
     UnslothBackendCapabilities,
-    UnslothTrainerBackend,
-    UnslothTrainingConfig,
 )
-from .runtime import detect_trainer_runtime, trainer_runtime_summary
+from .runtime import trainer_runtime_summary
 
 
 def cmd_check(args: argparse.Namespace) -> int:
@@ -122,17 +115,17 @@ def cmd_recommend(args: argparse.Namespace) -> int:
     print(f"Estimated Performance: {result.estimated_performance}")
 
     if result.requirements:
-        print(f"\nRequirements:")
+        print("\nRequirements:")
         for req in result.requirements:
             print(f"  - {req}")
 
     if result.alternatives:
-        print(f"\nAlternative Backends:")
+        print("\nAlternative Backends:")
         for alt in result.alternatives:
             print(f"  - {alt}")
 
     if result.warnings:
-        print(f"\nWarnings:")
+        print("\nWarnings:")
         for warning in result.warnings:
             print(f"  ⚠️  {warning}")
 
@@ -163,7 +156,7 @@ def cmd_mlx_info(args: argparse.Namespace) -> int:
 
     if not info['available']:
         missing = caps.get_missing_dependencies()
-        print(f"\nMissing Dependencies:")
+        print("\nMissing Dependencies:")
         for dep in missing:
             print(f"  - {dep}")
         print("\nInstall with: pip install mlx mlx_lm")
@@ -194,7 +187,7 @@ def cmd_unsloth_info(args: argparse.Namespace) -> int:
 
     if not info['available']:
         missing = caps.get_missing_dependencies()
-        print(f"\nMissing Dependencies:")
+        print("\nMissing Dependencies:")
         for dep in missing:
             print(f"  - {dep}")
         print("\nInstall with: pip install unsloth")

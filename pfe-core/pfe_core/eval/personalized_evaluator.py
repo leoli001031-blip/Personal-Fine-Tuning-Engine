@@ -17,7 +17,7 @@ from statistics import mean
 from typing import Any, Literal, Optional, Sequence
 
 from ..profile_extractor import ProfileExtractor
-from ..user_profile import PreferenceScore, UserProfile
+from ..user_profile import UserProfile
 
 
 def _utc_now() -> datetime:

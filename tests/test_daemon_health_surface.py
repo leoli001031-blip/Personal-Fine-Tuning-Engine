@@ -7,19 +7,12 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli.main import _format_status
 from pfe_core.pipeline import PipelineService
 from tests.matrix_test_compat import strip_ansi
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class DaemonHealthSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -142,7 +135,6 @@ class DaemonHealthSurfaceTests(unittest.TestCase):
         self.assertIn("daemon recovery reason:", clean)
         self.assertIn("daemon_stale", clean)
         self.assertIn("daemon recovery action:", clean)
-
 
 if __name__ == "__main__":
     unittest.main()

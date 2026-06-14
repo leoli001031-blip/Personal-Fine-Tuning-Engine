@@ -11,9 +11,8 @@ This module implements:
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import asdict, is_dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
@@ -31,7 +30,6 @@ from .models import (
     RunnerState,
     TaskExecutionMetadata,
     TaskLease,
-    TaskState,
     parse_utc_datetime,
     utc_now,
 )

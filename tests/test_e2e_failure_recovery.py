@@ -154,7 +154,7 @@ class TestTrainingFailureRecovery:
                     assert not daemon1.is_running()
 
                 # Start new daemon (simulating recovery)
-                with TestDaemon(port=config.port, workspace=config.test_workspace) as daemon2:
+                with TestDaemon(port=config.port, workspace=config.test_workspace):
                     # Verify job state is recovered
                     status_after = get_job_status(job_id, port=config.port)
 

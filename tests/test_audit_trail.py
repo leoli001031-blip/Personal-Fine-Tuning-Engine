@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from pfe_core.security.audit_trail import AuditTrail, AuditEntry, LineageReport
 

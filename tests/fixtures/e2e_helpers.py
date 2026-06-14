@@ -536,7 +536,7 @@ def submit_signal(
             response = requests.post(url, json=payload, timeout=30)
             response.raise_for_status()
             return response.json()
-        except requests.Timeout as e:
+        except requests.Timeout:
             if attempt < 2:
                 print(f"Timeout submitting signal (attempt {attempt + 1}), retrying...")
                 time.sleep(1.0)

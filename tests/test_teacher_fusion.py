@@ -45,7 +45,7 @@ class TestTeacherSignalFusion:
         user = [_make_sample(f"u{i}", "signal", f"prompt {i}", f"chosen {i}") for i in range(10)]
         teacher = [_make_sample(f"t{i}", "teacher", f"tprompt {i}", f"tchosen {i}") for i in range(10)]
         fuser = TeacherSignalFusion(config=TeacherSignalFusionConfig(max_teacher_ratio=0.2))
-        fused = fuser.fuse_signals(user, teacher)
+        fuser.fuse_signals(user, teacher)
         plan = fuser.get_last_plan()
         assert plan["teacher_ratio"] <= 0.21  # allow small rounding
 
@@ -70,6 +70,7 @@ class TestTeacherSignalFusion:
         fuser = TeacherSignalFusion()
         fused = fuser.fuse_signals(user, teacher)
         plan = fuser.get_last_plan()
+        assert len(fused) == 2
         assert plan["user_count"] == 1
         assert plan["teacher_selected"] == 1
         assert plan["total_fused"] == 2

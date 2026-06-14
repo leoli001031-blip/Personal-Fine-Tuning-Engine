@@ -1,14 +1,6 @@
 from __future__ import annotations
 
-import os
 import unittest
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.data_policy import (
     UserDatum,
@@ -17,7 +9,6 @@ from pfe_core.data_policy import (
     route_user_datum,
 )
 from pfe_core.models import ImplicitSignal, SignalQuality
-
 
 class DataPolicyTests(unittest.TestCase):
     def test_extract_candidates_finds_name_role_and_style_preference(self) -> None:
@@ -137,7 +128,6 @@ class DataPolicyTests(unittest.TestCase):
         self.assertFalse(decision.eligible)
         self.assertEqual(decision.primary_target, "dpo_rejected_only")
         self.assertTrue(decision.requires_pairing)
-
 
 if __name__ == "__main__":
     unittest.main()

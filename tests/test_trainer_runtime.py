@@ -10,21 +10,16 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
+from pfe_core.errors import TrainingError  # noqa: E402
+from pfe_core.config import PFEConfig  # noqa: E402
+from pfe_core.pipeline import PipelineService  # noqa: E402
+from pfe_core.trainer import detect_trainer_runtime, plan_trainer_backend, trainer_runtime_summary  # noqa: E402
+from pfe_core.trainer.service import TrainerService  # noqa: E402
 
-from pfe_core.pipeline import PipelineService
-from pfe_core.errors import TrainingError
-from pfe_core.trainer import detect_trainer_runtime, plan_trainer_backend, trainer_runtime_summary
-from pfe_core.trainer.service import TrainerService
 trainer_runtime_module = importlib.import_module("pfe_core.trainer.runtime")
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
-
 
 class _NoopTrainerStore:
     def __init__(self, version_dir: Path):
@@ -46,7 +41,6 @@ class _NoopTrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         self.pending_eval_calls.append({"version": version, "num_samples": num_samples, "metrics": dict(metrics or {})})
-
 
 class TrainerRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -164,7 +158,13 @@ class TrainerRuntimeTests(unittest.TestCase):
         def fake_import_module(name: str):
             return fake_modules[name]
 
-        with patch.dict(os.environ, {"PFE_LLAMA_CPP_EXPORT_TOOL": "/tmp/does-not-exist-llama-export-tool"}), patch.object(
+        with patch.dict(
+            os.environ,
+            {
+                "PFE_LLAMA_CPP_EXPORT_TOOL": "/tmp/does-not-exist-llama-export-tool",
+                "PFE_REAL_TRAINING": "1",
+            },
+        ), patch.object(
             trainer_service_module, "detect_trainer_runtime"
         ) as detect_runtime, patch.object(
             trainer_service_module.importlib.util,
@@ -245,6 +245,30 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertEqual(training_meta["export_execution"]["audit"]["status"], "tool_missing")
         self.assertEqual(training_meta["export_artifact_summary"]["status"], result.export_execution["audit"]["status"])
 
+    def test_train_result_defaults_base_model_from_initialized_config(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "/models/init-default"
+        config.save(home=self.pfe_home)
+
+        pipeline = PipelineService()
+        pipeline.generate(scenario="life-coach", style="温和、共情", num_samples=8)
+
+        version_dir = self.pfe_home / "adapters" / "user_default" / "20260323-999"
+        store = _NoopTrainerStore(version_dir)
+        trainer = TrainerService(store=store)
+
+        result = trainer.train_result(
+            method="qlora",
+            epochs=1,
+            train_type="sft",
+            backend_hint="mock_local",
+        )
+
+        self.assertEqual(result.training_config["executor_recipe"]["training"]["base_model"], "/models/init-default")
+        self.assertEqual(store.created_training_config["execution_summary"]["base_model"], "/models/init-default")
+        manifest = json.loads((version_dir / "adapter_manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["base_model"], "/models/init-default")
+
     def test_materialized_training_job_bundle_writes_runner_and_result_files(self) -> None:
         backend_dispatch = {
             "requested_backend": "peft",
@@ -276,7 +300,8 @@ class TrainerRuntimeTests(unittest.TestCase):
             execution_plan=plan,
             output_dir=self.pfe_home / "adapters" / "user_default" / "20260323-998",
         )
-        runner_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
+        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}):
+            runner_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
 
         job_json_path = Path(bundle.job_json_path)
         script_path = Path(bundle.script_path)
@@ -593,6 +618,10 @@ class TrainerRuntimeTests(unittest.TestCase):
 
         local_qwen_dir = Path(self.tempdir.name) / "Qwen3-4B"
         local_qwen_dir.mkdir(parents=True, exist_ok=True)
+        (local_qwen_dir / "config.json").write_text(
+            json.dumps({"model_type": "qwen2", "vocab_size": 128}) + "\n",
+            encoding="utf-8",
+        )
 
         with tempfile.TemporaryDirectory() as tool_dir:
             tool_path = Path(tool_dir) / "convert_lora_to_gguf"
@@ -617,7 +646,7 @@ class TrainerRuntimeTests(unittest.TestCase):
             )
             tool_path.chmod(0o755)
 
-            with patch.dict(os.environ, {"PFE_LLAMA_CPP_EXPORT_TOOL": str(tool_path)}), patch.object(
+            with patch.dict(os.environ, {"PFE_LLAMA_CPP_EXPORT_TOOL": str(tool_path), "PFE_REAL_TRAINING": "1"}), patch.object(
                 trainer_service_module, "detect_trainer_runtime"
             ) as detect_runtime, patch.object(
                 trainer_service_module.importlib.util,
@@ -638,7 +667,6 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertTrue(result.export_execution["success"])
         self.assertTrue(result.export_execution["output_artifact_validation"]["valid"])
         self.assertTrue(result.training_config["pre_export_artifact_sync"]["available"])
-
 
 if __name__ == "__main__":
     unittest.main()

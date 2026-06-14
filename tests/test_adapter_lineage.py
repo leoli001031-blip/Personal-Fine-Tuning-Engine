@@ -4,7 +4,6 @@ Tests the AdapterLineageTracker class and its integration with training service.
 """
 
 import pytest
-from datetime import datetime, timezone
 
 from pfe_core.trainer.adapter_lineage import (
     AdapterLineageTracker,

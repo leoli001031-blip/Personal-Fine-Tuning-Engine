@@ -7,18 +7,11 @@ from pathlib import Path
 import asyncio
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli.main import _format_status
 from pfe_core.config import PFEConfig
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import build_serve_plan, smoke_test_request
 from tests.matrix_test_compat import strip_ansi
-
 
 class AutoTriggerResetRetryTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -165,7 +158,6 @@ class AutoTriggerResetRetryTests(unittest.TestCase):
         self.assertTrue(after_body["auto_train_trigger"]["ready"])
         self.assertNotIn("failure_backoff_active", after_body["auto_train_trigger"]["blocked_reasons"])
         self.assertEqual(after_body["metadata"]["auto_train_trigger"]["state"], after_body["auto_train_trigger"]["state"])
-
 
 if __name__ == "__main__":
     unittest.main()

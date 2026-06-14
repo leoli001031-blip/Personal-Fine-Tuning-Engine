@@ -2,18 +2,10 @@
 
 from __future__ import annotations
 
-import os
-import sys
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in sys.path:
-        sys.path.insert(0, package_path)
 
 from pfe_core.config import (
     ConfirmationPolicyConfig,
@@ -33,7 +25,6 @@ from pfe_core.trainer.policy import (
     evaluate_queue_review_policy,
     evaluate_train_trigger_policy,
 )
-
 
 class PolicyConfigSchemaTests(unittest.TestCase):
     """Test policy configuration schema defaults and validation."""
@@ -134,7 +125,6 @@ class PolicyConfigSchemaTests(unittest.TestCase):
             self.assertTrue(loaded.trainer.trigger.eval_gate_policy.auto_trigger)
             self.assertTrue(loaded.trainer.trigger.promote_gate_policy.auto_promote)
             self.assertFalse(loaded.trainer.trigger.confirmation_policy.first_training_requires_confirm)
-
 
 class TrainTriggerPolicyEvaluationTests(unittest.TestCase):
     """Test train trigger policy evaluation logic."""
@@ -265,7 +255,6 @@ class TrainTriggerPolicyEvaluationTests(unittest.TestCase):
         self.assertIn("queue_depth_exceeded", result["blocked_reasons"])
         self.assertTrue(result["queue_full"])
 
-
 class EvalGatePolicyEvaluationTests(unittest.TestCase):
     """Test eval gate policy evaluation logic."""
 
@@ -352,7 +341,6 @@ class EvalGatePolicyEvaluationTests(unittest.TestCase):
         self.assertIn("eval_delay_pending", result["blocked_reasons"])
         self.assertIsNotNone(result["eval_delay_remaining"])
         self.assertGreater(result["eval_delay_remaining"], 0)
-
 
 class PromoteGatePolicyEvaluationTests(unittest.TestCase):
     """Test promote gate policy evaluation logic."""
@@ -478,7 +466,6 @@ class PromoteGatePolicyEvaluationTests(unittest.TestCase):
         self.assertFalse(result["frequency_elapsed"])
         self.assertIn("promote_frequency_limit", result["blocked_reasons"])
 
-
 class ConfirmationPolicyEvaluationTests(unittest.TestCase):
     """Test confirmation policy evaluation logic."""
 
@@ -546,7 +533,6 @@ class ConfirmationPolicyEvaluationTests(unittest.TestCase):
         self.assertFalse(result["requires_confirmation"])
         self.assertIsNone(result["confirmation_reason"])
         self.assertTrue(result["auto_approve_eligible"])
-
 
 class QueueReviewPolicyEvaluationTests(unittest.TestCase):
     """Test queue review policy evaluation logic."""
@@ -648,7 +634,6 @@ class QueueReviewPolicyEvaluationTests(unittest.TestCase):
         self.assertEqual(result["items_to_process"], 2)
         self.assertEqual(len(result["priority_order"]), 2)
 
-
 class PolicySummaryTests(unittest.TestCase):
     """Test policy summary generation."""
 
@@ -663,7 +648,6 @@ class PolicySummaryTests(unittest.TestCase):
         self.assertIn("promote_gate_policy", summary)
         self.assertIn("confirmation_policy", summary)
         self.assertIn("queue_review_policy", summary)
-
 
 if __name__ == "__main__":
     unittest.main()

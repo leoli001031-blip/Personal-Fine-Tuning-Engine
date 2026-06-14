@@ -358,18 +358,18 @@ class PIIDetector:
         fields = text_fields or ['instruction', 'input', 'output', 'conversation', 'messages']
         results = {}
 
-        for field in fields:
-            if field in sample and isinstance(sample[field], str):
-                results[field] = self.detect(sample[field])
-            elif field == 'messages' and field in sample:
+        for field_name in fields:
+            if field_name in sample and isinstance(sample[field_name], str):
+                results[field_name] = self.detect(sample[field_name])
+            elif field_name == 'messages' and field_name in sample:
                 # Handle conversation format
-                messages = sample[field]
+                messages = sample[field_name]
                 if isinstance(messages, list):
                     full_text = '\n'.join(
                         f"{m.get('role', 'unknown')}: {m.get('content', '')}"
                         for m in messages
                     )
-                    results[field] = self.detect(full_text)
+                    results[field_name] = self.detect(full_text)
 
         return results
 

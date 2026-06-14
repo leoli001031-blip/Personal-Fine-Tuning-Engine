@@ -74,15 +74,23 @@ PFE 自动从以下信号组合构建 preference pairs：
 ### 运行 DPO 训练
 
 ```bash
-# 基础 DPO 训练
-pfe train --method dpo
+# 预览可用 preference pairs（默认不训练）
+pfe dpo --preview
+
+# 只生成训练计划，不启动真实训练
+pfe dpo --dry-run --backend dpo
+
+# 显式开启真实本地 DPO 训练
+pfe dpo --train --real-local --backend dpo
+
+# 也可以用环境变量显式开启
+PFE_REAL_TRAINING=1 pfe dpo --train --backend dpo
 
 # 指定基础 adapter
-pfe train --method dpo --base-adapter v001
-
-# 使用特定配置
-pfe train --method dpo --config dpo_config.yaml
+pfe dpo --train --real-local --base-adapter v001
 ```
+
+真实 DPO 训练默认关闭。只有传入 `--real-local`，或显式设置 `PFE_REAL_TRAINING=1`，才会进入真实训练路径。真实 DPO backend 会在父进程完成 preference pairs 构建和 preflight，然后进入 materialized 子进程执行；如果依赖缺失、样本为空、模型路径不可用或子进程 abort，父进程应返回 blocked/failed diagnostics，而不是直接崩溃。
 
 ### 查看 DPO 训练状态
 

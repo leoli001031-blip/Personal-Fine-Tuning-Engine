@@ -13,7 +13,7 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -375,7 +375,7 @@ class TestDPOIntegration:
             result = service.build_dpo_dataset(workspace="test")
             assert "num_pairs" in result
             assert "statistics" in result
-        except Exception as e:
+        except Exception:
             # May fail due to missing config or other issues
             pass
 

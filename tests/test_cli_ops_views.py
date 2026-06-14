@@ -1,17 +1,8 @@
 from __future__ import annotations
 
-import os
 import unittest
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_cli.main import _format_candidate_history, _format_status, _format_train_queue_history, _format_worker_runner_history
-
 
 class CliOpsViewsTests(unittest.TestCase):
     def test_status_surface_highlights_ops_attention(self) -> None:
@@ -172,7 +163,6 @@ class CliOpsViewsTests(unittest.TestCase):
         self.assertIn("latest timestamp: 2026-03-26T10:00:00+00:00", candidate_text)
         self.assertIn("latest timestamp: 2026-03-26T08:10:00+00:00", queue_text)
         self.assertIn("latest timestamp: 2026-03-26T11:01:00+00:00", runner_text)
-
 
 if __name__ == "__main__":
     unittest.main()

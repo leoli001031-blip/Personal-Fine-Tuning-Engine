@@ -6,7 +6,6 @@ adapter based on user input intent classification.
 
 from __future__ import annotations
 
-import json
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -14,10 +13,10 @@ from pathlib import Path
 from typing import Any
 from collections import defaultdict
 
-from ..scenarios import ScenarioConfig, BUILTIN_SCENARIOS, get_builtin_scenario
+from ..scenarios import ScenarioConfig, BUILTIN_SCENARIOS
 from ..config import PFEConfig
 from ..user_profile import UserProfile
-from .semantic_classifier import SemanticClassifier, SemanticClassificationResult
+from .semantic_classifier import SemanticClassifier
 
 _DEFAULT_SCENARIO_CONFIG_PATH = "~/.pfe/scenarios.json"
 

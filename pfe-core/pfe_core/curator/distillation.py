@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import asdict, dataclass, field, replace
 from datetime import datetime, timezone
 from hashlib import sha256
-from typing import Any, Iterable, Optional, Sequence
+from typing import Any, Optional, Sequence
 
 from .datasets import (
     SampleFilterConfig,
@@ -23,12 +23,9 @@ from .datasets import (
     split_samples,
 )
 from .prada import (
-    compute_text_similarity,
     should_use_teacher_output,
     should_use_teacher_output_for_user_preference,
 )
-from .teacher_client import TeacherClientConfig, TeacherInferenceClient
-from .teacher_fusion import TeacherSignalFusion, TeacherSignalFusionConfig
 from ..profile_extractor import get_user_profile_store
 
 try:  # pragma: no cover - optional dependency during early bootstrap

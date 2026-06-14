@@ -2,46 +2,26 @@
 
 from __future__ import annotations
 
-import io
-import json
 import os
 import re
-from contextlib import redirect_stdout
 import tempfile
 import unittest
 from pathlib import Path
-from types import SimpleNamespace
 
-from typer.testing import CliRunner
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
-from pfe_cli import adapter_commands, main as cli_main
 from pfe_cli.main import (
     _format_eval_result,
     _format_eval_result_legacy,
     _format_serve,
-    _format_serve_preview,
     _format_status,
     _format_train_preview,
     _format_train_result,
 )
-from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.db.sqlite import resolve_home
-from pfe_core.pipeline import PipelineService
-from pfe_core.trainer.service import TrainerService
-from pfe_server.app import build_serve_plan
-
 
 def strip_ansi(text: str) -> str:
     """Remove ANSI color codes from text for testing."""
     ansi_pattern = re.compile(r'\x1b\[[0-9;]*m')
     return ansi_pattern.sub('', text)
-
 
 class CLIFormattingMatrixTests(unittest.TestCase):
     """Test CLI formatting with Matrix theme (default)."""
@@ -89,6 +69,7 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("pending_eval", clean)
         self.assertIn("ADAPTER LIFECYCLE", clean)
         self.assertIn("WORKSPACE: /tmp/pfe", clean)
+        self.assertIn("Next: pfe next --workspace /tmp/pfe", clean)
 
     def test_train_result_includes_version_and_samples(self) -> None:
         payload = {
@@ -96,10 +77,17 @@ class CLIFormattingMatrixTests(unittest.TestCase):
             "adapter_path": "/tmp/pfe/adapters/20260323-001",
             "num_samples": 12,
             "backend_plan": {
-                "selected_backend": "mock_local",
+                "recommended_backend": "mlx",
                 "requested_backend": "auto",
-                "runtime_device": "cpu",
+                "runtime_device": "mps",
                 "requires_export_step": False,
+            },
+            "backend_dispatch": {
+                "execution_backend": "mlx",
+            },
+            "execution_backend": "mlx",
+            "job_execution": {
+                "audit": {"runner_status": "completed"},
             },
             "export_runtime": {
                 "required": False,
@@ -119,6 +107,27 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("TRAINING COMPLETE", clean)
         self.assertIn("20260323-001", clean)
         self.assertIn("TRAINING RESULT", clean)
+        self.assertIn("mlx | device=mps", clean)
+        self.assertIn("execution:", clean)
+        self.assertIn("completed", clean)
+
+    def test_train_preview_distinguishes_real_local_from_export_dry_run(self) -> None:
+        text = _format_train_preview(
+            method="qlora",
+            epochs=1,
+            base_model="base-model",
+            train_type="sft",
+            workspace=None,
+            snapshot_workspace="user_default",
+            backend_hint="mock_local",
+            real_local=True,
+        )
+        clean = strip_ansi(text)
+
+        self.assertIn("PFE train plan", clean)
+        self.assertIn("execution_intent=real_local", clean)
+        self.assertIn("export-write:", clean)
+        self.assertNotIn("dry_run=yes", clean)
 
     def test_eval_result_shows_recommendation(self) -> None:
         payload = {
@@ -194,7 +203,6 @@ class CLIFormattingMatrixTests(unittest.TestCase):
         self.assertIn("ADAPTER VERSIONS", clean)
         self.assertIn("20260323-001", clean)
         self.assertIn("promoted", clean)
-
 
 if __name__ == "__main__":
     unittest.main()

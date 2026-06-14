@@ -28,13 +28,20 @@ PFE 更适合被理解为一套面向操作者的本地基础设施，而不是�
 ```bash
 tools/bootstrap_py311_env.sh
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+```
+
+bootstrap 默认只安装轻量 `dev` extra。需要真实训练依赖时再显式打开：
+
+```bash
+PFE_BOOTSTRAP_EXTRAS=dev,training tools/bootstrap_py311_env.sh
 ```
 
 建议先跑这几个命令：
 
 ```bash
+pfe init --workspace user_default --base-model Qwen/Qwen2.5-3B-Instruct
 pfe doctor
+pfe next --workspace user_default
 pfe status --json
 pfe console --cycles 1
 ```
@@ -50,6 +57,47 @@ pfe serve --port 8921 --live
 ```bash
 pfe dashboard
 ```
+
+运行快速测试分层：
+
+```bash
+make smoke-first-run
+make smoke-auto-train-queue
+make smoke-real-local-readiness
+make smoke-server-live
+make smoke-dashboard-console-live
+make smoke-browser-ui-live
+make test
+make test-unit
+make test-surface
+make test-e2e-mock
+```
+
+`make smoke-first-run` 会在隔离的临时目录里跑完
+`pfe init -> doctor -> next -> generate -> trigger configure -> collect ingest/status/review -> trigger status/process-next -> eval -> promote -> serve`。
+它不需要网络、真实模型下载，也不会启动常驻服务。
+
+`make smoke-auto-train-queue` 会跑同一条隔离路径，但在 auto-train 队列任务完成、
+mock adapter manifest 可见后就停止，便于快速验证队列闭环。
+
+`make smoke-real-local-readiness` 会验证不下载模型、不安装重训练依赖时的
+real-local 预检路径：本地模型发现、`pfe train --real-local --preview`、
+serve preview 和 console snapshot。
+
+`make smoke-server-live` 会在隔离目录里构建一个 mock-local adapter，临时启动
+`pfe serve --live`，然后通过 HTTP 检查 `/healthz`、`/pfe/status`、`/dashboard`、
+`/pfe/dashboard/metrics` 和 `/v1/chat/completions`。
+
+`make smoke-dashboard-console-live` 会启动同类临时 live server，检查 dashboard
+HTML/API 端点，并跑一遍 chat console 的 chat/feedback 闭环。
+
+`make smoke-browser-ui-live` 是可选 Playwright smoke。安装 e2e extras 和 Chromium
+浏览器后，它会在真实浏览器里执行 dashboard refresh 和 chat/feedback 交互；未安装时
+会带 setup 提示跳过。
+
+`make smoke-real-local-happy` 是显式 opt-in。设置 `PFE_REAL_LOCAL_MODEL` 指向本地
+模型或 config 目录，并安装 training extras 后，它会跑真实 `pfe train --real-local`
+happy path。
 
 默认本地页面：
 
@@ -70,25 +118,33 @@ http://127.0.0.1:8921/
 一条典型的操作者路径：
 
 ```bash
-# 1. 先确认本地运行环境是否 ready
+# 1. 创建本地 .pfe workspace 和默认配置
+pfe init --workspace user_default --base-model Qwen/Qwen2.5-3B-Instruct
+
+# 2. 先确认本地运行环境是否 ready
 pfe doctor
 
-# 2. 查看当前引擎状态
+# 3. 查看当前引擎状态
+pfe next --workspace user_default
 pfe status --json
 
-# 3. 打开实时终端面板
+# 4. 打开实时终端面板
 pfe console --cycles 1
 
-# 4. 启动本地服务
+# 5. 在安装重依赖前预检 real local 训练计划
+pfe train --backend peft --real-local --preview --epochs 1
+
+# 6. 启动本地服务
 pfe serve --port 8921 --live
 
-# 5. 打开观测面板
+# 7. 打开观测面板
 pfe dashboard
 ```
 
 命令分组：
 
-- 检查与观测：`pfe doctor`、`pfe status --json`、`pfe console`
+- 工作区初始化：`pfe init --workspace user_default --base-model <path-or-id>`
+- 检查与观测：`pfe doctor`、`pfe next`、`pfe status --json`、`pfe console`
 - 训练与评估：`pfe train`、`pfe dpo`、`pfe eval`
 - 生命周期管理：`pfe adapter`、`pfe candidate`
 - 自动化控制：`pfe trigger`、`pfe daemon`、`pfe eval-trigger`
@@ -97,6 +153,7 @@ pfe dashboard
 当 workspace、base model 和 adapter 流程配置好以后，可以继续看：
 
 ```bash
+pfe train --backend peft --real-local --preview
 pfe train --help
 pfe dpo --help
 pfe eval --help
@@ -163,7 +220,7 @@ tools/       仓库内辅助脚本
 ## 项目状态
 
 - Phase 1 已完成
-- Phase 2 已完成
+- Phase 2 功能性收尾完成；仍需 release-readiness 验证
 - 公开仓库版本已经整理完成，大体积本地资产继续排除在仓库之外
 
 Phase 2 收尾说明见 [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md)。
@@ -172,6 +229,7 @@ Phase 2 收尾说明见 [docs/reference/phase2-closeout.md](docs/reference/phase
 
 - [README.md](README.md)
 - [docs/README.md](docs/README.md)
+- [docs/guides/beta-local-runbook.md](docs/guides/beta-local-runbook.md)
 - [ENGINE_DEV_DOC.md](ENGINE_DEV_DOC.md)
 - [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md)
 

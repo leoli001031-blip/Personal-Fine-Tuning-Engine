@@ -13,11 +13,6 @@ import pytest
 from tests.matrix_test_compat import strip_ansi
 
 ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 
 @pytest.mark.slow
 class CLIClosedLoopSmokeTests(unittest.TestCase):
@@ -101,7 +96,6 @@ class CLIClosedLoopSmokeTests(unittest.TestCase):
         self.assertIn("[ RECENT TRAINING ]", clean_serve_output)
         self.assertIn(f"version:                 {version}", clean_serve_output)
         self.assertIn("state:                   pending_eval", clean_serve_output)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,17 +6,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class WorkerDaemonSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -91,7 +84,6 @@ class WorkerDaemonSurfaceTests(unittest.TestCase):
         self.assertIn("/pfe/auto-train/recover-worker-daemon", root_text)
         self.assertIn("重启 Daemon", root_text)
         self.assertIn("恢复 Daemon", root_text)
-
 
 if __name__ == "__main__":
     unittest.main()

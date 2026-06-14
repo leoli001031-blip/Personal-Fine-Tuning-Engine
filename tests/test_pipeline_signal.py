@@ -8,15 +8,8 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.storage import list_samples
-
 
 @pytest.mark.slow
 class PipelineSignalTests(unittest.TestCase):
@@ -160,7 +153,6 @@ class PipelineSignalTests(unittest.TestCase):
         self.assertIn("metadata", report)
         self.assertEqual(report["metadata"]["eval_scope"], "holdout_only")
         self.assertIn(report["metadata"]["eval_split_source"], {"test", "val", "val+test"})
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import pytest
 
@@ -12,7 +12,6 @@ from pfe_core.trainer.replay_strategy import (
     AggressiveReplayStrategy,
     ConservativeReplayStrategy,
     ReplayPlan,
-    ReplayStrategy,
     create_replay_strategy,
     get_strategy_summary,
 )

@@ -6,11 +6,10 @@ falling back to difflib.SequenceMatcher for a pure-Python implementation.
 
 from __future__ import annotations
 
-import math
 import re
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ..scenarios import ScenarioConfig

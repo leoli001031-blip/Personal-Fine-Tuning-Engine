@@ -71,7 +71,7 @@ eval = ["sentence-transformers>=2.2.0"]           # 用于样本去重
 | 云功能引发的数据出境/隐私顾虑 | 中 | 高 | 默认 `strict_local`，Teacher/Judge/Router 云能力显式 opt-in，调用前脱敏并写审计日志 |
 | 社区不买账 | 中 | 中 | Phase 0 结束先发技术博客验证关注度，再决定投入力度 |
 | unsloth 不支持某些模型/平台 | 低 | 中 | peft + trl 作为 fallback 方案 |
-| Mac MPS 训练不稳定 | 中 | 中 | Mac 走 mlx-lm 原生路径（非 MPS），避免 MPS 后端已知问题 |
+| Mac / MLX 训练进程级退出 | 中 | 高 | 真实训练默认关闭；`--real-local` 或 `PFE_REAL_TRAINING=1` 才启用；父进程只做安全 preflight，MLX / PEFT / Unsloth / DPO 真实执行进入 materialized 子进程并落盘 diagnostics |
 | 路由层判断不准确 | 中 | 中 | Phase 0-1 不做路由，Phase 2 从规则路由开始渐进 |
 | 多后端 adapter 产物不兼容 | 中 | 高 | 定义 canonical artifact + manifest，serve 前做兼容性检查与必要转换 |
 | Teacher / Judge 污染评测 | 中 | 高 | 强制 holdout/test split，记录 provenance，默认避免 teacher 数据直接作为 judge 测试集 |
@@ -197,7 +197,7 @@ MIT — 简洁宽松，对商业使用和社区采用都更友好。
 - integration tests (mock model)
 
 # 每周 / Release 前
-- 真实模型微调测试（3B, 7B）
+- 显式开启后的真实模型微调测试（3B, 7B；Mac 走 MLX 子进程隔离）
 - 多平台测试（Linux CUDA, Mac mlx-lm, CPU-only）
 - 效果回归测试
 ```

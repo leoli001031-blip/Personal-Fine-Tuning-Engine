@@ -203,9 +203,9 @@ def audit_pii_exposure(samples: list[dict[str, Any]]) -> PIIAuditReport:
     for sample in samples:
         sample_id = str(sample.get("sample_id") or sample.get("id") or "")
         texts: list[str] = []
-        for field in text_fields:
-            val = sample.get(field)
-            if field == "messages" and isinstance(val, list):
+        for field_name in text_fields:
+            val = sample.get(field_name)
+            if field_name == "messages" and isinstance(val, list):
                 for msg in val:
                     if isinstance(msg, dict):
                         content = msg.get("content") or ""

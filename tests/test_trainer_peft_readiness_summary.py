@@ -7,14 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
-
 
 class TrainerPeftReadinessSummaryTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -46,6 +39,32 @@ class TrainerPeftReadinessSummaryTests(unittest.TestCase):
                 }
             ],
         }
+
+    def test_real_local_model_source_rejects_empty_directory(self) -> None:
+        local_model_dir = Path(self.tempdir.name) / "empty-local-model"
+        local_model_dir.mkdir(parents=True, exist_ok=True)
+
+        source = trainer_executor_module._resolve_real_local_model_source(
+            {"base_model": str(local_model_dir)}
+        )
+
+        self.assertFalse(source["available"])
+        self.assertEqual(source["source_kind"], "unavailable")
+        self.assertEqual(source["load_mode"], "unavailable")
+
+    def test_real_local_model_source_accepts_directory_with_config_marker(self) -> None:
+        local_model_dir = Path(self.tempdir.name) / "local-model"
+        local_model_dir.mkdir(parents=True, exist_ok=True)
+        (local_model_dir / "config.json").write_text("{}", encoding="utf-8")
+
+        source = trainer_executor_module._resolve_real_local_model_source(
+            {"base_model": str(local_model_dir)}
+        )
+
+        self.assertTrue(source["available"])
+        self.assertEqual(source["source_kind"], "path")
+        self.assertEqual(source["source_path"], str(local_model_dir))
+        self.assertEqual(source["load_mode"], "from_pretrained")
 
     def test_execute_peft_training_reports_readiness_summary_when_local_model_source_is_missing(self) -> None:
         job_spec = self._job_spec()
@@ -249,7 +268,6 @@ class TrainerPeftReadinessSummaryTests(unittest.TestCase):
         self.assertEqual(result["execution_mode"], "real_import")
         self.assertEqual(result["real_execution"]["kind"], "real_peft")
         real_import_patch.assert_called_once()
-
 
 if __name__ == "__main__":
     unittest.main()

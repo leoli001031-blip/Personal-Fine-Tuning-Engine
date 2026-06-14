@@ -11,12 +11,6 @@ from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_core.inference.export_runtime import build_llama_cpp_export_command_plan
@@ -25,7 +19,6 @@ from pfe_server.app import ServiceBundle, build_serve_plan, create_app, serve, s
 from pfe_server.auth import ServerSecurityConfig
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
-
 
 class _NoopTrainerStore:
     def __init__(self, version_dir: Path):
@@ -46,7 +39,6 @@ class _NoopTrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         del version, num_samples, metrics
-
 
 class TrainerExportServerE2ETests(unittest.TestCase):
     def setUp(self) -> None:
@@ -196,7 +188,6 @@ class TrainerExportServerE2ETests(unittest.TestCase):
         self.assertEqual(run_calls[0]["host"], "127.0.0.1")
         self.assertEqual(run_calls[0]["port"], 8921)
         self.assertFalse(run_calls[0]["reload"])
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -6,17 +6,13 @@ import tempfile
 import unittest
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
+from typer.testing import CliRunner
 
+from pfe_cli import main as cli_main
 from pfe_cli.main import _format_status
 from pfe_core.config import PFEConfig
 from pfe_server.app import build_serve_plan, smoke_test_request
 from tests.matrix_test_compat import strip_ansi
-
 
 class AutoTriggerStatusTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -214,6 +210,48 @@ class AutoTriggerStatusTests(unittest.TestCase):
         self.assertEqual(loaded.trainer.trigger.queue_priority_policy, "promotion_bias")
         self.assertEqual(loaded.trainer.trigger.preference_reinforced_sample_weight, 2.0)
 
+    def test_trigger_configure_cli_persists_beta_ready_queue_settings(self) -> None:
+        result = CliRunner().invoke(
+            cli_main.app,
+            [
+                "trigger",
+                "configure",
+                "--workspace",
+                "first_run",
+                "--enable",
+                "--min-new-samples",
+                "1",
+                "--queue-mode",
+                "deferred",
+                "--max-interval-days",
+                "0",
+                "--no-require-confirmation",
+                "--epochs",
+                "1",
+                "--backend",
+                "mock_local",
+            ],
+        )
+
+        self.assertEqual(result.exit_code, 0, msg=result.stdout)
+        config = PFEConfig.load(home=self.pfe_home)
+        self.assertTrue(config.trainer.trigger.enabled)
+        self.assertEqual(config.trainer.trigger.min_new_samples, 1)
+        self.assertEqual(config.trainer.trigger.queue_mode, "deferred")
+        self.assertEqual(config.trainer.trigger.max_interval_days, 0)
+        self.assertFalse(config.trainer.trigger.require_queue_confirmation)
+        self.assertEqual(config.trainer.epochs, 1)
+        self.assertEqual(config.trainer.backend, "mock_local")
+
+        clean = strip_ansi(result.stdout)
+        self.assertIn("[ AUTO TRAIN ACTION ]", clean)
+        self.assertIn("action", clean)
+        self.assertIn("configure", clean)
+        self.assertIn("queue mode", clean)
+        self.assertIn("deferred", clean)
+        self.assertIn("backend", clean)
+        self.assertIn("mock_local", clean)
+
     def test_server_status_surfaces_auto_trigger_blocked_state(self) -> None:
         plan = build_serve_plan(workspace=str(self.pfe_home), dry_run=False)
         app = plan.app
@@ -236,7 +274,6 @@ class AutoTriggerStatusTests(unittest.TestCase):
         self.assertEqual(body["auto_train_trigger"]["policy"]["execution_mode"], "inline")
         self.assertEqual(body["auto_train_trigger"]["policy"]["queue_entry_mode"], "disabled")
         self.assertEqual(body["auto_train_trigger"]["policy"]["stop_stage"], "trigger")
-
 
 if __name__ == "__main__":
     unittest.main()

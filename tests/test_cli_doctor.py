@@ -1,21 +1,26 @@
 from __future__ import annotations
 
-import os
+import tempfile
 import unittest
 from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main
 
-
 class CLIDoctorTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tempdir = tempfile.TemporaryDirectory()
+        self._pfe_home = Path(self._tempdir.name) / ".pfe"
+        self._pfe_home.mkdir(parents=True)
+        (self._pfe_home / "config.toml").write_text('[model]\nbase_model = "local-model-or-base"\n', encoding="utf-8")
+        self._original_pfe_home = cli_main._pfe_home
+        cli_main._pfe_home = lambda workspace=None: self._pfe_home
+
+    def tearDown(self) -> None:
+        cli_main._pfe_home = self._original_pfe_home
+        self._tempdir.cleanup()
+
     def test_doctor_command_reports_compact_readiness_summary(self) -> None:
         runner = CliRunner()
         original_optional_call = cli_main._optional_module_call
@@ -142,6 +147,7 @@ class CLIDoctorTests(unittest.TestCase):
         )
         self.assertIn("blocked capabilities: none", text)
         self.assertIn("next steps: run pfe train or pfe eval as needed", text)
+        self.assertIn("run pfe next --workspace user_default for the current guided path", text)
         self.assertIn(
             "capability boundaries: train/core | eval/core | serve/core | generate/heuristic | distill/heuristic | profile/heuristic | route/heuristic",
             text,
@@ -163,6 +169,7 @@ class CLIDoctorTests(unittest.TestCase):
         )
 
     def test_doctor_command_surfaces_blocked_capabilities_without_base_model(self) -> None:
+        (self._pfe_home / "config.toml").unlink()
         runner = CliRunner()
         original_optional_call = cli_main._optional_module_call
         original_load_latest_adapter_manifest = cli_main._load_latest_adapter_manifest
@@ -216,10 +223,10 @@ class CLIDoctorTests(unittest.TestCase):
         text = result.stdout
         self.assertIn("local model: available=no | requested_base_model=n/a | reason=no base model configured", text)
         self.assertIn("blocked capabilities: train, eval, serve", text)
-        self.assertIn(
-            "next steps: set a base_model in the latest adapter manifest or pass --base-model; train an adapter to create a workspace snapshot",
-            text,
-        )
+        self.assertIn("next steps: initialize local config with pfe init --base-model <path-or-model-id>", text)
+        self.assertIn("run pfe next --workspace user_default for the current guided path", text)
+        self.assertIn("or pass --base-model for this doctor run to probe a local base model", text)
+        self.assertIn("train an adapter to create a workspace snapshot", text)
         self.assertIn(
             "capability boundaries: train/core | eval/core | serve/core | generate/heuristic | distill/heuristic | profile/heuristic | route/heuristic",
             text,
@@ -228,6 +235,58 @@ class CLIDoctorTests(unittest.TestCase):
         self.assertIn("adapter home: home=", text)
         self.assertIn("latest promoted=n/a", text)
         self.assertIn("recent training=n/a", text)
+
+    def test_doctor_command_uses_initialized_base_model_when_manifest_is_empty(self) -> None:
+        runner = CliRunner()
+        original_optional_call = cli_main._optional_module_call
+        original_load_latest_adapter_manifest = cli_main._load_latest_adapter_manifest
+        original_lookup_latest = cli_main._lookup_adapter_snapshot
+        original_lookup_recent = cli_main._lookup_recent_adapter_snapshot
+        try:
+            cli_main._load_latest_adapter_manifest = lambda workspace=None: {}
+
+            def fake_optional_module_call(module_name: str, attr_name: str, *args: object, **kwargs: object):
+                if module_name == "pfe_core.trainer.runtime" and attr_name == "detect_trainer_runtime":
+                    return {
+                        "runtime_device": "cpu",
+                        "installed_packages": {
+                            "torch": True,
+                            "transformers": True,
+                            "peft": True,
+                            "accelerate": True,
+                            "trl": True,
+                            "datasets": True,
+                        },
+                    }
+                if module_name == "pfe_core.trainer.executors" and attr_name == "_resolve_real_local_model_source":
+                    payload = args[0] if args else {}
+                    return {
+                        "available": True,
+                        "requested_base_model": payload.get("base_model"),
+                        "source_kind": "model_id",
+                        "source_path": payload.get("base_model"),
+                        "config_path": None,
+                        "load_mode": "from_pretrained",
+                        "reason": "configured base model resolved",
+                    }
+                return original_optional_call(module_name, attr_name, *args, **kwargs)
+
+            cli_main._optional_module_call = fake_optional_module_call
+            cli_main._lookup_adapter_snapshot = lambda version, workspace=None: None
+            cli_main._lookup_recent_adapter_snapshot = lambda workspace=None: None
+
+            result = runner.invoke(cli_main.app, ["doctor", "--workspace", "user_default"])
+        finally:
+            cli_main._optional_module_call = original_optional_call
+            cli_main._load_latest_adapter_manifest = original_load_latest_adapter_manifest
+            cli_main._lookup_adapter_snapshot = original_lookup_latest
+            cli_main._lookup_recent_adapter_snapshot = original_lookup_recent
+
+        self.assertEqual(result.exit_code, 0, msg=result.stdout)
+        self.assertIn(
+            "local model: available=yes | requested_base_model=local-model-or-base | source_kind=model_id | source_path=local-model-or-base | load_mode=from_pretrained",
+            result.stdout,
+        )
 
     def test_doctor_command_accepts_explicit_base_model_override(self) -> None:
         runner = CliRunner()
@@ -290,6 +349,29 @@ class CLIDoctorTests(unittest.TestCase):
             result.stdout,
         )
 
+    def test_doctor_command_suggests_init_when_local_config_missing(self) -> None:
+        (self._pfe_home / "config.toml").unlink()
+        runner = CliRunner()
+        original_optional_call = cli_main._optional_module_call
+        original_load_latest_adapter_manifest = cli_main._load_latest_adapter_manifest
+        original_lookup_latest = cli_main._lookup_adapter_snapshot
+        original_lookup_recent = cli_main._lookup_recent_adapter_snapshot
+        try:
+            cli_main._load_latest_adapter_manifest = lambda workspace=None: {}
+            cli_main._optional_module_call = lambda module_name, attr_name, *args, **kwargs: None
+            cli_main._lookup_adapter_snapshot = lambda version, workspace=None: None
+            cli_main._lookup_recent_adapter_snapshot = lambda workspace=None: None
+
+            result = runner.invoke(cli_main.app, ["doctor", "--workspace", "user_default"])
+        finally:
+            cli_main._optional_module_call = original_optional_call
+            cli_main._load_latest_adapter_manifest = original_load_latest_adapter_manifest
+            cli_main._lookup_adapter_snapshot = original_lookup_latest
+            cli_main._lookup_recent_adapter_snapshot = original_lookup_recent
+
+        self.assertEqual(result.exit_code, 0, msg=result.stdout)
+        self.assertIn("pfe init --base-model <path-or-model-id>", result.stdout)
+        self.assertIn("missing", result.stdout)
 
 if __name__ == "__main__":
     unittest.main()

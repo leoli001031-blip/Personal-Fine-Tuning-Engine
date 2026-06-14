@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import logging
 import os
 import signal
 import subprocess
@@ -12,7 +13,7 @@ import time
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 from uuid import uuid4
 
 from .adapter_store.store import create_adapter_store
@@ -21,7 +22,45 @@ from .curator.teacher_client import TeacherClientConfig, TeacherInferenceClient
 from .errors import EvalError
 from .inference.engine import InferenceConfig, InferenceEngine, resolve_base_model_reference
 from .models import parse_utc_datetime
-from .curator.datasets import SampleFilterConfig, build_signal_quality, signal_quality_filter_reasons, summarize_signal_quality_filters
+from .curator.datasets import SampleFilterConfig, build_signal_quality, signal_quality_filter_reasons
+from .pipeline_candidate import (
+    candidate_history_entry,
+    candidate_history_payload,
+    candidate_history_summary,
+    candidate_timeline_payload,
+    candidate_timeline_summary,
+    normalize_candidate_history,
+)
+from .pipeline_operations import (
+    GENERIC_MONITOR_FOCUSES,
+    classify_operations_event,
+    generic_monitor_active,
+    operations_event_severity_rank,
+    ordered_unique_actions,
+    prefer_inspection_summary_for_generic_monitor,
+)
+from .pipeline_queue import (
+    normalize_queue_items,
+    queue_history_entry,
+    queue_history_summary,
+    queue_recent_history,
+    queue_review_entries,
+    queue_review_policy_summary,
+    queue_review_summary,
+    queue_sort_key,
+    queue_state_counts,
+    train_queue_history_payload,
+)
+from .pipeline_runner import (
+    append_runner_history,
+    daemon_history_payload,
+    daemon_summary,
+    daemon_timeline_summary,
+    runner_history_entry,
+    runner_timeline_summary,
+    worker_runner_history_payload,
+    worker_summary,
+)
 from .storage import list_samples, list_signals, record_signal, resolve_home, save_samples, status_snapshot, write_json, write_jsonl
 from .trainer import summarize_real_training_execution, summarize_training_job_execution
 from .trainer.service import TrainerService
@@ -30,15 +69,36 @@ from .trainer.training_auditor import TrainingAuditor, TrainingAuditReport
 from .observability.trace import (
     TraceStore,
     record_signal_node,
-    append_signal_to_version,
-    trace_signal,
-    trace_version,
     SignalTrace,
 )
 
 
+logger = logging.getLogger(__name__)
+
+
 def _default_chat_base_model() -> str:
     return resolve_base_model_reference("local-default")
+
+
+def _adapter_manifest_base_model(adapter_path: str | Path | None) -> str | None:
+    if not adapter_path:
+        return None
+    manifest_path = Path(adapter_path) / "adapter_manifest.json"
+    if not manifest_path.exists():
+        return None
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    configured = str(manifest.get("base_model") or "").strip()
+    return configured or None
+
+
+def _resolve_defaultable_base_model(base_model: str | None, *, adapter_path: str | Path | None = None) -> str:
+    requested = str(base_model or "local-default").strip() or "local-default"
+    if requested not in {"local", "local-default", "base"}:
+        return requested
+    return _adapter_manifest_base_model(adapter_path) or _default_chat_base_model()
 
 
 def _eval_generation_kwargs() -> dict[str, Any]:
@@ -183,17 +243,7 @@ class PipelineService:
     """Coordinate generation, training, evaluation, and serving helpers."""
 
     split_defaults = (("train", 0.8), ("val", 0.1), ("test", 0.1))
-    generic_monitor_focuses = {
-        "candidate_idle",
-        "queue_waiting_execution",
-        "queue_backlog",
-        "runner_active",
-        "daemon_active",
-        "candidate_monitoring",
-        "queue_monitoring",
-        "runner_monitoring",
-        "daemon_monitoring",
-    }
+    generic_monitor_focuses = GENERIC_MONITOR_FOCUSES
 
     def __init__(self):
         self.trainer = TrainerService()
@@ -205,8 +255,11 @@ class PipelineService:
 
     @staticmethod
     def _generic_monitor_active(*, focus: Any, inspection_summary_line: Any) -> bool:
-        focus_text = str(focus or "").strip().lower()
-        return bool(inspection_summary_line) and focus_text in PipelineService.generic_monitor_focuses
+        return generic_monitor_active(
+            focus=focus,
+            inspection_summary_line=inspection_summary_line,
+            monitor_focuses=PipelineService.generic_monitor_focuses,
+        )
 
     @staticmethod
     def _prefer_inspection_summary_for_generic_monitor(
@@ -215,12 +268,12 @@ class PipelineService:
         summary_line: Any,
         inspection_summary_line: Any,
     ) -> tuple[Any, Any]:
-        if PipelineService._generic_monitor_active(
+        return prefer_inspection_summary_for_generic_monitor(
             focus=focus,
+            summary_line=summary_line,
             inspection_summary_line=inspection_summary_line,
-        ):
-            return inspection_summary_line, inspection_summary_line
-        return summary_line, inspection_summary_line
+            monitor_focuses=PipelineService.generic_monitor_focuses,
+        )
 
     @staticmethod
     def _auto_trigger_state_path(*, workspace: str | None = None) -> Path:
@@ -281,128 +334,27 @@ class PipelineService:
 
     @staticmethod
     def _candidate_history_entry(action: dict[str, Any]) -> dict[str, Any]:
-        return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "action": str(action.get("action") or "candidate_action"),
-            "status": str(action.get("status") or "noop"),
-            "reason": str(action.get("reason") or ""),
-            "candidate_version": action.get("candidate_version"),
-            "promoted_version": action.get("promoted_version"),
-            "archived_version": action.get("archived_version"),
-            "operator_note": action.get("operator_note"),
-            "previous_candidate_state": action.get("previous_candidate_state"),
-            "triggered": bool(action.get("triggered", False)),
-        }
+        return candidate_history_entry(action)
 
     def _load_candidate_history(self, *, workspace: str | None = None) -> list[dict[str, Any]]:
         state = self._load_auto_trigger_state(workspace=workspace)
-        raw = state.get("candidate_history") or []
-        if not isinstance(raw, list):
-            return []
-        return [dict(item) for item in raw if isinstance(item, dict)]
+        return normalize_candidate_history(state.get("candidate_history") or [])
 
     def _candidate_history_summary(self, *, workspace: str | None = None) -> dict[str, Any]:
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        return {
-            "count": len(history),
-            "latest_timestamp": latest.get("timestamp"),
-            "last_action": latest.get("action"),
-            "last_status": latest.get("status"),
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "last_note": latest.get("operator_note"),
-            "action_counts": {
-                "promote_candidate": sum(1 for item in history if str(item.get("action")) == "promote_candidate"),
-                "archive_candidate": sum(1 for item in history if str(item.get("action")) == "archive_candidate"),
-            },
-            "items": history[-5:],
-        }
+        return candidate_history_summary(history)
 
     def candidate_history(self, *, workspace: str | None = None, limit: int = 10) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        return {
-            "workspace": workspace or "user_default",
-            "count": len(history),
-            "limit": bounded_limit,
-            "last_action": latest.get("action"),
-            "last_status": latest.get("status"),
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "last_note": latest.get("operator_note"),
-            "latest_timestamp": latest.get("timestamp"),
-            "items": history[-bounded_limit:],
-        }
+        return candidate_history_payload(history=history, workspace=workspace, limit=limit)
 
     def _candidate_timeline_summary(self, *, workspace: str | None = None) -> dict[str, Any]:
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        transitions = sum(1 for item in history if str(item.get("status") or "") in {"completed", "blocked", "noop"})
-        current_stage = "idle"
-        if latest:
-            action = str(latest.get("action") or "")
-            status = str(latest.get("status") or "")
-            if action == "promote_candidate" and status == "completed":
-                current_stage = "promoted"
-            elif action == "archive_candidate" and status == "completed":
-                current_stage = "archived"
-            elif status == "blocked":
-                current_stage = "blocked"
-            elif status == "noop":
-                current_stage = "noop"
-            else:
-                current_stage = "candidate_action"
-        return {
-            "count": len(history),
-            "transition_count": transitions,
-            "current_stage": current_stage,
-            "last_transition": latest,
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "latest_timestamp": latest.get("timestamp"),
-        }
+        return candidate_timeline_summary(history)
 
     def candidate_timeline(self, *, workspace: str | None = None, limit: int = 10) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         history = self._load_candidate_history(workspace=workspace)
-        latest = history[-1] if history else {}
-        items = history[-bounded_limit:]
-        timeline_items: list[dict[str, Any]] = []
-        for item in items:
-            action = str(item.get("action") or "candidate_action")
-            status = str(item.get("status") or "noop")
-            if action == "promote_candidate" and status == "completed":
-                stage = "promoted"
-            elif action == "archive_candidate" and status == "completed":
-                stage = "archived"
-            elif status == "blocked":
-                stage = "blocked"
-            elif status == "noop":
-                stage = "noop"
-            else:
-                stage = "candidate_action"
-            timeline_items.append(
-                {
-                    **dict(item),
-                    "stage": stage,
-                    "label": f"{action}:{status}",
-                }
-            )
-        summary = self._candidate_timeline_summary(workspace=workspace)
-        return {
-            "workspace": workspace or "user_default",
-            "count": len(history),
-            "limit": bounded_limit,
-            "current_stage": summary.get("current_stage"),
-            "transition_count": summary.get("transition_count"),
-            "last_transition": latest,
-            "last_reason": latest.get("reason"),
-            "last_candidate_version": latest.get("candidate_version"),
-            "latest_timestamp": latest.get("timestamp"),
-            "items": timeline_items,
-        }
+        return candidate_timeline_payload(history=history, workspace=workspace, limit=limit)
 
     @staticmethod
     def _train_queue_state_path(*, workspace: str | None = None) -> Path:
@@ -477,15 +429,7 @@ class PipelineService:
         reason: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        entry = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "event": str(event),
-        }
-        if reason:
-            entry["reason"] = str(reason)
-        if metadata:
-            entry["metadata"] = dict(metadata)
-        return entry
+        return runner_history_entry(event=event, reason=reason, metadata=metadata)
 
     def _append_train_queue_worker_history(
         self,
@@ -495,114 +439,32 @@ class PipelineService:
         reason: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        payload = self._load_train_queue_worker_state(workspace=workspace)
-        history = list(payload.get("history") or [])
-        history.append(
-            self._worker_runner_history_entry(
-                event=event,
-                reason=reason,
-                metadata=metadata,
-            )
+        payload = append_runner_history(
+            payload=self._load_train_queue_worker_state(workspace=workspace),
+            event=event,
+            reason=reason,
+            metadata=metadata,
         )
-        payload["history"] = history[-20:]
-        payload["history_count"] = len(history)
         self._persist_train_queue_worker_state(payload, workspace=workspace)
         return payload
 
     def train_queue_worker_runner_history(self, *, workspace: str | None = None, limit: int = 10) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         payload = self._load_train_queue_worker_state(workspace=workspace)
-        history = list(payload.get("history") or [])
-        latest = history[-1] if history else {}
-        return {
-            "workspace": workspace or "user_default",
-            "count": len(history),
-            "limit": bounded_limit,
-            "last_event": latest.get("event"),
-            "last_reason": latest.get("reason"),
-            "items": history[-bounded_limit:],
-        }
+        return worker_runner_history_payload(payload=payload, workspace=workspace, limit=limit)
 
     def train_queue_worker_runner_timeline(self, *, workspace: str | None = None, limit: int = 5) -> dict[str, Any]:
         return self._runner_timeline_summary(workspace=workspace, limit=limit)
 
     def _runner_timeline_summary(self, *, workspace: str | None = None, limit: int = 5) -> dict[str, Any]:
         history_payload = self.train_queue_worker_runner_history(workspace=workspace, limit=max(1, int(limit or 5)))
-        items = [dict(item) for item in list(history_payload.get("items") or [])]
-        takeover_items = [
-            item
-            for item in items
-            if str(item.get("reason") or "").startswith("stale_lock_takeover")
-        ]
-        latest = items[-1] if items else {}
-        last_takeover = takeover_items[-1] if takeover_items else {}
-        return {
-            "count": history_payload.get("count", 0),
-            "latest_timestamp": ((latest or {}).get("timestamp") or None),
-            "last_event": history_payload.get("last_event"),
-            "last_reason": history_payload.get("last_reason"),
-            "takeover_event_count": len(takeover_items),
-            "last_takeover_event": last_takeover.get("event"),
-            "last_takeover_reason": last_takeover.get("reason"),
-            "recent_takeover_events": [
-                {
-                    "timestamp": item.get("timestamp"),
-                    "event": item.get("event"),
-                    "reason": item.get("reason"),
-                    "note": item.get("note"),
-                }
-                for item in takeover_items[-max(1, int(limit or 5)) :]
-            ],
-            "recent_events": [
-                {
-                    "timestamp": item.get("timestamp"),
-                    "event": item.get("event"),
-                    "reason": item.get("reason"),
-                    "note": item.get("note"),
-                }
-                for item in items[-max(1, int(limit or 5)) :]
-            ],
-            "latest": latest,
-        }
+        return runner_timeline_summary(history_payload=history_payload, limit=limit)
 
     def _train_queue_worker_summary(self, *, workspace: str | None = None) -> dict[str, Any]:
-        payload = self._load_train_queue_worker_state(workspace=workspace)
-        stale_after_seconds = None
-        lease_expires_at = None
-        lock_state = "idle"
-        if bool(payload.get("active", False)):
-            lock_state = "active"
-            heartbeat = self._parse_iso_datetime(payload.get("last_heartbeat_at"))
-            if heartbeat is not None:
-                if heartbeat.tzinfo is None:
-                    heartbeat = heartbeat.replace(tzinfo=timezone.utc)
-                max_seconds = float(payload.get("max_seconds", 30.0) or 30.0)
-                stale_after_seconds = max(5.0, max_seconds * 2.0)
-                lease_expires_at = (heartbeat + timedelta(seconds=stale_after_seconds)).isoformat()
-                if (datetime.now(timezone.utc) - heartbeat).total_seconds() > stale_after_seconds:
-                    lock_state = "stale"
-        return {
-            "state_path": str(self._train_queue_worker_state_path(workspace=workspace)),
-            "active": bool(payload.get("active", False)),
-            "lock_state": lock_state,
-            "stale_after_seconds": stale_after_seconds,
-            "lease_expires_at": lease_expires_at,
-            "stop_requested": bool(payload.get("stop_requested", False)),
-            "pid": payload.get("pid"),
-            "started_at": payload.get("started_at"),
-            "last_heartbeat_at": payload.get("last_heartbeat_at"),
-            "last_completed_at": payload.get("last_completed_at"),
-            "loop_cycles": int(payload.get("loop_cycles", 0) or 0),
-            "processed_count": int(payload.get("processed_count", 0) or 0),
-            "failed_count": int(payload.get("failed_count", 0) or 0),
-            "stopped_reason": payload.get("stopped_reason"),
-            "last_action": payload.get("last_action"),
-            "history_count": int(payload.get("history_count", 0) or 0),
-            "last_event": ((list(payload.get("history") or []) or [{}])[-1]).get("event"),
-            "last_event_reason": ((list(payload.get("history") or []) or [{}])[-1]).get("reason"),
-            "max_seconds": payload.get("max_seconds"),
-            "idle_sleep_seconds": payload.get("idle_sleep_seconds"),
-        }
+        return worker_summary(
+            payload=self._load_train_queue_worker_state(workspace=workspace),
+            state_path=self._train_queue_worker_state_path(workspace=workspace),
+            workspace=workspace,
+        )
 
     def _append_train_queue_daemon_history(
         self,
@@ -612,244 +474,34 @@ class PipelineService:
         reason: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        payload = self._load_train_queue_daemon_state(workspace=workspace)
-        history = list(payload.get("history") or [])
-        entry = self._worker_runner_history_entry(event=event, reason=reason, metadata=metadata)
-        if isinstance(metadata, dict) and metadata.get("note") is not None:
-            entry["note"] = str(metadata["note"])
-        history.append(entry)
-        payload["history"] = history[-20:]
-        payload["history_count"] = len(history)
+        payload = append_runner_history(
+            payload=self._load_train_queue_daemon_state(workspace=workspace),
+            event=event,
+            reason=reason,
+            metadata=metadata,
+            include_metadata_note=True,
+        )
         self._persist_train_queue_daemon_state(payload, workspace=workspace)
         return payload
 
     def train_queue_daemon_history(self, *, workspace: str | None = None, limit: int = 10) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         payload = self._load_train_queue_daemon_state(workspace=workspace)
-        history = list(payload.get("history") or [])
-        latest = history[-1] if history else {}
-        return {
-            "workspace": workspace or "user_default",
-            "count": len(history),
-            "limit": bounded_limit,
-            "last_event": latest.get("event"),
-            "last_reason": latest.get("reason"),
-            "latest_timestamp": latest.get("timestamp"),
-            "items": history[-bounded_limit:],
-        }
+        return daemon_history_payload(payload=payload, workspace=workspace, limit=limit)
 
     def _daemon_timeline_summary(self, *, workspace: str | None = None, limit: int = 5) -> dict[str, Any]:
         history_payload = self.train_queue_daemon_history(workspace=workspace, limit=max(1, int(limit or 5)))
-        items = [dict(item) for item in list(history_payload.get("items") or [])]
-        recovery_events = {
-            "recover_requested",
-            "restart_requested",
-            "recover_blocked",
-            "stale_lock_takeover",
-            "start_requested",
-        }
-        recovery_items = [item for item in items if str(item.get("event") or "") in recovery_events]
-        latest = items[-1] if items else {}
-        last_recovery = recovery_items[-1] if recovery_items else {}
-        return {
-            "count": history_payload.get("count", 0),
-            "latest_timestamp": history_payload.get("latest_timestamp"),
-            "last_event": history_payload.get("last_event"),
-            "last_reason": history_payload.get("last_reason"),
-            "recovery_event_count": len(recovery_items),
-            "last_recovery_event": last_recovery.get("event"),
-            "last_recovery_reason": last_recovery.get("reason"),
-            "last_recovery_note": last_recovery.get("note"),
-            "recent_recovery_events": [
-                {
-                    "timestamp": item.get("timestamp"),
-                    "event": item.get("event"),
-                    "reason": item.get("reason"),
-                    "note": item.get("note"),
-                }
-                for item in recovery_items[-max(1, int(limit or 5)) :]
-            ],
-            "recent_events": [
-                {
-                    "timestamp": item.get("timestamp"),
-                    "event": item.get("event"),
-                    "reason": item.get("reason"),
-                    "note": item.get("note"),
-                }
-                for item in items[-max(1, int(limit or 5)) :]
-            ],
-            "latest": latest,
-        }
+        return daemon_timeline_summary(history_payload=history_payload, limit=limit)
 
     def _train_queue_daemon_summary(self, *, workspace: str | None = None) -> dict[str, Any]:
         payload = self._load_train_queue_daemon_state(workspace=workspace)
         config = self._load_config()
-        trigger = config.trainer.trigger
-        active = bool(payload.get("active", False))
-        pid = payload.get("pid")
-        lock_state = "active" if active else "idle"
-        heartbeat = self._parse_iso_datetime(payload.get("last_heartbeat_at"))
-        heartbeat_interval_seconds = float(
-            payload.get("heartbeat_interval_seconds", trigger.queue_daemon_heartbeat_interval_seconds)
-            or trigger.queue_daemon_heartbeat_interval_seconds
+        return daemon_summary(
+            payload=payload,
+            state_path=self._train_queue_daemon_state_path(workspace=workspace),
+            trigger=config.trainer.trigger,
+            pid_exists=self._pid_exists,
+            workspace=workspace,
         )
-        lease_timeout_seconds = float(
-            payload.get("lease_timeout_seconds", trigger.queue_daemon_lease_timeout_seconds)
-            or trigger.queue_daemon_lease_timeout_seconds
-        )
-        heartbeat_timeout_seconds = float(
-            payload.get("heartbeat_timeout_seconds", lease_timeout_seconds) or lease_timeout_seconds
-        )
-        heartbeat_age_seconds = None
-        lease_expires_at = None
-        lease_state = "idle"
-        heartbeat_state = "idle"
-        if active:
-            if heartbeat is not None:
-                if heartbeat.tzinfo is None:
-                    heartbeat = heartbeat.replace(tzinfo=timezone.utc)
-                heartbeat_age_seconds = max(0.0, round((datetime.now(timezone.utc) - heartbeat).total_seconds(), 3))
-                effective_lease_timeout = max(5.0, lease_timeout_seconds)
-                fresh_threshold_seconds = max(heartbeat_interval_seconds * 3.0, 5.0)
-                lease_expires_at = (heartbeat + timedelta(seconds=effective_lease_timeout)).isoformat()
-                if heartbeat_age_seconds <= fresh_threshold_seconds:
-                    heartbeat_state = "fresh"
-                elif heartbeat_age_seconds <= effective_lease_timeout:
-                    heartbeat_state = "delayed"
-                else:
-                    heartbeat_state = "stale"
-                if heartbeat_age_seconds <= max(effective_lease_timeout * 0.5, heartbeat_interval_seconds * 2.0):
-                    lease_state = "valid"
-                elif heartbeat_age_seconds <= effective_lease_timeout:
-                    lease_state = "expiring"
-                else:
-                    lease_state = "expired"
-                if heartbeat_age_seconds > effective_lease_timeout or not self._pid_exists(pid):
-                    lock_state = "stale"
-            elif not self._pid_exists(pid):
-                lock_state = "stale"
-                heartbeat_state = "stale"
-                lease_state = "expired"
-        history = list(payload.get("history") or [])
-        latest = history[-1] if history else {}
-        restart_attempts = int(payload.get("restart_attempts", 0) or 0)
-        max_restart_attempts = int(payload.get("max_restart_attempts", trigger.queue_daemon_max_restart_attempts) or trigger.queue_daemon_max_restart_attempts)
-        restart_backoff_seconds = float(payload.get("restart_backoff_seconds", trigger.queue_daemon_restart_backoff_seconds) or trigger.queue_daemon_restart_backoff_seconds)
-        next_restart_after = self._parse_iso_datetime(payload.get("next_restart_after"))
-        now = datetime.now(timezone.utc)
-        if next_restart_after is not None and next_restart_after.tzinfo is None:
-            next_restart_after = next_restart_after.replace(tzinfo=timezone.utc)
-        backoff_remaining_seconds = None
-        if next_restart_after is not None and now < next_restart_after:
-            backoff_remaining_seconds = round((next_restart_after - now).total_seconds(), 3)
-        if backoff_remaining_seconds is not None:
-            restart_policy_state = "backoff"
-        elif restart_attempts >= max_restart_attempts:
-            restart_policy_state = "capped"
-        else:
-            restart_policy_state = "ready"
-        desired_state = payload.get("desired_state") or "stopped"
-        recovery_needed = bool(desired_state == "running" and lock_state in {"idle", "stale"} and not bool(payload.get("stop_requested", False)))
-        can_recover = recovery_needed and backoff_remaining_seconds is None and restart_attempts < max_restart_attempts
-        recovery_reason = None
-        if recovery_needed:
-            if lock_state == "stale":
-                recovery_reason = "daemon_stale"
-            elif backoff_remaining_seconds is not None:
-                recovery_reason = "restart_backoff_active"
-            elif restart_attempts >= max_restart_attempts:
-                recovery_reason = "restart_attempt_limit_reached"
-            else:
-                recovery_reason = "daemon_inactive"
-        requested_action = str(payload.get("requested_action") or "")
-        command_status = str(payload.get("command_status") or "")
-        observed_state = payload.get("observed_state") or ("running" if active else "stopped")
-        if requested_action == "restart" and command_status == "spawned":
-            observed_state = "restarting"
-            recovery_state = "restarting"
-        elif requested_action == "recover" and command_status == "spawned":
-            observed_state = "recovering"
-            recovery_state = "recovering"
-        elif active and lock_state == "active":
-            recovery_state = "healthy"
-        elif recovery_needed and can_recover:
-            recovery_state = "recoverable"
-        elif recovery_needed:
-            recovery_state = "blocked"
-        else:
-            recovery_state = "idle"
-        if active and lock_state == "active":
-            health_state = "healthy"
-        elif lock_state == "stale":
-            health_state = "stale"
-        elif recovery_state in {"restarting", "recovering"}:
-            health_state = "recovering"
-        elif recovery_needed and not can_recover:
-            health_state = "blocked"
-        else:
-            health_state = "stopped"
-        if requested_action == "recover" and command_status == "spawned":
-            recovery_action = "auto_recover" if str(payload.get("last_requested_by") or "") == "auto_recovery" else "manual_recover"
-        elif requested_action == "restart" and command_status == "spawned":
-            recovery_action = "restart_required"
-        elif recovery_needed and can_recover:
-            recovery_action = "auto_recover" if bool(payload.get("auto_recover_enabled", trigger.queue_daemon_auto_recover)) else "manual_recover"
-        else:
-            recovery_action = "none"
-        return {
-            "workspace": workspace or "user_default",
-            "state_path": str(self._train_queue_daemon_state_path(workspace=workspace)),
-            "desired_state": desired_state,
-            "observed_state": observed_state,
-            "requested_action": payload.get("requested_action"),
-            "command_status": payload.get("command_status") or ("running" if active else "idle"),
-            "active": active,
-            "lock_state": lock_state,
-            "pid": pid,
-            "started_at": payload.get("started_at"),
-            "last_heartbeat_at": payload.get("last_heartbeat_at"),
-            "last_completed_at": payload.get("last_completed_at"),
-            "last_requested_at": payload.get("last_requested_at"),
-            "last_requested_by": payload.get("last_requested_by"),
-            "stop_requested": bool(payload.get("stop_requested", False)),
-            "auto_recover_enabled": bool(payload.get("auto_recover_enabled", trigger.queue_daemon_auto_recover)),
-            "heartbeat_interval_seconds": heartbeat_interval_seconds,
-            "lease_timeout_seconds": lease_timeout_seconds,
-            "heartbeat_timeout_seconds": heartbeat_timeout_seconds,
-            "health_state": health_state,
-            "lease_state": lease_state,
-            "heartbeat_state": heartbeat_state,
-            "restart_policy_state": restart_policy_state,
-            "recovery_action": recovery_action,
-            "lease_expires_at": lease_expires_at,
-            "heartbeat_age_seconds": heartbeat_age_seconds,
-            "history_count": int(payload.get("history_count", 0) or 0),
-            "last_event": latest.get("event"),
-            "last_reason": latest.get("reason"),
-            "latest_timestamp": latest.get("timestamp"),
-            "log_path": payload.get("log_path"),
-            "runner_max_seconds": payload.get("runner_max_seconds"),
-            "idle_sleep_seconds": payload.get("idle_sleep_seconds"),
-            "takeover": bool(payload.get("takeover", False)),
-            "previous_pid": payload.get("previous_pid"),
-            "auto_restart_enabled": bool(payload.get("auto_restart_enabled", trigger.queue_daemon_auto_restart)),
-            "restart_attempts": restart_attempts,
-            "max_restart_attempts": max_restart_attempts,
-            "restart_backoff_seconds": restart_backoff_seconds,
-            "next_restart_after": next_restart_after.isoformat() if next_restart_after is not None else None,
-            "backoff_remaining_seconds": backoff_remaining_seconds,
-            "auto_recovery_count": int(payload.get("auto_recovery_count", 0) or 0),
-            "last_auto_recovery_at": payload.get("last_auto_recovery_at"),
-            "last_auto_recovery_reason": payload.get("last_auto_recovery_reason"),
-            "recovery_needed": recovery_needed,
-            "can_recover": can_recover,
-            "recovery_reason": recovery_reason,
-            "recovery_state": recovery_state,
-            "recovery_mode": "restart_policy",
-            "recovery_attempts": restart_attempts,
-            "recovery_backoff_seconds": restart_backoff_seconds,
-            "recovery_next_retry_at": next_restart_after.isoformat() if next_restart_after is not None else None,
-        }
 
     def _spawn_train_queue_daemon(
         self,
@@ -871,6 +523,7 @@ class PipelineService:
         log_dir.mkdir(parents=True, exist_ok=True)
         log_path = log_dir / f"train_queue_daemon_{workspace_name}.log"
         env = dict(os.environ)
+        env["PFE_HOME"] = str(resolve_home())
         env["PYTHONPATH"] = os.pathsep.join(
             [str(repo_root / "pfe-core"), str(repo_root / "pfe-cli"), str(repo_root / "pfe-server"), os.environ.get("PYTHONPATH", "")]
         ).strip(os.pathsep)
@@ -980,36 +633,11 @@ class PipelineService:
         reason: str | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        timestamp = (
-            item.get("updated_at")
-            or item.get("triggered_at")
-            or item.get("created_at")
-            or datetime.now(timezone.utc).isoformat()
-        )
-        entry = {
-            "timestamp": str(timestamp),
-            "event": str(event),
-            "state": str(item.get("state") or "unknown"),
-            "job_id": str(item.get("job_id") or ""),
-        }
-        if reason:
-            entry["reason"] = str(reason)
-        if metadata:
-            entry["metadata"] = dict(metadata)
-            if metadata.get("note") is not None:
-                entry["note"] = str(metadata["note"])
-        return entry
+        return queue_history_entry(event=event, item=item, reason=reason, metadata=metadata)
 
     @staticmethod
     def _queue_sort_key(item: dict[str, Any]) -> tuple[int, str]:
-        priority = int(item.get("priority", 0) or 0)
-        ordered_at = str(
-            item.get("triggered_at")
-            or item.get("created_at")
-            or item.get("updated_at")
-            or ""
-        )
-        return (-priority, ordered_at)
+        return queue_sort_key(item)
 
     @staticmethod
     def _queue_priority(
@@ -1148,14 +776,16 @@ class PipelineService:
         self._persist_train_queue_state(payload, workspace=workspace)
         return dict(updated_item)
 
-    def _train_queue_snapshot(self, *, workspace: str | None = None) -> dict[str, Any]:
+    def _train_queue_snapshot(
+        self,
+        *,
+        workspace: str | None = None,
+        allow_daemon_auto_recover: bool = False,
+    ) -> dict[str, Any]:
         trigger = self._load_config().trainer.trigger
         payload = self._load_train_queue_state(workspace=workspace)
-        items = [dict(item) for item in list(payload.get("items") or [])]
-        counts: dict[str, int] = {}
-        for item in items:
-            state = str(item.get("state") or "unknown")
-            counts[state] = counts.get(state, 0) + 1
+        items = normalize_queue_items(payload.get("items") or [])
+        counts = queue_state_counts(items)
         current_item = next((item for item in items if str(item.get("state")) in {"queued", "running"}), None)
         last_item = dict(payload.get("last_item") or (items[0] if items else {}))
         dedup_scopes = sorted(
@@ -1176,58 +806,17 @@ class PipelineService:
         queued_item = next((item for item in items if str(item.get("state")) == "queued"), None)
         confirmation_required_count = sum(1 for item in items if bool(item.get("confirmation_required")))
         awaiting_confirmation_count = int(counts.get("awaiting_confirmation", 0) or 0)
-        recent_history: list[dict[str, Any]] = []
-        for item in items:
-            recent_history.extend(list(item.get("history") or [])[-1:])
-        recent_history = sorted(recent_history, key=lambda entry: str(entry.get("timestamp") or ""), reverse=True)[:5]
+        recent_history = queue_recent_history(items, limit=5)
         last_transition = recent_history[0] if recent_history else {}
-        history_summary = {
-            "transition_count": sum(int(item.get("history_count", 0) or 0) for item in items),
-            "last_transition": last_transition,
-            "last_reason": last_transition.get("reason"),
-        }
-        review_entries = [
-            entry
-            for item in items
-            for entry in list(item.get("history") or [])
-            if str(entry.get("event") or "") in {"approved", "rejected"}
-        ]
-        review_entries = sorted(review_entries, key=lambda entry: str(entry.get("timestamp") or ""), reverse=True)
-        last_review = review_entries[0] if review_entries else {}
-        review_required_by_policy = bool(str(trigger.queue_mode) == "deferred" and bool(trigger.require_queue_confirmation))
-        if awaiting_confirmation_count > 0:
-            review_queue_entry_mode = "awaiting_confirmation"
-            review_next_action = "review_queue_confirmation"
-            review_reason = (awaiting_item or {}).get("confirmation_reason")
-        elif queued_item is not None:
-            review_queue_entry_mode = "queued"
-            review_next_action = "process_next_queue_item"
-            review_reason = None
-        elif str(trigger.queue_mode) == "deferred":
-            review_queue_entry_mode = "deferred_idle"
-            review_next_action = "await_new_queue_item"
-            review_reason = None
-        else:
-            review_queue_entry_mode = "inline_execute"
-            review_next_action = "await_signal_trigger"
-            review_reason = None
-        review_mode = "manual_review" if (review_required_by_policy or awaiting_confirmation_count > 0) else "auto_queue"
-        review_policy_summary = {
-            "review_mode": review_mode,
-            "queue_entry_mode": review_queue_entry_mode,
-            "review_required_by_policy": review_required_by_policy,
-            "review_required_now": awaiting_confirmation_count > 0,
-            "review_reason": review_reason,
-            "next_action": review_next_action,
-            "summary_line": " | ".join(
-                [
-                    f"mode={review_mode}",
-                    f"entry={review_queue_entry_mode}",
-                    f"next={review_next_action}",
-                ]
-                + ([f"reason={review_reason}"] if review_reason else [])
-            ),
-        }
+        history_summary = queue_history_summary(items, recent_history)
+        review_entries = queue_review_entries(items)
+        review_policy_summary = queue_review_policy_summary(
+            queue_mode=str(trigger.queue_mode),
+            require_queue_confirmation=bool(trigger.require_queue_confirmation),
+            awaiting_confirmation_count=awaiting_confirmation_count,
+            awaiting_item=awaiting_item,
+            queued_item=queued_item,
+        )
         return {
             "count": len(items),
             "counts": counts,
@@ -1249,20 +838,14 @@ class PipelineService:
                 "next_job_id": (awaiting_item or {}).get("job_id"),
                 "next_confirmation_reason": (awaiting_item or {}).get("confirmation_reason"),
             },
-            "review_summary": {
-                "reviewed_transition_count": len(review_entries),
-                "approved_transition_count": sum(1 for entry in review_entries if str(entry.get("event")) == "approved"),
-                "rejected_transition_count": sum(1 for entry in review_entries if str(entry.get("event")) == "rejected"),
-                "last_review_event": last_review.get("event"),
-                "last_review_reason": last_review.get("reason"),
-                "last_review_note": last_review.get("note"),
-                "next_job_id": (awaiting_item or {}).get("job_id"),
-                "next_confirmation_reason": (awaiting_item or {}).get("confirmation_reason"),
-            },
+            "review_summary": queue_review_summary(review_entries=review_entries, awaiting_item=awaiting_item),
             "review_policy_summary": review_policy_summary,
             "worker_runner": self._train_queue_worker_summary(workspace=workspace),
             "runner_history": self._runner_timeline_summary(workspace=workspace),
-            "daemon": self.train_queue_daemon_status(workspace=workspace),
+            "daemon": self.train_queue_daemon_status(
+                workspace=workspace,
+                allow_auto_recover=allow_daemon_auto_recover,
+            ),
             "daemon_history": self._daemon_timeline_summary(workspace=workspace),
             "items": items[:5],
         }
@@ -1286,29 +869,15 @@ class PipelineService:
         job_id: str | None = None,
         limit: int = 10,
     ) -> dict[str, Any]:
-        bounded_limit = max(1, int(limit or 10))
         payload = self._load_train_queue_state(workspace=workspace)
-        items = [dict(item) for item in list(payload.get("items") or [])]
-        target_item: dict[str, Any] = {}
-        if job_id:
-            for item in items:
-                if str(item.get("job_id") or "") == str(job_id):
-                    target_item = item
-                    break
-        elif items:
-            target_item = dict(payload.get("last_item") or items[0])
-        history = list(target_item.get("history") or [])
-        return {
-            "workspace": workspace or "user_default",
-            "job_id": target_item.get("job_id"),
-            "state": target_item.get("state"),
-            "count": len(history),
-            "limit": bounded_limit,
-            "history": history[-bounded_limit:],
-            "history_count": int(target_item.get("history_count", len(history)) or len(history)),
-            "available_job_ids": [item.get("job_id") for item in items[:10] if item.get("job_id")],
-            "history_summary": dict(self._train_queue_snapshot(workspace=workspace).get("history_summary") or {}),
-        }
+        snapshot = self._train_queue_snapshot(workspace=workspace)
+        return train_queue_history_payload(
+            payload=payload,
+            workspace=workspace,
+            job_id=job_id,
+            limit=limit,
+            history_summary=dict(snapshot.get("history_summary") or {}),
+        )
 
     @staticmethod
     def _candidate_promotion_gate(
@@ -1325,7 +894,6 @@ class PipelineService:
                 "action": None,
             }
 
-        left_adapter = str(compare.get("left_adapter") or compare.get("left_adapter_version") or "")
         right_adapter = str(compare.get("right_adapter") or compare.get("right_adapter_version") or "")
         recommendation = str(compare.get("recommendation") or "")
 
@@ -3024,17 +2592,12 @@ class PipelineService:
             event_summary_parts.append(f"required_action={alert_policy.get('required_action')}")
             dashboard_summary_parts.append(f"required_action={alert_policy.get('required_action')}")
         event_stream["summary_line"] = " | ".join(event_summary_parts)
-        ordered_next_actions = []
-        for action_name in [
-            alert_policy.get("required_action"),
-            *list(alert_policy.get("secondary_actions") or []),
-            *event_stream_recommended_actions,
-            *next_actions,
-        ]:
-            action_text = str(action_name or "").strip()
-            if not action_text or action_text == "none" or action_text in ordered_next_actions:
-                continue
-            ordered_next_actions.append(action_text)
+        ordered_next_actions = ordered_unique_actions(
+            [alert_policy.get("required_action")],
+            list(alert_policy.get("secondary_actions") or []),
+            event_stream_recommended_actions,
+            next_actions,
+        )
         if ordered_next_actions:
             dashboard_summary_parts.append(f"next={','.join(ordered_next_actions[:3])}")
         dashboard_digest_parts: list[str] = []
@@ -3120,9 +2683,6 @@ class PipelineService:
             "secondary_actions": list(alert_policy.get("secondary_actions") or []),
             "alert_count": len(alerts_section),
             "attention_count": attention_count,
-            "highest_priority_action": highest_priority_action,
-            "active_recovery_hint": active_recovery_hint,
-            "escalated_reasons": escalated_reasons,
             "next_actions": ordered_next_actions,
             "candidate_stage": candidate_section.get("current_stage"),
             "queue_state": (
@@ -3265,19 +2825,11 @@ class PipelineService:
             "event_dashboard": dashboard,
             "dashboard": operations_dashboard,
             "alert_policy": alert_policy,
-            "monitor_focus": monitor_focus,
         }
 
     @staticmethod
     def _operations_event_severity_rank(value: Any) -> int:
-        severity = str(value or "info")
-        if severity == "critical":
-            return 4
-        if severity == "warning":
-            return 3
-        if severity == "info":
-            return 2
-        return 1
+        return operations_event_severity_rank(value)
 
     @staticmethod
     def _classify_operations_event(
@@ -3289,70 +2841,14 @@ class PipelineService:
         status: Any | None = None,
         state: Any | None = None,
     ) -> dict[str, Any]:
-        severity = "info"
-        attention = False
-        normalized_level = str(level or "").strip().lower()
-        if normalized_level == "attention":
-            severity = "info"
-            attention = True
-        elif normalized_level == "warning":
-            severity = "warning"
-            attention = True
-
-        normalized_source = str(source or "operations")
-        normalized_event = str(event or "")
-        normalized_reason = str(reason or "")
-        normalized_status = str(status or "")
-        normalized_state = str(state or "")
-        combined = " ".join(
-            part
-            for part in (
-                normalized_event,
-                normalized_reason,
-                normalized_status,
-                normalized_state,
-            )
-            if part
-        ).lower()
-
-        if "queue_pending_review" in combined:
-            severity = "info"
-            attention = True
-        elif "queue_waiting_execution" in combined:
-            severity = "info"
-            attention = True
-        elif "queue_processing_active" in combined:
-            severity = "info"
-            attention = False
-        elif any(token in combined for token in ("awaiting_confirmation", "manual_review_required")):
-            severity = "info"
-            attention = True
-        elif "candidate_ready_for_promotion" in combined:
-            severity = "info"
-            attention = True
-        elif normalized_source == "daemon" and any(token in combined for token in ("stale", "expired", "failed", "error")):
-            severity = "critical"
-            attention = True
-        elif normalized_source == "daemon" and any(token in combined for token in ("backoff", "capped", "blocked", "recover", "restart", "delayed")):
-            severity = "warning"
-            attention = True
-        elif normalized_source == "runner" and any(token in combined for token in ("stale", "blocked", "failed", "error", "stop_requested")):
-            severity = "warning"
-            attention = True
-        elif any(token in combined for token in ("stale", "expired", "backoff", "capped", "blocked", "failed", "error")):
-            severity = "warning"
-            attention = True
-        elif normalized_source in {"runner", "daemon"} and normalized_event == "alert":
-            severity = "warning"
-            attention = True
-        elif normalized_source == "queue" and normalized_state in {"awaiting_confirmation", "failed"}:
-            severity = "warning" if normalized_state == "failed" else "info"
-            attention = True
-
-        return {
-            "severity": severity,
-            "attention": attention,
-        }
+        return classify_operations_event(
+            source=source,
+            event=event,
+            reason=reason,
+            level=level,
+            status=status,
+            state=state,
+        )
 
     @staticmethod
     def _operations_alert_policy(
@@ -4117,8 +3613,8 @@ class PipelineService:
         filtered_reasons: dict[str, int] = {}
         reply_style_counts: dict[str, int] = {}
 
-        for signal in signals:
-            quality = build_signal_quality(signal)
+        for signal_payload in signals:
+            quality = build_signal_quality(signal_payload)
             evaluated += 1
             reply_style = str(getattr(quality, "reply_style", "other") or "other")
             reply_style_counts[reply_style] = reply_style_counts.get(reply_style, 0) + 1
@@ -4815,6 +4311,10 @@ class PipelineService:
         min_preference = promote_policy.min_preference_alignment_score
         min_preservation = promote_policy.min_quality_preservation_score
 
+        overall_quality = scores.get("overall", scores.get("quality", 0))
+        if overall_quality < min_quality:
+            return False, f"quality_{overall_quality:.2f}_below_{min_quality}"
+
         if scores.get("quality_preservation", 0) < min_preservation:
             return False, f"quality_preservation_{scores.get('quality_preservation', 0):.2f}_below_{min_preservation}"
 
@@ -5371,6 +4871,70 @@ class PipelineService:
         self._persist_auto_trigger_action(action_payload, workspace=workspace)
         snapshot["auto_train_trigger_action"] = action_payload
         return snapshot
+
+    def configure_auto_train_trigger(
+        self,
+        *,
+        workspace: str | None = None,
+        enabled: bool | None = None,
+        min_new_samples: int | None = None,
+        max_interval_days: int | None = None,
+        queue_mode: str | None = None,
+        require_queue_confirmation: bool | None = None,
+        epochs: int | None = None,
+        backend: str | None = None,
+    ) -> dict[str, Any]:
+        """Configure the auto-train trigger and persist the updated local config."""
+
+        config = self._load_config_with_workspace(workspace)
+        trigger = config.trainer.trigger
+        changes: dict[str, Any] = {}
+
+        if enabled is not None:
+            trigger.enabled = bool(enabled)
+            changes["enabled"] = trigger.enabled
+        if min_new_samples is not None:
+            if int(min_new_samples) < 1:
+                raise ValueError("min_new_samples must be at least 1")
+            trigger.min_new_samples = int(min_new_samples)
+            changes["min_new_samples"] = trigger.min_new_samples
+        if max_interval_days is not None:
+            if int(max_interval_days) < 0:
+                raise ValueError("max_interval_days must be zero or greater")
+            trigger.max_interval_days = int(max_interval_days)
+            changes["max_interval_days"] = trigger.max_interval_days
+        if queue_mode is not None:
+            normalized_queue_mode = str(queue_mode).strip().lower()
+            if normalized_queue_mode not in {"inline", "deferred"}:
+                raise ValueError("queue_mode must be 'inline' or 'deferred'")
+            trigger.queue_mode = normalized_queue_mode  # type: ignore[assignment]
+            changes["queue_mode"] = trigger.queue_mode
+        if require_queue_confirmation is not None:
+            trigger.require_queue_confirmation = bool(require_queue_confirmation)
+            changes["require_queue_confirmation"] = trigger.require_queue_confirmation
+        if epochs is not None:
+            if int(epochs) < 1:
+                raise ValueError("epochs must be at least 1")
+            config.trainer.epochs = int(epochs)
+            changes["epochs"] = config.trainer.epochs
+        if backend is not None:
+            normalized_backend = str(backend).strip()
+            if not normalized_backend:
+                raise ValueError("backend cannot be empty")
+            config.trainer.backend = normalized_backend
+            changes["backend"] = config.trainer.backend
+
+        self._save_config(config)
+
+        snapshot = self.status(workspace=workspace)
+        action_payload = {
+            "action": "configure",
+            "status": "completed" if changes else "noop",
+            "reason": "auto_train_trigger_configured" if changes else "no_changes_requested",
+            **changes,
+        }
+        self._persist_auto_trigger_action(action_payload, workspace=workspace)
+        snapshot["auto_train_trigger_action"] = action_payload
         return snapshot
 
     def enable_auto_eval_trigger(self, *, workspace: str | None = None) -> dict[str, Any]:
@@ -5918,6 +5482,24 @@ class PipelineService:
         if signaled:
             payload["command_status"] = "signaled"
         self._persist_train_queue_daemon_state(payload, workspace=workspace)
+        if signaled and pid not in (None, os.getpid()):
+            deadline = time.monotonic() + 3.0
+            while time.monotonic() < deadline:
+                if not self._pid_exists(int(pid)):
+                    current = self._load_train_queue_daemon_state(workspace=workspace)
+                    if bool(current.get("active", False)):
+                        current.update(
+                            {
+                                "active": False,
+                                "observed_state": "stopped",
+                                "command_status": "signaled",
+                                "stop_requested": True,
+                                "last_completed_at": datetime.now(timezone.utc).isoformat(),
+                            }
+                        )
+                        self._persist_train_queue_daemon_state(current, workspace=workspace)
+                    break
+                time.sleep(0.1)
         self._append_train_queue_daemon_history(
             workspace=workspace,
             event="stop_requested",
@@ -5972,8 +5554,15 @@ class PipelineService:
             auto_recovery=False,
         )
 
-    def train_queue_daemon_status(self, *, workspace: str | None = None) -> dict[str, Any]:
-        return self._maybe_auto_recover_train_queue_daemon(workspace=workspace)
+    def train_queue_daemon_status(
+        self,
+        *,
+        workspace: str | None = None,
+        allow_auto_recover: bool = False,
+    ) -> dict[str, Any]:
+        if allow_auto_recover:
+            return self._maybe_auto_recover_train_queue_daemon(workspace=workspace)
+        return self._train_queue_daemon_summary(workspace=workspace)
 
     def promote_candidate(self, *, workspace: str | None = None, note: str | None = None) -> dict[str, Any]:
         store = create_adapter_store(workspace=workspace)
@@ -6122,7 +5711,7 @@ class PipelineService:
             snapshot["candidate_action"] = action_payload
             return snapshot
         try:
-            result = store.rollback(version, workspace=workspace)
+            store.rollback(version, workspace=workspace)
             action_payload = {
                 "action": "rollback_candidate",
                 "status": "completed",
@@ -6602,6 +6191,7 @@ class PipelineService:
                 adapter_path = store.load(adapter_version)
             else:
                 raise
+        base_model = _resolve_defaultable_base_model(base_model, adapter_path=adapter_path)
         eval_samples = list_samples(dataset_split="test", limit=num_samples)
         if len(eval_samples) < num_samples:
             eval_samples.extend(
@@ -6759,7 +6349,7 @@ class PipelineService:
                 adapter_path = None
                 resolved_adapter = None
         if model in {"local", "local-default", "base"} and not adapter_path:
-            base_model_name = _default_chat_base_model()
+            base_model_name = _resolve_defaultable_base_model(model, adapter_path=None)
 
         engine = InferenceEngine(
             InferenceConfig(
@@ -7263,7 +6853,6 @@ class PipelineService:
             pass
 
         return summary
-        return snapshot
 
     def run_distillation(
         self,
@@ -7532,7 +7121,7 @@ class PipelineService:
         workspace: str | None = None,
     ) -> dict[str, Any]:
         """Get reliability alerts for monitoring."""
-        from .reliability import AlertManager, AlertLevel
+        from .reliability import AlertManager
         from .models import AlertLevel as AlertLevelEnum
 
         workspace_name = workspace or "user_default"

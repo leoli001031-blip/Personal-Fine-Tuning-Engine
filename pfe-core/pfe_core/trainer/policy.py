@@ -7,8 +7,8 @@ auto-train/eval/promote closed-loop system.
 from __future__ import annotations
 
 from dataclasses import asdict
-from datetime import datetime, timedelta, timezone
-from typing import Any, Literal, Optional
+from datetime import datetime, timezone
+from typing import Any, Optional
 
 from ..config import (
     ConfirmationPolicyConfig,

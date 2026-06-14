@@ -1,18 +1,11 @@
 from __future__ import annotations
 
 import asyncio
-import importlib
 import os
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_cli.main import _format_status
 from pfe_core.config import PFEConfig
@@ -21,7 +14,6 @@ from tests.matrix_test_compat import strip_ansi
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class _FakeAdapterStore:
     def __init__(self, rows: list[dict[str, object]], latest_version: str | None):
@@ -34,7 +26,6 @@ class _FakeAdapterStore:
 
     def current_latest_version(self) -> str | None:
         return self.latest_version
-
 
 class TrainQueueSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -341,7 +332,6 @@ class TrainQueueSurfaceTests(unittest.TestCase):
         self.assertEqual(queue["last_item"]["source"], "signal_auto_train")
         self.assertEqual(queue["last_item"]["adapter_version"], "20260325-010")
         self.assertIn("candidate_summary", status)
-
 
 if __name__ == "__main__":
     unittest.main()

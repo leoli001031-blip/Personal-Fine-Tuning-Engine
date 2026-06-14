@@ -28,13 +28,21 @@ Bootstrap a local environment:
 ```bash
 tools/bootstrap_py311_env.sh
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+```
+
+The bootstrap script installs the lightweight `dev` extra by default. To include
+real training dependencies, opt in explicitly:
+
+```bash
+PFE_BOOTSTRAP_EXTRAS=dev,training tools/bootstrap_py311_env.sh
 ```
 
 Recommended first commands:
 
 ```bash
+pfe init --workspace user_default --base-model Qwen/Qwen2.5-3B-Instruct
 pfe doctor
+pfe next --workspace user_default
 pfe status --json
 pfe console --cycles 1
 ```
@@ -50,6 +58,51 @@ Open observability:
 ```bash
 pfe dashboard
 ```
+
+Run the fast test layers:
+
+```bash
+make smoke-first-run
+make smoke-auto-train-queue
+make smoke-real-local-readiness
+make smoke-server-live
+make smoke-dashboard-console-live
+make smoke-browser-ui-live
+make test
+make test-unit
+make test-surface
+make test-e2e-mock
+```
+
+`make smoke-first-run` runs
+`pfe init -> doctor -> next -> generate -> trigger configure -> collect ingest/status/review -> trigger status/process-next -> eval -> promote -> serve`
+inside an isolated temp directory. It requires no network, real model download,
+or long-running server.
+
+`make smoke-auto-train-queue` runs the same isolated path but stops after the
+auto-train queue item is processed and the mock adapter manifest is visible.
+
+`make smoke-real-local-readiness` validates the no-download real-local preflight:
+local model discovery, `pfe train --real-local --preview`, serve preview, and a
+console snapshot.
+
+`make smoke-server-live` builds an isolated mock-local adapter, launches
+`pfe serve --live` on a temporary loopback port, then probes `/healthz`,
+`/pfe/status`, `/dashboard`, `/pfe/dashboard/metrics`, and
+`/v1/chat/completions` over HTTP.
+
+`make smoke-dashboard-console-live` launches the same kind of temporary live
+server, then checks the dashboard HTML/API endpoints plus the chat-console
+chat/feedback round trip.
+
+`make smoke-browser-ui-live` is an optional Playwright smoke. It executes
+dashboard refresh plus chat/feedback interactions in a real browser when the e2e
+extras and Chromium browser are installed; otherwise it skips with setup
+instructions.
+
+`make smoke-real-local-happy` is opt-in. Set `PFE_REAL_LOCAL_MODEL` to a local
+model/config directory with training extras installed to run a true
+`pfe train --real-local` happy path.
 
 Default local pages:
 
@@ -70,25 +123,33 @@ Notes:
 Typical operator path:
 
 ```bash
-# 1. Verify the local runtime
+# 1. Create the local .pfe workspace and default config
+pfe init --workspace user_default --base-model Qwen/Qwen2.5-3B-Instruct
+
+# 2. Verify the local runtime
 pfe doctor
 
-# 2. Inspect current engine state
+# 3. Inspect current engine state
+pfe next --workspace user_default
 pfe status --json
 
-# 3. Open the live terminal surface
+# 4. Open the live terminal surface
 pfe console --cycles 1
 
-# 4. Start local serving
+# 5. Preview real local training before installing heavier dependencies
+pfe train --backend peft --real-local --preview --epochs 1
+
+# 6. Start local serving
 pfe serve --port 8921 --live
 
-# 5. Open observability
+# 7. Open observability
 pfe dashboard
 ```
 
 Command families:
 
-- Inspect: `pfe doctor`, `pfe status --json`, `pfe console`
+- Workspace setup: `pfe init --workspace user_default --base-model <path-or-id>`
+- Inspect: `pfe doctor`, `pfe next`, `pfe status --json`, `pfe console`
 - Train and evaluate: `pfe train`, `pfe dpo`, `pfe eval`
 - Lifecycle: `pfe adapter`, `pfe candidate`
 - Automation: `pfe trigger`, `pfe daemon`, `pfe eval-trigger`
@@ -97,6 +158,7 @@ Command families:
 When your workspace, base model, and adapter flow are configured, continue with:
 
 ```bash
+pfe train --backend peft --real-local --preview
 pfe train --help
 pfe dpo --help
 pfe eval --help
@@ -163,7 +225,7 @@ tools/       Repository-local helper scripts
 ## Project Status
 
 - Phase 1 complete
-- Phase 2 complete
+- Phase 2 functional closeout complete; release-readiness validation remains
 - Public repository prepared with large local artifacts intentionally excluded
 
 See [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md) for the closeout note.
@@ -172,6 +234,7 @@ See [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md) for t
 
 - [README.zh-CN.md](README.zh-CN.md)
 - [docs/README.md](docs/README.md)
+- [docs/guides/beta-local-runbook.md](docs/guides/beta-local-runbook.md)
 - [ENGINE_DEV_DOC.md](ENGINE_DEV_DOC.md)
 - [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md)
 

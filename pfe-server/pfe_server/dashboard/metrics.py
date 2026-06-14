@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
@@ -492,6 +492,7 @@ class AdapterMetricsCollector:
 
         try:
             from pfe_core.pipeline import PipelineService
+            from pfe_core.pipeline_queue import normalize_queue_items, queue_state_counts
 
             pipeline = PipelineService()
 
@@ -505,13 +506,16 @@ class AdapterMetricsCollector:
             metrics.runner_active = runner_status.get("active", False)
             metrics.runner_state = "running" if metrics.runner_active else "idle"
 
-            # Get queue status from pipeline status
-            status = pipeline.status()
-            train_queue = status.get("train_queue", {})
-            metrics.queue_pending_jobs = len(train_queue.get("pending_jobs", []))
-            metrics.queue_processing_jobs = len(train_queue.get("processing_jobs", []))
-            metrics.queue_completed_jobs = len(train_queue.get("completed_jobs", []))
-            metrics.queue_failed_jobs = len(train_queue.get("failed_jobs", []))
+            # Keep dashboard health lightweight; full pipeline.status() performs
+            # adapter/trainer/signal aggregation and can block live polling.
+            queue_payload = pipeline._load_train_queue_state(workspace=self.workspace)  # noqa: SLF001
+            counts = queue_state_counts(normalize_queue_items(queue_payload.get("items") or []))
+            metrics.queue_pending_jobs = int(counts.get("queued", 0) or 0) + int(
+                counts.get("awaiting_confirmation", 0) or 0
+            )
+            metrics.queue_processing_jobs = int(counts.get("running", 0) or 0) + int(counts.get("processing", 0) or 0)
+            metrics.queue_completed_jobs = int(counts.get("completed", 0) or 0)
+            metrics.queue_failed_jobs = int(counts.get("failed", 0) or 0) + int(counts.get("dead_letter", 0) or 0)
 
         except Exception:
             pass

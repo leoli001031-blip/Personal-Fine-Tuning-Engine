@@ -8,7 +8,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pfe_core.collector import ChatCollector, ChatInteraction, CollectorConfig, ImplicitSignal
-from pfe_core.models import SignalQuality
 from pfe_core.user_memory import get_user_memory_store
 
 

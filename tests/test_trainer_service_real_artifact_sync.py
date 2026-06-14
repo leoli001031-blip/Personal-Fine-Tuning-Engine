@@ -9,12 +9,6 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_core.trainer.service import TrainerService
@@ -22,7 +16,6 @@ from pfe_core.trainer.service import TrainerService
 import pytest
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
-
 
 @pytest.mark.slow
 class TrainerServiceRealArtifactSyncTests(unittest.TestCase):
@@ -107,7 +100,6 @@ class TrainerServiceRealArtifactSyncTests(unittest.TestCase):
         self.assertEqual(metadata["training"]["backend"], result.execution_backend)
         self.assertEqual(row["artifact_path"], str(adapter_model))
         self.assertEqual(row["artifact_format"], "peft_lora")
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,15 +1,8 @@
 from __future__ import annotations
 
-import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.adapter_store.lifecycle import AdapterArtifactFormat
 from pfe_core.inference.export_runtime import (
@@ -18,7 +11,6 @@ from pfe_core.inference.export_runtime import (
     summarize_llama_cpp_export_toolchain,
     validate_llama_cpp_export_output_artifact,
 )
-
 
 class ExportToolchainSummaryTests(unittest.TestCase):
     def test_planned_summary_exposes_toolchain_and_artifact_checks(self) -> None:
@@ -146,7 +138,6 @@ class ExportToolchainSummaryTests(unittest.TestCase):
             validation = validate_llama_cpp_export_output_artifact(artifact, required=False)
             self.assertFalse(validation.valid)
             self.assertEqual(validation.reason, "output artifact is not present yet")
-
 
 if __name__ == "__main__":
     unittest.main()

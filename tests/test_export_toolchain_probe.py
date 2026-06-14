@@ -1,15 +1,8 @@
 from __future__ import annotations
 
-import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_core.adapter_store.lifecycle import AdapterArtifactFormat
 from pfe_core.inference.export_runtime import (
@@ -17,7 +10,6 @@ from pfe_core.inference.export_runtime import (
     probe_llama_cpp_export_toolchain,
     summarize_llama_cpp_export_toolchain,
 )
-
 
 class ExportToolchainProbeTests(unittest.TestCase):
     def test_probe_reports_missing_tool_with_actionable_env_hints(self) -> None:
@@ -83,7 +75,6 @@ class ExportToolchainProbeTests(unittest.TestCase):
             self.assertEqual(summary["probe_summary"]["status"], "planned")
             self.assertIn("recommended_action", summary["probe_summary"])
             self.assertIn("toolchain_searched_env", summary)
-
 
 if __name__ == "__main__":
     unittest.main()

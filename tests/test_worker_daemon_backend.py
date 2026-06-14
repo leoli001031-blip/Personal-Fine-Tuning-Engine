@@ -9,12 +9,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.reliability import ReliabilityService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
@@ -22,11 +16,9 @@ from pfe_core.worker_daemon import run_worker_daemon
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
 
-
 class _DummyProcess:
     def __init__(self, pid: int = 43210) -> None:
         self.pid = pid
-
 
 class WorkerDaemonBackendTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -261,7 +253,6 @@ class WorkerDaemonBackendTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertGreaterEqual(len(captured_runner_ids), 2)
         self.assertEqual(len(set(captured_runner_ids)), 1)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,14 +8,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
-
 
 @pytest.mark.slow
 class PipelineRealExecutionSummaryTests(unittest.TestCase):
@@ -72,7 +65,6 @@ class PipelineRealExecutionSummaryTests(unittest.TestCase):
         self.assertEqual(training_meta["export_toolchain_summary"]["status"], result.export_toolchain_summary["status"])
         self.assertEqual(manifest_metadata["training"]["backend"], result.training_config["backend"])
         self.assertEqual(manifest_metadata["backend_plan"]["recommended_backend"], result.backend_plan["recommended_backend"])
-
 
 if __name__ == "__main__":
     unittest.main()

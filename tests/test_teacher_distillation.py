@@ -11,7 +11,6 @@ from pfe_core.curator.distillation import (
     _build_teacher_provenance,
 )
 from pfe_core.curator.prada import (
-    compute_text_similarity,
     should_use_teacher_output,
     should_use_teacher_output_for_user_preference,
 )

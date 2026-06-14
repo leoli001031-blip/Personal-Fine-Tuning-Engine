@@ -11,7 +11,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from ..data_policy import HIGH_RISK_PII_TYPES, sanitize_for_training
+from ..data_policy import sanitize_for_training
 
 
 # Low-risk PII types that can be tagged but do not require strict isolation
@@ -193,7 +193,7 @@ class PIIGuard:
     def _extract_texts(sample: dict[str, Any]) -> list[str]:
         """Extract all text strings from a sample dict."""
         texts: list[str] = []
-        for field in (
+        for field_name in (
             "instruction",
             "input",
             "output",
@@ -203,7 +203,7 @@ class PIIGuard:
             "model_output",
             "conversation",
         ):
-            val = sample.get(field)
+            val = sample.get(field_name)
             if isinstance(val, str) and val:
                 texts.append(val)
         messages = sample.get("messages")
@@ -302,7 +302,7 @@ class PIIGuard:
         all text fields. The original sample is not mutated.
         """
         sanitized = dict(sample)
-        for field in (
+        for field_name in (
             "instruction",
             "input",
             "output",
@@ -312,9 +312,9 @@ class PIIGuard:
             "model_output",
             "conversation",
         ):
-            val = sanitized.get(field)
+            val = sanitized.get(field_name)
             if isinstance(val, str) and val:
-                sanitized[field] = sanitize_for_training(val)
+                sanitized[field_name] = sanitize_for_training(val)
 
         messages = sanitized.get("messages")
         if isinstance(messages, list):

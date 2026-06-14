@@ -9,16 +9,9 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import create_app, smoke_test_request
-
 
 @pytest.mark.slow
 class Phase0ClosedLoopRegressionTests(unittest.TestCase):
@@ -110,7 +103,6 @@ class Phase0ClosedLoopRegressionTests(unittest.TestCase):
         if body["metadata"]["trainer"]["export_toolchain"]["status"] != "unknown":
             self.assertEqual(body["metadata"]["trainer"]["export_toolchain"]["status"], train_result.export_toolchain_summary["status"])
         self.assertEqual(body["metadata"]["lifecycle"]["promotion"]["last_export_toolchain_status"], train_result.export_toolchain_summary["status"])
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,12 +7,6 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.inference.engine import (
     InferenceConfig,
     InferenceEngine,
@@ -22,7 +16,6 @@ from pfe_core.inference.engine import (
     resolve_base_model_reference,
 )
 from pfe_core.pipeline import PipelineService
-
 
 class InferenceRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -104,9 +97,27 @@ class InferenceRuntimeTests(unittest.TestCase):
         self.assertIn("requires a local base model path", engine.status()["generation"]["fallback_reason"])
 
     def test_llama_cpp_runtime_resolution_prefers_cpu_build(self) -> None:
-        resolution = _resolve_llama_cpp_runtime_binary()
+        repo_root = Path(self.tempdir.name) / "repo"
+        cpu_runtime = repo_root / "tools" / "llama.cpp" / "build-cpu" / "bin" / "llama-completion"
+        generic_runtime = repo_root / "tools" / "llama.cpp" / "build" / "bin" / "llama-completion"
+        for runtime in (cpu_runtime, generic_runtime):
+            runtime.parent.mkdir(parents=True, exist_ok=True)
+            runtime.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            runtime.chmod(0o755)
+
+        with patch("pfe_core.inference.engine._repo_root", return_value=repo_root), patch.dict(
+            os.environ,
+            {
+                "PFE_LLAMA_CPP_RUNTIME_BIN": "",
+                "LLAMA_CPP_RUNTIME_BIN": "",
+                "LLAMA_CPP_BIN": "",
+                "LLAMA_CPP_PATH": "",
+            },
+        ):
+            resolution = _resolve_llama_cpp_runtime_binary()
+
         self.assertTrue(resolution["available"])
-        self.assertIn("build-cpu/bin/llama-completion", str(resolution["path"]))
+        self.assertEqual(str(cpu_runtime), resolution["path"])
 
     def test_generate_prefers_llama_cpp_for_gguf_manifest(self) -> None:
         adapter_dir = Path(self.tempdir.name) / "adapter"
@@ -205,7 +216,6 @@ class InferenceRuntimeTests(unittest.TestCase):
         self.assertIn("[base]", text)
         self.assertEqual(engine.status()["served_by"], "mock")
         self.assertFalse(engine.status()["real_local_enabled"])
-
 
 if __name__ == "__main__":
     unittest.main()

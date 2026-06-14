@@ -13,7 +13,7 @@ from platform import system as platform_system
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
 TRAIN_TYPES: Tuple[str, ...] = ("sft", "dpo")
-TRAINING_BACKENDS: Tuple[str, ...] = ("mock_local", "peft", "unsloth", "mlx")
+TRAINING_BACKENDS: Tuple[str, ...] = ("mock_local", "peft", "dpo", "unsloth", "mlx")
 DEFAULT_BACKEND: str = "mock_local"
 SUPPORTED_DEVICE_PREFERENCES: Tuple[str, ...] = ("auto", "cpu", "cuda", "mps")
 LLAMA_CPP_BACKEND: str = "llama_cpp"
@@ -24,6 +24,7 @@ MLX_LORA_FORMAT: str = "mlx_lora"
 BACKEND_ALIASES: Dict[str, Tuple[str, ...]] = {
     "mock_local": ("mock", "mock_local", "local_mock"),
     "peft": ("peft", "hf_peft", "transformers_peft"),
+    "dpo": ("dpo", "trl_dpo"),
     "unsloth": ("unsloth", "fast_lora", "unsloth_lora"),
     "mlx": ("mlx", "mlx_lm", "mlx-lm", "mlx_lora"),
 }
@@ -108,6 +109,9 @@ class BackendCapability:
     preferred_on: Tuple[str, ...]
     required_dependencies: Tuple[str, ...] = ()
     optional_dependencies: Tuple[str, ...] = ()
+    real_training_backend: bool = False
+    subprocess_isolated: bool = False
+    preflight_dependency_blocking: bool = True
     supports_cpu_only: bool = True
     supports_cuda: bool = True
     supports_apple_silicon: bool = True
@@ -169,6 +173,9 @@ BACKEND_CAPABILITIES: Dict[str, BackendCapability] = {
         preferred_on=("cpu", "cuda", "mps"),
         required_dependencies=(),
         optional_dependencies=(),
+        real_training_backend=False,
+        subprocess_isolated=False,
+        preflight_dependency_blocking=True,
         supports_cpu_only=True,
         supports_cuda=True,
         supports_apple_silicon=True,
@@ -187,6 +194,9 @@ BACKEND_CAPABILITIES: Dict[str, BackendCapability] = {
         preferred_on=("cpu", "cuda"),
         required_dependencies=("torch", "transformers", "peft", "accelerate"),
         optional_dependencies=("trl", "datasets"),
+        real_training_backend=True,
+        subprocess_isolated=True,
+        preflight_dependency_blocking=True,
         supports_cpu_only=True,
         supports_cuda=True,
         supports_apple_silicon=True,
@@ -194,6 +204,27 @@ BACKEND_CAPABILITIES: Dict[str, BackendCapability] = {
         notes=(
             "general-purpose local LoRA backend",
             "best default when DPO is requested",
+        ),
+    ),
+    "dpo": BackendCapability(
+        name="dpo",
+        supports_sft=False,
+        supports_dpo=True,
+        artifact_format=PEFT_LORA_FORMAT,
+        supported_devices=("cpu", "cuda", "mps"),
+        preferred_on=("cpu", "cuda", "mps"),
+        required_dependencies=("torch", "transformers", "peft", "trl", "accelerate"),
+        optional_dependencies=("datasets",),
+        real_training_backend=True,
+        subprocess_isolated=True,
+        preflight_dependency_blocking=True,
+        supports_cpu_only=True,
+        supports_cuda=True,
+        supports_apple_silicon=True,
+        requires_export_for_llama_cpp=True,
+        notes=(
+            "TRL Direct Preference Optimization executor",
+            "uses isolated subprocess execution for real DPO training",
         ),
     ),
     "unsloth": BackendCapability(
@@ -205,6 +236,9 @@ BACKEND_CAPABILITIES: Dict[str, BackendCapability] = {
         preferred_on=("cuda",),
         required_dependencies=("torch", "transformers", "unsloth"),
         optional_dependencies=("peft", "accelerate", "trl"),
+        real_training_backend=True,
+        subprocess_isolated=True,
+        preflight_dependency_blocking=True,
         supports_cpu_only=False,
         supports_cuda=True,
         supports_apple_silicon=False,
@@ -223,6 +257,9 @@ BACKEND_CAPABILITIES: Dict[str, BackendCapability] = {
         preferred_on=("mps",),
         required_dependencies=("mlx", "mlx_lm"),
         optional_dependencies=("torch",),
+        real_training_backend=True,
+        subprocess_isolated=True,
+        preflight_dependency_blocking=False,
         supports_cpu_only=False,
         supports_cuda=False,
         supports_apple_silicon=True,
@@ -250,6 +287,29 @@ def is_known_backend_name(name: Optional[str]) -> bool:
 def get_backend_capability(name: Optional[str]) -> BackendCapability:
     canonical = normalize_backend_name(name)
     return BACKEND_CAPABILITIES.get(canonical, BACKEND_CAPABILITIES[DEFAULT_BACKEND])
+
+
+def backend_executor_imports() -> Dict[str, Tuple[str, ...]]:
+    return {
+        name: tuple(capability.required_dependencies)
+        for name, capability in BACKEND_CAPABILITIES.items()
+    }
+
+
+def real_training_backend_names() -> frozenset[str]:
+    return frozenset(
+        name
+        for name, capability in BACKEND_CAPABILITIES.items()
+        if capability.real_training_backend
+    )
+
+
+def subprocess_isolated_backend_names() -> frozenset[str]:
+    return frozenset(
+        name
+        for name, capability in BACKEND_CAPABILITIES.items()
+        if capability.subprocess_isolated
+    )
 
 
 def backend_missing_dependencies(
@@ -291,6 +351,43 @@ def backend_is_supported_on_runtime(
     return True
 
 
+def backend_is_available_on_runtime(
+    name: Optional[str],
+    *,
+    train_type: str,
+    runtime: Optional[Mapping[str, Any]] = None,
+    device_preference: str = "auto",
+) -> bool:
+    if not is_known_backend_name(name):
+        return False
+    return (
+        not backend_missing_dependencies(name, runtime)
+        and backend_is_supported_on_runtime(
+            name,
+            train_type=train_type,
+            runtime=runtime,
+            device_preference=device_preference,
+        )
+    )
+
+
+def backend_availability_map(
+    *,
+    train_type: str,
+    runtime: Optional[Mapping[str, Any]] = None,
+    device_preference: str = "auto",
+) -> Dict[str, bool]:
+    return {
+        name: backend_is_available_on_runtime(
+            name,
+            train_type=train_type,
+            runtime=runtime,
+            device_preference=device_preference,
+        )
+        for name in TRAINING_BACKENDS
+    }
+
+
 def _device_from_runtime(runtime: Optional[Mapping[str, Any]]) -> str:
     if not runtime:
         return "cpu"
@@ -317,6 +414,7 @@ def _rank_backends_for_context(
 
     candidates = []
     if train_type == "dpo":
+        candidates.append("dpo")
         if cuda_available:
             candidates.extend(["unsloth", "peft"])
         else:

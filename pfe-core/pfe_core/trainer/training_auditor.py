@@ -7,7 +7,6 @@ training must be blocked.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -167,8 +166,8 @@ class TrainingAuditor:
     def _extract_texts(sample: dict[str, Any]) -> list[str]:
         """Extract all text strings from a sample dict."""
         texts: list[str] = []
-        for field in ("instruction", "input", "output", "chosen", "rejected", "context", "model_output", "conversation"):
-            val = sample.get(field)
+        for field_name in ("instruction", "input", "output", "chosen", "rejected", "context", "model_output", "conversation"):
+            val = sample.get(field_name)
             if isinstance(val, str) and val:
                 texts.append(val)
         messages = sample.get("messages")

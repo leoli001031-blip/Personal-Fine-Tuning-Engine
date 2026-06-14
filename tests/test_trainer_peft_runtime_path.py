@@ -7,14 +7,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.trainer.executors import execute_peft_training, summarize_real_training_execution
-
 
 class TrainerPeftRuntimePathTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -167,7 +160,6 @@ class TrainerPeftRuntimePathTests(unittest.TestCase):
         self.assertEqual(result["real_execution"]["kind"], "toy_local_peft")
         self.assertFalse(result["real_execution"]["available"])
         self.assertIn("missing_modules", result["real_execution"])
-
 
 if __name__ == "__main__":
     unittest.main()

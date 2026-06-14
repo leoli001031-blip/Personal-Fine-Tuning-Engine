@@ -46,6 +46,7 @@ from .scenarios import (
     create_custom_scenario,
 )
 from .router import (
+    ConfidenceScorer,
     SemanticClassifier,
     SemanticClassificationResult,
 )
@@ -110,8 +111,11 @@ __all__ = [
     "PFEConfig",
     "PrivacyConfig",
     "RawSignal",
+    "RouterConfig",
     "ScenarioConfig",
     "BUILTIN_SCENARIOS",
+    "SemanticClassifier",
+    "SemanticClassificationResult",
     "SecurityConfig",
     "ServerConfig",
     "StorageConfig",
@@ -149,4 +153,3 @@ __all__ = [
     "PIIComplianceReport",
     "PIIWhitelist",
 ]
-

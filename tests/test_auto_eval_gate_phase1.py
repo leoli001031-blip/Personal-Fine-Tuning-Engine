@@ -6,15 +6,8 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.config import PFEConfig
 from pfe_core.pipeline import PipelineService
-
 
 class _FakeAdapterStore:
     def __init__(self) -> None:
@@ -31,7 +24,6 @@ class _FakeAdapterStore:
         del workspace
         self.promoted_versions.append(version)
         return version
-
 
 class AutoEvalGatePhase1Tests(unittest.TestCase):
     def setUp(self) -> None:
@@ -225,7 +217,6 @@ class AutoEvalGatePhase1Tests(unittest.TestCase):
         self.assertFalse(auto_train["execution_policy"]["auto_promote_enabled"])
         self.assertEqual(auto_train["execution_policy"]["promote_gate_reason"], "policy_requires_auto_evaluate")
         self.assertEqual(auto_train["execution_policy"]["promote_gate_action"], "enable_auto_evaluate")
-
 
 if __name__ == "__main__":
     unittest.main()

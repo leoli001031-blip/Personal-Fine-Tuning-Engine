@@ -13,22 +13,16 @@ from unittest.mock import patch
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_core.inference.export_runtime import write_materialized_export_plan
+from pfe_core.trainer.backends import BACKEND_CAPABILITIES
 from pfe_core.trainer.runtime import plan_trainer_backend
 from pfe_core.trainer.service import TrainerService
 from pfe_server.app import ServiceBundle, build_serve_plan, create_app, serve, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
 
 trainer_service_module = importlib.import_module("pfe_core.trainer.service")
-
 
 class _FakeTrainerStore:
     def __init__(self, version_dir: Path):
@@ -44,7 +38,6 @@ class _FakeTrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         self.pending_eval_calls.append({"version": version, "num_samples": num_samples, "metrics": dict(metrics or {})})
-
 
 @pytest.mark.slow
 class TrainerAndServerPlanningTests(unittest.TestCase):
@@ -77,7 +70,8 @@ class TrainerAndServerPlanningTests(unittest.TestCase):
         )
         self.assertEqual(result.version, "20260323-999")
         expected_backend = fake_store.created_training_config["backend"]
-        self.assertIn(expected_backend, {"mock_local", "peft"})
+        self.assertIn(expected_backend, BACKEND_CAPABILITIES)
+        self.assertTrue(BACKEND_CAPABILITIES[str(expected_backend)].supports_sft)
         self.assertIn("replay_ratio", fake_store.created_training_config)
 
         training_meta = json.loads((version_dir / "training_meta.json").read_text(encoding="utf-8"))
@@ -458,7 +452,6 @@ class TrainerAndServerPlanningTests(unittest.TestCase):
                 self.assertEqual(run_calls[0]["host"], "127.0.0.1")
                 self.assertEqual(run_calls[0]["port"], 8921)
                 self.assertFalse(run_calls[0]["reload"])
-
 
 if __name__ == "__main__":
     unittest.main()

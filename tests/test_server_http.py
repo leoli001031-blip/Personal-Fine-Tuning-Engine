@@ -5,15 +5,10 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
+from pfe_core.config import PFEConfig
 from pfe_server.app import build_serve_plan, smoke_test_request
-
 
 class ServerHttpSmokeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -291,6 +286,36 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(feedback_body["request_id"], chat_body["request_id"])
         self.assertEqual(feedback_body["signal_type"], "accept")
         self.assertGreaterEqual(feedback_body["metadata"]["signals_extracted"], 0)
+
+    def test_chat_completion_uses_initialized_base_model_for_local_model(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "/models/init-server-default"
+        config.save(home=self.pfe_home)
+        captured_base_models: list[str] = []
+
+        def capture_init(engine, config):  # type: ignore[no-untyped-def]
+            captured_base_models.append(config.base_model)
+            engine.config = config
+
+        with patch("pfe_core.pipeline.InferenceEngine.__init__", new=capture_init), patch(
+            "pfe_core.pipeline.InferenceEngine.generate",
+            return_value="server configured reply",
+        ), patch(
+            "pfe_core.pipeline.InferenceEngine.status",
+            return_value={"served_by": "mock"},
+        ):
+            result = self._smoke(
+                "/v1/chat/completions",
+                method="POST",
+                body={
+                    "model": "local",
+                    "messages": [{"role": "user", "content": "hello"}],
+                },
+            )
+
+        self.assertEqual(result["status_code"], 200)
+        self.assertEqual(captured_base_models, ["/models/init-server-default"])
+        self.assertEqual(result["body"]["choices"][0]["message"]["content"], "server configured reply")
 
     def test_chat_completion_requires_api_key_for_remote_clients_when_enabled(self) -> None:
         previous_allow_remote_access = self.app.state.pfe_services.security.allow_remote_access
@@ -570,7 +595,6 @@ class ServerHttpSmokeTests(unittest.TestCase):
                 os.environ.pop("PFE_API_KEY", None)
             else:
                 os.environ["PFE_API_KEY"] = previous_api_key
-
 
 if __name__ == "__main__":
     unittest.main()

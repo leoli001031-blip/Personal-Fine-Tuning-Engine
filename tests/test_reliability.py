@@ -4,13 +4,11 @@ from __future__ import annotations
 
 import json
 import time
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
+from datetime import timedelta
 
 import pytest
 
 from pfe_core.models import (
-    AlertEvent,
     AlertLevel,
     AlertThreshold,
     DeadLetterEntry,
@@ -636,8 +634,8 @@ class TestAlertManager:
     def test_list_alerts_filtered(self, alert_mgr):
         # Create alerts with different levels
         alert1 = alert_mgr.create_alert(AlertLevel.WARNING, "runner", "r1", "msg1")
-        alert2 = alert_mgr.create_alert(AlertLevel.ERROR, "runner", "r2", "msg2")
-        alert3 = alert_mgr.create_alert(AlertLevel.WARNING, "task", "r3", "msg3")
+        alert_mgr.create_alert(AlertLevel.ERROR, "runner", "r2", "msg2")
+        alert_mgr.create_alert(AlertLevel.WARNING, "task", "r3", "msg3")
 
         warnings = alert_mgr.list_alerts(level=AlertLevel.WARNING)
         assert len(warnings) == 2
@@ -684,8 +682,8 @@ class TestAlertManager:
         assert alert.level == AlertLevel.WARNING
 
     def test_get_active_alerts_summary(self, alert_mgr):
-        alert1 = alert_mgr.create_alert(AlertLevel.WARNING, "runner", "r1", "msg1")
-        alert2 = alert_mgr.create_alert(AlertLevel.ERROR, "runner", "r2", "msg2")
+        alert_mgr.create_alert(AlertLevel.WARNING, "runner", "r1", "msg1")
+        alert_mgr.create_alert(AlertLevel.ERROR, "runner", "r2", "msg2")
         alert3 = alert_mgr.create_alert(AlertLevel.WARNING, "task", "r3", "msg3")
         # Resolve one alert
         alert_mgr.resolve_alert(alert3.alert_id)

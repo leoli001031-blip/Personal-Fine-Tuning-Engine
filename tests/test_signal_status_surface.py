@@ -8,18 +8,11 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
-
 from pfe_cli import main as cli_main
 from pfe_cli.main import _format_status
 from pfe_core.pipeline import PipelineService
 from pfe_server.app import build_serve_plan, smoke_test_request
 from tests.matrix_test_compat import strip_ansi
-
 
 class SignalStatusSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -168,6 +161,87 @@ class SignalStatusSurfaceTests(unittest.TestCase):
         started_clean = strip_ansi(started.stdout)
         self.assertIn("[ IDLE ]", started_clean)
 
+    def test_collect_cli_status_and_review_use_persisted_signals(self) -> None:
+        PipelineService().signal(
+            {
+                "event_id": "evt-collect-review-1",
+                "request_id": "req-collect-review-1",
+                "session_id": "sess-collect-review-1",
+                "source_event_id": "evt-source-collect-review-1",
+                "source_event_ids": ["evt-source-collect-review-1", "evt-collect-review-1"],
+                "event_type": "accept",
+                "user_input": "我需要一个更直接的下一步",
+                "model_output": "先列出三件今天能完成的小事。",
+                "user_action": {"type": "accept"},
+                "metadata": {"scenario": "work-coach", "confidence": 0.82},
+            }
+        )
+        runner = CliRunner()
+
+        status_result = runner.invoke(cli_main.app, ["collect", "status"])
+        self.assertEqual(status_result.exit_code, 0, status_result.stdout)
+        status_clean = strip_ansi(status_result.stdout)
+        self.assertIn("Total Signals: 1", status_clean)
+        self.assertIn("Curated Samples: 1", status_clean)
+        self.assertIn("Dataset Splits: train=1", status_clean)
+        self.assertIn("Latest Signal: evt-collect-review-1", status_clean)
+        self.assertIn("  accept: 1", status_clean)
+
+        review_result = runner.invoke(
+            cli_main.app,
+            ["collect", "review", "--type", "accept", "--min-confidence", "0.8"],
+        )
+        self.assertEqual(review_result.exit_code, 0, review_result.stdout)
+        review_clean = strip_ansi(review_result.stdout)
+        self.assertIn("Signal ID: evt-collect-review-1", review_clean)
+        self.assertIn("Type: accept", review_clean)
+        self.assertIn("Confidence: 0.82", review_clean)
+        self.assertIn("Session: sess-collect-review-1", review_clean)
+
+    def test_collect_cli_ingest_records_reviewable_training_signal(self) -> None:
+        runner = CliRunner()
+
+        ingest_result = runner.invoke(
+            cli_main.app,
+            [
+                "collect",
+                "ingest",
+                "--workspace",
+                "user_default",
+                "--event-id",
+                "evt-cli-ingest-1",
+                "--request-id",
+                "req-cli-ingest-1",
+                "--session-id",
+                "sess-cli-ingest-1",
+                "--source-event-id",
+                "evt-cli-ingest-source-1",
+                "--user-input",
+                "帮我把今天的重点变清楚",
+                "--model-output",
+                "今天先完成一个最重要的任务，再处理其他事项。",
+                "--action",
+                "accept",
+                "--scenario",
+                "work-coach",
+            ],
+        )
+        self.assertEqual(ingest_result.exit_code, 0, ingest_result.stdout)
+        ingest_clean = strip_ansi(ingest_result.stdout)
+        self.assertIn("Signal ingested", ingest_clean)
+        self.assertIn("Signal ID: evt-cli-ingest-1", ingest_clean)
+        self.assertIn("Recorded: True", ingest_clean)
+        self.assertIn("Event Chain Complete: True", ingest_clean)
+        self.assertIn("Curated Samples: 1", ingest_clean)
+        self.assertIn("Review: pfe collect review --type accept --limit 5", ingest_clean)
+
+        review_result = runner.invoke(cli_main.app, ["collect", "review", "--type", "accept"])
+        self.assertEqual(review_result.exit_code, 0, review_result.stdout)
+        review_clean = strip_ansi(review_result.stdout)
+        self.assertIn("Signal ID: evt-cli-ingest-1", review_clean)
+        self.assertIn("Type: accept", review_clean)
+        self.assertIn("Confidence: 0.90", review_clean)
+        self.assertIn("Session: sess-cli-ingest-1", review_clean)
 
 if __name__ == "__main__":
     unittest.main()

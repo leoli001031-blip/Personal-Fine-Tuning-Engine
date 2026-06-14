@@ -1,6 +1,6 @@
 # PFE 文档导航
 
-更新时间：2026-04-21
+更新时间：2026-06-15
 
 这套文档按三个层次整理：
 
@@ -34,6 +34,9 @@
 | [guides/auto-loop-policy.md](guides/auto-loop-policy.md) | 自动训练 / 评测 / promote 策略配置 |
 | [guides/chat-collector.md](guides/chat-collector.md) | ChatCollector 的信号采集方式 |
 | [guides/dpo-training.md](guides/dpo-training.md) | DPO 训练的输入和使用方式 |
+| [guides/beta-local-runbook.md](guides/beta-local-runbook.md) | 本地 beta 验证、real-local 预检、live server、dashboard/console 和可选浏览器 smoke |
+| [guides/cuda-real-training-validation.md](guides/cuda-real-training-validation.md) | Linux/CUDA 上 PEFT / Unsloth 真实训练验证入口 |
+| [guides/install-upgrade.md](guides/install-upgrade.md) | Phase 2 release candidate 的本地安装、升级和 release gate 准备方式 |
 
 ## 参考文档
 
@@ -41,6 +44,11 @@
 |------|------|
 | [reference/data-layering-strategy.md](reference/data-layering-strategy.md) | 数据分层与训练边界 |
 | [reference/phase2-closeout.md](reference/phase2-closeout.md) | Phase 2 收尾结果与验证范围 |
+| [reference/release-candidate-checklist.md](reference/release-candidate-checklist.md) | Release candidate 必过 gate、性能预算、长 soak 和发布材料清单 |
+| [reference/release-readiness-evidence.md](reference/release-readiness-evidence.md) | Release readiness 当前验证证据、strict smoke 结果和剩余 blocker |
+| [reference/release-notes-phase2-rc.md](reference/release-notes-phase2-rc.md) | Phase 2 release candidate 变更、证据和用户可期待能力 |
+| [reference/known-limitations.md](reference/known-limitations.md) | Phase 2 release candidate 的已知限制和未承诺边界 |
+| [reference/user-acceptance-checklist.md](reference/user-acceptance-checklist.md) | 从真实用户视角验收 init/doctor/train/eval/promote/serve/dashboard 闭环 |
 
 ## 归档
 

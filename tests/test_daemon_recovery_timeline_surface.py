@@ -4,21 +4,13 @@ import asyncio
 import os
 import tempfile
 import unittest
-from datetime import datetime, timedelta, timezone
 from pathlib import Path
-
-ROOT = Path(__file__).resolve().parents[1]
-for package_dir in ("pfe-core", "pfe-cli", "pfe-server"):
-    package_path = str(ROOT / package_dir)
-    if package_path not in os.sys.path:
-        os.sys.path.insert(0, package_path)
 
 from pfe_cli.main import _format_status
 from pfe_core.pipeline import PipelineService
 from pfe_core.server_services import InferenceServiceAdapter, PipelineServiceAdapter
 from pfe_server.app import ServiceBundle, create_app, smoke_test_request
 from pfe_server.auth import ServerSecurityConfig
-
 
 class DaemonRecoveryTimelineSurfaceTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -152,7 +144,6 @@ class DaemonRecoveryTimelineSurfaceTests(unittest.TestCase):
         self.assertIn("recent recovery events:", clean)
         self.assertIn("start_requested", clean)
         self.assertIn("recover_requested", clean)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -21,7 +21,6 @@ Example:
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Union
@@ -125,6 +124,39 @@ class MLXTrainingResult:
             "config": self.config.to_dict() if self.config else None,
             "error": self.error,
             "metadata": self.metadata,
+        }
+
+
+def mlx_smoke_check(*, force_cpu: bool = False) -> dict[str, Any]:
+    """Run a minimal MLX smoke test to verify GPU/Metal readiness.
+
+    Returns a dict with status and diagnostic info.
+    """
+    try:
+        import mlx.core as mx
+    except ImportError as exc:
+        return {
+            "status": "failed",
+            "check": "mlx_import",
+            "reason": f"mlx_import_failed: {exc}",
+        }
+
+    try:
+        if force_cpu:
+            mx.set_default_device(mx.cpu)
+        a = mx.ones((2, 2))
+        mx.eval(a)
+        return {
+            "status": "ok",
+            "check": "mlx_gpu_smoke" if not force_cpu else "mlx_cpu_smoke",
+            "device": str(mx.default_device()) if hasattr(mx, "default_device") else "unknown",
+        }
+    except Exception as exc:
+        return {
+            "status": "failed",
+            "check": "mlx_gpu_smoke",
+            "reason": f"mlx_gpu_smoke_failed: {type(exc).__name__}: {exc}",
+            "macos_crash_logs_hint": "~/Library/Logs/DiagnosticReports/Python-*.ips",
         }
 
 
@@ -357,10 +389,10 @@ class MLXTrainerBackend:
                 train(model=model, optimizer=optimizer, train_dataset=train_dataset, args=args)
             finally:
                 mx.clear_cache()
-                if hasattr(mx.metal, "set_wired_limit"):
-                    mx.metal.set_wired_limit(0)
-                elif hasattr(mx, "set_wired_limit"):
+                if hasattr(mx, "set_wired_limit"):
                     mx.set_wired_limit(0)
+                elif hasattr(mx.metal, "set_wired_limit"):
+                    mx.metal.set_wired_limit(0)
 
             loss_history = [0.0]  # mlx_lm.train does not expose per-epoch losses directly
             num_steps = args.iters

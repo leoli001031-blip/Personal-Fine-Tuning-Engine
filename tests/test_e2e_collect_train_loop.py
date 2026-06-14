@@ -55,7 +55,7 @@ class TestSignalCollectionTriggersTraining:
             with TestServer(port=config.port, workspace=config.test_workspace):
                 with TestDaemon(port=config.port, workspace=config.test_workspace):
                     # Step 1: Simulate 60 conversations to exceed threshold
-                    signals = simulate_conversations(
+                    simulate_conversations(
                         count=60,
                         port=config.port,
                         accept_ratio=0.8,
