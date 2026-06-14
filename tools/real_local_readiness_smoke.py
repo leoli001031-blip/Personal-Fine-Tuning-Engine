@@ -98,7 +98,12 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
     _require(train_preview_output, "PFE train plan", label="train preview output")
     _require(train_preview_output, "execution_intent=real_local", label="train preview output")
     _require(train_preview_output, "backend-dispatch:", label="train preview output")
-    _require(train_preview_output, "execution_backend=peft", label="train preview output")
+    _require(train_preview_output, "execution_backend=", label="train preview output")
+    _require(train_preview_output, "execution_mode=", label="train preview output")
+    if "execution_backend=peft" not in train_preview_output:
+        _require(train_preview_output, "requested_backend=peft", label="train preview output")
+        _require(train_preview_output, "execution_backend=mock_local", label="train preview output")
+        _require(train_preview_output, "execution_mode=fallback", label="train preview output")
 
     serve_preview_output = run(
         [
@@ -132,8 +137,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Smoke-test the real-local readiness path without model downloads or heavy training dependencies. "
-            "This validates local model discovery, train --preview --real-local, serve --real-local preview, "
-            "and console snapshot wiring."
+            "This validates local model discovery, train --preview --real-local, dependency-safe fallback, "
+            "serve --real-local preview, and console snapshot wiring."
         )
     )
     parser.add_argument("--repo-root", type=Path, default=repo_root)

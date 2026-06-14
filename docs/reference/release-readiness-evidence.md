@@ -215,7 +215,7 @@ execution:  kind=real_peft | path=real_import
 
 ## 本轮修复/新增
 
-- `tools/real_local_readiness_smoke.py`：把旧断言 `requested_backend=peft` 对齐到当前稳定输出 `backend-dispatch: execution_backend=peft`。
+- `tools/real_local_readiness_smoke.py`：beta readiness 保留 `execution_intent=real_local`，并允许缺少训练依赖时走 `requested_backend=peft | execution_backend=mock_local | execution_mode=fallback`；真实 PEFT 执行仍由 strict gate 覆盖。
 - `tools/browser_ui_live_smoke.py`：等待 dashboard 初始化和 refresh 的 `/pfe/dashboard/metrics` 200 响应，避免导航取消未完成 fetch 被误判为浏览器错误。
 - `tools/browser_ui_live_smoke.py`：聊天页不再依赖会被 status refresh 覆盖的 footer 文案，改为等待真实 `.bubble.assistant .feedback-btn.accept`。
 - `pyproject.toml`：`training` extra 补入 `accelerate>=0.23`，与 real-local PEFT runtime 的实际导入需求一致。
