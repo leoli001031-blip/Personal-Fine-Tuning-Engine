@@ -145,7 +145,12 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         _require(studio_html, "PFE / 本地模型工作台", label="studio first launch html")
         _require(studio_html, "选择模型，拿到本机 API。", label="studio first launch html")
         _require(studio_html, "测试接入", label="studio first launch html")
-        _require(studio_html, "/pfe/handoff/test", label="studio first launch html")
+        _require(studio_html, "/pfe/static/studio.css", label="studio first launch html")
+        _require(studio_html, "/pfe/static/studio.js", label="studio first launch html")
+        studio_js = _wait_for_text(f"{base_url}/pfe/static/studio.js", timeout=args.server_timeout)
+        if studio_js["status"] != 200:
+            raise AssertionError(f"unexpected Studio JS status: {studio_js}")
+        _require(str(studio_js["body"]), "/pfe/handoff/test", label="studio first launch js")
 
         runtime = _request_json(f"{base_url}/pfe/runtime")
         if runtime["status"] != 200:
