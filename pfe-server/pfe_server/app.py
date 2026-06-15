@@ -1343,6 +1343,33 @@ def _build_training_preflight_payload(
     }
 
 
+def _build_legacy_training_trigger_preflight_payload(
+    services: ServiceBundle,
+    request: TrainingJobRequest,
+) -> dict[str, Any]:
+    base_model = str(request.training_config.get("base_model") or _load_config_base_model())
+    return {
+        "kind": "pfe_training_preflight",
+        "ready": True,
+        "requires_confirmation": False,
+        "confirm_api": "POST /pfe/training/trigger",
+        "request": request.payload(),
+        "method": request.method,
+        "workspace": services.workspace,
+        "base_model": base_model,
+        "blocked_by": [],
+        "warnings": ["legacy_trigger_bypasses_studio_preflight"],
+        "next_actions": [],
+        "preview": {
+            "method": request.method,
+            "training_config": request.training_config,
+            "will_create_job": True,
+            "will_start_background_training": True,
+            "legacy_endpoint": True,
+        },
+    }
+
+
 def _training_job_payload(job_entry: Mapping[str, Any]) -> dict[str, Any]:
     return studio_training_job_payload(job_entry)
 
@@ -3914,6 +3941,7 @@ def _start_training_job(
     training_config: Mapping[str, Any],
     preflight: Mapping[str, Any],
     retry_of: str | None = None,
+    reason: str | None = None,
 ) -> Any:
     workspace = services.workspace
     store = _training_job_store(workspace)
@@ -3925,6 +3953,7 @@ def _start_training_job(
         training_config=training_config,
         preflight=preflight,
         retry_of=retry_of,
+        reason=reason,
         persist_job=store.persist_job,
         persist_overall=store.persist_overall,
         build_jobs_payload=lambda limit: store.build_jobs_payload(limit=limit),
@@ -4258,49 +4287,60 @@ async def handle_training_trigger(
     if not allowed:
         return denial
     workspace = services.workspace
-    body_raw = envelope.body or b"{}"
-    try:
-        body = json.loads(body_raw) if isinstance(body_raw, bytes) else dict(body_raw or {})
-    except Exception:
-        body = {}
-    reason = body.get("reason", "manual_trigger")
-    job_id = str(uuid4())
-    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    body = _load_request_json(envelope.body)
+    reason = str(body.pop("reason", "manual_trigger") or "manual_trigger")
+    body.setdefault("method", "sft")
+    request = _training_request_from_body(body, envelope.query_params, confirmed=True)
+    if request.unsupported_method:
+        payload = _error_payload(
+            "unsupported training method",
+            "unsupported_training_method",
+            "choose sft or dpo for legacy training trigger",
+        )
+        payload.update(
+            {
+                "kind": "pfe_training_request_error",
+                "legacy_endpoint": "/pfe/training/trigger",
+                "request": request.payload(),
+                "supported_methods": list(SUPPORTED_STUDIO_TRAINING_METHODS),
+            }
+        )
+        return _json_response(payload, status_code=400)
+
     store = _training_job_store(workspace)
-    store.persist_overall(workspace, {"state": "running", "reason": reason, "job_id": job_id, "updated_at": now})
-
-    def _run_triggered_training() -> None:
-        try:
-            result_msg = services.pipeline.train()
-            version = None
-            for token in str(result_msg).split():
-                if token.startswith("2") and len(token) >= 8:
-                    version = token
-                    break
-            state = {
-                "state": "completed",
-                "adapter_version": version,
+    active_job = store.active_job()
+    if active_job is not None:
+        return _json_response(
+            {
+                "kind": "pfe_training_trigger_legacy_active",
+                "legacy_endpoint": "/pfe/training/trigger",
+                "state": active_job.get("status") or "running",
                 "reason": reason,
-                "result": result_msg,
-                "job_id": job_id,
-                "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            }
-        except Exception as exc:
-            state = {
-                "state": "failed",
-                "reason": reason,
-                "error": str(exc),
-                "job_id": job_id,
-                "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            }
-        store.persist_overall(workspace, state)
+                "job_id": active_job.get("job_id"),
+                "active_job": active_job,
+                "jobs": store.build_jobs_payload(limit=10),
+            },
+            status_code=202,
+        )
 
-    import threading
-    threading.Thread(target=_run_triggered_training, daemon=True).start()
-    return _json_response(
-        {"state": "running", "reason": reason, "job_id": job_id},
-        status_code=202,
+    preflight = _build_legacy_training_trigger_preflight_payload(services, request)
+    status_code, payload = _response_status_payload(
+        _start_training_job(
+            services,
+            method=request.method,
+            training_config=request.training_config,
+            preflight=preflight,
+            reason=reason,
+        )
     )
+    payload.update(
+        {
+            "legacy_endpoint": "/pfe/training/trigger",
+            "state": payload.get("status"),
+            "reason": reason,
+        }
+    )
+    return _json_response(payload, status_code=status_code)
 
 
 async def handle_eval_run(

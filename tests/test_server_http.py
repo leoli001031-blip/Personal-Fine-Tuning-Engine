@@ -1178,6 +1178,71 @@ class ServerHttpSmokeTests(unittest.TestCase):
                 self.assertEqual(result["body"]["kind"], "pfe_training_request_error")
                 self.assertEqual(result["body"]["request"]["method"], method)
 
+    def test_training_trigger_legacy_endpoint_uses_studio_job_contract(self) -> None:
+        pipeline = self.app.state.pfe_services.pipeline
+        original_train = getattr(pipeline, "train", None)
+        pipeline.train = lambda: "TRAINING COMPLETE 20260615-997"
+        try:
+            triggered = self._smoke(
+                "/pfe/training/trigger",
+                method="POST",
+                body={"reason": "legacy_manual", "epochs": 1},
+            )
+            self.assertEqual(triggered["status_code"], 202)
+            self.assertEqual(triggered["body"]["kind"], "pfe_training_job_started")
+            self.assertEqual(triggered["body"]["legacy_endpoint"], "/pfe/training/trigger")
+            self.assertEqual(triggered["body"]["reason"], "legacy_manual")
+            self.assertEqual(triggered["body"]["request"]["method"], "sft")
+            self.assertEqual(triggered["body"]["request"]["training_config"], {"epochs": 1})
+            self.assertEqual(triggered["body"]["preflight"]["confirm_api"], "POST /pfe/training/trigger")
+            self.assertFalse(triggered["body"]["preflight"]["requires_confirmation"])
+            self.assertIn(
+                "legacy_trigger_bypasses_studio_preflight",
+                triggered["body"]["preflight"]["warnings"],
+            )
+            job_id = triggered["body"]["job_id"]
+
+            completed = {}
+            for _ in range(20):
+                job_result = self._smoke(f"/pfe/training/jobs/{job_id}")
+                self.assertEqual(job_result["status_code"], 200)
+                completed = job_result["body"]
+                if completed.get("status") == "completed":
+                    break
+                time.sleep(0.05)
+            self.assertEqual(completed["status"], "completed")
+            self.assertEqual(completed["adapter_version"], "20260615-997")
+            self.assertEqual(completed["reason"], "legacy_manual")
+
+            jobs = self._smoke("/pfe/training/jobs")
+            self.assertEqual(jobs["status_code"], 200)
+            self.assertEqual(jobs["body"]["latest"]["job_id"], job_id)
+            self.assertEqual(jobs["body"]["latest"]["reason"], "legacy_manual")
+
+            status = self._smoke("/pfe/training/status")
+            self.assertEqual(status["status_code"], 200)
+            self.assertEqual(status["body"]["state"], "completed")
+            self.assertEqual(status["body"]["job_id"], job_id)
+            self.assertEqual(status["body"]["adapter_version"], "20260615-997")
+            self.assertEqual(status["body"]["reason"], "legacy_manual")
+        finally:
+            if original_train is not None:
+                pipeline.train = original_train
+
+    def test_training_trigger_rejects_unsupported_method_without_sft_fallback(self) -> None:
+        result = self._smoke(
+            "/pfe/training/trigger",
+            method="POST",
+            body={"method": "bogus", "reason": "legacy_manual"},
+        )
+
+        self.assertEqual(result["status_code"], 400)
+        self.assertEqual(result["body"]["kind"], "pfe_training_request_error")
+        self.assertEqual(result["body"]["code"], "unsupported_training_method")
+        self.assertEqual(result["body"]["legacy_endpoint"], "/pfe/training/trigger")
+        self.assertEqual(result["body"]["request"]["method"], "bogus")
+        self.assertFalse((self.pfe_home / "training_jobs.json").exists())
+
     def test_status_returns_runtime_snapshot(self) -> None:
         result = self._smoke("/pfe/status", query_params={"detail": "full"})
         self.assertEqual(result["status_code"], 200)
