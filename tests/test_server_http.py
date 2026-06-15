@@ -61,6 +61,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("选择模型，拿到本机 API。", result["text"])
         self.assertIn("/pfe/runtime", result["text"])
         self.assertIn("/pfe/models", result["text"])
+        self.assertIn("/pfe/handoff", result["text"])
 
     def test_chat_alias_serves_legacy_operations_frontend(self) -> None:
         result = self._smoke("/chat")
@@ -85,8 +86,11 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("/pfe/adapters", result["text"])
         self.assertIn("/pfe/readiness", result["text"])
         self.assertIn("/pfe/workspaces", result["text"])
+        self.assertIn("/pfe/handoff", result["text"])
         self.assertIn("回复来源", result["text"])
         self.assertIn("复制 API 地址", result["text"])
+        self.assertIn("接入信息", result["text"])
+        self.assertIn("复制接入信息", result["text"])
         self.assertIn("模型参数", result["text"])
         self.assertIn("调用示例", result["text"])
         self.assertIn("复制调用示例", result["text"])
@@ -114,6 +118,33 @@ class ServerHttpSmokeTests(unittest.TestCase):
         alias = self._smoke("/pfe/studio")
         self.assertEqual(alias["status_code"], 200)
         self.assertIn("PFE / 本地模型工作台", alias["text"])
+
+    def test_studio_handoff_surface_exposes_copyable_user_contract(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "Qwen/Qwen3-4B"
+        config.save(home=self.pfe_home)
+        store = self._server_adapter_store()
+        version = self._create_pending_adapter(store, base_model="Qwen/Qwen3-4B")
+        store.promote(version)
+
+        result = self._smoke("/pfe/handoff", headers={"host": "127.0.0.1:9012"})
+
+        self.assertEqual(result["status_code"], 200)
+        body = result["body"]
+        self.assertEqual(body["kind"], "pfe_studio_handoff")
+        self.assertEqual(body["workspace"], "user_default")
+        self.assertEqual(body["urls"]["web"], "http://127.0.0.1:9012/")
+        self.assertEqual(body["urls"]["api"], "http://127.0.0.1:9012/v1/chat/completions")
+        self.assertEqual(body["model"]["selected"], "Qwen/Qwen3-4B")
+        self.assertEqual(body["model"]["api_parameter"], "local")
+        self.assertIn("local-default", body["model"]["aliases"])
+        self.assertEqual(body["version"]["current"], version)
+        self.assertEqual(body["version"]["latest"], version)
+        self.assertEqual(body["version"]["count"], 1)
+        self.assertIn("Web: http://127.0.0.1:9012/", body["copy_text"])
+        self.assertIn("API: http://127.0.0.1:9012/v1/chat/completions", body["copy_text"])
+        self.assertIn("Model parameter: local", body["copy_text"])
+        self.assertIn(f"Current version: {version}", body["copy_text"])
 
     def test_studio_runtime_models_and_adapters_surfaces(self) -> None:
         config = PFEConfig()

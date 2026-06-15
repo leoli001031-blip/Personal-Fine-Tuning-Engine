@@ -226,9 +226,9 @@
 
     .summary {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 18px;
-      align-items: end;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
     }
 
     .summary h2 {
@@ -249,10 +249,10 @@
 
     .summary-actions {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       gap: 10px;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      justify-content: flex-start;
     }
 
     .model-row {
@@ -392,6 +392,33 @@
       grid-template-columns: minmax(0, 1fr) auto;
       gap: 10px;
       align-items: end;
+    }
+
+    .handoff-summary {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      font-weight: 720;
+    }
+
+    .handoff-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .handoff-grid strong {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      font-weight: 760;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .api-example {
@@ -574,6 +601,7 @@
       .workspace-control-row,
       .path-row,
       .api-card-head,
+      .handoff-grid,
       .evidence-grid {
         grid-template-columns: 1fr;
       }
@@ -705,6 +733,33 @@
             <span class="status-pill" id="runtimeStatus">检查中</span>
           </div>
           <div class="endpoint-grid">
+            <div class="api-card">
+              <div class="api-card-head">
+                <div>
+                  <label for="handoffValue">接入信息</label>
+                  <div class="handoff-summary" id="handoffValue">检查中</div>
+                </div>
+                <button class="button" id="copyHandoffButton" type="button" disabled>复制接入信息</button>
+              </div>
+              <div class="handoff-grid">
+                <div>
+                  <span>网页</span>
+                  <strong id="handoffWebValue">检查中</strong>
+                </div>
+                <div>
+                  <span>API</span>
+                  <strong id="handoffApiValue">检查中</strong>
+                </div>
+                <div>
+                  <span>模型</span>
+                  <strong id="handoffModelValue">检查中</strong>
+                </div>
+                <div>
+                  <span>版本</span>
+                  <strong id="handoffVersionValue">检查中</strong>
+                </div>
+              </div>
+            </div>
             <div class="endpoint">
               <div>
                 <label for="webUrlValue">网页</label>
@@ -796,6 +851,7 @@
       runtime: null,
       workspaces: null,
       models: null,
+      handoff: null,
       adapters: null,
       readiness: null,
       evalStatus: null,
@@ -894,6 +950,65 @@
       return lines.join("\n");
     }
 
+    function currentModelCandidate() {
+      const models = state.models || {};
+      const candidates = Array.isArray(models.candidates) ? models.candidates : [];
+      return candidates.find((candidate) => candidate.id === models.selected) || candidates[0] || {};
+    }
+
+    function buildHandoffSnapshot() {
+      const runtime = state.runtime || {};
+      const models = state.models || {};
+      const adapters = state.adapters || {};
+      const current = adapters.current || {};
+      const candidate = currentModelCandidate();
+      const contract = apiContract();
+      return {
+        urls: {
+          web: runtime.web_url || "",
+          api: contract.url || runtime.api_url || "",
+          studio: runtime.studio_url || "",
+          dashboard: runtime.dashboard_url || "",
+        },
+        model: {
+          selected: models.selected || candidate.id || "",
+          label: candidate.label || models.selected_label || models.selected || "",
+          api_parameter: contract.model || "local",
+        },
+        version: {
+          current: current.version || adapters.latest_version || "",
+          latest: adapters.latest_version || "",
+          count: adapters.count || 0,
+          pending_count: Array.isArray(adapters.pending) ? adapters.pending.length : 0,
+        },
+        runtime: {
+          access_scope: runtime.access_scope || "仅本机",
+          auth_mode: runtime.auth_mode || "",
+        },
+      };
+    }
+
+    function currentHandoff() {
+      return state.handoff && state.handoff.kind === "pfe_studio_handoff"
+        ? state.handoff
+        : buildHandoffSnapshot();
+    }
+
+    function buildHandoffText() {
+      const handoff = currentHandoff();
+      if (handoff.copy_text) return handoff.copy_text;
+      const urls = handoff.urls || {};
+      const model = handoff.model || {};
+      const version = handoff.version || {};
+      return [
+        "Web: " + (urls.web || "-"),
+        "API: " + (urls.api || "-"),
+        "Model parameter: " + (model.api_parameter || "local"),
+        "Selected model: " + (model.selected || "-"),
+        "Current version: " + (version.current || "-"),
+      ].join("\n");
+    }
+
     const issueCopy = {
       needs_local_path: "还没选择本地模型路径",
       real_local_inference_disabled: "还没开启真实本地模型",
@@ -953,6 +1068,25 @@
       pill("runtimeStatus", runtime.status === "passed" ? "可继续" : "检查中", runtime.status === "passed" ? "ok" : "");
       $("openWebButton").disabled = !runtime.web_url;
       $("copyApiTopButton").disabled = !runtime.api_url;
+    }
+
+    function renderHandoff() {
+      const handoff = currentHandoff();
+      const urls = handoff.urls || {};
+      const model = handoff.model || {};
+      const version = handoff.version || {};
+      const runtime = handoff.runtime || {};
+      const access = runtime.access_scope || (state.runtime && state.runtime.access_scope) || "仅本机";
+      const versionLabel = version.current || version.latest || "暂无版本";
+      const summary = urls.api
+        ? "网页和 API 已就绪，复制后可直接交给前端或调用方。"
+        : "正在检查网页、API 和模型版本。";
+      text("handoffValue", summary);
+      text("handoffWebValue", urls.web || "-");
+      text("handoffApiValue", urls.api || "-");
+      text("handoffModelValue", [model.api_parameter || "local", model.label || model.selected].filter(Boolean).join(" / "));
+      text("handoffVersionValue", [versionLabel, access].filter(Boolean).join(" / "));
+      $("copyHandoffButton").disabled = !urls.api && !urls.web;
     }
 
     function renderWorkspaces() {
@@ -1028,6 +1162,7 @@
         const payload = await sendJson("/pfe/config/model", { base_model: modelId });
         state.models = payload.models || await loadJson("/pfe/models");
         state.readiness = await loadJson("/pfe/readiness");
+        state.handoff = null;
         state.trainingPreflight = null;
         toast(payload.reload_required ? "已保存，需重启服务" : "已保存，下一次请求生效");
       } catch (error) {
@@ -1044,6 +1179,7 @@
       try {
         const payload = await sendJson("/pfe/config/real-local", { enabled });
         state.readiness = payload.readiness || await loadJson("/pfe/readiness");
+        state.handoff = null;
         state.trainingPreflight = null;
         toast(enabled ? "已开启真实本地模型" : "已关闭真实本地模型");
       } catch (error) {
@@ -1074,6 +1210,7 @@
         state.trainingJobs = await loadJson("/pfe/training/jobs").catch(() => null);
         state.evalStatus = await loadJson("/pfe/eval/status").catch(() => null);
         state.status = await loadJson("/pfe/status?detail=full").catch(() => null);
+        state.handoff = null;
         state.trainingPreflight = null;
         if ($("workspaceInput")) $("workspaceInput").value = "";
         toast(payload.created ? "已创建并切换" : "已切换工作区");
@@ -1230,12 +1367,14 @@
           const payload = await postJson(api, { confirm: true, version });
           state.evalStatus = payload;
           state.adapters = payload.adapters || await loadJson("/pfe/adapters");
+          state.handoff = null;
           toast("已开始评估");
           refreshEvalStatus();
         } else {
           const payload = await postJson(api, { confirm: true });
           state.adapters = payload.adapters || await loadJson("/pfe/adapters");
           state.readiness = await loadJson("/pfe/readiness");
+          state.handoff = null;
           toast("已完成");
         }
       } catch (error) {
@@ -1249,6 +1388,7 @@
       try {
         state.evalStatus = await loadJson("/pfe/eval/status");
         state.adapters = state.evalStatus.adapters || await loadJson("/pfe/adapters");
+        state.handoff = null;
         render();
         if (state.evalStatus && state.evalStatus.state === "running") {
           refreshEvalStatus.timer = window.setTimeout(refreshEvalStatus, 1200);
@@ -1299,6 +1439,7 @@
       try {
         state.trainingJobs = await loadJson("/pfe/training/jobs");
         state.adapters = await loadJson("/pfe/adapters");
+        state.handoff = null;
         render();
         const job = state.trainingJobs && state.trainingJobs.active;
         if (job && (job.status === "queued" || job.status === "running") && !job.cancellation_requested) {
@@ -1340,6 +1481,7 @@
       try {
         const payload = await postJson(job.cancel_url, { confirm: true });
         state.trainingJobs = payload.jobs || await loadJson("/pfe/training/jobs");
+        state.handoff = null;
         toast(payload.message || "已请求停止");
         refreshTrainingJobs();
       } catch (error) {
@@ -1361,6 +1503,7 @@
         state.trainingPreflight = payload.preflight || state.trainingPreflight;
         state.trainingJobs = payload.jobs || await loadJson("/pfe/training/jobs");
         state.adapters = await loadJson("/pfe/adapters");
+        state.handoff = null;
         toast("已重新开始生成");
         refreshTrainingJobs();
       } catch (error) {
@@ -1384,6 +1527,7 @@
         state.trainingPreflight = payload.preflight || state.trainingPreflight;
         state.trainingJobs = payload.jobs || await loadJson("/pfe/training/jobs");
         state.adapters = await loadJson("/pfe/adapters");
+        state.handoff = null;
         toast("已开始生成版本");
         refreshTrainingJobs();
       } catch (error) {
@@ -1428,6 +1572,7 @@
       renderWorkspaces();
       renderModels();
       renderAdapters();
+      renderHandoff();
       renderTrainingPreflight();
       renderStatus();
       renderSummary();
@@ -1440,11 +1585,12 @@
       pill("modelStatus", "检查中", "");
       pill("adapterStatus", "检查中", "");
       try {
-        const [runtime, workspaces, models, adapters, readiness, trainingJobs, evalStatus, status] = await Promise.all([
+        const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, status] = await Promise.all([
           loadJson("/pfe/runtime"),
           loadJson("/pfe/workspaces"),
           loadJson("/pfe/models"),
           loadJson("/pfe/adapters"),
+          loadJson("/pfe/handoff"),
           loadJson("/pfe/readiness"),
           loadJson("/pfe/training/jobs").catch(() => null),
           loadJson("/pfe/eval/status").catch(() => null),
@@ -1454,6 +1600,7 @@
         state.workspaces = workspaces;
         state.models = models;
         state.adapters = adapters;
+        state.handoff = handoff;
         state.readiness = readiness;
         state.trainingJobs = trainingJobs;
         state.evalStatus = evalStatus;
@@ -1463,6 +1610,7 @@
         state.runtime = state.runtime || {};
         state.workspaces = state.workspaces || {};
         state.models = state.models || {};
+        state.handoff = state.handoff || null;
         state.adapters = state.adapters || {};
       }
       render();
@@ -1514,6 +1662,9 @@
     });
     $("copyApiTopButton").addEventListener("click", () => {
       copyText(state.runtime && state.runtime.api_url);
+    });
+    $("copyHandoffButton").addEventListener("click", () => {
+      copyText(buildHandoffText());
     });
     $("modelSelect").addEventListener("change", (event) => saveModel(event.target.value));
     $("workspaceSelect").addEventListener("change", (event) => saveWorkspace(event.target.value));
