@@ -4465,6 +4465,11 @@ async def handle_frontend(envelope: RequestEnvelope, services: ServiceBundle) ->
     return _html_response(_studio_html(), status_code=200)
 
 
+async def handle_chat_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    del envelope, services
+    return _html_response(_frontend_html(), status_code=200)
+
+
 async def handle_studio_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     del envelope, services
     return _html_response(_studio_html(), status_code=200)
@@ -4784,6 +4789,8 @@ class _LiteASGIApp:
     async def _dispatch(self, envelope: RequestEnvelope) -> Any:
         if envelope.path == "/" and envelope.method == "GET":
             return await handle_frontend(envelope, self.services)
+        if envelope.path in {"/chat", "/pfe/chat"} and envelope.method == "GET":
+            return await handle_chat_frontend(envelope, self.services)
         if envelope.path in {"/studio", "/pfe/studio"} and envelope.method == "GET":
             return await handle_studio_frontend(envelope, self.services)
         if envelope.path == "/healthz" and envelope.method == "GET":
@@ -4936,6 +4943,14 @@ def create_app(
         @app.get("/", response_class=HTMLResponse)
         async def frontend(request: Request) -> Any:
             return await handle_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/chat", response_class=HTMLResponse)
+        async def chat_frontend(request: Request) -> Any:
+            return await handle_chat_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/chat", response_class=HTMLResponse)
+        async def pfe_chat_frontend(request: Request) -> Any:
+            return await handle_chat_frontend(await _envelope_from_fastapi_request(request), bundle)
 
         @app.get("/studio", response_class=HTMLResponse)
         async def studio_frontend(request: Request) -> Any:

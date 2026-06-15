@@ -188,7 +188,7 @@ class WorkerRunnerSurfaceTests(unittest.TestCase):
             )
             status_result = await smoke_test_request(app, path="/pfe/auto-train/worker-runner", method="GET")
             timeline_result = await smoke_test_request(app, path="/pfe/status", method="GET")
-            root_result = await smoke_test_request(app, path="/", method="GET")
+            root_result = await smoke_test_request(app, path="/chat", method="GET")
             return run_result["body"], status_result["body"], timeline_result["body"], root_result["text"]
 
         run_body, status_body, timeline_body, root_text = asyncio.run(http_scenario())

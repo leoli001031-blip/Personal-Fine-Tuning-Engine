@@ -67,12 +67,12 @@ class WorkerDaemonSurfaceTests(unittest.TestCase):
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, self.html)
 
-    def test_root_page_serves_the_worker_daemon_surface(self) -> None:
+    def test_chat_page_serves_the_worker_daemon_surface(self) -> None:
         service = self._service()
         app = self._app(service)
 
         async def scenario() -> str:
-            result = await smoke_test_request(app, path="/", method="GET")
+            result = await smoke_test_request(app, path="/chat", method="GET")
             return result["text"]
 
         root_text = asyncio.run(scenario())

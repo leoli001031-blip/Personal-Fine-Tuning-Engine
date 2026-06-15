@@ -62,6 +62,18 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("/pfe/runtime", result["text"])
         self.assertIn("/pfe/models", result["text"])
 
+    def test_chat_alias_serves_legacy_operations_frontend(self) -> None:
+        result = self._smoke("/chat")
+        self.assertEqual(result["status_code"], 200)
+        self.assertIn("text/html", result["headers"].get("content-type", ""))
+        self.assertIn("Worker Daemon", result["text"])
+        self.assertIn("Train Queue", result["text"])
+        self.assertIn("/pfe/auto-train/run-worker-runner", result["text"])
+
+        alias = self._smoke("/pfe/chat")
+        self.assertEqual(alias["status_code"], 200)
+        self.assertIn("Worker Daemon", alias["text"])
+
     def test_studio_frontend_serves_user_facing_control_surface(self) -> None:
         result = self._smoke("/studio")
         self.assertEqual(result["status_code"], 200)

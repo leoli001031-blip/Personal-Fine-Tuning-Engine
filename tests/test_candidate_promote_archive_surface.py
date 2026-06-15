@@ -189,7 +189,7 @@ class CandidatePromoteArchiveSurfaceTests(unittest.TestCase):
         app = plan.app
 
         async def scenario() -> str:
-            result = await smoke_test_request(app, path="/", method="GET")
+            result = await smoke_test_request(app, path="/chat", method="GET")
             return result["text"]
 
         text = asyncio.run(scenario())
