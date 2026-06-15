@@ -23,9 +23,10 @@ help:
 	@echo "make smoke-first-run - Run the isolated first-run CLI smoke"
 	@echo "make smoke-auto-train-queue - Run the isolated auto-train queue smoke"
 	@echo "make smoke-real-local-readiness - Run the real-local readiness smoke"
+	@echo "make smoke-studio-model-path - Run the Studio model-path/API handoff smoke"
 	@echo "make smoke-server-live - Launch a temporary live server and probe HTTP surfaces"
-	@echo "make smoke-dashboard-console-live - Probe dashboard and chat-console live surfaces"
-	@echo "make smoke-browser-ui-live - Optional Playwright browser smoke for dashboard/chat UI"
+	@echo "make smoke-dashboard-console-live - Probe dashboard and Studio live surfaces"
+	@echo "make smoke-browser-ui-live - Optional Playwright browser smoke for dashboard/Studio UI"
 	@echo "make smoke-real-local-happy - Opt-in real local model happy path (set PFE_REAL_LOCAL_MODEL)"
 	@echo "make smoke-beta - Run the beta-ready smoke chain"
 	@echo "make smoke-release-strict - Run beta smoke plus required browser/model gates"
@@ -83,6 +84,10 @@ smoke-auto-train-queue: check-venv
 smoke-real-local-readiness: check-venv
 	$(PYTHON) tools/real_local_readiness_smoke.py
 
+.PHONY: smoke-studio-model-path
+smoke-studio-model-path: check-venv
+	$(PYTHON) tools/studio_model_path_smoke.py
+
 .PHONY: smoke-server-live
 smoke-server-live: check-venv
 	$(PYTHON) tools/server_live_smoke.py
@@ -100,7 +105,7 @@ smoke-real-local-happy: check-venv
 	$(PYTHON) tools/real_local_happy_path_smoke.py
 
 .PHONY: smoke-beta
-smoke-beta: smoke-first-run smoke-auto-train-queue smoke-real-local-readiness smoke-server-live smoke-dashboard-console-live
+smoke-beta: smoke-first-run smoke-auto-train-queue smoke-real-local-readiness smoke-studio-model-path smoke-server-live smoke-dashboard-console-live
 
 .PHONY: smoke-release-strict
 smoke-release-strict: smoke-beta

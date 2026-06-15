@@ -138,6 +138,37 @@ def test_real_local_readiness_smoke_script_reaches_preview_surfaces() -> None:
 
 
 @pytest.mark.e2e
+def test_studio_model_path_smoke_script_reaches_api_handoff() -> None:
+    script = ROOT / "tools" / "studio_model_path_smoke.py"
+    completed = subprocess.run(
+        [
+            sys.executable,
+            str(script),
+            "--repo-root",
+            str(ROOT),
+            "--python",
+            sys.executable,
+        ],
+        cwd=str(ROOT),
+        text=True,
+        capture_output=True,
+        timeout=30,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    output = completed.stdout
+    assert "STUDIO MODEL PATH SMOKE PASSED" in output
+    assert "workspace:           studio-client" in output
+    assert "api_url:             http://127.0.0.1:8921/v1/chat/completions" in output
+    assert "real_local_enabled:  True" in output
+    assert "training_preflight:  True" in output
+    assert "training_jobs:       0" in output
+    assert "chat_served_by:      mock" in output
+    assert "chat_resolved_model:" in output
+
+
+@pytest.mark.e2e
 def test_server_live_smoke_script_probes_http_surfaces() -> None:
     script = ROOT / "tools" / "server_live_smoke.py"
     completed = subprocess.run(

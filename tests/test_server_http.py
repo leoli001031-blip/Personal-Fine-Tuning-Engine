@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
 import os
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.config import PFEConfig
-from pfe_server.app import build_serve_plan, smoke_test_request
+from pfe_server.app import build_serve_plan, create_app, smoke_test_request
+
+server_app = importlib.import_module("pfe_server.app")
 
 class ServerHttpSmokeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -29,19 +34,979 @@ class ServerHttpSmokeTests(unittest.TestCase):
     def _smoke(self, path: str, **kwargs):
         return asyncio.run(smoke_test_request(self.app, path=path, **kwargs))
 
+    def _server_adapter_store(self) -> AdapterStore:
+        self.app.state.pfe_services.workspace = "user_default"
+        return AdapterStore(home=self.pfe_home, workspace="user_default")
+
+    def _create_pending_adapter(self, store: AdapterStore, base_model: str = "base") -> str:
+        created = store.create_training_version(
+            base_model=base_model,
+            training_config={"backend": "mock_local", "train_type": "sft"},
+        )
+        version = str(created["version"])
+        store.mark_pending_eval(version, num_samples=3, metrics={"loss": 0.1})
+        return version
+
     def test_healthz_returns_ok(self) -> None:
         result = self._smoke("/healthz")
         self.assertEqual(result["status_code"], 200)
         self.assertEqual(result["body"]["status"], "ok")
         self.assertIn("content-type", result["headers"])
 
-    def test_root_serves_chat_frontend(self) -> None:
+    def test_root_serves_studio_frontend(self) -> None:
         result = self._smoke("/")
         self.assertEqual(result["status_code"], 200)
         self.assertIn("text/html", result["headers"].get("content-type", ""))
-        self.assertIn("PFE Local Chat", result["text"])
-        self.assertIn("/v1/chat/completions", result["text"])
-        self.assertIn("/pfe/status", result["text"])
+        self.assertIn("PFE / 本地模型工作台", result["text"])
+        self.assertIn("选择模型，拿到本机 API。", result["text"])
+        self.assertIn("/pfe/runtime", result["text"])
+        self.assertIn("/pfe/models", result["text"])
+
+    def test_studio_frontend_serves_user_facing_control_surface(self) -> None:
+        result = self._smoke("/studio")
+        self.assertEqual(result["status_code"], 200)
+        self.assertIn("text/html", result["headers"].get("content-type", ""))
+        self.assertIn("PFE / 本地模型工作台", result["text"])
+        self.assertIn("选择模型，拿到本机 API。", result["text"])
+        self.assertIn("/pfe/runtime", result["text"])
+        self.assertIn("/pfe/models", result["text"])
+        self.assertIn("/pfe/adapters", result["text"])
+        self.assertIn("/pfe/readiness", result["text"])
+        self.assertIn("/pfe/workspaces", result["text"])
+        self.assertIn("回复来源", result["text"])
+        self.assertIn("复制 API 地址", result["text"])
+        self.assertIn("模型参数", result["text"])
+        self.assertIn("调用示例", result["text"])
+        self.assertIn("复制调用示例", result["text"])
+        self.assertIn("版本生成", result["text"])
+        self.assertIn("检查训练条件", result["text"])
+        self.assertIn("最近任务", result["text"])
+        self.assertIn("停止生成", result["text"])
+        self.assertIn("重新生成", result["text"])
+        self.assertIn("version-evidence", result["text"])
+        self.assertIn("eval_summary", result["text"])
+        self.assertIn("decision", result["text"])
+        self.assertIn("/pfe/eval/status", result["text"])
+        self.assertIn("评估", result["text"])
+        self.assertIn("/pfe/training/jobs", result["text"])
+        self.assertIn("工作区", result["text"])
+        self.assertIn("创建并切换", result["text"])
+        self.assertIn("本地模型路径", result["text"])
+        self.assertIn("保存路径", result["text"])
+        self.assertIn("开启真实本地模型", result["text"])
+        self.assertIn("还没选择本地模型路径", result["text"])
+        self.assertIn("还没开启真实本地模型", result["text"])
+        self.assertIn("缺少本地推理依赖", result["text"])
+        self.assertIn("/pfe/config/real-local", result["text"])
+
+        alias = self._smoke("/pfe/studio")
+        self.assertEqual(alias["status_code"], 200)
+        self.assertIn("PFE / 本地模型工作台", alias["text"])
+
+    def test_studio_runtime_models_and_adapters_surfaces(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "Qwen/Qwen2.5-3B-Instruct"
+        config.save(home=self.pfe_home)
+
+        runtime = self._smoke("/pfe/runtime", headers={"host": "127.0.0.1:9012"})
+        self.assertEqual(runtime["status_code"], 200)
+        self.assertEqual(runtime["body"]["workspace"], str(self.pfe_home))
+        self.assertEqual(runtime["body"]["web_url"], "http://127.0.0.1:9012/")
+        self.assertEqual(runtime["body"]["api_url"], "http://127.0.0.1:9012/v1/chat/completions")
+        self.assertEqual(runtime["body"]["studio_url"], "http://127.0.0.1:9012/studio")
+        self.assertEqual(runtime["body"]["api"]["kind"], "openai_chat_completions")
+        self.assertEqual(runtime["body"]["api"]["method"], "POST")
+        self.assertEqual(runtime["body"]["api"]["chat_completions_url"], "http://127.0.0.1:9012/v1/chat/completions")
+        self.assertEqual(runtime["body"]["api"]["model_parameter"], "local")
+        self.assertIn("local-default", runtime["body"]["api"]["model_aliases"])
+        self.assertEqual(runtime["body"]["api"]["request_body"]["model"], "local")
+        self.assertEqual(runtime["body"]["access_scope"], "仅本机")
+        self.assertIn("privacy_mode", runtime["body"])
+
+        models = self._smoke("/pfe/models")
+        self.assertEqual(models["status_code"], 200)
+        self.assertEqual(models["body"]["selected"], "Qwen/Qwen2.5-3B-Instruct")
+        self.assertEqual(models["body"]["mode"], "configurable")
+        self.assertGreaterEqual(models["body"]["count"], 1)
+        selected = models["body"]["candidates"][0]
+        self.assertEqual(selected["id"], "Qwen/Qwen2.5-3B-Instruct")
+        self.assertIsNone(selected["local_path"])
+        self.assertIsNone(selected["exists"])
+
+        adapters = self._smoke("/pfe/adapters")
+        self.assertEqual(adapters["status_code"], 200)
+        self.assertIn("versions", adapters["body"])
+        self.assertIn("count", adapters["body"])
+        self.assertIn("pending", adapters["body"])
+        self.assertIn("latest_version", adapters["body"])
+
+        workspaces = self._smoke("/pfe/workspaces")
+        self.assertEqual(workspaces["status_code"], 200)
+        self.assertEqual(workspaces["body"]["current"], str(self.pfe_home))
+        self.assertIn("items", workspaces["body"])
+        self.assertIn("create_api", workspaces["body"])
+
+    def test_studio_workspaces_create_and_switch_current_process(self) -> None:
+        previous_workspace = os.environ.get("PFE_WORKSPACE")
+        try:
+            os.environ.pop("PFE_WORKSPACE", None)
+            created = self._smoke(
+                "/pfe/workspaces",
+                method="POST",
+                body={"name": "client-a"},
+            )
+            self.assertEqual(created["status_code"], 200)
+            self.assertTrue(created["body"]["saved"])
+            self.assertTrue(created["body"]["created"])
+            self.assertTrue(created["body"]["switched"])
+            self.assertEqual(created["body"]["previous"], str(self.pfe_home))
+            self.assertEqual(created["body"]["current"], "client-a")
+            self.assertEqual(created["body"]["runtime"]["workspace"], "client-a")
+            self.assertEqual(os.environ.get("PFE_WORKSPACE"), "client-a")
+            self.assertTrue((self.pfe_home / "adapters" / "client-a").is_dir())
+            self.assertTrue((self.pfe_home / "workspaces" / "client-a").is_dir())
+            self.assertEqual(created["body"]["workspaces"]["current"], "client-a")
+            self.assertEqual(created["body"]["readiness"]["runtime"]["service"]["workspace"], "client-a")
+
+            listed = self._smoke("/pfe/workspaces")
+            self.assertEqual(listed["status_code"], 200)
+            self.assertEqual(listed["body"]["current"], "client-a")
+            self.assertIn("client-a", {item["id"] for item in listed["body"]["items"]})
+
+            same = self._smoke(
+                "/pfe/workspaces",
+                method="POST",
+                body={"name": "client-a"},
+            )
+            self.assertEqual(same["status_code"], 200)
+            self.assertFalse(same["body"]["created"])
+            self.assertFalse(same["body"]["changed"])
+
+            invalid = self._smoke(
+                "/pfe/workspaces",
+                method="POST",
+                body={"name": "../bad"},
+            )
+            self.assertEqual(invalid["status_code"], 422)
+            self.assertFalse(invalid["body"]["saved"])
+            self.assertEqual(invalid["body"]["validation"]["issues"][0]["code"], "workspace_invalid_chars")
+        finally:
+            self.app.state.pfe_services.workspace = str(self.pfe_home)
+            if previous_workspace is None:
+                os.environ.pop("PFE_WORKSPACE", None)
+            else:
+                os.environ["PFE_WORKSPACE"] = previous_workspace
+
+    def test_default_app_reads_workspace_from_environment(self) -> None:
+        previous_workspace = os.environ.get("PFE_WORKSPACE")
+        try:
+            os.environ["PFE_WORKSPACE"] = "env-start"
+            app = create_app()
+            runtime = asyncio.run(smoke_test_request(app, "/pfe/runtime"))
+            self.assertEqual(runtime["status_code"], 200)
+            self.assertEqual(runtime["body"]["workspace"], "env-start")
+        finally:
+            if previous_workspace is None:
+                os.environ.pop("PFE_WORKSPACE", None)
+            else:
+                os.environ["PFE_WORKSPACE"] = previous_workspace
+
+    def test_studio_readiness_reports_template_mode_until_real_local_is_enabled(self) -> None:
+        previous_real_local = os.environ.get("PFE_ENABLE_REAL_LOCAL_INFERENCE")
+        try:
+            os.environ.pop("PFE_ENABLE_REAL_LOCAL_INFERENCE", None)
+            config = PFEConfig()
+            config.model.base_model = "Qwen/Qwen2.5-3B-Instruct"
+            config.save(home=self.pfe_home)
+
+            readiness = self._smoke("/pfe/readiness", headers={"host": "127.0.0.1:9012"})
+            self.assertEqual(readiness["status_code"], 200)
+            body = readiness["body"]
+            self.assertEqual(body["summary"]["label"], "需确认")
+            self.assertEqual(body["inference"]["mode"], "template")
+            self.assertEqual(body["inference"]["mode_label"], "模板回复")
+            self.assertFalse(body["inference"]["real_local_enabled"])
+            self.assertFalse(body["model"]["source"]["ok"])
+            self.assertEqual(body["model"]["source"]["state"], "needs_local_path")
+            self.assertEqual(body["runtime"]["service"]["api_url"], "http://127.0.0.1:9012/v1/chat/completions")
+            self.assertIn("runtime_dependencies", body["checks"])
+            self.assertIn(
+                "enable_real_local_inference",
+                {item["id"] for item in body["next_actions"]},
+            )
+        finally:
+            if previous_real_local is None:
+                os.environ.pop("PFE_ENABLE_REAL_LOCAL_INFERENCE", None)
+            else:
+                os.environ["PFE_ENABLE_REAL_LOCAL_INFERENCE"] = previous_real_local
+
+    def test_studio_readiness_recognizes_existing_local_model_source(self) -> None:
+        previous_real_local = os.environ.get("PFE_ENABLE_REAL_LOCAL_INFERENCE")
+        try:
+            os.environ["PFE_ENABLE_REAL_LOCAL_INFERENCE"] = "1"
+            local_model = self.pfe_home / "models" / "tiny-local"
+            local_model.mkdir(parents=True)
+            config = PFEConfig()
+            config.model.base_model = str(local_model)
+            config.save(home=self.pfe_home)
+
+            readiness = self._smoke("/pfe/readiness")
+            self.assertEqual(readiness["status_code"], 200)
+            body = readiness["body"]
+            self.assertTrue(body["inference"]["real_local_enabled"])
+            self.assertEqual(body["model"]["source"]["state"], "ready")
+            self.assertTrue(body["model"]["source"]["ok"])
+            self.assertEqual(body["model"]["source"]["path"], str(local_model))
+            self.assertIn(body["inference"]["mode"], {"real_local", "template"})
+            self.assertIn("runtime", body)
+            self.assertIn("dependencies", body["runtime"])
+        finally:
+            if previous_real_local is None:
+                os.environ.pop("PFE_ENABLE_REAL_LOCAL_INFERENCE", None)
+            else:
+                os.environ["PFE_ENABLE_REAL_LOCAL_INFERENCE"] = previous_real_local
+
+    def test_studio_model_config_update_saves_base_model(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "Qwen/Qwen2.5-3B-Instruct"
+        config.save(home=self.pfe_home)
+
+        preview = self._smoke(
+            "/pfe/config/model",
+            method="PUT",
+            body={"base_model": "Qwen/Qwen3-4B"},
+            query_params={"validate_only": "true"},
+        )
+        self.assertEqual(preview["status_code"], 200)
+        self.assertFalse(preview["body"]["saved"])
+        self.assertTrue(preview["body"]["validate_only"])
+        self.assertTrue(preview["body"]["changed"])
+        self.assertEqual(preview["body"]["effective_scope"], "not_applied")
+        self.assertFalse(preview["body"]["reload_required"])
+        self.assertEqual(preview["body"]["selected"], "Qwen/Qwen3-4B")
+        self.assertEqual(PFEConfig.load(home=self.pfe_home).model.base_model, "Qwen/Qwen2.5-3B-Instruct")
+
+        saved = self._smoke(
+            "/pfe/config/model",
+            method="PUT",
+            body={"base_model": "Qwen/Qwen3-4B"},
+        )
+        self.assertEqual(saved["status_code"], 200)
+        self.assertTrue(saved["body"]["saved"])
+        self.assertTrue(saved["body"]["changed"])
+        self.assertEqual(saved["body"]["effective_scope"], "next_chat_request")
+        self.assertFalse(saved["body"]["reload_required"])
+        self.assertEqual(saved["body"]["applies_to_models"], ["local", "local-default", "base"])
+        self.assertEqual(saved["body"]["previous"], "Qwen/Qwen2.5-3B-Instruct")
+        self.assertEqual(saved["body"]["models"]["selected"], "Qwen/Qwen3-4B")
+        self.assertEqual(PFEConfig.load(home=self.pfe_home).model.base_model, "Qwen/Qwen3-4B")
+
+        readiness = self._smoke("/pfe/readiness")
+        self.assertEqual(readiness["status_code"], 200)
+        self.assertEqual(readiness["body"]["configuration"]["base_model"], "Qwen/Qwen3-4B")
+        self.assertEqual(readiness["body"]["configuration"]["effective_scope"], "next_chat_request")
+        self.assertFalse(readiness["body"]["configuration"]["reload_required"])
+        self.assertEqual(readiness["body"]["configuration"]["applies_to_models"], ["local", "local-default", "base"])
+        self.assertTrue(readiness["body"]["checks"]["model_configuration"]["ok"])
+
+        saved_again = self._smoke(
+            "/pfe/config/model",
+            method="PUT",
+            body={"base_model": "Qwen/Qwen3-4B"},
+        )
+        self.assertEqual(saved_again["status_code"], 200)
+        self.assertFalse(saved_again["body"]["changed"])
+        self.assertFalse(saved_again["body"]["reload_required"])
+
+        local_model = self.pfe_home / "models" / "Qwen3-4B"
+        local_model.mkdir(parents=True)
+        local_saved = self._smoke(
+            "/pfe/config/model",
+            method="PUT",
+            body={"base_model": str(local_model)},
+        )
+        self.assertEqual(local_saved["status_code"], 200)
+        self.assertTrue(local_saved["body"]["changed"])
+        self.assertFalse(local_saved["body"]["reload_required"])
+        self.assertEqual(local_saved["body"]["models"]["selected"], str(local_model))
+
+        local_readiness = self._smoke("/pfe/readiness")
+        self.assertEqual(local_readiness["status_code"], 200)
+        self.assertEqual(local_readiness["body"]["model"]["source"]["state"], "ready")
+        self.assertEqual(local_readiness["body"]["model"]["source"]["path"], str(local_model))
+
+    def test_studio_model_config_update_rejects_missing_local_model_path(self) -> None:
+        result = self._smoke(
+            "/pfe/config/model",
+            method="PUT",
+            body={"base_model": str(self.pfe_home / "missing-model")},
+        )
+        self.assertEqual(result["status_code"], 422)
+        self.assertFalse(result["body"]["saved"])
+        self.assertEqual(result["body"]["validation"]["issues"][0]["code"], "model_path_not_found")
+
+    def test_studio_real_local_toggle_updates_current_process_readiness(self) -> None:
+        previous_real_local = os.environ.get("PFE_ENABLE_REAL_LOCAL_INFERENCE")
+        try:
+            os.environ.pop("PFE_ENABLE_REAL_LOCAL_INFERENCE", None)
+            local_model = self.pfe_home / "models" / "tiny-local"
+            local_model.mkdir(parents=True)
+            config = PFEConfig()
+            config.model.base_model = str(local_model)
+            config.save(home=self.pfe_home)
+
+            before = self._smoke("/pfe/readiness")
+            self.assertEqual(before["status_code"], 200)
+            self.assertFalse(before["body"]["inference"]["real_local_enabled"])
+            self.assertIn("real_local_inference_disabled", before["body"]["summary"]["blockers"])
+
+            enabled = self._smoke(
+                "/pfe/config/real-local",
+                method="PUT",
+                body={"enabled": True},
+            )
+            self.assertEqual(enabled["status_code"], 200)
+            self.assertTrue(enabled["body"]["saved"])
+            self.assertFalse(enabled["body"]["previous"])
+            self.assertTrue(enabled["body"]["enabled"])
+            self.assertTrue(enabled["body"]["changed"])
+            self.assertFalse(enabled["body"]["persisted"])
+            self.assertEqual(enabled["body"]["effective_scope"], "current_process_next_request")
+            self.assertFalse(enabled["body"]["reload_required"])
+            self.assertTrue(enabled["body"]["readiness"]["inference"]["real_local_enabled"])
+            self.assertNotIn("real_local_inference_disabled", enabled["body"]["readiness"]["summary"]["blockers"])
+            self.assertTrue(enabled["body"]["readiness"]["checks"]["real_local_flag"]["ok"])
+
+            chat = self._smoke(
+                "/v1/chat/completions",
+                method="POST",
+                body={
+                    "model": "local",
+                    "messages": [{"role": "user", "content": "hello"}],
+                },
+            )
+            self.assertEqual(chat["status_code"], 200)
+            self.assertTrue(chat["body"]["metadata"]["inference"]["real_local_enabled"])
+            self.assertEqual(chat["body"]["metadata"]["inference"]["resolved_base_model"], str(local_model))
+
+            disabled = self._smoke(
+                "/pfe/config/real-local",
+                method="PUT",
+                body={"enabled": False},
+            )
+            self.assertEqual(disabled["status_code"], 200)
+            self.assertFalse(disabled["body"]["enabled"])
+            self.assertFalse(disabled["body"]["readiness"]["inference"]["real_local_enabled"])
+        finally:
+            if previous_real_local is None:
+                os.environ.pop("PFE_ENABLE_REAL_LOCAL_INFERENCE", None)
+            else:
+                os.environ["PFE_ENABLE_REAL_LOCAL_INFERENCE"] = previous_real_local
+
+    def test_studio_adapter_promote_requires_confirmation_and_uses_requested_version(self) -> None:
+        store = self._server_adapter_store()
+        version = self._create_pending_adapter(store)
+
+        missing_confirmation = self._smoke(
+            f"/pfe/adapters/{version}/promote",
+            method="POST",
+        )
+        self.assertEqual(missing_confirmation["status_code"], 409)
+        self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
+        self.assertIsNone(store.current_latest_version())
+
+        promoted = self._smoke(
+            f"/pfe/adapters/{version}/promote",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(promoted["status_code"], 200)
+        self.assertTrue(promoted["body"]["success"])
+        self.assertEqual(promoted["body"]["action"], "promote")
+        self.assertEqual(promoted["body"]["version"], version)
+        self.assertEqual(promoted["body"]["current_version"], version)
+        self.assertEqual(store.current_latest_version(), version)
+        self.assertEqual(promoted["body"]["adapters"]["current"]["version"], version)
+
+    def test_studio_adapter_rollback_restores_archived_previous_version(self) -> None:
+        store = self._server_adapter_store()
+        first = self._create_pending_adapter(store, base_model="base-a")
+        store.promote(first)
+        second = self._create_pending_adapter(store, base_model="base-b")
+        store.promote(second)
+        self.assertEqual(store.current_latest_version(), second)
+        self.assertEqual(
+            next(row for row in store.list_version_records(limit=10) if row["version"] == first)["state"],
+            "archived",
+        )
+
+        rolled_back = self._smoke(
+            f"/pfe/adapters/{first}/rollback",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(rolled_back["status_code"], 200)
+        self.assertTrue(rolled_back["body"]["success"])
+        self.assertEqual(rolled_back["body"]["action"], "rollback")
+        self.assertEqual(rolled_back["body"]["previous_version"], second)
+        self.assertEqual(rolled_back["body"]["current_version"], first)
+        self.assertEqual(store.current_latest_version(), first)
+
+    def test_studio_adapter_archive_requires_confirmation_and_blocks_current(self) -> None:
+        store = self._server_adapter_store()
+        current = self._create_pending_adapter(store, base_model="base-a")
+        store.promote(current)
+        candidate = self._create_pending_adapter(store, base_model="base-b")
+
+        missing_confirmation = self._smoke(
+            f"/pfe/adapters/{candidate}/archive",
+            method="POST",
+        )
+        self.assertEqual(missing_confirmation["status_code"], 409)
+        self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
+
+        archived = self._smoke(
+            f"/pfe/adapters/{candidate}/archive",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(archived["status_code"], 200)
+        self.assertTrue(archived["body"]["success"])
+        self.assertEqual(archived["body"]["action"], "archive")
+        self.assertEqual(
+            next(row for row in store.list_version_records(limit=10) if row["version"] == candidate)["state"],
+            "archived",
+        )
+
+        blocked = self._smoke(
+            f"/pfe/adapters/{current}/archive",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(blocked["status_code"], 409)
+        self.assertEqual(blocked["body"]["code"], "adapter_action_failed")
+
+    def test_studio_adapters_include_user_readable_evaluation_evidence(self) -> None:
+        store = self._server_adapter_store()
+        version = self._create_pending_adapter(
+            store,
+            base_model="base-eval",
+        )
+        store.attach_eval_report(
+            version,
+            {
+                "recommendation": "deploy",
+                "comparison": "improved",
+                "scores": {
+                    "style_match": 0.91,
+                    "preference_alignment": 0.88,
+                    "quality_preservation": 0.94,
+                },
+                "summary": "candidate improved personalization without quality loss",
+            },
+        )
+
+        result = self._smoke("/pfe/adapters")
+        self.assertEqual(result["status_code"], 200)
+        item = next(row for row in result["body"]["versions"] if row["version"] == version)
+        self.assertEqual(item["user_state"], "待确认")
+        self.assertEqual(item["training_summary"]["num_samples"], 3)
+        self.assertIn("训练样本 3", item["training_summary"]["summary_line"])
+        self.assertEqual(item["eval_summary"]["label"], "评估通过")
+        self.assertEqual(item["eval_summary"]["recommendation"], "deploy")
+        self.assertEqual(item["eval_summary"]["comparison"], "improved")
+        self.assertEqual(item["eval_summary"]["scores"]["style_match"], 0.91)
+        self.assertIn("评估结论：评估通过", item["eval_summary"]["summary_line"])
+        self.assertEqual(item["decision"]["label"], "建议设为当前")
+        self.assertEqual(item["decision"]["primary_action"], "promote")
+        self.assertTrue(item["can_eval"])
+        self.assertEqual(item["action_api"]["eval"], "/pfe/eval")
+
+        failed = self._create_pending_adapter(store, base_model="base-failed")
+        store.attach_eval_report(
+            failed,
+            {
+                "recommendation": "keep_previous",
+                "comparison": "degraded",
+                "scores": {"quality_preservation": 0.42},
+            },
+        )
+        result = self._smoke("/pfe/adapters")
+        failed_item = next(row for row in result["body"]["versions"] if row["version"] == failed)
+        self.assertEqual(failed_item["user_state"], "有问题")
+        self.assertEqual(failed_item["eval_summary"]["label"], "有问题")
+        self.assertEqual(failed_item["decision"]["label"], "建议保留旧版")
+        self.assertEqual(failed_item["decision"]["primary_action"], "archive")
+        self.assertTrue(failed_item["can_eval"])
+
+    def test_studio_eval_requires_confirmation_and_updates_version_evidence(self) -> None:
+        store = self._server_adapter_store()
+        version = self._create_pending_adapter(store, base_model="base-eval-run")
+
+        missing_confirmation = self._smoke(
+            "/pfe/eval",
+            method="POST",
+            body={"version": version},
+        )
+        self.assertEqual(missing_confirmation["status_code"], 409)
+        self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
+        self.assertEqual(missing_confirmation["body"]["status_url"], "/pfe/eval/status")
+
+        pipeline = self.app.state.pfe_services.pipeline
+        original_evaluate = getattr(pipeline, "evaluate", None)
+
+        def fake_evaluate(**kwargs):
+            self.assertEqual(kwargs["adapter"], version)
+            report = {
+                "recommendation": "deploy",
+                "comparison": "improved",
+                "scores": {"style_match": 0.93, "preference_alignment": 0.87},
+            }
+            store.attach_eval_report(version, report)
+            return "EVAL COMPLETE"
+
+        pipeline.evaluate = fake_evaluate
+        try:
+            started = self._smoke(
+                "/pfe/eval",
+                method="POST",
+                body={"version": version, "confirm": True, "num_samples": 3},
+            )
+            self.assertEqual(started["status_code"], 202)
+            self.assertEqual(started["body"]["state"], "running")
+            self.assertEqual(started["body"]["version"], version)
+            self.assertEqual(started["body"]["status_url"], "/pfe/eval/status")
+            running_item = next(row for row in started["body"]["adapters"]["versions"] if row["version"] == version)
+            self.assertTrue(running_item["eval_running"])
+            self.assertFalse(running_item["can_eval"])
+            self.assertEqual(running_item["eval_summary"]["label"], "评估中")
+
+            status = {}
+            for _ in range(20):
+                result = self._smoke("/pfe/eval/status")
+                self.assertEqual(result["status_code"], 200)
+                status = result["body"]
+                if status.get("state") == "completed":
+                    break
+                time.sleep(0.05)
+            self.assertEqual(status["state"], "completed")
+            self.assertEqual(status["version"], version)
+            self.assertEqual(status["recommendation"], "deploy")
+            completed_item = next(row for row in status["adapters"]["versions"] if row["version"] == version)
+            self.assertEqual(completed_item["eval_summary"]["label"], "评估通过")
+            self.assertEqual(completed_item["decision"]["label"], "建议设为当前")
+            self.assertTrue(completed_item["can_eval"])
+        finally:
+            if original_evaluate is not None:
+                pipeline.evaluate = original_evaluate
+
+    def test_studio_eval_blocks_when_persisted_running_state_exists(self) -> None:
+        store = self._server_adapter_store()
+        version = self._create_pending_adapter(store, base_model="base-eval-running")
+        workspace = self.app.state.pfe_services.workspace
+        server_app._eval_overall_state.pop(workspace, None)
+        server_app._save_json_state(
+            server_app._eval_state_path(workspace),
+            server_app.build_eval_running_state(
+                version=version,
+                requested_version=version,
+                job_id="eval-running-from-disk",
+            ),
+        )
+
+        result = self._smoke(
+            "/pfe/eval",
+            method="POST",
+            body={"version": version, "confirm": True},
+        )
+
+        self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["code"], "eval_already_running")
+
+    def test_training_jobs_require_confirmation_and_return_preflight_without_side_effects(self) -> None:
+        local_model = self.pfe_home / "models" / "tiny-local"
+        local_model.mkdir(parents=True)
+        config = PFEConfig()
+        config.model.base_model = str(local_model)
+        config.save(home=self.pfe_home)
+        existing_jobs = dict(server_app._training_jobs_state)
+
+        before = self._smoke("/pfe/training/jobs")
+        self.assertEqual(before["status_code"], 200)
+        self.assertEqual(before["body"]["workspace"], str(self.pfe_home))
+        self.assertEqual(before["body"]["items"], [])
+        self.assertIsNone(before["body"]["latest"])
+        self.assertIsNone(before["body"]["active"])
+
+        result = self._smoke(
+            "/pfe/training/jobs",
+            method="POST",
+            body={"method": "sft", "epochs": 1, "confirm": False},
+        )
+
+        self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["code"], "confirmation_required")
+        self.assertNotIn("job_id", result["body"])
+        self.assertEqual(server_app._training_jobs_state, existing_jobs)
+        self.assertFalse((self.pfe_home / "training_jobs.json").exists())
+        preflight = result["body"]["preflight"]
+        self.assertTrue(preflight["ready"])
+        self.assertTrue(preflight["requires_confirmation"])
+        self.assertEqual(preflight["confirm_api"], "POST /pfe/training/jobs")
+        self.assertEqual(preflight["method"], "sft")
+        self.assertEqual(preflight["base_model"], str(local_model))
+        self.assertEqual(preflight["blocked_by"], [])
+        self.assertEqual(preflight["preview"]["training_config"], {"epochs": 1})
+        self.assertFalse(preflight["preview"]["will_create_job"])
+        self.assertFalse(preflight["preview"]["will_start_background_training"])
+
+        after = self._smoke("/pfe/training/jobs")
+        self.assertEqual(after["status_code"], 200)
+        self.assertEqual(after["body"]["items"], [])
+        self.assertIsNone(after["body"]["latest"])
+
+    def test_training_jobs_confirmed_request_is_observable_by_job_list(self) -> None:
+        local_model = self.pfe_home / "models" / "tiny-local"
+        local_model.mkdir(parents=True)
+        config = PFEConfig()
+        config.model.base_model = str(local_model)
+        config.save(home=self.pfe_home)
+        pipeline = self.app.state.pfe_services.pipeline
+        original_train = getattr(pipeline, "train", None)
+        pipeline.train = lambda: "TRAINING COMPLETE 20260615-999"
+        try:
+            started = self._smoke(
+                "/pfe/training/jobs",
+                method="POST",
+                body={"method": "sft", "epochs": 1, "confirm": True},
+            )
+            self.assertEqual(started["status_code"], 202)
+            job_id = started["body"]["job_id"]
+            self.assertEqual(started["body"]["job"]["job_id"], job_id)
+            self.assertEqual(started["body"]["job"]["workspace"], str(self.pfe_home))
+            self.assertEqual(started["body"]["job"]["events"][0]["type"], "queued")
+            self.assertEqual(started["body"]["job"]["events_url"], f"/pfe/training/jobs/{job_id}/events")
+            self.assertEqual(started["body"]["jobs"]["latest"]["job_id"], job_id)
+            self.assertEqual(started["body"]["status_url"], f"/pfe/training/jobs/{job_id}")
+
+            job = {}
+            for _ in range(20):
+                job_result = self._smoke(f"/pfe/training/jobs/{job_id}")
+                self.assertEqual(job_result["status_code"], 200)
+                job = job_result["body"]
+                if job.get("status") == "completed":
+                    break
+                time.sleep(0.05)
+            self.assertEqual(job["status"], "completed")
+            self.assertEqual(job["adapter_version"], "20260615-999")
+            self.assertEqual(job["status_url"], f"/pfe/training/jobs/{job_id}")
+            self.assertEqual(job["events_url"], f"/pfe/training/jobs/{job_id}/events")
+            self.assertGreaterEqual(job["event_count"], 3)
+            self.assertEqual(job["latest_event"]["type"], "completed")
+
+            events = self._smoke(f"/pfe/training/jobs/{job_id}/events")
+            self.assertEqual(events["status_code"], 200)
+            self.assertEqual(events["body"]["job_id"], job_id)
+            self.assertEqual(events["body"]["latest"]["type"], "completed")
+            self.assertEqual(events["body"]["job"]["latest_event"]["type"], "completed")
+            self.assertIn(
+                "started",
+                {item["type"] for item in events["body"]["items"]},
+            )
+
+            jobs = self._smoke("/pfe/training/jobs")
+            self.assertEqual(jobs["status_code"], 200)
+            self.assertEqual(jobs["body"]["latest"]["job_id"], job_id)
+            self.assertEqual(jobs["body"]["latest"]["status"], "completed")
+            self.assertEqual(jobs["body"]["latest"]["latest_event"]["type"], "completed")
+            self.assertEqual(jobs["body"]["state"]["job_id"], job_id)
+            self.assertEqual(jobs["body"]["state"]["adapter_version"], "20260615-999")
+        finally:
+            if original_train is not None:
+                pipeline.train = original_train
+
+    def test_training_jobs_confirmed_request_blocks_when_preflight_fails(self) -> None:
+        config = PFEConfig()
+        config.model.base_model = "Qwen/Qwen2.5-3B-Instruct"
+        config.save(home=self.pfe_home)
+
+        result = self._smoke(
+            "/pfe/training/jobs",
+            method="POST",
+            body={"method": "sft", "confirm": True},
+        )
+
+        self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["code"], "training_preflight_failed")
+        self.assertIn("needs_local_path", result["body"]["preflight"]["blocked_by"])
+
+    def test_training_jobs_confirmed_request_blocks_when_active_job_exists(self) -> None:
+        local_model = self.pfe_home / "models" / "tiny-local"
+        local_model.mkdir(parents=True)
+        config = PFEConfig()
+        config.model.base_model = str(local_model)
+        config.save(home=self.pfe_home)
+        job_id = "job-active-start-block"
+        now = "2026-06-15T00:00:00Z"
+        job = {
+            "job_id": job_id,
+            "workspace": str(self.pfe_home),
+            "status": "running",
+            "method": "sft",
+            "adapter_version": None,
+            "checkpoints": [],
+            "events": [],
+            "training_config": {"epochs": 1},
+            "created_at": now,
+            "updated_at": now,
+        }
+        server_app._append_training_job_event(
+            job,
+            event_type="started",
+            status="running",
+            message="training job started",
+        )
+        server_app._training_jobs_state[job_id] = job
+        server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: job})
+
+        result = self._smoke(
+            "/pfe/training/jobs",
+            method="POST",
+            body={"method": "sft", "epochs": 1, "confirm": True},
+        )
+
+        self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["code"], "training_job_already_active")
+        self.assertEqual(result["body"]["active_job"]["job_id"], job_id)
+        self.assertEqual(result["body"]["jobs"]["active"]["job_id"], job_id)
+
+    def test_training_job_cancel_requires_confirmation_and_cancels_queued_job(self) -> None:
+        job_id = "job-queued-cancel"
+        now = "2026-06-15T00:00:00Z"
+        job = {
+            "job_id": job_id,
+            "workspace": str(self.pfe_home),
+            "status": "queued",
+            "method": "sft",
+            "adapter_version": None,
+            "checkpoints": [],
+            "events": [],
+            "training_config": {"epochs": 1},
+            "created_at": now,
+            "updated_at": now,
+        }
+        server_app._append_training_job_event(
+            job,
+            event_type="queued",
+            status="queued",
+            message="training job queued",
+        )
+        server_app._training_jobs_state[job_id] = job
+        server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: job})
+
+        missing_confirmation = self._smoke(f"/pfe/training/jobs/{job_id}/cancel", method="POST")
+        self.assertEqual(missing_confirmation["status_code"], 409)
+        self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
+
+        cancelled = self._smoke(
+            f"/pfe/training/jobs/{job_id}/cancel",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(cancelled["status_code"], 200)
+        self.assertTrue(cancelled["body"]["success"])
+        self.assertEqual(cancelled["body"]["action"], "cancelled")
+        self.assertEqual(cancelled["body"]["job"]["status"], "cancelled")
+        self.assertEqual(cancelled["body"]["job"]["latest_event"]["type"], "cancelled")
+
+        events = self._smoke(f"/pfe/training/jobs/{job_id}/events")
+        self.assertEqual(events["status_code"], 200)
+        self.assertEqual(events["body"]["latest"]["type"], "cancelled")
+
+    def test_training_job_cancel_records_request_for_running_job_without_claiming_interrupt(self) -> None:
+        job_id = "job-running-cancel"
+        now = "2026-06-15T00:00:00Z"
+        job = {
+            "job_id": job_id,
+            "workspace": str(self.pfe_home),
+            "status": "running",
+            "method": "sft",
+            "adapter_version": None,
+            "checkpoints": [],
+            "events": [],
+            "training_config": {"epochs": 1},
+            "created_at": now,
+            "updated_at": now,
+        }
+        server_app._append_training_job_event(
+            job,
+            event_type="started",
+            status="running",
+            message="training job started",
+        )
+        server_app._training_jobs_state[job_id] = job
+        server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: job})
+
+        cancelled = self._smoke(
+            f"/pfe/training/jobs/{job_id}/cancel",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(cancelled["status_code"], 200)
+        self.assertEqual(cancelled["body"]["action"], "cancel_requested")
+        self.assertEqual(cancelled["body"]["job"]["status"], "running")
+        self.assertTrue(cancelled["body"]["job"]["cancellation_requested"])
+        self.assertEqual(cancelled["body"]["job"]["latest_event"]["type"], "cancel_requested")
+        self.assertIn("无法被强行中断", cancelled["body"]["message"])
+        self.assertTrue(job["cancellation_requested"])
+        self.assertEqual(job["events"][-1]["type"], "cancel_requested")
+
+    def test_training_job_cancel_blocks_terminal_job(self) -> None:
+        job_id = "job-completed-cancel"
+        now = "2026-06-15T00:00:00Z"
+        job = {
+            "job_id": job_id,
+            "workspace": str(self.pfe_home),
+            "status": "completed",
+            "method": "sft",
+            "adapter_version": "20260615-001",
+            "checkpoints": [],
+            "events": [],
+            "training_config": {"epochs": 1},
+            "created_at": now,
+            "updated_at": now,
+        }
+        server_app._append_training_job_event(
+            job,
+            event_type="completed",
+            status="completed",
+            message="training job completed",
+        )
+        server_app._training_jobs_state[job_id] = job
+        server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: job})
+
+        result = self._smoke(
+            f"/pfe/training/jobs/{job_id}/cancel",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["code"], "job_not_cancellable")
+
+    def test_training_job_retry_requires_confirmation_and_reuses_original_config(self) -> None:
+        local_model = self.pfe_home / "models" / "tiny-local"
+        local_model.mkdir(parents=True)
+        config = PFEConfig()
+        config.model.base_model = str(local_model)
+        config.save(home=self.pfe_home)
+
+        job_id = "job-failed-retry"
+        now = "2026-06-15T00:00:00Z"
+        original_job = {
+            "job_id": job_id,
+            "workspace": str(self.pfe_home),
+            "status": "failed",
+            "method": "sft",
+            "adapter_version": None,
+            "checkpoints": [],
+            "events": [],
+            "training_config": {"epochs": 2, "learning_rate": 0.001},
+            "created_at": now,
+            "updated_at": now,
+            "error": "trainer failed",
+        }
+        server_app._append_training_job_event(
+            original_job,
+            event_type="failed",
+            status="failed",
+            message="training job failed",
+        )
+        server_app._training_jobs_state[job_id] = original_job
+        server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: original_job})
+
+        missing_confirmation = self._smoke(f"/pfe/training/jobs/{job_id}/retry", method="POST")
+        self.assertEqual(missing_confirmation["status_code"], 409)
+        self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
+        self.assertEqual(missing_confirmation["body"]["retry_of"], job_id)
+        self.assertEqual(
+            missing_confirmation["body"]["confirm_api"],
+            f"POST /pfe/training/jobs/{job_id}/retry",
+        )
+        self.assertEqual(missing_confirmation["body"]["preflight"]["base_model"], str(local_model))
+        self.assertEqual(
+            missing_confirmation["body"]["preflight"]["preview"]["training_config"],
+            {"epochs": 2, "learning_rate": 0.001},
+        )
+
+        pipeline = self.app.state.pfe_services.pipeline
+        original_train = getattr(pipeline, "train", None)
+        pipeline.train = lambda: "TRAINING COMPLETE 20260615-998"
+        try:
+            retried = self._smoke(
+                f"/pfe/training/jobs/{job_id}/retry",
+                method="POST",
+                body={"confirm": True},
+            )
+            self.assertEqual(retried["status_code"], 202)
+            self.assertEqual(retried["body"]["action"], "retry_started")
+            self.assertEqual(retried["body"]["retry_of"], job_id)
+            new_job_id = retried["body"]["job_id"]
+            self.assertNotEqual(new_job_id, job_id)
+            new_job = retried["body"]["job"]
+            self.assertEqual(new_job["retry_of"], job_id)
+            self.assertEqual(new_job["training_config"], {"epochs": 2, "learning_rate": 0.001})
+            self.assertEqual(new_job["retry_url"], f"/pfe/training/jobs/{new_job_id}/retry")
+
+            completed = {}
+            for _ in range(20):
+                job_result = self._smoke(f"/pfe/training/jobs/{new_job_id}")
+                self.assertEqual(job_result["status_code"], 200)
+                completed = job_result["body"]
+                if completed.get("status") == "completed":
+                    break
+                time.sleep(0.05)
+            self.assertEqual(completed["status"], "completed")
+            self.assertEqual(completed["retry_of"], job_id)
+            self.assertEqual(completed["adapter_version"], "20260615-998")
+
+            original_events = self._smoke(f"/pfe/training/jobs/{job_id}/events")
+            self.assertEqual(original_events["status_code"], 200)
+            self.assertIn("retry_requested", {item["type"] for item in original_events["body"]["items"]})
+        finally:
+            if original_train is not None:
+                pipeline.train = original_train
+
+    def test_training_job_retry_blocks_non_terminal_job(self) -> None:
+        job_id = "job-running-retry"
+        now = "2026-06-15T00:00:00Z"
+        job = {
+            "job_id": job_id,
+            "workspace": str(self.pfe_home),
+            "status": "running",
+            "method": "sft",
+            "adapter_version": None,
+            "checkpoints": [],
+            "events": [],
+            "training_config": {"epochs": 1},
+            "created_at": now,
+            "updated_at": now,
+        }
+        server_app._append_training_job_event(
+            job,
+            event_type="started",
+            status="running",
+            message="training job started",
+        )
+        server_app._training_jobs_state[job_id] = job
+        server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: job})
+
+        result = self._smoke(
+            f"/pfe/training/jobs/{job_id}/retry",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["code"], "job_not_retryable")
 
     def test_status_returns_runtime_snapshot(self) -> None:
         result = self._smoke("/pfe/status", query_params={"detail": "full"})
@@ -549,6 +1514,181 @@ class ServerHttpSmokeTests(unittest.TestCase):
         finally:
             self.app.state.pfe_services.security.allow_remote_access = previous_allow_remote_access
             self.app.state.pfe_services.security.auth_mode = previous_auth_mode
+            if previous_api_key is None:
+                os.environ.pop("PFE_API_KEY", None)
+            else:
+                os.environ["PFE_API_KEY"] = previous_api_key
+
+    def test_studio_management_surfaces_require_api_key_for_remote_clients_when_enabled(self) -> None:
+        previous_allow_remote_access = self.app.state.pfe_services.security.allow_remote_access
+        previous_auth_mode = self.app.state.pfe_services.security.auth_mode
+        previous_api_key = os.environ.get("PFE_API_KEY")
+        try:
+            self.app.state.pfe_services.security.allow_remote_access = True
+            self.app.state.pfe_services.security.auth_mode = "local_optional"
+            os.environ.pop("PFE_API_KEY", None)
+
+            for path in ("/pfe/runtime", "/pfe/workspaces", "/pfe/models", "/pfe/adapters", "/pfe/readiness", "/pfe/training/jobs", "/pfe/eval/status"):
+                remote_without_key = self._smoke(path, client_host="10.0.0.8")
+                self.assertEqual(remote_without_key["status_code"], 503)
+                self.assertEqual(remote_without_key["body"]["code"], "api_key_not_configured")
+            remote_events_without_key = self._smoke(
+                "/pfe/training/jobs/demo/events",
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_events_without_key["status_code"], 503)
+            self.assertEqual(remote_events_without_key["body"]["code"], "api_key_not_configured")
+            remote_cancel_without_key = self._smoke(
+                "/pfe/training/jobs/demo/cancel",
+                method="POST",
+                body={"confirm": True},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_cancel_without_key["status_code"], 503)
+            self.assertEqual(remote_cancel_without_key["body"]["code"], "api_key_not_configured")
+            remote_retry_without_key = self._smoke(
+                "/pfe/training/jobs/demo/retry",
+                method="POST",
+                body={"confirm": True},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_retry_without_key["status_code"], 503)
+            self.assertEqual(remote_retry_without_key["body"]["code"], "api_key_not_configured")
+            for path in (
+                "/pfe/adapters/demo/promote",
+                "/pfe/adapters/demo/rollback",
+                "/pfe/adapters/demo/archive",
+            ):
+                remote_action_without_key = self._smoke(
+                    path,
+                    method="POST",
+                    body={"confirm": True},
+                    client_host="10.0.0.8",
+                )
+                self.assertEqual(remote_action_without_key["status_code"], 503)
+                self.assertEqual(remote_action_without_key["body"]["code"], "api_key_not_configured")
+            remote_put_without_key = self._smoke(
+                "/pfe/config/model",
+                method="PUT",
+                body={"base_model": "Qwen/Qwen3-4B"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_put_without_key["status_code"], 503)
+            self.assertEqual(remote_put_without_key["body"]["code"], "api_key_not_configured")
+            remote_real_local_without_key = self._smoke(
+                "/pfe/config/real-local",
+                method="PUT",
+                body={"enabled": True},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_real_local_without_key["status_code"], 503)
+            self.assertEqual(remote_real_local_without_key["body"]["code"], "api_key_not_configured")
+            remote_workspace_without_key = self._smoke(
+                "/pfe/workspaces",
+                method="POST",
+                body={"name": "remote-client"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_workspace_without_key["status_code"], 503)
+            self.assertEqual(remote_workspace_without_key["body"]["code"], "api_key_not_configured")
+            remote_training_without_key = self._smoke(
+                "/pfe/training/jobs",
+                method="POST",
+                body={"method": "sft"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_training_without_key["status_code"], 503)
+            self.assertEqual(remote_training_without_key["body"]["code"], "api_key_not_configured")
+            remote_eval_without_key = self._smoke(
+                "/pfe/eval",
+                method="POST",
+                body={"version": "demo", "confirm": True},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_eval_without_key["status_code"], 503)
+            self.assertEqual(remote_eval_without_key["body"]["code"], "api_key_not_configured")
+
+            os.environ["PFE_API_KEY"] = "secret-remote-key"
+
+            for path in ("/pfe/runtime", "/pfe/workspaces", "/pfe/models", "/pfe/adapters", "/pfe/readiness", "/pfe/training/jobs", "/pfe/eval/status"):
+                remote_with_header = self._smoke(
+                    path,
+                    headers={"Authorization": "Bearer secret-remote-key"},
+                    client_host="10.0.0.8",
+                )
+                self.assertEqual(remote_with_header["status_code"], 200)
+            remote_events_with_header = self._smoke(
+                "/pfe/training/jobs/demo/events",
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_events_with_header["status_code"], 404)
+            self.assertEqual(remote_events_with_header["body"]["code"], "not_found")
+            remote_cancel_with_header = self._smoke(
+                "/pfe/training/jobs/demo/cancel",
+                method="POST",
+                body={"confirm": True},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_cancel_with_header["status_code"], 404)
+            self.assertEqual(remote_cancel_with_header["body"]["code"], "not_found")
+            remote_retry_with_header = self._smoke(
+                "/pfe/training/jobs/demo/retry",
+                method="POST",
+                body={"confirm": True},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_retry_with_header["status_code"], 404)
+            self.assertEqual(remote_retry_with_header["body"]["code"], "not_found")
+            remote_put_with_header = self._smoke(
+                "/pfe/config/model",
+                method="PUT",
+                body={"base_model": "Qwen/Qwen3-4B"},
+                query_params={"validate_only": "true"},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_put_with_header["status_code"], 200)
+            remote_real_local_with_header = self._smoke(
+                "/pfe/config/real-local",
+                method="PUT",
+                body={"enabled": False},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_real_local_with_header["status_code"], 200)
+            remote_workspace_with_header = self._smoke(
+                "/pfe/workspaces",
+                method="POST",
+                body={"name": "remote-client"},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_workspace_with_header["status_code"], 200)
+            remote_training_with_header = self._smoke(
+                "/pfe/training/jobs",
+                method="POST",
+                body={"method": "sft"},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_training_with_header["status_code"], 409)
+            self.assertEqual(remote_training_with_header["body"]["code"], "confirmation_required")
+            remote_eval_with_header = self._smoke(
+                "/pfe/eval",
+                method="POST",
+                body={"version": "demo", "confirm": True},
+                headers={"Authorization": "Bearer secret-remote-key"},
+                client_host="10.0.0.8",
+            )
+            self.assertEqual(remote_eval_with_header["status_code"], 404)
+            self.assertEqual(remote_eval_with_header["body"]["code"], "not_found")
+        finally:
+            self.app.state.pfe_services.security.allow_remote_access = previous_allow_remote_access
+            self.app.state.pfe_services.security.auth_mode = previous_auth_mode
+            self.app.state.pfe_services.workspace = str(self.pfe_home)
             if previous_api_key is None:
                 os.environ.pop("PFE_API_KEY", None)
             else:
