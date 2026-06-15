@@ -265,7 +265,7 @@ def _run_iteration(base_url: str, *, args: argparse.Namespace, stats: SoakStats,
     status = _json_probe(base_url, "/pfe/status?detail=full", args=args, stats=stats)
     _validate_status(status, expected_version=expected_version)
     _text_probe(base_url, "/dashboard", args=args, stats=stats, expected="PFE Observability Dashboard")
-    _text_probe(base_url, "/", args=args, stats=stats, expected="PFE Local Chat")
+    _text_probe(base_url, "/chat", args=args, stats=stats, expected="PFE Local Chat")
     for path in (
         "/pfe/dashboard/metrics",
         "/pfe/dashboard/training",
