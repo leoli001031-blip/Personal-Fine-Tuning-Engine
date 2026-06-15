@@ -4,6 +4,7 @@ import argparse
 from typing import Optional
 
 from pfe_server.app import serve
+from pfe_server.studio_launcher import schedule_open_studio
 
 
 def main(argv: Optional[list[str]] = None) -> int:
@@ -16,9 +17,15 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--allow-remote-access", action="store_true", help="Allow remote clients to access management endpoints")
     parser.add_argument("--cors-origins", type=str, default=None, help="Comma-separated list of allowed CORS origins (e.g. 'http://localhost:3000,http://localhost:5173')")
     parser.add_argument("--dry-run", action="store_true", help="Dry run mode")
+    parser.add_argument("--open", dest="open_browser", action="store_true", default=True, help="Open PFE Studio in the browser when the server is ready")
+    parser.add_argument("--no-open", dest="open_browser", action="store_false", help="Keep the browser closed")
     args = parser.parse_args(argv)
 
     cors_origins = [o.strip() for o in args.cors_origins.split(",")] if args.cors_origins else None
+
+    if args.open_browser and not args.dry_run:
+        url, _ = schedule_open_studio(args.host, args.port)
+        print(f"Opening PFE Studio at {url} when the server is ready...", flush=True)
 
     result = serve(
         port=args.port,
