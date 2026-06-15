@@ -731,11 +731,17 @@ class ServerHttpSmokeTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["kind"], "pfe_training_preflight_required")
         self.assertEqual(result["body"]["code"], "confirmation_required")
+        self.assertEqual(result["body"]["request"]["method"], "sft")
+        self.assertEqual(result["body"]["request"]["training_config"], {"epochs": 1})
+        self.assertFalse(result["body"]["request"]["confirmed"])
         self.assertNotIn("job_id", result["body"])
         self.assertEqual(server_app._training_jobs_state, existing_jobs)
         self.assertFalse((self.pfe_home / "training_jobs.json").exists())
         preflight = result["body"]["preflight"]
+        self.assertEqual(preflight["kind"], "pfe_training_preflight")
+        self.assertEqual(preflight["request"]["method"], "sft")
         self.assertTrue(preflight["ready"])
         self.assertTrue(preflight["requires_confirmation"])
         self.assertEqual(preflight["confirm_api"], "POST /pfe/training/jobs")
@@ -750,6 +756,28 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(after["status_code"], 200)
         self.assertEqual(after["body"]["items"], [])
         self.assertIsNone(after["body"]["latest"])
+
+    def test_training_jobs_reject_unsupported_method_without_sft_fallback(self) -> None:
+        local_model = self.pfe_home / "models" / "tiny-local"
+        local_model.mkdir(parents=True)
+        config = PFEConfig()
+        config.model.base_model = str(local_model)
+        config.save(home=self.pfe_home)
+
+        result = self._smoke(
+            "/pfe/training/jobs",
+            method="POST",
+            body={"method": "bogus", "epochs": 1, "confirm": True},
+        )
+
+        self.assertEqual(result["status_code"], 400)
+        self.assertEqual(result["body"]["kind"], "pfe_training_request_error")
+        self.assertEqual(result["body"]["code"], "unsupported_training_method")
+        self.assertEqual(result["body"]["request"]["method"], "bogus")
+        self.assertEqual(result["body"]["request"]["training_config"], {"epochs": 1})
+        self.assertTrue(result["body"]["request"]["confirmed"])
+        self.assertEqual(result["body"]["supported_methods"], ["sft", "dpo"])
+        self.assertFalse((self.pfe_home / "training_jobs.json").exists())
 
     def test_training_jobs_confirmed_request_is_observable_by_job_list(self) -> None:
         local_model = self.pfe_home / "models" / "tiny-local"
@@ -767,7 +795,11 @@ class ServerHttpSmokeTests(unittest.TestCase):
                 body={"method": "sft", "epochs": 1, "confirm": True},
             )
             self.assertEqual(started["status_code"], 202)
+            self.assertEqual(started["body"]["kind"], "pfe_training_job_started")
             job_id = started["body"]["job_id"]
+            self.assertEqual(started["body"]["request"]["method"], "sft")
+            self.assertEqual(started["body"]["request"]["training_config"], {"epochs": 1})
+            self.assertTrue(started["body"]["request"]["confirmed"])
             self.assertEqual(started["body"]["job"]["job_id"], job_id)
             self.assertEqual(started["body"]["job"]["workspace"], str(self.pfe_home))
             self.assertEqual(started["body"]["job"]["events"][0]["type"], "queued")
@@ -823,7 +855,9 @@ class ServerHttpSmokeTests(unittest.TestCase):
         )
 
         self.assertEqual(result["status_code"], 409)
+        self.assertEqual(result["body"]["kind"], "pfe_training_preflight_failed")
         self.assertEqual(result["body"]["code"], "training_preflight_failed")
+        self.assertEqual(result["body"]["request"]["method"], "sft")
         self.assertIn("needs_local_path", result["body"]["preflight"]["blocked_by"])
 
     def test_training_jobs_confirmed_request_blocks_when_active_job_exists(self) -> None:
@@ -1012,8 +1046,11 @@ class ServerHttpSmokeTests(unittest.TestCase):
 
         missing_confirmation = self._smoke(f"/pfe/training/jobs/{job_id}/retry", method="POST")
         self.assertEqual(missing_confirmation["status_code"], 409)
+        self.assertEqual(missing_confirmation["body"]["kind"], "pfe_training_preflight_required")
         self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
         self.assertEqual(missing_confirmation["body"]["retry_of"], job_id)
+        self.assertEqual(missing_confirmation["body"]["request"]["method"], "sft")
+        self.assertFalse(missing_confirmation["body"]["request"]["confirmed"])
         self.assertEqual(
             missing_confirmation["body"]["confirm_api"],
             f"POST /pfe/training/jobs/{job_id}/retry",
@@ -1034,8 +1071,14 @@ class ServerHttpSmokeTests(unittest.TestCase):
                 body={"confirm": True},
             )
             self.assertEqual(retried["status_code"], 202)
+            self.assertEqual(retried["body"]["kind"], "pfe_training_job_started")
             self.assertEqual(retried["body"]["action"], "retry_started")
             self.assertEqual(retried["body"]["retry_of"], job_id)
+            self.assertEqual(retried["body"]["request"]["method"], "sft")
+            self.assertEqual(
+                retried["body"]["request"]["training_config"],
+                {"epochs": 2, "learning_rate": 0.001},
+            )
             new_job_id = retried["body"]["job_id"]
             self.assertNotEqual(new_job_id, job_id)
             new_job = retried["body"]["job"]
@@ -1093,6 +1136,47 @@ class ServerHttpSmokeTests(unittest.TestCase):
         )
         self.assertEqual(result["status_code"], 409)
         self.assertEqual(result["body"]["code"], "job_not_retryable")
+
+    def test_training_job_retry_rejects_missing_or_unsupported_method(self) -> None:
+        now = "2026-06-15T00:00:00Z"
+        cases = (
+            ("job-missing-method", None, 409, "training_method_missing"),
+            ("job-bad-method", "bogus", 400, "unsupported_training_method"),
+        )
+        for job_id, method, expected_status, expected_code in cases:
+            job = {
+                "job_id": job_id,
+                "workspace": str(self.pfe_home),
+                "status": "failed",
+                "adapter_version": None,
+                "checkpoints": [],
+                "events": [],
+                "training_config": {"epochs": 1},
+                "created_at": now,
+                "updated_at": now,
+            }
+            if method is not None:
+                job["method"] = method
+            server_app._append_training_job_event(
+                job,
+                event_type="failed",
+                status="failed",
+                message="training job failed",
+            )
+            server_app._training_jobs_state[job_id] = job
+            server_app._save_json_state(server_app._training_jobs_path(str(self.pfe_home)), {job_id: job})
+
+            result = self._smoke(
+                f"/pfe/training/jobs/{job_id}/retry",
+                method="POST",
+                body={"confirm": True},
+            )
+
+            self.assertEqual(result["status_code"], expected_status)
+            self.assertEqual(result["body"]["code"], expected_code)
+            if method is not None:
+                self.assertEqual(result["body"]["kind"], "pfe_training_request_error")
+                self.assertEqual(result["body"]["request"]["method"], method)
 
     def test_status_returns_runtime_snapshot(self) -> None:
         result = self._smoke("/pfe/status", query_params={"detail": "full"})

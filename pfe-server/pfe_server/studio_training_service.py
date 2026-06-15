@@ -174,9 +174,15 @@ def start_training_job(
         )
     )
     payload = {
+        "kind": "pfe_training_job_started",
         "job_id": job_id,
         "status": "queued",
         "status_url": f"/pfe/training/jobs/{job_id}",
+        "request": {
+            "method": method,
+            "training_config": dict(training_config),
+            "confirmed": True,
+        },
         "job": training_job_payload(job_entry),
         "jobs": build_jobs_payload(10),
         "preflight": dict(preflight),
