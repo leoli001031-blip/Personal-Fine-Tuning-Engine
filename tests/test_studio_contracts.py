@@ -22,6 +22,7 @@ def test_runtime_payload_exposes_openai_chat_handoff_contract() -> None:
     assert payload["workspace"] == "client-a"
     assert payload["web_url"] == "http://127.0.0.1:9012/"
     assert payload["api_url"] == "http://127.0.0.1:9012/v1/chat/completions"
+    assert payload["api"]["feedback_url"] == "http://127.0.0.1:9012/pfe/feedback"
     assert payload["access_scope"] == "仅本机"
     assert payload["api_key_required"] is True
     assert payload["uptime_seconds"] == 5.432
@@ -30,4 +31,7 @@ def test_runtime_payload_exposes_openai_chat_handoff_contract() -> None:
     assert payload["api"]["model_parameter"] == "local"
     assert payload["api"]["model_aliases"] == ["local", "local-default", "base"]
     assert payload["api"]["auth_header"] == "Authorization: Bearer $PFE_API_KEY"
+    assert payload["api"]["response_id_fields"] == ["session_id", "request_id"]
+    assert "accept" in payload["api"]["feedback_actions"]
     assert payload["api"]["request_body"]["model"] == "local"
+    assert payload["api"]["feedback_body"]["action"] == "accept"

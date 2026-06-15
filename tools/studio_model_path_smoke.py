@@ -88,6 +88,8 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         _require(studio["text"], "点“使用本地模型回复”后生效", label="studio html")
         _require(studio["text"], "本机推理依赖未安装", label="studio html")
         _require(studio["text"], "演示回复", label="studio html")
+        _require(studio["text"], "聊天 API", label="studio html")
+        _require(studio["text"], "反馈 API", label="studio html")
         _require(studio["text"], "模型参数", label="studio html")
         _require(studio["text"], "调用示例", label="studio html")
         _require(studio["text"], "复制调用示例", label="studio html")
@@ -135,11 +137,18 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
             label="runtime",
         )
         expected_api_url = f"http://{args.host}:{args.port}/v1/chat/completions"
+        expected_feedback_url = f"http://{args.host}:{args.port}/pfe/feedback"
         if runtime.get("api_url") != expected_api_url:
             raise AssertionError(f"unexpected api_url: {runtime}")
         api_contract = runtime.get("api") if isinstance(runtime.get("api"), dict) else {}
         if api_contract.get("chat_completions_url") != expected_api_url:
             raise AssertionError(f"unexpected api handoff contract: {runtime}")
+        if api_contract.get("feedback_url") != expected_feedback_url:
+            raise AssertionError(f"unexpected feedback handoff contract: {runtime}")
+        if api_contract.get("response_id_fields") != ["session_id", "request_id"]:
+            raise AssertionError(f"handoff contract did not expose response ids: {runtime}")
+        if "accept" not in set(api_contract.get("feedback_actions") or []):
+            raise AssertionError(f"handoff contract did not expose feedback actions: {runtime}")
         if api_contract.get("model_parameter") != "local":
             raise AssertionError(f"unexpected api model parameter: {runtime}")
         if api_contract.get("request_body", {}).get("model") != "local":

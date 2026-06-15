@@ -30,7 +30,13 @@ from .models import (
     SignalIngestRequest,
     SignalIngestResponse,
 )
-from .studio_contracts import build_runtime_payload as build_studio_runtime_payload
+from .studio_contracts import (
+    build_handoff_closed_loop,
+    build_handoff_copy_text,
+    build_handoff_javascript_snippet,
+    build_handoff_python_snippet,
+    build_runtime_payload as build_studio_runtime_payload,
+)
 from .studio_eval_jobs import (
     EVAL_STATUS_URL,
     auto_eval_state_from_last_result,
@@ -959,24 +965,6 @@ def _selected_model_handoff(models_payload: Mapping[str, Any]) -> dict[str, Any]
     }
 
 
-def _build_studio_handoff_text(payload: Mapping[str, Any]) -> str:
-    urls = payload.get("urls") if isinstance(payload.get("urls"), Mapping) else {}
-    model = payload.get("model") if isinstance(payload.get("model"), Mapping) else {}
-    version = payload.get("version") if isinstance(payload.get("version"), Mapping) else {}
-    api = payload.get("api") if isinstance(payload.get("api"), Mapping) else {}
-    lines = [
-        f"Web: {urls.get('web') or '-'}",
-        f"API: {urls.get('api') or '-'}",
-        f"Model parameter: {model.get('api_parameter') or api.get('model_parameter') or 'local'}",
-        f"Selected model: {model.get('selected') or '-'}",
-        f"Current version: {version.get('current') or '-'}",
-    ]
-    auth_header = api.get("auth_header")
-    if auth_header:
-        lines.append(f"Auth: {auth_header}")
-    return "\n".join(lines)
-
-
 def _build_handoff_payload(envelope: RequestEnvelope, services: ServiceBundle) -> dict[str, Any]:
     runtime = _build_runtime_payload(envelope, services)
     models = _build_models_payload(services)
@@ -994,6 +982,7 @@ def _build_handoff_payload(envelope: RequestEnvelope, services: ServiceBundle) -
             "web": runtime.get("web_url"),
             "studio": runtime.get("studio_url"),
             "api": runtime.get("api_url"),
+            "feedback": api.get("feedback_url") or f"{runtime.get('base_url')}/pfe/feedback",
             "dashboard": runtime.get("dashboard_url"),
         },
         "model": {
@@ -1015,7 +1004,12 @@ def _build_handoff_payload(envelope: RequestEnvelope, services: ServiceBundle) -
             "api_key_required": runtime.get("api_key_required"),
         },
     }
-    payload["copy_text"] = _build_studio_handoff_text(payload)
+    payload["closed_loop"] = build_handoff_closed_loop(payload)
+    payload["snippets"] = {
+        "javascript": build_handoff_javascript_snippet(payload),
+        "python": build_handoff_python_snippet(payload),
+    }
+    payload["copy_text"] = build_handoff_copy_text(payload)
     return payload
 
 
