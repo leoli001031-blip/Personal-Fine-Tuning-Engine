@@ -32,6 +32,7 @@ def build_training_job_entry(
     method: str,
     training_config: Mapping[str, Any],
     retry_of: str | None = None,
+    reason: str | None = None,
     now_seconds: float | None = None,
 ) -> dict[str, Any]:
     now = utc_timestamp(now_seconds)
@@ -49,16 +50,21 @@ def build_training_job_entry(
     }
     if retry_of:
         job_entry["retry_of"] = retry_of
+    if reason:
+        job_entry["reason"] = reason
     return job_entry
 
 
 def training_overall_state(job_id: str, job_entry: Mapping[str, Any]) -> dict[str, Any]:
-    return {
+    state = {
         "state": job_entry.get("status"),
         "adapter_version": job_entry.get("adapter_version"),
         "job_id": job_id,
         "updated_at": job_entry.get("updated_at"),
     }
+    if job_entry.get("reason"):
+        state["reason"] = job_entry.get("reason")
+    return state
 
 
 def run_training_job(
@@ -92,6 +98,7 @@ def run_training_job(
             metadata={"method": method, "retry_of": retry_of},
         )
         persist_job(job_id, job_entry)
+        persist_overall(workspace, training_overall_state(job_id, job_entry))
         if method == "dpo":
             result_msg = pipeline.train_dpo()
         else:
@@ -139,6 +146,7 @@ def start_training_job(
     training_config: Mapping[str, Any],
     preflight: Mapping[str, Any],
     retry_of: str | None = None,
+    reason: str | None = None,
     persist_job: PersistJob,
     persist_overall: PersistOverall,
     build_jobs_payload: BuildJobsPayload,
@@ -152,6 +160,7 @@ def start_training_job(
         method=method,
         training_config=training_config,
         retry_of=retry_of,
+        reason=reason,
     )
     append_training_job_event(
         job_entry,
@@ -183,6 +192,7 @@ def start_training_job(
             "training_config": dict(training_config),
             "confirmed": True,
         },
+        "reason": reason,
         "job": training_job_payload(job_entry),
         "jobs": build_jobs_payload(10),
         "preflight": dict(preflight),
