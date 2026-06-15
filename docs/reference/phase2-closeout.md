@@ -11,8 +11,9 @@
 - CLI / queue / server / dashboard / chat console 的 beta smoke 已补齐
 - 默认验证链保持无下载、无真实训练依赖
 - 真实本地模型 full happy path、浏览器 strict smoke、30 分钟 soak 和 performance budget 已有本机证据
+- 远端 GitHub Actions strict release gate 已在 `main` 通过
 
-当前判断是：`Phase 2` 可以进入 closeout / release 收尾，不需要继续作为功能研发阶段推进。后续应把远端 CI release gate 的真实执行结果作为 release-ready 的最后关键证据。
+当前判断是：`Phase 2` 可以进入 closeout / release 收尾，不需要继续作为功能研发阶段推进。远端 CI release gate 的真实执行结果已经补齐，当前 release gate 阻塞项为 0。
 
 ## 2. 本轮收口的关键问题
 
@@ -192,9 +193,9 @@ make test
 
 ## 4. 当前还剩什么
 
-当前不再有 Phase 2 功能 blocker，但还有几类 release-readiness 边界：
+当前不再有 Phase 2 功能 blocker；release-readiness 已有本机与远端证据。仍需注意以下非阻塞边界：
 
-1. **真实本地模型 full happy path 已有本机 strict 证据**
+1. **真实本地模型 full happy path 已有本机与远端 strict 证据**
 
    当前 release evidence 已使用本地 tiny Hugging Face 兼容模型跑通：
 
@@ -215,7 +216,7 @@ make test
 
    `release_soak_smoke.py --duration-seconds 1800 --interval-seconds 2` 已通过，覆盖 30 分钟 queue / daemon / server / dashboard / chat / feedback 长稳态轮询。正式发布前仍可按需补 60 分钟窗口。
 
-4. **性能与内存 budget 已有首版**
+4. **性能与内存 budget 已有本机与远端 gate 证据**
 
    `make benchmark-release` 已记录 first-run、strict browser UI、real-local happy path 和短 soak 的耗时/峰值 RSS，并默认执行 release budget。
 
@@ -227,12 +228,12 @@ make test
 
 优先级建议：
 
-1. 在 GitHub Actions 上验证 `smoke-release-strict` / `benchmark-release`
-2. 把远端 CI run URL、结论和关键日志摘要补入 `release-readiness-evidence.md`
-3. 进入 Phase 3：多模型兼容、插件体系、示例应用、文档站
+1. 进入 Phase 3：多模型兼容、插件体系、示例应用、文档站
+2. 继续收束 Studio-first 用户入口，减少普通用户对 CLI 的依赖
+3. 在 2026-09-16 前处理 GitHub Actions Node.js 20 deprecation annotation
 
 ## 6. 最终判断
 
 截至 **2026-06-15**，可以把项目当前状态表述为：
 
-> `Phase 2` 功能闭环已经完成，默认 beta 验证链已覆盖 CLI、队列、server、dashboard、chat console 和 feedback。strict release gate、真实浏览器 JS smoke、real-local tiny model happy path、30 分钟长稳态 soak、dashboard offline-first、性能/内存 budget 和最终发布材料已有本机证据。剩余工作不再是 Phase 2 功能研发，而是 release-readiness 收尾：远端 CI 证据。
+> `Phase 2` 功能闭环已经完成，默认 beta 验证链已覆盖 Studio、CLI、队列、server、dashboard、chat console 和 feedback。strict release gate、真实浏览器 JS smoke、real-local tiny model happy path、30 分钟长稳态 soak、dashboard offline-first、性能/内存 budget、最终发布材料和远端 GitHub Actions release gate 都已有证据。剩余工作不再是 Phase 2 功能研发，而是进入 Phase 3 与 Studio-first 产品收束。

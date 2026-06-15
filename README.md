@@ -8,9 +8,9 @@ Personal Finetune Engine is a local-first engine for turning user feedback and b
 collect -> curate -> train -> eval -> promote -> serve
 ```
 
-[Quick Start](#quick-start) • [Core CLI Workflow](#core-cli-workflow) • [Screenshots](#screenshots) • [Platform Support](#platform-support) • [Docs](#docs)
+[Quick Start](#quick-start) • [Studio Workflow](#studio-workflow) • [Advanced CLI](#advanced-cli) • [Screenshots](#screenshots) • [Platform Support](#platform-support) • [Docs](#docs)
 
-PFE is best understood as operator infrastructure rather than a turnkey consumer app. The main surface is the `pfe` CLI, with local HTTP and browser companions for serving and observability.
+PFE is best understood as a local-first model service workbench. The default user surface is PFE Studio in the browser: choose a local model, copy the web/API URLs, and manage personalized model versions. The `pfe` CLI remains available for advanced diagnostics, automation, and maintenance.
 
 ## What PFE Covers
 
@@ -19,7 +19,8 @@ PFE is best understood as operator infrastructure rather than a turnkey consumer
 - SFT and DPO training paths
 - Evaluation, candidate handling, promotion, and archive workflows
 - Queue, trigger, daemon, and recovery controls
-- OpenAI-compatible local serving plus dashboard and chat surfaces
+- PFE Studio for model selection, API handoff, and version management
+- OpenAI-compatible local serving plus dashboard and legacy chat surfaces
 
 ## Quick Start
 
@@ -37,27 +38,24 @@ real training dependencies, opt in explicitly:
 PFE_BOOTSTRAP_EXTRAS=dev,training tools/bootstrap_py311_env.sh
 ```
 
-Recommended first commands:
+Start the local Studio service:
 
 ```bash
-pfe init --workspace user_default --base-model Qwen/Qwen2.5-3B-Instruct
-pfe doctor
-pfe next --workspace user_default
-pfe status --json
-pfe console --cycles 1
+.venv/bin/python -m pfe_server --port 8921 --workspace user_default
 ```
 
-Start local serving:
+Then open:
 
-```bash
-pfe serve --port 8921 --live
+```text
+http://127.0.0.1:8921/
 ```
 
-Open observability:
+From Studio, the main path is:
 
-```bash
-pfe dashboard
-```
+1. Choose a local model or paste a local model path.
+2. Copy the web URL or OpenAI-compatible API URL.
+3. Review, evaluate, promote, rollback, or archive model versions.
+4. Generate a new version when training conditions are ready.
 
 Run the fast test layers:
 
@@ -107,18 +105,36 @@ model/config directory with training extras installed to run a true
 Default local pages:
 
 ```text
-http://127.0.0.1:8921/dashboard
-http://127.0.0.1:8921/
+http://127.0.0.1:8921/          PFE Studio
+http://127.0.0.1:8921/dashboard Observability dashboard
+http://127.0.0.1:8921/chat      Legacy operations chat
 ```
 
 Notes:
 
-- `pfe serve --port 8921` without `--live` shows the serve plan only.
+- `pfe serve --port 8921 --live` is still available, but it is no longer the only documented entry.
 - `127.0.0.1:8921` is the default local bind, not a fixed requirement.
 - If no promoted adapter is available, serving can stay in safe or mock mode.
-- Real local model loading is gated behind explicit runtime configuration such as `--real-local`.
+- Real local model loading is gated behind explicit runtime configuration. Studio exposes a current-process toggle for local runs.
 
-## Core CLI Workflow
+## Studio Workflow
+
+The browser workflow is intentionally small:
+
+```text
+select model -> copy API/web URL -> manage versions
+```
+
+Studio keeps the most common actions in one place:
+
+- Workspace switching and creation
+- Local model selection and model path validation
+- OpenAI-compatible `/v1/chat/completions` URL and `model` parameter handoff
+- Current version, pending versions, evaluation, promote, rollback, and archive
+- Training preflight, start, cancel, and retry
+- Real-local inference readiness and current reply source
+
+## Advanced CLI
 
 Typical operator path:
 
@@ -182,7 +198,7 @@ Dashboard at `/dashboard` after `pfe serve --port 8921 --live`:
   <img src="docs/assets/screenshots/dashboard.png" alt="PFE observability dashboard" width="1100">
 </p>
 
-The browser dashboard is a companion surface. The main control plane remains the CLI.
+PFE Studio is the default browser surface at `/`. The dashboard remains an observability surface for deeper runtime inspection.
 
 ## Platform Support
 
@@ -202,12 +218,17 @@ PFE also exposes local HTTP and browser companions:
 
 - `GET /healthz`
 - `GET /pfe/status`
+- `GET /pfe/runtime`
+- `GET /pfe/models`
+- `GET /pfe/adapters`
+- `GET /pfe/readiness`
 - `GET /dashboard`
 - `POST /v1/chat/completions`
 
 Bundled browser pages live under:
 
 - `pfe-server/pfe_server/static/dashboard.html`
+- `pfe-server/pfe_server/static/studio.html`
 - `pfe-server/pfe_server/static/chat.html`
 
 ## Repository Layout
@@ -225,7 +246,8 @@ tools/       Repository-local helper scripts
 ## Project Status
 
 - Phase 1 complete
-- Phase 2 functional closeout complete; release-readiness validation remains
+- Phase 2 functional closeout complete
+- Release readiness validated locally and by remote GitHub Actions strict release gate
 - Public repository prepared with large local artifacts intentionally excluded
 
 See [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md) for the closeout note.

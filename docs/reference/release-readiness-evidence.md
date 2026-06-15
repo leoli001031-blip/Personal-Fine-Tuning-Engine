@@ -119,11 +119,11 @@
 
 2026-06-15 05:05 CST 远端复核：
 
-- `gh pr checks 1 --watch=false`：PR run `27511838268` 在 commit `48efa93f5da8d0c269e0457359cca679da040a09` 上通过 `Fast beta gate`；`Strict release gate` 在 PR 事件中按 workflow 设计跳过。
-- `gh workflow run "PFE release gates" --ref codex/cli-refactor-checkpoint`：manual `workflow_dispatch` run `27511847250` 在同一 commit 上通过。
-- workflow_dispatch run：`Fast beta gate` 通过，用时 `2m27s`；`Strict release gate` 通过，用时 `6m7s`。
-- `.venv/bin/python tools/github_actions_release_evidence.py --require-success --branch codex/cli-refactor-checkpoint --event workflow_dispatch --output-path /tmp/pfe-github-actions-release-evidence.json`：通过，采集 run URL、status、conclusion、branch、commit JSON。
-- `.venv/bin/python tools/render_remote_release_evidence.py --require-success --remote-evidence-report /tmp/pfe-github-actions-release-evidence.json --output-path /tmp/pfe-remote-release-evidence.md`：通过，生成远端 evidence Markdown 摘要。
+- PR #3 fast beta gate 在修复提交上通过；`Strict release gate` 在 PR 事件中按 workflow 设计跳过。
+- `gh workflow run pfe-release-gates.yml --ref main`：manual `workflow_dispatch` run `27518991700` 在 `main` commit `0c08d2791edce2ac6c48ce1f432a1eb6716fca8d` 上通过。
+- workflow_dispatch run：`Fast beta gate` 通过，用时 `2m37s`；`Strict release gate` 通过，用时 `6m24s`。
+- `make record-remote-release-evidence REMOTE_EVIDENCE_REPORT=/tmp/pfe-github-actions-release-evidence-latest.json`：通过，采集 run URL、status、conclusion、branch、commit JSON。
+- `make render-remote-release-evidence REMOTE_EVIDENCE_REPORT=/tmp/pfe-github-actions-release-evidence-latest.json BUNDLE_REPORT=/tmp/pfe-release-evidence-bundle.json REMOTE_EVIDENCE_MARKDOWN=/tmp/pfe-remote-release-evidence-latest.md`：通过，生成远端 evidence Markdown 摘要。
 
 本次 strict run 的关键尾部：
 
@@ -351,14 +351,21 @@ budget:
 - release_ready: `yes`
 - workflow: `PFE release gates`
 - repo: `leoli001031-blip/Personal-Fine-Tuning-Engine`
-- run: https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27511847250
+- run: https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27518991700
 - run status: `completed`
 - conclusion: `success`
 - event: `workflow_dispatch`
-- branch: `codex/cli-refactor-checkpoint`
-- commit: `48efa93f5da8d0c269e0457359cca679da040a09`
-- started: `2026-06-14T20:58:30Z`
-- updated: `2026-06-14T21:04:41Z`
+- branch: `main`
+- commit: `0c08d2791edce2ac6c48ce1f432a1eb6716fca8d`
+- started: `2026-06-15T01:38:07Z`
+- updated: `2026-06-15T01:44:38Z`
+
+Artifact bundle:
+- status: `passed`
+- summary: blockers=0 | present=3 | total=3 | warnings=0
+- performance: `passed`
+- evidence_audit: `passed`
+- remote_actions: `passed`
 
 ## Release evidence audit 证据
 
@@ -395,8 +402,8 @@ make render-remote-release-evidence REMOTE_EVIDENCE_REPORT=/tmp/pfe-github-actio
 
 ```text
 GITHUB ACTIONS RELEASE EVIDENCE PASSED
-report: /tmp/pfe-github-actions-release-evidence.json
-run:    https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27511847250
+report: /tmp/pfe-github-actions-release-evidence-latest.json
+run:    https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27518991700
 state:  status=completed conclusion=success
 ```
 
