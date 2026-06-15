@@ -747,8 +747,12 @@
                   <strong id="handoffWebValue">检查中</strong>
                 </div>
                 <div>
-                  <span>API</span>
+                  <span>聊天 API</span>
                   <strong id="handoffApiValue">检查中</strong>
+                </div>
+                <div>
+                  <span>反馈 API</span>
+                  <strong id="handoffFeedbackValue">检查中</strong>
                 </div>
                 <div>
                   <span>模型</span>
@@ -929,6 +933,7 @@
         url: api.chat_completions_url || runtime.api_url || "",
         method: api.method || "POST",
         model: api.model_parameter || "local",
+        feedbackUrl: api.feedback_url || "",
         authHeader: api.auth_header || "",
         contentType: api.content_type || "application/json",
       };
@@ -967,6 +972,7 @@
         urls: {
           web: runtime.web_url || "",
           api: contract.url || runtime.api_url || "",
+          feedback: contract.feedbackUrl || (runtime.base_url ? runtime.base_url + "/pfe/feedback" : ""),
           studio: runtime.studio_url || "",
           dashboard: runtime.dashboard_url || "",
         },
@@ -985,6 +991,13 @@
           access_scope: runtime.access_scope || "仅本机",
           auth_mode: runtime.auth_mode || "",
         },
+        closed_loop: {
+          required_response_fields: ["session_id", "request_id"],
+          feedback: {
+            url: contract.feedbackUrl || (runtime.base_url ? runtime.base_url + "/pfe/feedback" : ""),
+            actions: ["accept", "reject", "edit", "regenerate", "delete"],
+          },
+        },
       };
     }
 
@@ -1000,11 +1013,17 @@
       const urls = handoff.urls || {};
       const model = handoff.model || {};
       const version = handoff.version || {};
+      const closedLoop = handoff.closed_loop || {};
+      const feedback = closedLoop.feedback || {};
       return [
+        "PFE closed-loop handoff",
         "Web: " + (urls.web || "-"),
-        "API: " + (urls.api || "-"),
+        "Chat API: " + (urls.api || "-"),
+        "Feedback API: " + (urls.feedback || feedback.url || "-"),
         "Model parameter: " + (model.api_parameter || "local"),
         "Selected model: " + (model.selected || "-"),
+        "Keep per answer: " + ((closedLoop.required_response_fields || ["session_id", "request_id"]).join(", ")),
+        "Report actions: " + (((feedback && feedback.actions) || ["accept", "reject", "edit", "regenerate", "delete"]).join(", ")),
         "Current version: " + (version.current || "-"),
       ].join("\n");
     }
@@ -1109,11 +1128,12 @@
       const access = runtime.access_scope || (state.runtime && state.runtime.access_scope) || "仅本机";
       const versionLabel = version.current || version.latest || "暂无版本";
       const summary = urls.api
-        ? "网页和 API 已就绪，复制后可直接交给前端或调用方。"
+        ? "聊天和反馈 API 已就绪，复制后可直接交给前端或调用方。"
         : "正在检查网页、API 和模型版本。";
       text("handoffValue", summary);
       text("handoffWebValue", urls.web || "-");
       text("handoffApiValue", urls.api || "-");
+      text("handoffFeedbackValue", urls.feedback || "-");
       text("handoffModelValue", [model.api_parameter || "local", model.label || model.selected].filter(Boolean).join(" / "));
       text("handoffVersionValue", [versionLabel, access].filter(Boolean).join(" / "));
       $("copyHandoffButton").disabled = !urls.api && !urls.web;
