@@ -942,6 +942,83 @@ def _build_models_payload(services: ServiceBundle) -> dict[str, Any]:
     )
 
 
+def _selected_model_handoff(models_payload: Mapping[str, Any]) -> dict[str, Any]:
+    selected = str(models_payload.get("selected") or "")
+    selected_label = str(models_payload.get("selected_label") or selected or "local")
+    selected_candidate: Mapping[str, Any] = {}
+    for candidate in list(models_payload.get("candidates") or []):
+        if isinstance(candidate, Mapping) and str(candidate.get("id") or "") == selected:
+            selected_candidate = candidate
+            break
+    return {
+        "selected": selected,
+        "label": str(selected_candidate.get("label") or selected_label),
+        "source": selected_candidate.get("source"),
+        "local_path": selected_candidate.get("local_path"),
+        "exists": selected_candidate.get("exists"),
+    }
+
+
+def _build_studio_handoff_text(payload: Mapping[str, Any]) -> str:
+    urls = payload.get("urls") if isinstance(payload.get("urls"), Mapping) else {}
+    model = payload.get("model") if isinstance(payload.get("model"), Mapping) else {}
+    version = payload.get("version") if isinstance(payload.get("version"), Mapping) else {}
+    api = payload.get("api") if isinstance(payload.get("api"), Mapping) else {}
+    lines = [
+        f"Web: {urls.get('web') or '-'}",
+        f"API: {urls.get('api') or '-'}",
+        f"Model parameter: {model.get('api_parameter') or api.get('model_parameter') or 'local'}",
+        f"Selected model: {model.get('selected') or '-'}",
+        f"Current version: {version.get('current') or '-'}",
+    ]
+    auth_header = api.get("auth_header")
+    if auth_header:
+        lines.append(f"Auth: {auth_header}")
+    return "\n".join(lines)
+
+
+def _build_handoff_payload(envelope: RequestEnvelope, services: ServiceBundle) -> dict[str, Any]:
+    runtime = _build_runtime_payload(envelope, services)
+    models = _build_models_payload(services)
+    adapters = _build_adapters_payload(services)
+    api = runtime.get("api") if isinstance(runtime.get("api"), Mapping) else {}
+    current_version = None
+    if isinstance(adapters.get("current"), Mapping):
+        current_version = adapters["current"].get("version")
+    payload: dict[str, Any] = {
+        "kind": "pfe_studio_handoff",
+        "workspace": runtime.get("workspace"),
+        "status": runtime.get("status"),
+        "summary": "复制后可直接接入本机网页或 OpenAI-compatible chat API。",
+        "urls": {
+            "web": runtime.get("web_url"),
+            "studio": runtime.get("studio_url"),
+            "api": runtime.get("api_url"),
+            "dashboard": runtime.get("dashboard_url"),
+        },
+        "model": {
+            **_selected_model_handoff(models),
+            "api_parameter": api.get("model_parameter") or "local",
+            "aliases": list(api.get("model_aliases") or []),
+        },
+        "version": {
+            "current": current_version,
+            "latest": adapters.get("latest_version"),
+            "count": int(adapters.get("count") or 0),
+            "pending_count": len(list(adapters.get("pending") or [])),
+        },
+        "api": api,
+        "runtime": {
+            "provider": runtime.get("provider"),
+            "access_scope": runtime.get("access_scope"),
+            "auth_mode": runtime.get("auth_mode"),
+            "api_key_required": runtime.get("api_key_required"),
+        },
+    }
+    payload["copy_text"] = _build_studio_handoff_text(payload)
+    return payload
+
+
 def _env_flag_enabled(name: str) -> bool:
     return str(os.environ.get(name, "")).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -4546,6 +4623,13 @@ async def handle_models(envelope: RequestEnvelope, services: ServiceBundle) -> A
     return _json_response(_build_models_payload(services), status_code=200)
 
 
+async def handle_handoff(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    return _json_response(_build_handoff_payload(envelope, services), status_code=200)
+
+
 async def handle_readiness(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
     if not allowed:
@@ -4857,6 +4941,8 @@ class _LiteASGIApp:
             return await handle_workspaces(envelope, self.services)
         if envelope.path == "/pfe/models" and envelope.method == "GET":
             return await handle_models(envelope, self.services)
+        if envelope.path == "/pfe/handoff" and envelope.method == "GET":
+            return await handle_handoff(envelope, self.services)
         if envelope.path == "/pfe/readiness" and envelope.method == "GET":
             return await handle_readiness(envelope, self.services)
         if envelope.path == "/pfe/config/model" and envelope.method == "PUT":
@@ -5091,6 +5177,10 @@ def create_app(
         @app.get("/pfe/models")
         async def pfe_models(request: Request) -> Any:
             return await handle_models(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/handoff")
+        async def pfe_handoff(request: Request) -> Any:
+            return await handle_handoff(await _envelope_from_fastapi_request(request), bundle)
 
         @app.get("/pfe/readiness")
         async def pfe_readiness(request: Request) -> Any:
