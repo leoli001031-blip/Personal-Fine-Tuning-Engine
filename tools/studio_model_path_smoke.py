@@ -239,7 +239,14 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         )
         if training_preflight.get("code") != "confirmation_required":
             raise AssertionError(f"training preflight did not require confirmation: {training_preflight}")
+        if training_preflight.get("kind") != "pfe_training_preflight_required":
+            raise AssertionError(f"training preflight did not expose typed response kind: {training_preflight}")
+        request = training_preflight.get("request") if isinstance(training_preflight.get("request"), dict) else {}
+        if request.get("method") != "sft" or request.get("confirmed") is not False:
+            raise AssertionError(f"training preflight did not expose typed request: {training_preflight}")
         preflight = training_preflight.get("preflight") if isinstance(training_preflight.get("preflight"), dict) else {}
+        if preflight.get("kind") != "pfe_training_preflight":
+            raise AssertionError(f"training preflight did not expose typed preflight kind: {training_preflight}")
         if preflight.get("base_model") != str(model_dir):
             raise AssertionError(f"training preflight did not use saved model path: {training_preflight}")
         if preflight.get("requires_confirmation") is not True:

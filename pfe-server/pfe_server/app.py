@@ -1235,27 +1235,60 @@ def _load_request_json(body: bytes) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
-def _training_method_from_body(body: Mapping[str, Any]) -> str:
-    method = str(body.get("method", "sft")).strip().lower()
-    return method or "sft"
+SUPPORTED_STUDIO_TRAINING_METHODS = ("sft", "dpo")
 
 
-def _training_config_from_body(body: Mapping[str, Any]) -> dict[str, Any]:
-    return {
-        k: v
-        for k, v in body.items()
-        if k not in ("method", "auto_trigger", "confirm")
-    }
+@dataclass(frozen=True)
+class TrainingJobRequest:
+    method: str
+    training_config: dict[str, Any]
+    confirmed: bool
+    raw_method: str | None = None
+
+    @property
+    def unsupported_method(self) -> str | None:
+        return self.method if self.method not in SUPPORTED_STUDIO_TRAINING_METHODS else None
+
+    def payload(self) -> dict[str, Any]:
+        return {
+            "method": self.method,
+            "training_config": dict(self.training_config),
+            "confirmed": self.confirmed,
+        }
+
+
+def _training_request_from_body(
+    body: Mapping[str, Any],
+    query_params: Mapping[str, str] | None = None,
+    confirmed: bool | None = None,
+) -> TrainingJobRequest:
+    raw_method_value = body.get("method")
+    raw_method = str(raw_method_value).strip().lower() if raw_method_value is not None else None
+    method = raw_method or "sft"
+    return TrainingJobRequest(
+        method=method,
+        raw_method=raw_method,
+        confirmed=(
+            bool(confirmed)
+            if confirmed is not None
+            else _query_bool(query_params or {}, "confirm") or _body_bool(body, "confirm")
+        ),
+        training_config={
+            k: v
+            for k, v in body.items()
+            if k not in ("method", "auto_trigger", "confirm")
+        },
+    )
 
 
 def _build_training_preflight_payload(
     envelope: RequestEnvelope,
     services: ServiceBundle,
-    body: Mapping[str, Any],
+    request: TrainingJobRequest,
 ) -> dict[str, Any]:
     readiness = _build_readiness_payload(envelope, services)
-    method = _training_method_from_body(body)
-    training_config = _training_config_from_body(body)
+    method = request.method
+    training_config = request.training_config
     model_source = dict(readiness.get("model", {}).get("source") or {})
     runtime_deps = dict(readiness.get("runtime", {}).get("dependencies") or {})
     inference = dict(readiness.get("inference") or {})
@@ -1268,15 +1301,6 @@ def _build_training_preflight_payload(
     blocked_by: list[str] = []
     warnings: list[str] = []
     next_actions: list[dict[str, str]] = []
-    if method not in {"sft", "dpo"}:
-        blocked_by.append("unsupported_training_method")
-        next_actions.append(
-            {
-                "id": "choose_supported_training_method",
-                "label": "选择支持的训练方式",
-                "detail": "当前只支持 SFT 或 DPO 训练入口。",
-            }
-        )
     if not model_source.get("ok"):
         blocked_by.append(str(model_source.get("state") or "model_source_not_ready"))
         next_actions.append(
@@ -1292,9 +1316,11 @@ def _build_training_preflight_payload(
         warnings.append("real_local_inference_disabled")
 
     return {
+        "kind": "pfe_training_preflight",
         "ready": not blocked_by,
         "requires_confirmation": True,
         "confirm_api": "POST /pfe/training/jobs",
+        "request": request.payload(),
         "method": method,
         "workspace": services.workspace,
         "base_model": base_model,
@@ -3914,16 +3940,36 @@ async def handle_training_jobs(
     if not allowed:
         return denial
     body = _load_request_json(envelope.body)
-    method = _training_method_from_body(body)
-    preflight = _build_training_preflight_payload(envelope, services, body)
-    confirmed = _query_bool(envelope.query_params, "confirm") or _body_bool(body, "confirm")
-    if not confirmed:
+    request = _training_request_from_body(body, envelope.query_params)
+    if request.unsupported_method:
+        payload = _error_payload(
+            "unsupported training method",
+            "unsupported_training_method",
+            "choose sft or dpo for Studio training jobs",
+        )
+        payload.update(
+            {
+                "kind": "pfe_training_request_error",
+                "request": request.payload(),
+                "supported_methods": list(SUPPORTED_STUDIO_TRAINING_METHODS),
+            }
+        )
+        return _json_response(payload, status_code=400)
+    preflight = _build_training_preflight_payload(envelope, services, request)
+    if not request.confirmed:
         payload = _error_payload(
             "confirmation required",
             "confirmation_required",
             "pass confirm=true to start this training job",
         )
-        payload.update({"preflight": preflight, "confirm_api": "POST /pfe/training/jobs"})
+        payload.update(
+            {
+                "kind": "pfe_training_preflight_required",
+                "request": request.payload(),
+                "preflight": preflight,
+                "confirm_api": "POST /pfe/training/jobs",
+            }
+        )
         return _json_response(payload, status_code=409)
     if not preflight.get("ready"):
         payload = _error_payload(
@@ -3931,7 +3977,13 @@ async def handle_training_jobs(
             "training_preflight_failed",
             "resolve preflight blockers before starting this training job",
         )
-        payload.update({"preflight": preflight})
+        payload.update(
+            {
+                "kind": "pfe_training_preflight_failed",
+                "request": request.payload(),
+                "preflight": preflight,
+            }
+        )
         return _json_response(payload, status_code=409)
     store = _training_job_store(services.workspace)
     active_job = store.active_job()
@@ -3943,11 +3995,10 @@ async def handle_training_jobs(
         )
         payload.update({"active_job": active_job, "jobs": store.build_jobs_payload(limit=10)})
         return _json_response(payload, status_code=409)
-    training_config = _training_config_from_body(body)
     return _start_training_job(
         services,
-        method=method,
-        training_config=training_config,
+        method=request.method,
+        training_config=request.training_config,
         preflight=preflight,
     )
 
@@ -4077,10 +4128,34 @@ async def handle_training_job_retry(
 
     original_config = job_entry.get("training_config")
     retry_body = dict(original_config) if isinstance(original_config, Mapping) else {}
-    method = str(job_entry.get("method") or "sft")
+    method = str(job_entry.get("method") or "").strip().lower()
+    if not method:
+        return _json_response(
+            _error_payload(
+                "training method missing",
+                "training_method_missing",
+                "this job was created without a retryable Studio training method",
+            ),
+            status_code=409,
+        )
     retry_body["method"] = method
-    retry_body["confirm"] = True
-    preflight = _build_training_preflight_payload(envelope, services, retry_body)
+    retry_request = _training_request_from_body(retry_body, envelope.query_params, confirmed=confirmed)
+    if retry_request.unsupported_method:
+        payload = _error_payload(
+            "unsupported training method",
+            "unsupported_training_method",
+            "choose sft or dpo before retrying this training job",
+        )
+        payload.update(
+            {
+                "kind": "pfe_training_request_error",
+                "retry_of": job_id,
+                "request": retry_request.payload(),
+                "supported_methods": list(SUPPORTED_STUDIO_TRAINING_METHODS),
+            }
+        )
+        return _json_response(payload, status_code=400)
+    preflight = _build_training_preflight_payload(envelope, services, retry_request)
     if not confirmed:
         payload = _error_payload(
             "confirmation required",
@@ -4089,9 +4164,11 @@ async def handle_training_job_retry(
         )
         payload.update(
             {
+                "kind": "pfe_training_preflight_required",
                 "preflight": preflight,
                 "confirm_api": f"POST /pfe/training/jobs/{job_id}/retry",
                 "retry_of": job_id,
+                "request": retry_request.payload(),
             }
         )
         return _json_response(payload, status_code=409)
@@ -4101,7 +4178,14 @@ async def handle_training_job_retry(
             "training_preflight_failed",
             "resolve preflight blockers before retrying this training job",
         )
-        payload.update({"preflight": preflight, "retry_of": job_id})
+        payload.update(
+            {
+                "kind": "pfe_training_preflight_failed",
+                "preflight": preflight,
+                "retry_of": job_id,
+                "request": retry_request.payload(),
+            }
+        )
         return _json_response(payload, status_code=409)
 
     active_job = store.active_job()
@@ -4124,8 +4208,8 @@ async def handle_training_job_retry(
         )
     return _start_training_job(
         services,
-        method=method,
-        training_config=_training_config_from_body(retry_body),
+        method=retry_request.method,
+        training_config=retry_request.training_config,
         preflight=preflight,
         retry_of=job_id,
     )
