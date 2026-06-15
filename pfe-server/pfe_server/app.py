@@ -66,6 +66,13 @@ from .studio_resources import (
     workspace_record as studio_workspace_record,
     workspace_slug_issues as studio_workspace_slug_issues,
 )
+from .studio_training_contracts import (
+    SUPPORTED_STUDIO_TRAINING_METHODS,
+    TrainingJobRequest,
+    build_legacy_training_trigger_preflight_payload as build_studio_legacy_training_trigger_preflight_payload,
+    build_training_preflight_payload as build_studio_training_preflight_payload,
+    training_request_from_body as studio_training_request_from_body,
+)
 from .studio_training_service import start_training_job as start_studio_training_job
 
 # ChatCollector integration - import from pfe_core if available
@@ -1235,139 +1242,28 @@ def _load_request_json(body: bytes) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
-SUPPORTED_STUDIO_TRAINING_METHODS = ("sft", "dpo")
-
-
-@dataclass(frozen=True)
-class TrainingJobRequest:
-    method: str
-    training_config: dict[str, Any]
-    confirmed: bool
-    raw_method: str | None = None
-
-    @property
-    def unsupported_method(self) -> str | None:
-        return self.method if self.method not in SUPPORTED_STUDIO_TRAINING_METHODS else None
-
-    def payload(self) -> dict[str, Any]:
-        return {
-            "method": self.method,
-            "training_config": dict(self.training_config),
-            "confirmed": self.confirmed,
-        }
-
-
-def _training_request_from_body(
-    body: Mapping[str, Any],
-    query_params: Mapping[str, str] | None = None,
-    confirmed: bool | None = None,
-) -> TrainingJobRequest:
-    raw_method_value = body.get("method")
-    raw_method = str(raw_method_value).strip().lower() if raw_method_value is not None else None
-    method = raw_method or "sft"
-    return TrainingJobRequest(
-        method=method,
-        raw_method=raw_method,
-        confirmed=(
-            bool(confirmed)
-            if confirmed is not None
-            else _query_bool(query_params or {}, "confirm") or _body_bool(body, "confirm")
-        ),
-        training_config={
-            k: v
-            for k, v in body.items()
-            if k not in ("method", "auto_trigger", "confirm")
-        },
-    )
-
-
 def _build_training_preflight_payload(
     envelope: RequestEnvelope,
     services: ServiceBundle,
     request: TrainingJobRequest,
 ) -> dict[str, Any]:
-    readiness = _build_readiness_payload(envelope, services)
-    method = request.method
-    training_config = request.training_config
-    model_source = dict(readiness.get("model", {}).get("source") or {})
-    runtime_deps = dict(readiness.get("runtime", {}).get("dependencies") or {})
-    inference = dict(readiness.get("inference") or {})
-    base_model = str(
-        training_config.get("base_model")
-        or readiness.get("configuration", {}).get("base_model")
-        or _load_config_base_model()
+    return build_studio_training_preflight_payload(
+        request=request,
+        readiness=_build_readiness_payload(envelope, services),
+        workspace=services.workspace,
+        base_model=_load_config_base_model(),
     )
-
-    blocked_by: list[str] = []
-    warnings: list[str] = []
-    next_actions: list[dict[str, str]] = []
-    if not model_source.get("ok"):
-        blocked_by.append(str(model_source.get("state") or "model_source_not_ready"))
-        next_actions.append(
-            {
-                "id": "choose_local_model",
-                "label": "选择本地模型",
-                "detail": "启动训练前需要一个已存在的本地基础模型目录。",
-            }
-        )
-    if not runtime_deps.get("ok"):
-        warnings.append("runtime_dependencies_missing")
-    if not inference.get("real_local_enabled"):
-        warnings.append("real_local_inference_disabled")
-
-    return {
-        "kind": "pfe_training_preflight",
-        "ready": not blocked_by,
-        "requires_confirmation": True,
-        "confirm_api": "POST /pfe/training/jobs",
-        "request": request.payload(),
-        "method": method,
-        "workspace": services.workspace,
-        "base_model": base_model,
-        "blocked_by": blocked_by,
-        "warnings": warnings,
-        "next_actions": next_actions,
-        "preview": {
-            "method": method,
-            "training_config": training_config,
-            "will_create_job": False,
-            "will_start_background_training": False,
-        },
-        "readiness": {
-            "summary": readiness.get("summary"),
-            "model": readiness.get("model"),
-            "runtime_dependencies": runtime_deps,
-            "inference": inference,
-            "version": readiness.get("version"),
-        },
-    }
 
 
 def _build_legacy_training_trigger_preflight_payload(
     services: ServiceBundle,
     request: TrainingJobRequest,
 ) -> dict[str, Any]:
-    base_model = str(request.training_config.get("base_model") or _load_config_base_model())
-    return {
-        "kind": "pfe_training_preflight",
-        "ready": True,
-        "requires_confirmation": False,
-        "confirm_api": "POST /pfe/training/trigger",
-        "request": request.payload(),
-        "method": request.method,
-        "workspace": services.workspace,
-        "base_model": base_model,
-        "blocked_by": [],
-        "warnings": ["legacy_trigger_bypasses_studio_preflight"],
-        "next_actions": [],
-        "preview": {
-            "method": request.method,
-            "training_config": request.training_config,
-            "will_create_job": True,
-            "will_start_background_training": True,
-            "legacy_endpoint": True,
-        },
-    }
+    return build_studio_legacy_training_trigger_preflight_payload(
+        request=request,
+        workspace=services.workspace,
+        base_model=_load_config_base_model(),
+    )
 
 
 def _training_job_payload(job_entry: Mapping[str, Any]) -> dict[str, Any]:
@@ -3969,7 +3865,7 @@ async def handle_training_jobs(
     if not allowed:
         return denial
     body = _load_request_json(envelope.body)
-    request = _training_request_from_body(body, envelope.query_params)
+    request = studio_training_request_from_body(body, envelope.query_params)
     if request.unsupported_method:
         payload = _error_payload(
             "unsupported training method",
@@ -4168,7 +4064,7 @@ async def handle_training_job_retry(
             status_code=409,
         )
     retry_body["method"] = method
-    retry_request = _training_request_from_body(retry_body, envelope.query_params, confirmed=confirmed)
+    retry_request = studio_training_request_from_body(retry_body, envelope.query_params, confirmed=confirmed)
     if retry_request.unsupported_method:
         payload = _error_payload(
             "unsupported training method",
@@ -4290,7 +4186,7 @@ async def handle_training_trigger(
     body = _load_request_json(envelope.body)
     reason = str(body.pop("reason", "manual_trigger") or "manual_trigger")
     body.setdefault("method", "sft")
-    request = _training_request_from_body(body, envelope.query_params, confirmed=True)
+    request = studio_training_request_from_body(body, envelope.query_params, confirmed=True)
     if request.unsupported_method:
         payload = _error_payload(
             "unsupported training method",
