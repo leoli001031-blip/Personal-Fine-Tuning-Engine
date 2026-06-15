@@ -88,6 +88,9 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         _require(studio["text"], "点“使用本地模型回复”后生效", label="studio html")
         _require(studio["text"], "本机推理依赖未安装", label="studio html")
         _require(studio["text"], "演示回复", label="studio html")
+        _require(studio["text"], "测试接入", label="studio html")
+        _require(studio["text"], "未测试", label="studio html")
+        _require(studio["text"], "/pfe/handoff/test", label="studio html")
         _require(studio["text"], "聊天 API", label="studio html")
         _require(studio["text"], "反馈 API", label="studio html")
         _require(studio["text"], "模型参数", label="studio html")
@@ -272,6 +275,26 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         if inference.get("real_local_enabled") is not True:
             raise AssertionError(f"chat did not enter the real-local attempt path: {chat}")
 
+        handoff_test = _expect_status(
+            _request(
+                app,
+                "/pfe/handoff/test",
+                method="POST",
+                body={"message": "hello from studio handoff test", "action": "accept"},
+                headers=host_header,
+            ),
+            200,
+            label="handoff test",
+        )
+        if handoff_test.get("ok") is not True:
+            raise AssertionError(f"handoff test did not pass: {handoff_test}")
+        if handoff_test.get("contract", {}).get("feedback_url") != expected_feedback_url:
+            raise AssertionError(f"handoff test did not expose feedback url: {handoff_test}")
+        if not handoff_test.get("chat", {}).get("request_id"):
+            raise AssertionError(f"handoff test did not return request id: {handoff_test}")
+        if handoff_test.get("feedback", {}).get("signal_type") != "accept":
+            raise AssertionError(f"handoff test did not record accept feedback: {handoff_test}")
+
         return {
             "workspace": workspace_name,
             "pfe_home": str(pfe_home),
@@ -284,6 +307,7 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
             "training_jobs": str(jobs_after_preflight.get("count")),
             "chat_served_by": str(chat.get("served_by") or ""),
             "chat_resolved_model": str(inference.get("resolved_base_model") or ""),
+            "handoff_test": str(handoff_test.get("ok")),
         }
     finally:
         if old_home is None:
