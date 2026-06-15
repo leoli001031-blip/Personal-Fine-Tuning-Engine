@@ -79,17 +79,15 @@
       min-width: 0;
     }
 
-    .brand-mark {
+    .brand-signature {
       display: grid;
       width: 34px;
       height: 34px;
       place-items: center;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--paper);
+      font-size: 17px;
       color: var(--primary);
       font-weight: 760;
-      box-shadow: 0 8px 22px rgba(82, 58, 38, 0.08);
+      letter-spacing: 0;
     }
 
     .brand-title {
@@ -227,15 +225,29 @@
     .summary {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
-      gap: 16px;
+      gap: 18px;
       align-items: start;
+    }
+
+    .work-order-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
     }
 
     .summary h2 {
       max-width: 720px;
       margin: 0;
-      font-size: clamp(32px, 5vw, 56px);
-      line-height: 0.98;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.02;
       font-weight: 780;
       letter-spacing: 0;
     }
@@ -253,6 +265,37 @@
       gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-start;
+    }
+
+    .work-facts {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .work-fact {
+      min-width: 0;
+      padding: 12px 0 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .work-fact span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .work-fact strong {
+      display: block;
+      min-width: 0;
+      margin-top: 4px;
+      overflow: hidden;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 760;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .model-row {
@@ -279,6 +322,27 @@
       font-size: 12px;
       font-weight: 760;
       text-transform: uppercase;
+    }
+
+    .field .label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .inline-status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(221, 208, 192, 0.9);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 720;
+      text-transform: none;
+      white-space: nowrap;
     }
 
     .select-wrap,
@@ -387,6 +451,10 @@
       background: #fffdf8;
     }
 
+    .api-card.primary-card {
+      background: #fffaf3;
+    }
+
     .api-card-head {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -450,6 +518,18 @@
       line-height: 1.55;
       white-space: pre-wrap;
       overflow-wrap: anywhere;
+    }
+
+    .api-details summary {
+      margin-bottom: 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .api-details[open] summary {
+      color: var(--ink);
     }
 
     .evidence-grid {
@@ -574,6 +654,14 @@
       line-height: 1.45;
     }
 
+    .footer-signature {
+      margin-top: 18px;
+      color: rgba(122, 85, 60, 0.24);
+      font-size: 13px;
+      font-weight: 760;
+      text-align: right;
+    }
+
     .empty {
       padding: 18px;
       border: 1px dashed rgba(124, 111, 99, 0.5);
@@ -612,6 +700,8 @@
     @media (max-width: 900px) {
       .workspace,
       .summary,
+      .work-order-head,
+      .work-facts,
       .model-row,
       .workspace-control-row,
       .path-row,
@@ -679,7 +769,7 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand" aria-label="PFE Studio">
-        <div class="brand-mark">P</div>
+        <div class="brand-signature">zc</div>
         <div>
           <h1 class="brand-title">PFE / 本地模型工作台</h1>
           <div class="brand-subtitle" id="workspaceLabel">本机工作区</div>
@@ -695,13 +785,36 @@
       <section class="surface surface-main" aria-labelledby="studioSummaryTitle">
         <div class="section">
           <div class="summary">
-            <div>
-              <h2 id="studioSummaryTitle">选择模型，拿到本机 API。</h2>
-              <p class="summary-copy" id="summaryText">正在检查本机服务、模型版本和可用地址。</p>
+            <div class="work-order-head">
+              <div>
+                <div class="eyebrow">当前工作单</div>
+                <h2 id="studioSummaryTitle">选择模型，拿到本机 API。</h2>
+                <p class="summary-copy" id="summaryText">正在检查本机服务、模型版本和可用地址。</p>
+              </div>
+              <span class="status-pill" id="workOrderStatus">检查中</span>
+            </div>
+            <div class="work-facts" aria-label="当前状态">
+              <div class="work-fact">
+                <span>模型</span>
+                <strong id="heroModelValue">检查中</strong>
+              </div>
+              <div class="work-fact">
+                <span>回复</span>
+                <strong id="heroReplyValue">检查中</strong>
+              </div>
+              <div class="work-fact">
+                <span>版本</span>
+                <strong id="heroVersionValue">检查中</strong>
+              </div>
+              <div class="work-fact">
+                <span>API</span>
+                <strong id="heroApiValue">检查中</strong>
+              </div>
             </div>
             <div class="summary-actions">
-              <button class="button primary" id="openWebButton" type="button">打开网页</button>
-              <button class="button" id="copyApiTopButton" type="button">复制 API 地址</button>
+              <button class="button primary" id="copyApiTopButton" type="button">复制 API</button>
+              <button class="button" id="testHandoffButton" type="button" disabled>测试接入</button>
+              <button class="button" id="openWebButton" type="button">打开网页</button>
               <button class="button" id="realLocalToggleButton" type="button" disabled>使用本地模型回复</button>
             </div>
           </div>
@@ -739,7 +852,10 @@
           </div>
           <div class="path-row">
             <div class="field">
-              <label for="modelPathInput">模型文件夹</label>
+              <label class="label-row" for="modelPathInput">
+                <span>模型文件夹</span>
+                <span class="inline-status" id="modelPathState">检查中</span>
+              </label>
               <input class="text-input" id="modelPathInput" type="text" autocomplete="off" placeholder="/Users/me/models/Qwen3-4B" />
             </div>
             <button class="button" id="saveModelPathButton" type="button">保存模型</button>
@@ -752,14 +868,13 @@
             <span class="status-pill" id="runtimeStatus">检查中</span>
           </div>
           <div class="endpoint-grid">
-            <div class="api-card">
+            <div class="api-card primary-card">
               <div class="api-card-head">
                 <div>
                   <label for="handoffValue">接入信息</label>
                   <div class="handoff-summary" id="handoffValue">检查中</div>
                 </div>
                 <div class="handoff-actions">
-                  <button class="button" id="testHandoffButton" type="button" disabled>测试接入</button>
                   <button class="button" id="copyHandoffButton" type="button" disabled>复制接入信息</button>
                 </div>
               </div>
@@ -809,11 +924,11 @@
                 </div>
                 <button class="button" data-copy-target="apiModelValue" type="button">复制 model</button>
               </div>
-              <div>
-                <label for="apiExampleValue">调用示例</label>
+              <details class="api-details">
+                <summary>调用示例</summary>
                 <pre class="api-example" id="apiExampleValue">检查中</pre>
-              </div>
-              <button class="button" data-copy-target="apiExampleValue" type="button">复制调用示例</button>
+                <button class="button" data-copy-target="apiExampleValue" type="button">复制调用示例</button>
+              </details>
             </div>
           </div>
         </div>
@@ -860,8 +975,8 @@
             <div class="training-meta" id="trainingMeta">-</div>
             <div class="training-meta" id="trainingJobMeta">最近任务：-</div>
             <div class="version-actions">
-              <button class="button" id="trainingPreflightButton" type="button">检查训练条件</button>
-              <button class="button primary" id="startTrainingButton" type="button" disabled>开始生成版本</button>
+              <button class="button" id="trainingPreflightButton" type="button">检查条件</button>
+              <button class="button primary" id="startTrainingButton" type="button" disabled>生成版本</button>
               <button class="button" id="cancelTrainingButton" type="button" disabled>停止生成</button>
               <button class="button" id="retryTrainingButton" type="button" disabled>重新生成</button>
             </div>
@@ -869,6 +984,7 @@
         </div>
       </aside>
     </div>
+    <div class="footer-signature">zc / PFE Studio</div>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -1134,6 +1250,7 @@
       text("workspaceLabel", runtime.workspace ? runtime.workspace + " / " + access : "本机工作区");
       text("webUrlValue", runtime.web_url || "-");
       text("apiUrlValue", runtime.api_url || "-");
+      text("heroApiValue", runtime.api_url ? "已就绪" : "检查中");
       text("apiModelValue", apiContract().model);
       text("apiExampleValue", buildApiExample());
       text("serviceValue", service);
@@ -1152,7 +1269,7 @@
       const access = runtime.access_scope || (state.runtime && state.runtime.access_scope) || "仅本机";
       const versionLabel = version.current || version.latest || "暂无版本";
       const summary = urls.api
-        ? "聊天和反馈 API 已就绪，复制后可直接交给前端或调用方。"
+        ? "聊天和反馈 API 已就绪。"
         : "正在检查网页、API 和模型版本。";
       text("handoffValue", summary);
       text("handoffWebValue", urls.web || "-");
@@ -1220,7 +1337,9 @@
       if (pathInput && document.activeElement !== pathInput) {
         pathInput.value = selected.local_path || "";
       }
-      text("modelValue", selected.label || models.selected_label || models.selected || "-");
+      const selectedLabel = selected.label || models.selected_label || models.selected || "-";
+      text("modelValue", selectedLabel);
+      text("heroModelValue", selectedLabel);
       const modelSource = state.readiness && state.readiness.model ? state.readiness.model.source : null;
       const configuration = state.readiness && state.readiness.configuration ? state.readiness.configuration : null;
       const sourceLabel = modelSource && modelSource.state && modelSource.state !== "ready"
@@ -1232,6 +1351,7 @@
       text("modelMeta", [sourceLabel, effectiveLabel].filter(Boolean).join(" / "));
       const modelReady = modelSource ? Boolean(modelSource.ok) : Boolean(models.selected);
       const needsReload = Boolean(configuration && configuration.reload_required);
+      text("modelPathState", modelReady && !needsReload ? "已保存" : humanIssue(modelSource && modelSource.state ? modelSource.state : "需确认"));
       pill("modelStatus", modelReady && !needsReload ? "可继续" : "需确认", modelReady && !needsReload ? "ok" : "warn");
     }
 
@@ -1344,13 +1464,14 @@
       const adapters = state.adapters || {};
       const current = adapters.current;
       text("versionValue", current && current.version ? current.version : "暂无版本");
+      text("heroVersionValue", current && current.version ? current.version : "暂无版本");
       const list = $("versionList");
       list.textContent = "";
       const versions = Array.isArray(adapters.versions) ? adapters.versions : [];
       if (!versions.length) {
         const empty = document.createElement("div");
         empty.className = "empty";
-        empty.textContent = "暂无可用版本";
+        empty.textContent = "还没有模型版本";
         list.appendChild(empty);
         pill("adapterStatus", "需确认", "warn");
         return;
@@ -1659,6 +1780,7 @@
           ? "模型配置下一次请求生效"
           : "";
         text("requestValue", replyModeLabel(readiness));
+        text("heroReplyValue", replyModeLabel(readiness));
         const blockers = humanIssueList(readinessBlockers(readiness));
         text("requestMeta", blockers.length
           ? blockers.join(" / ")
@@ -1670,12 +1792,14 @@
       const serve = lifecycle.serve || {};
       const last = serve.last_check || {};
       text("requestValue", last.path || "/pfe/status");
+      text("heroReplyValue", last.path ? "已检查" : "检查中");
       text("requestMeta", last.status_code ? String(last.status_code) : serve.state || "-");
     }
 
     function renderSummary() {
       const result = classify();
       pill("overallStatus", result.label, result.tone);
+      pill("workOrderStatus", result.label, result.tone);
       text("summaryText", result.summary);
       renderRealLocalToggle();
     }
