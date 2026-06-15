@@ -30,6 +30,37 @@ from .models import (
     SignalIngestRequest,
     SignalIngestResponse,
 )
+from .studio_contracts import build_runtime_payload as build_studio_runtime_payload
+from .studio_eval_jobs import (
+    EVAL_STATUS_URL,
+    auto_eval_state_from_last_result,
+    build_eval_running_state,
+    build_eval_status_payload,
+    running_eval_summary,
+    running_eval_version,
+)
+from .studio_eval_service import start_eval_job as start_studio_eval_job
+from .studio_jobs import (
+    append_training_job_event as append_studio_training_job_event,
+    latest_training_event_type as latest_studio_training_event_type,
+    training_job_event as studio_training_job_event,
+    training_job_payload as studio_training_job_payload,
+)
+from .studio_job_store import (
+    StudioTrainingJobStore,
+    load_json_state as load_studio_json_state,
+    save_json_state as save_studio_json_state,
+)
+from .studio_resources import (
+    build_models_payload as build_studio_models_payload,
+    build_workspaces_payload as build_studio_workspaces_payload,
+    model_candidate as studio_model_candidate,
+    validate_model_reference as validate_studio_model_reference,
+    workspace_paths as studio_workspace_paths,
+    workspace_record as studio_workspace_record,
+    workspace_slug_issues as studio_workspace_slug_issues,
+)
+from .studio_training_service import start_training_job as start_studio_training_job
 
 # ChatCollector integration - import from pfe_core if available
 def _try_import_chat_collector() -> tuple[bool, Any, Any, Any]:
@@ -661,7 +692,11 @@ def _load_core_services() -> Optional[ServiceBundle]:
 
 def _select_default_services() -> ServiceBundle:
     core_bundle = _load_core_services()
-    return core_bundle if core_bundle is not None else _default_services()
+    bundle = core_bundle if core_bundle is not None else _default_services()
+    env_workspace = os.getenv("PFE_WORKSPACE")
+    if env_workspace:
+        bundle.workspace = env_workspace
+    return bundle
 
 
 def _json_response(payload: Any, status_code: int = 200) -> Any:
@@ -672,6 +707,11 @@ def _json_response(payload: Any, status_code: int = 200) -> Any:
 
 def _frontend_html() -> str:
     html_path = _repo_root() / "pfe-server" / "pfe_server" / "static" / "chat.html"
+    return html_path.read_text(encoding="utf-8")
+
+
+def _studio_html() -> str:
+    html_path = _repo_root() / "pfe-server" / "pfe_server" / "static" / "studio.html"
     return html_path.read_text(encoding="utf-8")
 
 
@@ -827,6 +867,669 @@ def _extract_status_counts(status_payload: dict[str, Any]) -> dict[str, int]:
         "val": int(raw_counts.get("val", 0) or 0),
         "test": int(raw_counts.get("test", 0) or 0),
     }
+
+
+def _build_runtime_payload(envelope: RequestEnvelope, services: ServiceBundle) -> dict[str, Any]:
+    return build_studio_runtime_payload(
+        headers=envelope.headers,
+        runtime_probe=services.runtime_probe,
+        workspace=services.workspace,
+        provider=services.provider,
+        allow_remote_access=services.security.allow_remote_access,
+        privacy_mode=services.security.privacy_mode,
+        auth_mode=services.security.auth_mode,
+        started_at=services.started_at,
+    )
+
+
+def _workspace_slug_issues(name: str) -> list[dict[str, str]]:
+    return studio_workspace_slug_issues(name)
+
+
+def _workspace_paths(name: str) -> dict[str, Path]:
+    return studio_workspace_paths(_resolve_pfe_home(), name)
+
+
+def _workspace_record(name: str, *, current: str) -> dict[str, Any]:
+    return studio_workspace_record(_resolve_pfe_home(), name, current=current)
+
+
+def _set_active_workspace(services: ServiceBundle, name: str) -> tuple[str, str]:
+    previous = services.workspace
+    services.workspace = name
+    os.environ["PFE_WORKSPACE"] = name
+    return previous, services.workspace
+
+
+def _build_workspaces_payload(services: ServiceBundle) -> dict[str, Any]:
+    return build_studio_workspaces_payload(
+        _resolve_pfe_home(),
+        str(services.workspace or "user_default"),
+        env_workspace=os.getenv("PFE_WORKSPACE"),
+    )
+
+
+def _load_config_base_model() -> str:
+    try:
+        _ensure_core_import_path()
+        from pfe_core.config import PFEConfig
+
+        return str(PFEConfig.load(home=_resolve_pfe_home()).model.base_model)
+    except Exception:
+        return _default_chat_base_model()
+
+
+def _config_path_label() -> str | None:
+    try:
+        _ensure_core_import_path()
+        from pfe_core.config import PFEConfig
+
+        return str(PFEConfig.default_path(home=_resolve_pfe_home()))
+    except Exception:
+        return None
+
+
+def _model_candidate(model_id: str, *, source: str, selected: str | None = None) -> dict[str, Any]:
+    return studio_model_candidate(model_id, source=source, selected=selected)
+
+
+def _build_models_payload(services: ServiceBundle) -> dict[str, Any]:
+    del services
+    return build_studio_models_payload(
+        _load_config_base_model(),
+        env_model=os.getenv("PFE_REAL_LOCAL_MODEL"),
+        repo_models_dir=_repo_root() / "models",
+    )
+
+
+def _env_flag_enabled(name: str) -> bool:
+    return str(os.environ.get(name, "")).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _set_real_local_inference(enabled: bool) -> tuple[bool, bool]:
+    previous = _env_flag_enabled("PFE_ENABLE_REAL_LOCAL_INFERENCE")
+    if enabled:
+        os.environ["PFE_ENABLE_REAL_LOCAL_INFERENCE"] = "1"
+    else:
+        os.environ.pop("PFE_ENABLE_REAL_LOCAL_INFERENCE", None)
+    return previous, _env_flag_enabled("PFE_ENABLE_REAL_LOCAL_INFERENCE")
+
+
+def _module_available(name: str) -> bool:
+    try:
+        import importlib.util
+
+        return importlib.util.find_spec(name) is not None
+    except Exception:
+        return False
+
+
+def _selected_model_candidate(models_payload: Mapping[str, Any]) -> dict[str, Any]:
+    selected = str(models_payload.get("selected") or "")
+    for candidate in list(models_payload.get("candidates") or []):
+        if str(candidate.get("id") or "") == selected:
+            return dict(candidate)
+    return _model_candidate(selected, source="config", selected=selected)
+
+
+def _model_source_readiness(candidate: Mapping[str, Any]) -> dict[str, Any]:
+    local_path = candidate.get("local_path")
+    exists = bool(candidate.get("exists"))
+    model_id = str(candidate.get("id") or "")
+    if local_path:
+        return {
+            "ok": exists,
+            "state": "ready" if exists else "missing",
+            "label": "本地模型已找到" if exists else "本地模型不存在",
+            "reason": None if exists else "selected local model path does not exist",
+            "path": local_path,
+        }
+    return {
+        "ok": False,
+        "state": "needs_local_path",
+        "label": "需要本地模型路径",
+        "reason": "real local inference requires a local base model path",
+        "path": None,
+        "model_id": model_id,
+    }
+
+
+def _runtime_dependency_readiness() -> dict[str, Any]:
+    modules = {
+        "torch": _module_available("torch"),
+        "transformers": _module_available("transformers"),
+        "llama_cpp": _module_available("llama_cpp"),
+        "peft": _module_available("peft"),
+    }
+    transformers_ready = bool(modules["torch"] and modules["transformers"])
+    llama_cpp_ready = bool(modules["llama_cpp"])
+    return {
+        "ok": transformers_ready or llama_cpp_ready,
+        "transformers_ready": transformers_ready,
+        "llama_cpp_ready": llama_cpp_ready,
+        "modules": modules,
+        "preferred_runtime": "transformers" if transformers_ready else ("llama_cpp" if llama_cpp_ready else None),
+        "missing_core_modules": [
+            name
+            for name in ("torch", "transformers")
+            if not modules[name]
+        ],
+    }
+
+
+def _build_readiness_payload(envelope: RequestEnvelope, services: ServiceBundle) -> dict[str, Any]:
+    runtime = _build_runtime_payload(envelope, services)
+    models = _build_models_payload(services)
+    adapters = _build_adapters_payload(services)
+    selected_candidate = _selected_model_candidate(models)
+    selected_model = str(models.get("selected") or "")
+    model_source = _model_source_readiness(selected_candidate)
+    runtime_deps = _runtime_dependency_readiness()
+    real_local_enabled = _env_flag_enabled("PFE_ENABLE_REAL_LOCAL_INFERENCE")
+    real_local_ready = bool(real_local_enabled and model_source["ok"] and runtime_deps["ok"])
+    current_adapter = adapters.get("current")
+
+    blockers: list[str] = []
+    next_actions: list[dict[str, str]] = []
+    if not real_local_enabled:
+        blockers.append("real_local_inference_disabled")
+        next_actions.append(
+            {
+                "id": "enable_real_local_inference",
+                "label": "开启真实本地模型",
+                "detail": "在 Studio 中开启真实本地模型；当前服务进程内立即生效。",
+            }
+        )
+    if not model_source["ok"]:
+        blockers.append(str(model_source["state"]))
+        next_actions.append(
+            {
+                "id": "choose_local_model",
+                "label": "选择本地模型",
+                "detail": "在模型选择里使用已存在的本地模型目录。",
+            }
+        )
+    if not runtime_deps["ok"]:
+        blockers.append("runtime_dependencies_missing")
+        next_actions.append(
+            {
+                "id": "install_runtime_dependencies",
+                "label": "补齐本地推理依赖",
+                "detail": "真实本地模型需要 torch+transformers 或 llama.cpp 运行时。",
+            }
+        )
+    if current_adapter is None:
+        next_actions.append(
+            {
+                "id": "continue_without_version",
+                "label": "继续使用基础模型",
+                "detail": "当前没有已使用的个性化版本，仍可用基础模型或模板回复。",
+            }
+        )
+
+    inference_mode = "real_local" if real_local_ready else "template"
+    inference_label = "真实本地模型" if real_local_ready else "模板回复"
+    summary_state = "ready" if real_local_ready else "needs_setup"
+    summary_label = "可继续" if real_local_ready else "需确认"
+    if real_local_ready:
+        summary_text = "本机服务已就绪，回复来自真实本地模型。"
+    elif not real_local_enabled:
+        summary_text = "本机服务已就绪，当前回复来自模板回复；真实本地模型尚未开启。"
+    elif not model_source["ok"]:
+        summary_text = "本机服务已就绪，但真实本地模型需要一个可用的本地模型目录。"
+    else:
+        summary_text = "本机服务已就绪，但真实本地推理依赖还不完整。"
+
+    return {
+        "summary": {
+            "state": summary_state,
+            "label": summary_label,
+            "text": summary_text,
+            "blockers": blockers,
+        },
+        "inference": {
+            "mode": inference_mode,
+            "mode_label": inference_label,
+            "real_local_enabled": real_local_enabled,
+            "real_local_ready": real_local_ready,
+            "provider": services.provider,
+            "control_api": "PUT /pfe/config/real-local",
+            "effective_scope": "current_process_next_request",
+        },
+        "model": {
+            "selected": selected_model,
+            "selected_label": models.get("selected_label"),
+            "candidate": selected_candidate,
+            "source": model_source,
+        },
+        "configuration": {
+            "base_model": selected_model,
+            "effective_scope": "next_chat_request",
+            "reload_required": False,
+            "applies_to_models": ["local", "local-default", "base"],
+            "config_path": _config_path_label(),
+        },
+        "runtime": {
+            "service": runtime,
+            "dependencies": runtime_deps,
+        },
+        "version": {
+            "current": current_adapter,
+            "latest_version": adapters.get("latest_version"),
+            "pending_count": len(list(adapters.get("pending") or [])),
+            "count": adapters.get("count", 0),
+        },
+        "next_actions": next_actions,
+        "checks": {
+            "server": {"ok": runtime.get("status") == "passed", "label": "本机服务"},
+            "model_source": {"ok": bool(model_source["ok"]), "label": model_source["label"]},
+            "runtime_dependencies": {"ok": bool(runtime_deps["ok"]), "label": "本地推理依赖"},
+            "real_local_flag": {"ok": real_local_enabled, "label": "真实本地模型开关"},
+            "model_configuration": {"ok": True, "label": "模型配置"},
+            "model_version": {"ok": current_adapter is not None, "label": "模型版本"},
+        },
+    }
+
+
+def _query_bool(query_params: Mapping[str, str], key: str) -> bool:
+    return str(query_params.get(key, "")).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _body_bool(body: Mapping[str, Any], key: str) -> bool:
+    value = body.get(key)
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _load_request_json(body: bytes) -> dict[str, Any]:
+    try:
+        payload = json.loads(body or b"{}")
+    except Exception:
+        payload = {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _training_method_from_body(body: Mapping[str, Any]) -> str:
+    method = str(body.get("method", "sft")).strip().lower()
+    return method or "sft"
+
+
+def _training_config_from_body(body: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        k: v
+        for k, v in body.items()
+        if k not in ("method", "auto_trigger", "confirm")
+    }
+
+
+def _build_training_preflight_payload(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+    body: Mapping[str, Any],
+) -> dict[str, Any]:
+    readiness = _build_readiness_payload(envelope, services)
+    method = _training_method_from_body(body)
+    training_config = _training_config_from_body(body)
+    model_source = dict(readiness.get("model", {}).get("source") or {})
+    runtime_deps = dict(readiness.get("runtime", {}).get("dependencies") or {})
+    inference = dict(readiness.get("inference") or {})
+    base_model = str(
+        training_config.get("base_model")
+        or readiness.get("configuration", {}).get("base_model")
+        or _load_config_base_model()
+    )
+
+    blocked_by: list[str] = []
+    warnings: list[str] = []
+    next_actions: list[dict[str, str]] = []
+    if method not in {"sft", "dpo"}:
+        blocked_by.append("unsupported_training_method")
+        next_actions.append(
+            {
+                "id": "choose_supported_training_method",
+                "label": "选择支持的训练方式",
+                "detail": "当前只支持 SFT 或 DPO 训练入口。",
+            }
+        )
+    if not model_source.get("ok"):
+        blocked_by.append(str(model_source.get("state") or "model_source_not_ready"))
+        next_actions.append(
+            {
+                "id": "choose_local_model",
+                "label": "选择本地模型",
+                "detail": "启动训练前需要一个已存在的本地基础模型目录。",
+            }
+        )
+    if not runtime_deps.get("ok"):
+        warnings.append("runtime_dependencies_missing")
+    if not inference.get("real_local_enabled"):
+        warnings.append("real_local_inference_disabled")
+
+    return {
+        "ready": not blocked_by,
+        "requires_confirmation": True,
+        "confirm_api": "POST /pfe/training/jobs",
+        "method": method,
+        "workspace": services.workspace,
+        "base_model": base_model,
+        "blocked_by": blocked_by,
+        "warnings": warnings,
+        "next_actions": next_actions,
+        "preview": {
+            "method": method,
+            "training_config": training_config,
+            "will_create_job": False,
+            "will_start_background_training": False,
+        },
+        "readiness": {
+            "summary": readiness.get("summary"),
+            "model": readiness.get("model"),
+            "runtime_dependencies": runtime_deps,
+            "inference": inference,
+            "version": readiness.get("version"),
+        },
+    }
+
+
+def _training_job_payload(job_entry: Mapping[str, Any]) -> dict[str, Any]:
+    return studio_training_job_payload(job_entry)
+
+
+def _training_job_event(
+    *,
+    job_id: str,
+    event_type: str,
+    status: str,
+    message: str,
+    metadata: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    return studio_training_job_event(
+        job_id=job_id,
+        event_type=event_type,
+        status=status,
+        message=message,
+        metadata=metadata,
+    )
+
+
+def _append_training_job_event(
+    job_entry: dict[str, Any],
+    *,
+    event_type: str,
+    status: str,
+    message: str,
+    metadata: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    return append_studio_training_job_event(
+        job_entry,
+        event_type=event_type,
+        status=status,
+        message=message,
+        metadata=metadata,
+    )
+
+
+def _latest_training_event_type(job_entry: Mapping[str, Any]) -> str | None:
+    return latest_studio_training_event_type(job_entry)
+
+
+def _build_training_jobs_payload(services: ServiceBundle, *, limit: int = 20) -> dict[str, Any]:
+    return _training_job_store(services.workspace).build_jobs_payload(limit=limit)
+
+
+def _validate_model_reference(model_id: str) -> dict[str, Any]:
+    return validate_studio_model_reference(model_id)
+
+
+def _save_config_base_model(model_id: str) -> tuple[str, Path]:
+    _ensure_core_import_path()
+    from pfe_core.config import PFEConfig
+
+    home = _resolve_pfe_home()
+    config = PFEConfig.load(home=home)
+    previous = str(config.model.base_model)
+    config.model.base_model = model_id
+    config_path = config.save(home=home)
+    return previous, config_path
+
+
+def _coerce_json_mapping(value: Any) -> dict[str, Any]:
+    if isinstance(value, Mapping):
+        return dict(value)
+    if isinstance(value, str) and value.strip():
+        try:
+            parsed = json.loads(value)
+            return dict(parsed) if isinstance(parsed, Mapping) else {}
+        except Exception:
+            return {}
+    return {}
+
+
+def _compact_metric_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return "yes" if value else "no"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float):
+        return f"{value:.3g}"
+    return str(value)
+
+
+def _selected_metrics(source: Mapping[str, Any], keys: tuple[str, ...]) -> dict[str, Any]:
+    selected: dict[str, Any] = {}
+    for key in keys:
+        value = source.get(key)
+        if value is not None:
+            selected[key] = value
+    return selected
+
+
+def _adapter_training_summary(row: Mapping[str, Any]) -> dict[str, Any]:
+    metrics = _coerce_json_mapping(row.get("metrics"))
+    try:
+        num_samples = int(row.get("num_samples") or 0)
+    except Exception:
+        num_samples = 0
+    selected = _selected_metrics(
+        metrics,
+        (
+            "loss",
+            "train_loss",
+            "eval_loss",
+            "num_fresh_samples",
+            "num_replay_samples",
+            "preference_reinforced_fresh_sample_count",
+        ),
+    )
+    parts = [f"训练样本 {num_samples}"]
+    for key, value in list(selected.items())[:2]:
+        parts.append(f"{key} {_compact_metric_value(value)}")
+    return {
+        "num_samples": num_samples,
+        "metrics": selected,
+        "summary_line": " / ".join(parts),
+    }
+
+
+def _adapter_eval_summary(row: Mapping[str, Any]) -> dict[str, Any]:
+    raw_state = str(row.get("state") or "").lower()
+    report = _coerce_json_mapping(row.get("eval_report"))
+    if not report:
+        if raw_state in {"pending_eval", "training"}:
+            label = "待评估"
+            state = "not_run"
+        elif raw_state == "promoted":
+            label = "已设为当前"
+            state = "current"
+        elif raw_state == "archived":
+            label = "已归档"
+            state = "archived"
+        else:
+            label = "暂无评估"
+            state = "missing"
+        return {
+            "state": state,
+            "label": label,
+            "recommendation": None,
+            "comparison": None,
+            "scores": {},
+            "summary_line": f"评估结论：{label}",
+        }
+
+    recommendation = str(report.get("recommendation") or "").lower()
+    comparison = report.get("comparison")
+    scores = _coerce_json_mapping(report.get("scores"))
+    selected_scores = _selected_metrics(
+        scores,
+        (
+            "style_match",
+            "preference_alignment",
+            "personality_consistency",
+            "style_preference_hit_rate",
+            "quality_preservation",
+            "generic_quality_score",
+        ),
+    )
+    if recommendation == "deploy":
+        label = "评估通过"
+        state = "passed"
+    elif recommendation == "keep_previous":
+        label = "有问题"
+        state = "failed"
+    elif recommendation == "needs_more_data":
+        label = "需更多数据"
+        state = "needs_more_data"
+    else:
+        label = "已评估"
+        state = "completed"
+    parts = [f"评估结论：{label}"]
+    if comparison:
+        parts.append(str(comparison))
+    for key, value in list(selected_scores.items())[:2]:
+        parts.append(f"{key} {_compact_metric_value(value)}")
+    return {
+        "state": state,
+        "label": label,
+        "recommendation": recommendation or None,
+        "comparison": comparison,
+        "scores": selected_scores,
+        "summary_line": " / ".join(parts),
+    }
+
+
+def _adapter_decision_summary(
+    row: Mapping[str, Any],
+    *,
+    latest_version: str | None,
+    eval_summary: Mapping[str, Any],
+) -> dict[str, Any]:
+    version = str(row.get("version") or "")
+    raw_state = str(row.get("state") or "").lower()
+    recommendation = str(eval_summary.get("recommendation") or "").lower()
+    if latest_version and version == str(latest_version):
+        label = "当前使用中"
+        return {"label": label, "tone": "ok", "primary_action": None, "summary_line": "当前：使用中"}
+    if recommendation == "deploy":
+        label = "建议设为当前"
+        return {"label": label, "tone": "ok", "primary_action": "promote", "summary_line": "建议：设为当前"}
+    if recommendation == "keep_previous" or raw_state == "failed_eval":
+        label = "建议保留旧版"
+        return {"label": label, "tone": "bad", "primary_action": "archive", "summary_line": "建议：保留旧版"}
+    if recommendation == "needs_more_data":
+        label = "先补样本或手动确认"
+        return {"label": label, "tone": "warn", "primary_action": None, "summary_line": f"建议：{label}"}
+    if raw_state in {"pending_eval", "training"}:
+        label = "可手动确认"
+        return {"label": label, "tone": "warn", "primary_action": "promote", "summary_line": f"建议：{label}"}
+    if raw_state == "promoted":
+        label = "可回退到此版本"
+        return {"label": label, "tone": "warn", "primary_action": "rollback", "summary_line": f"建议：{label}"}
+    if raw_state == "archived":
+        label = "已归档"
+        return {"label": label, "tone": "", "primary_action": None, "summary_line": "状态：已归档"}
+    label = "待确认"
+    return {"label": label, "tone": "warn", "primary_action": None, "summary_line": f"建议：{label}"}
+
+
+def _current_eval_state(workspace: str) -> dict[str, Any]:
+    state = _eval_overall_state.get(workspace)
+    if state is None:
+        state = _load_json_state(_eval_state_path(workspace))
+    return dict(state) if isinstance(state, Mapping) else {}
+
+
+def _adapter_user_state(row: Mapping[str, Any], *, latest_version: str | None) -> str:
+    version = str(row.get("version") or "")
+    raw_state = str(row.get("state") or "").lower()
+    if latest_version and version == str(latest_version):
+        return "使用中"
+    if raw_state in {"pending_eval", "training"}:
+        return "待确认"
+    if raw_state == "promoted":
+        return "可回退"
+    if raw_state == "archived":
+        return "已归档"
+    if raw_state == "failed_eval":
+        return "有问题"
+    return "待验证"
+
+
+def _build_adapters_payload(services: ServiceBundle) -> dict[str, Any]:
+    try:
+        _ensure_core_import_path()
+        from pfe_core.adapter_store import create_adapter_store
+
+        store = create_adapter_store(workspace=services.workspace)
+        latest_version = store.current_latest_version()
+        rows = store.list_version_records(limit=100)
+        eval_state = _current_eval_state(services.workspace)
+        running_version = running_eval_version(eval_state)
+        versions = []
+        for row in rows:
+            item = _snapshot_adapter_row(row, latest=bool(latest_version and row.get("version") == latest_version))
+            raw_state = str(row.get("state") or "").lower()
+            eval_summary = _adapter_eval_summary(row)
+            version = str(item.get("version") or "")
+            eval_running = bool(running_version and version == running_version)
+            if eval_running:
+                eval_summary = running_eval_summary()
+            item["user_state"] = _adapter_user_state(row, latest_version=latest_version)
+            item["training_summary"] = _adapter_training_summary(row)
+            item["eval_summary"] = eval_summary
+            item["decision"] = _adapter_decision_summary(row, latest_version=latest_version, eval_summary=eval_summary)
+            item["can_promote"] = item["user_state"] in {"待确认", "可回退"}
+            item["can_rollback"] = bool(not item.get("latest") and raw_state in {"promoted", "archived"})
+            item["can_archive"] = bool(not item.get("latest") and raw_state != "archived")
+            item["can_eval"] = bool(raw_state in {"pending_eval", "failed_eval", "promoted"} and not eval_running)
+            item["eval_running"] = eval_running
+            item["action_api"] = {
+                "promote": f"/pfe/adapters/{item.get('version')}/promote",
+                "rollback": f"/pfe/adapters/{item.get('version')}/rollback",
+                "archive": f"/pfe/adapters/{item.get('version')}/archive",
+                "eval": "/pfe/eval",
+            }
+            versions.append(item)
+        pending = [item for item in versions if item.get("user_state") == "待确认"]
+        fallback = next((item for item in versions if item.get("user_state") == "可回退"), None)
+        return {
+            "latest_version": latest_version,
+            "current": next((item for item in versions if item.get("latest")), None),
+            "pending": pending,
+            "fallback": fallback,
+            "versions": versions,
+            "count": len(versions),
+        }
+    except Exception as exc:
+        return {
+            "latest_version": None,
+            "current": None,
+            "pending": [],
+            "fallback": None,
+            "versions": [],
+            "count": 0,
+            "error": str(exc),
+        }
 
 
 def _build_status_export_metadata(snapshot: Mapping[str, Any], services: ServiceBundle) -> dict[str, Any]:
@@ -1003,20 +1706,20 @@ def _eval_state_path(workspace: str) -> Path:
 
 
 def _load_json_state(path: Path) -> dict[str, Any]:
-    try:
-        if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
-    except Exception:
-        pass
-    return {}
+    return load_studio_json_state(path)
 
 
 def _save_json_state(path: Path, payload: dict[str, Any]) -> None:
-    try:
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(payload, ensure_ascii=False, default=str), encoding="utf-8")
-    except Exception:
-        pass
+    save_studio_json_state(path, payload)
+
+
+def _training_job_store(workspace: str) -> StudioTrainingJobStore:
+    return StudioTrainingJobStore(
+        workspace=workspace,
+        workspace_dir=_default_status_workspace_dir(workspace),
+        memory_jobs=_training_jobs_state,
+        overall_state=_training_overall_state,
+    )
 
 
 def _load_latest_training_artifacts(snapshot: Mapping[str, Any], services: ServiceBundle) -> dict[str, Any]:
@@ -3093,6 +3796,31 @@ async def handle_signals(
 
 
 
+def _start_training_job(
+    services: ServiceBundle,
+    *,
+    method: str,
+    training_config: Mapping[str, Any],
+    preflight: Mapping[str, Any],
+    retry_of: str | None = None,
+) -> Any:
+    workspace = services.workspace
+    store = _training_job_store(workspace)
+
+    payload = start_studio_training_job(
+        workspace=workspace,
+        pipeline=services.pipeline,
+        method=method,
+        training_config=training_config,
+        preflight=preflight,
+        retry_of=retry_of,
+        persist_job=store.persist_job,
+        persist_overall=store.persist_overall,
+        build_jobs_payload=lambda limit: store.build_jobs_payload(limit=limit),
+    )
+    return _json_response(payload, status_code=202)
+
+
 async def handle_training_jobs(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -3100,73 +3828,54 @@ async def handle_training_jobs(
     allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
     if not allowed:
         return denial
-    try:
-        body = json.loads(envelope.body or b"{}")
-    except Exception:
-        body = {}
-    method = str(body.get("method", "sft")).lower()
-    job_id = str(uuid4())
-    workspace = services.workspace
-    now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    body = _load_request_json(envelope.body)
+    method = _training_method_from_body(body)
+    preflight = _build_training_preflight_payload(envelope, services, body)
+    confirmed = _query_bool(envelope.query_params, "confirm") or _body_bool(body, "confirm")
+    if not confirmed:
+        payload = _error_payload(
+            "confirmation required",
+            "confirmation_required",
+            "pass confirm=true to start this training job",
+        )
+        payload.update({"preflight": preflight, "confirm_api": "POST /pfe/training/jobs"})
+        return _json_response(payload, status_code=409)
+    if not preflight.get("ready"):
+        payload = _error_payload(
+            "training preflight failed",
+            "training_preflight_failed",
+            "resolve preflight blockers before starting this training job",
+        )
+        payload.update({"preflight": preflight})
+        return _json_response(payload, status_code=409)
+    store = _training_job_store(services.workspace)
+    active_job = store.active_job()
+    if active_job is not None:
+        payload = _error_payload(
+            "training job is already active",
+            "training_job_already_active",
+            "wait for the active job to finish or cancel it before starting another one",
+        )
+        payload.update({"active_job": active_job, "jobs": store.build_jobs_payload(limit=10)})
+        return _json_response(payload, status_code=409)
+    training_config = _training_config_from_body(body)
+    return _start_training_job(
+        services,
+        method=method,
+        training_config=training_config,
+        preflight=preflight,
+    )
 
-    training_config = {
-        k: v
-        for k, v in body.items()
-        if k not in ("method", "auto_trigger")
-    }
-    job_entry = {
-        "job_id": job_id,
-        "status": "queued",
-        "method": method,
-        "adapter_version": None,
-        "checkpoints": [],
-        "training_config": training_config,
-        "created_at": now,
-        "updated_at": now,
-    }
-    _training_jobs_state[job_id] = job_entry
-    jobs_file = _training_jobs_path(workspace)
-    stored = _load_json_state(jobs_file)
-    stored[job_id] = job_entry
-    _save_json_state(jobs_file, stored)
 
-    def _run_training() -> None:
-        try:
-            job_entry["status"] = "running"
-            job_entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-            _training_jobs_state[job_id] = job_entry
-            _save_json_state(jobs_file, stored)
-            if method == "dpo":
-                result_msg = services.pipeline.train_dpo()
-            else:
-                result_msg = services.pipeline.train()
-            version = None
-            for token in str(result_msg).split():
-                if token.startswith("2") and len(token) >= 8:
-                    version = token
-                    break
-            job_entry["status"] = "completed"
-            job_entry["adapter_version"] = version
-            job_entry["result"] = result_msg
-        except Exception as exc:
-            job_entry["status"] = "failed"
-            job_entry["error"] = str(exc)
-        finally:
-            job_entry["updated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-            _training_jobs_state[job_id] = job_entry
-            stored[job_id] = job_entry
-            _save_json_state(jobs_file, stored)
-            _training_overall_state[workspace] = {
-                "state": job_entry["status"],
-                "adapter_version": job_entry.get("adapter_version"),
-                "job_id": job_id,
-                "updated_at": job_entry["updated_at"],
-            }
-            _save_json_state(_training_state_path(workspace), _training_overall_state[workspace])
-
-    import threading
-    threading.Thread(target=_run_training, daemon=True).start()
-    return _json_response({"job_id": job_id}, status_code=202)
+async def handle_training_jobs_list(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 20)
+    return _json_response(_build_training_jobs_payload(services, limit=limit), status_code=200)
 
 
 async def handle_training_job(
@@ -3180,14 +3889,161 @@ async def handle_training_job(
     job_id = path_parts[-1] if path_parts else ""
     if not job_id or job_id == "jobs":
         return _json_response(_error_payload("job_id required", "bad_request"), status_code=400)
-    workspace = services.workspace
-    job_entry = _training_jobs_state.get(job_id)
-    if job_entry is None:
-        stored = _load_json_state(_training_jobs_path(workspace))
-        job_entry = stored.get(job_id)
+    job_entry = _training_job_store(services.workspace).get_job(job_id)
     if job_entry is None:
         return _json_response(_error_payload("job not found", "not_found"), status_code=404)
-    return _json_response(dict(job_entry), status_code=200)
+    return _json_response(_training_job_payload(job_entry), status_code=200)
+
+
+async def handle_training_job_events(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    path_parts = envelope.path.strip("/").split("/")
+    job_id = path_parts[-2] if len(path_parts) >= 2 and path_parts[-1] == "events" else ""
+    if not job_id:
+        return _json_response(_error_payload("job_id required", "bad_request"), status_code=400)
+    workspace = services.workspace
+    job_entry = _training_job_store(workspace).get_job(job_id)
+    if job_entry is None:
+        return _json_response(_error_payload("job not found", "not_found"), status_code=404)
+    events = job_entry.get("events")
+    items = list(events) if isinstance(events, list) else []
+    return _json_response(
+        {
+            "job_id": job_id,
+            "workspace": workspace,
+            "count": len(items),
+            "items": items,
+            "latest": items[-1] if items else None,
+            "job": _training_job_payload(job_entry),
+        },
+        status_code=200,
+    )
+
+
+async def handle_training_job_cancel(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    confirmed = _query_bool(envelope.query_params, "confirm") or _body_bool(body, "confirm")
+    path_parts = envelope.path.strip("/").split("/")
+    job_id = path_parts[-2] if len(path_parts) >= 2 and path_parts[-1] == "cancel" else ""
+    if not job_id:
+        return _json_response(_error_payload("job_id required", "bad_request"), status_code=400)
+    if not confirmed:
+        return _json_response(
+            _error_payload("confirmation required", "confirmation_required", "pass confirm=true to cancel this training job"),
+            status_code=409,
+        )
+    store = _training_job_store(services.workspace)
+    result = store.cancel_job(job_id)
+    if result["outcome"] == "not_found":
+        return _json_response(_error_payload("job not found", "not_found"), status_code=404)
+    if result["outcome"] == "not_cancellable":
+        return _json_response(
+            _error_payload("job is no longer cancellable", "job_not_cancellable", "only queued or running jobs can be cancelled"),
+            status_code=409,
+        )
+    return _json_response(
+        {
+            "success": True,
+            "action": result["action"],
+            "message": result["message"],
+            "job_id": job_id,
+            "job": result["job"],
+            "jobs": store.build_jobs_payload(limit=10),
+        },
+        status_code=200,
+    )
+
+
+async def handle_training_job_retry(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    confirmed = _query_bool(envelope.query_params, "confirm") or _body_bool(body, "confirm")
+    path_parts = envelope.path.strip("/").split("/")
+    job_id = path_parts[-2] if len(path_parts) >= 2 and path_parts[-1] == "retry" else ""
+    if not job_id:
+        return _json_response(_error_payload("job_id required", "bad_request"), status_code=400)
+
+    store = _training_job_store(services.workspace)
+    job_entry = store.get_job(job_id)
+    if job_entry is None:
+        return _json_response(_error_payload("job not found", "not_found"), status_code=404)
+    status = str(job_entry.get("status") or "")
+    if status not in {"failed", "cancelled"}:
+        return _json_response(
+            _error_payload("job is not retryable", "job_not_retryable", "only failed or cancelled jobs can be retried"),
+            status_code=409,
+        )
+
+    original_config = job_entry.get("training_config")
+    retry_body = dict(original_config) if isinstance(original_config, Mapping) else {}
+    method = str(job_entry.get("method") or "sft")
+    retry_body["method"] = method
+    retry_body["confirm"] = True
+    preflight = _build_training_preflight_payload(envelope, services, retry_body)
+    if not confirmed:
+        payload = _error_payload(
+            "confirmation required",
+            "confirmation_required",
+            "pass confirm=true to retry this training job",
+        )
+        payload.update(
+            {
+                "preflight": preflight,
+                "confirm_api": f"POST /pfe/training/jobs/{job_id}/retry",
+                "retry_of": job_id,
+            }
+        )
+        return _json_response(payload, status_code=409)
+    if not preflight.get("ready"):
+        payload = _error_payload(
+            "training preflight failed",
+            "training_preflight_failed",
+            "resolve preflight blockers before retrying this training job",
+        )
+        payload.update({"preflight": preflight, "retry_of": job_id})
+        return _json_response(payload, status_code=409)
+
+    active_job = store.active_job()
+    if active_job is not None:
+        payload = _error_payload(
+            "training job is already active",
+            "training_job_already_active",
+            "wait for the active job to finish or cancel it before retrying this job",
+        )
+        payload.update({"active_job": active_job, "retry_of": job_id, "jobs": store.build_jobs_payload(limit=10)})
+        return _json_response(payload, status_code=409)
+
+    retry_result = store.mark_retry_requested(job_id)
+    if retry_result["outcome"] == "not_found":
+        return _json_response(_error_payload("job not found", "not_found"), status_code=404)
+    if retry_result["outcome"] == "not_retryable":
+        return _json_response(
+            _error_payload("job is not retryable", "job_not_retryable", "only failed or cancelled jobs can be retried"),
+            status_code=409,
+        )
+    return _start_training_job(
+        services,
+        method=method,
+        training_config=_training_config_from_body(retry_body),
+        preflight=preflight,
+        retry_of=job_id,
+    )
 
 
 async def handle_training_status(
@@ -3198,9 +4054,7 @@ async def handle_training_status(
     if not allowed:
         return denial
     workspace = services.workspace
-    state = _training_overall_state.get(workspace)
-    if state is None:
-        state = _load_json_state(_training_state_path(workspace))
+    state = _training_job_store(workspace).current_overall_state()
     if not state:
         state = {"state": "idle", "adapter_version": None}
     # Derive auto-train state from pipeline when no explicit server trigger is tracked
@@ -3243,8 +4097,8 @@ async def handle_training_trigger(
     reason = body.get("reason", "manual_trigger")
     job_id = str(uuid4())
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    _training_overall_state[workspace] = {"state": "running", "reason": reason, "job_id": job_id, "updated_at": now}
-    _save_json_state(_training_state_path(workspace), _training_overall_state[workspace])
+    store = _training_job_store(workspace)
+    store.persist_overall(workspace, {"state": "running", "reason": reason, "job_id": job_id, "updated_at": now})
 
     def _run_triggered_training() -> None:
         try:
@@ -3270,8 +4124,7 @@ async def handle_training_trigger(
                 "job_id": job_id,
                 "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             }
-        _training_overall_state[workspace] = state
-        _save_json_state(_training_state_path(workspace), state)
+        store.persist_overall(workspace, state)
 
     import threading
     threading.Thread(target=_run_triggered_training, daemon=True).start()
@@ -3289,48 +4142,58 @@ async def handle_eval_run(
     if not allowed:
         return denial
     workspace = services.workspace
-    body_raw = envelope.body or b"{}"
-    try:
-        body = json.loads(body_raw) if isinstance(body_raw, bytes) else dict(body_raw or {})
-    except Exception:
-        body = {}
-    version = body.get("version", "latest")
-
-    def _run_eval() -> None:
-        try:
-            from pfe_core.adapter_store import create_adapter_store
-            store = create_adapter_store(workspace=workspace)
-            latest = store.current_latest_version()
-            eval_version = version if version != "latest" else (latest or version)
-            _eval_overall_state[workspace] = {"state": "running", "version": eval_version}
-            _save_json_state(_eval_state_path(workspace), _eval_overall_state[workspace])
-            result = services.pipeline.evaluate(
-                base_model=body.get("base_model") or _default_chat_base_model(),
-                adapter=eval_version,
-                num_samples=int(body.get("num_samples", 20)),
-                workspace=workspace,
-            )
-            report = {"state": "completed", "version": eval_version, "raw_result": str(result)}
-            try:
-                adapter_path = store.load(eval_version)
-                report_path = Path(adapter_path) / "eval_report.json"
-                if report_path.exists():
-                    eval_data = json.loads(report_path.read_text(encoding="utf-8"))
-                    report.update(eval_data)
-            except Exception:
-                pass
-            _eval_overall_state[workspace] = report
-        except Exception as exc:
-            _eval_overall_state[workspace] = {
-                "state": "failed",
+    body = _load_request_json(envelope.body)
+    confirmed = _query_bool(envelope.query_params, "confirm") or _body_bool(body, "confirm")
+    version = str(body.get("version") or envelope.query_params.get("version") or "latest")
+    if not confirmed:
+        payload = _error_payload(
+            "confirmation required",
+            "confirmation_required",
+            "pass confirm=true to evaluate this version",
+        )
+        payload.update(
+            {
                 "version": version,
-                "error": str(exc),
+                "confirm_api": "POST /pfe/eval",
+                "status_url": EVAL_STATUS_URL,
             }
-        _save_json_state(_eval_state_path(workspace), _eval_overall_state[workspace])
+        )
+        return _json_response(payload, status_code=409)
 
-    import threading
-    threading.Thread(target=_run_eval, daemon=True).start()
-    return _json_response({"state": "running", "version": version}, status_code=202)
+    try:
+        from pfe_core.adapter_store import create_adapter_store
+        store = create_adapter_store(workspace=workspace)
+        latest = store.current_latest_version()
+        eval_version = version if version != "latest" else (latest or "")
+        if not eval_version:
+            return _json_response(_error_payload("adapter not found", "not_found"), status_code=404)
+        store.load(eval_version)
+    except Exception as exc:
+        return _json_response(_error_payload(str(exc), "not_found"), status_code=404)
+
+    current_eval_state = _current_eval_state(workspace)
+    if isinstance(current_eval_state, Mapping) and str(current_eval_state.get("state") or "") == "running":
+        return _json_response(
+            _error_payload("evaluation is already running", "eval_already_running", f"wait for {EVAL_STATUS_URL} to finish"),
+            status_code=409,
+        )
+
+    def _persist_eval_state(eval_workspace: str, state: dict[str, Any]) -> None:
+        _eval_overall_state[eval_workspace] = state
+        _save_json_state(_eval_state_path(eval_workspace), state)
+
+    payload = start_studio_eval_job(
+        pipeline=services.pipeline,
+        workspace=workspace,
+        version=eval_version,
+        requested_version=version,
+        request_body=body,
+        default_base_model=_default_chat_base_model,
+        load_adapter_path=store.load,
+        persist_state=_persist_eval_state,
+        build_adapters_payload=lambda: _build_adapters_payload(services),
+    )
+    return _json_response(payload, status_code=202)
 
 
 async def handle_eval_status(
@@ -3341,33 +4204,21 @@ async def handle_eval_status(
     if not allowed:
         return denial
     workspace = services.workspace
-    state = _eval_overall_state.get(workspace)
-    if state is None:
-        state = _load_json_state(_eval_state_path(workspace))
-    if not state:
-        state = {"state": "idle"}
+    state = _current_eval_state(workspace)
     # Derive auto-eval state from pipeline when no explicit server eval is tracked
-    if state.get("state") == "idle":
+    if not state or state.get("state") == "idle":
         pipeline = getattr(services.pipeline, "pipeline", None)
         if pipeline is not None and hasattr(pipeline, "_load_auto_trigger_state"):
             try:
                 auto_state = pipeline._load_auto_trigger_state(workspace=workspace)
                 last_result = dict(auto_state.get("last_result") or {})
-                if last_result.get("eval_triggered"):
-                    eval_state = {
-                        "state": "completed",
-                        "version": last_result.get("triggered_version") or last_result.get("promoted_version"),
-                        "recommendation": last_result.get("eval_recommendation"),
-                        "comparison": last_result.get("eval_comparison"),
-                        "auto_evaluate": True,
-                    }
-                    if last_result.get("eval_error") or (last_result.get("error_stage") == "eval"):
-                        eval_state["state"] = "failed"
-                        eval_state["error"] = last_result.get("eval_error") or last_result.get("error")
+                eval_state = auto_eval_state_from_last_result(last_result)
+                if eval_state:
                     return _json_response(eval_state, status_code=200)
             except Exception:
                 pass
-    return _json_response(dict(state), status_code=200)
+    payload = build_eval_status_payload(state, adapters=_build_adapters_payload(services))
+    return _json_response(payload, status_code=200)
 
 
 async def handle_adapter_latest(
@@ -3411,6 +4262,56 @@ async def handle_adapter_version(
         return _json_response(_error_payload(str(exc), "internal_error"), status_code=500)
 
 
+def _adapter_action_version(envelope: RequestEnvelope, action: str) -> str:
+    path_parts = envelope.path.strip("/").split("/")
+    if len(path_parts) >= 4 and path_parts[-1] == action:
+        return path_parts[-2]
+    return ""
+
+
+def _adapter_action_confirmed(envelope: RequestEnvelope, body: Mapping[str, Any]) -> bool:
+    return _query_bool(envelope.query_params, "confirm") or _body_bool(body, "confirm")
+
+
+def _adapter_action_payload(
+    *,
+    services: ServiceBundle,
+    action: str,
+    version: str,
+    previous_version: str | None,
+    message: str,
+) -> dict[str, Any]:
+    adapters = _build_adapters_payload(services)
+    return {
+        "success": True,
+        "action": action,
+        "version": version,
+        "target_version": version,
+        "previous_version": previous_version,
+        "current_version": adapters.get("latest_version"),
+        "message": message,
+        "adapters": adapters,
+        "fallback": adapters.get("fallback"),
+    }
+
+
+def _rollback_adapter_version(store: Any, version: str) -> str:
+    rows = store.list_version_records(limit=1000)
+    row = next((item for item in rows if str(item.get("version") or "") == version), None)
+    if row and str(row.get("state") or "").lower() == "archived":
+        adapter_dir = Path(store.load(version))
+        manifest_path = adapter_dir / "adapter_manifest.json"
+        manifest: dict[str, Any] = {}
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except Exception:
+            manifest = {}
+        metrics = manifest.get("training_metrics") if isinstance(manifest.get("training_metrics"), dict) else None
+        num_samples = int(manifest.get("num_samples", row.get("num_samples", 0)) or 0)
+        store.mark_pending_eval(version, num_samples=num_samples, metrics=metrics)
+    return store.rollback(version)
+
+
 async def handle_adapter_promote(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -3418,17 +4319,102 @@ async def handle_adapter_promote(
     allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
     if not allowed:
         return denial
-    path_parts = envelope.path.strip("/").split("/")
-    version = path_parts[-3] if len(path_parts) >= 3 else ""
+    body = _load_request_json(envelope.body)
+    version = _adapter_action_version(envelope, "promote")
     if not version:
         return _json_response(_error_payload("version required", "bad_request"), status_code=400)
+    if not _adapter_action_confirmed(envelope, body):
+        return _json_response(
+            _error_payload("confirmation required", "confirmation_required", "pass confirm=true to promote this version"),
+            status_code=409,
+        )
     try:
         from pfe_core.adapter_store import create_adapter_store
         store = create_adapter_store(workspace=services.workspace)
-        store.promote(version)
-        return _json_response({"success": True, "version": version}, status_code=200)
+        previous_version = store.current_latest_version()
+        message = store.promote(version)
+        return _json_response(
+            _adapter_action_payload(
+                services=services,
+                action="promote",
+                version=version,
+                previous_version=previous_version,
+                message=message,
+            ),
+            status_code=200,
+        )
     except Exception as exc:
-        return _json_response(_error_payload(str(exc), "internal_error"), status_code=500)
+        return _json_response(_error_payload(str(exc), "adapter_action_failed"), status_code=409)
+
+
+async def handle_adapter_rollback(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    version = _adapter_action_version(envelope, "rollback")
+    if not version:
+        return _json_response(_error_payload("version required", "bad_request"), status_code=400)
+    if not _adapter_action_confirmed(envelope, body):
+        return _json_response(
+            _error_payload("confirmation required", "confirmation_required", "pass confirm=true to rollback to this version"),
+            status_code=409,
+        )
+    try:
+        from pfe_core.adapter_store import create_adapter_store
+        store = create_adapter_store(workspace=services.workspace)
+        previous_version = store.current_latest_version()
+        message = _rollback_adapter_version(store, version)
+        return _json_response(
+            _adapter_action_payload(
+                services=services,
+                action="rollback",
+                version=version,
+                previous_version=previous_version,
+                message=message,
+            ),
+            status_code=200,
+        )
+    except Exception as exc:
+        return _json_response(_error_payload(str(exc), "adapter_action_failed"), status_code=409)
+
+
+async def handle_adapter_archive(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    version = _adapter_action_version(envelope, "archive")
+    if not version:
+        return _json_response(_error_payload("version required", "bad_request"), status_code=400)
+    if not _adapter_action_confirmed(envelope, body):
+        return _json_response(
+            _error_payload("confirmation required", "confirmation_required", "pass confirm=true to archive this version"),
+            status_code=409,
+        )
+    try:
+        from pfe_core.adapter_store import create_adapter_store
+        store = create_adapter_store(workspace=services.workspace)
+        previous_version = store.current_latest_version()
+        message = store.archive(version)
+        return _json_response(
+            _adapter_action_payload(
+                services=services,
+                action="archive",
+                version=version,
+                previous_version=previous_version,
+                message=message,
+            ),
+            status_code=200,
+        )
+    except Exception as exc:
+        return _json_response(_error_payload(str(exc), "adapter_action_failed"), status_code=409)
 
 
 async def handle_training_checkpoints(
@@ -3476,7 +4462,17 @@ async def handle_training_dead_letter(
 
 async def handle_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     del envelope, services
+    return _html_response(_studio_html(), status_code=200)
+
+
+async def handle_chat_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    del envelope, services
     return _html_response(_frontend_html(), status_code=200)
+
+
+async def handle_studio_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    del envelope, services
+    return _html_response(_studio_html(), status_code=200)
 
 
 async def handle_dashboard_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
@@ -3486,6 +4482,157 @@ async def handle_dashboard_frontend(envelope: RequestEnvelope, services: Service
     if html_path.exists():
         return _html_response(html_path.read_text(encoding="utf-8"), status_code=200)
     return _json_response({"error": "dashboard.html not found"}, status_code=404)
+
+
+async def handle_runtime(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    return _json_response(_build_runtime_payload(envelope, services), status_code=200)
+
+
+async def handle_workspaces(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    if envelope.method == "GET":
+        return _json_response(_build_workspaces_payload(services), status_code=200)
+    body = _load_request_json(envelope.body)
+    name = str(body.get("name") or body.get("workspace") or body.get("id") or "").strip()
+    validation_issues = _workspace_slug_issues(name)
+    if validation_issues:
+        return _json_response(
+            {
+                "saved": False,
+                "selected": name,
+                "validation": {"valid": False, "issues": validation_issues},
+            },
+            status_code=422,
+        )
+    paths = _workspace_paths(name)
+    existed = paths["adapters"].exists() or paths["state"].exists()
+    paths["adapters"].mkdir(parents=True, exist_ok=True)
+    paths["state"].mkdir(parents=True, exist_ok=True)
+    switch_requested = "switch" not in body or _body_bool(body, "switch")
+    previous = services.workspace
+    current = services.workspace
+    if switch_requested:
+        previous, current = _set_active_workspace(services, name)
+    return _json_response(
+        {
+            "saved": True,
+            "created": not existed,
+            "switched": switch_requested,
+            "changed": previous != current,
+            "previous": previous,
+            "current": current,
+            "selected": name,
+            "workspace": _workspace_record(name, current=current),
+            "workspaces": _build_workspaces_payload(services),
+            "runtime": _build_runtime_payload(envelope, services),
+            "adapters": _build_adapters_payload(services),
+            "readiness": _build_readiness_payload(envelope, services),
+            "effective_scope": "current_process_next_request",
+            "persisted": False,
+        },
+        status_code=200,
+    )
+
+
+async def handle_models(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    return _json_response(_build_models_payload(services), status_code=200)
+
+
+async def handle_readiness(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    return _json_response(_build_readiness_payload(envelope, services), status_code=200)
+
+
+async def handle_model_config(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        body = json.loads(envelope.body or b"{}")
+    except Exception:
+        body = {}
+    if not isinstance(body, dict):
+        return _json_response(_error_payload("JSON object expected", "invalid_request"), status_code=400)
+    model_id = str(body.get("base_model") or body.get("model") or "").strip()
+    validation = _validate_model_reference(model_id)
+    if not validation["valid"]:
+        return _json_response(
+            {
+                "saved": False,
+                "validate_only": _query_bool(envelope.query_params, "validate_only"),
+                "selected": model_id,
+                "validation": validation,
+            },
+            status_code=422,
+        )
+    validate_only = _query_bool(envelope.query_params, "validate_only")
+    previous_model = _load_config_base_model()
+    changed = model_id != previous_model
+    config_path: Path | None = None
+    if not validate_only:
+        previous_model, config_path = _save_config_base_model(model_id)
+        changed = model_id != previous_model
+    return _json_response(
+        {
+            "saved": not validate_only,
+            "validate_only": validate_only,
+            "changed": changed,
+            "previous": previous_model,
+            "selected": model_id,
+            "config_path": str(config_path) if config_path else None,
+            "effective_scope": "not_applied" if validate_only else "next_chat_request",
+            "reload_required": False,
+            "applies_to_models": ["local", "local-default", "base"],
+            "validation": validation,
+            "models": _build_models_payload(services),
+        },
+        status_code=200,
+    )
+
+
+async def handle_real_local_config(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    if "enabled" not in body:
+        return _json_response(
+            _error_payload("enabled is required", "invalid_request"),
+            status_code=400,
+        )
+    requested = _body_bool(body, "enabled")
+    previous, enabled = _set_real_local_inference(requested)
+    return _json_response(
+        {
+            "saved": True,
+            "previous": previous,
+            "enabled": enabled,
+            "changed": previous != enabled,
+            "env_var": "PFE_ENABLE_REAL_LOCAL_INFERENCE",
+            "persisted": False,
+            "effective_scope": "current_process_next_request",
+            "reload_required": False,
+            "readiness": _build_readiness_payload(envelope, services),
+        },
+        status_code=200,
+    )
+
+
+async def handle_adapters(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    return _json_response(_build_adapters_payload(services), status_code=200)
 
 
 async def handle_dashboard_metrics(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
@@ -3642,6 +4789,10 @@ class _LiteASGIApp:
     async def _dispatch(self, envelope: RequestEnvelope) -> Any:
         if envelope.path == "/" and envelope.method == "GET":
             return await handle_frontend(envelope, self.services)
+        if envelope.path in {"/chat", "/pfe/chat"} and envelope.method == "GET":
+            return await handle_chat_frontend(envelope, self.services)
+        if envelope.path in {"/studio", "/pfe/studio"} and envelope.method == "GET":
+            return await handle_studio_frontend(envelope, self.services)
         if envelope.path == "/healthz" and envelope.method == "GET":
             return _json_response({"status": "ok"}, status_code=200)
         if envelope.path == "/v1/chat/completions" and envelope.method == "POST":
@@ -3700,8 +4851,28 @@ class _LiteASGIApp:
             return await handle_train_queue_history(envelope, self.services)
         if envelope.path == "/pfe/status" and envelope.method == "GET":
             return await handle_status(envelope, self.services)
+        if envelope.path == "/pfe/runtime" and envelope.method == "GET":
+            return await handle_runtime(envelope, self.services)
+        if envelope.path == "/pfe/workspaces" and envelope.method in {"GET", "POST"}:
+            return await handle_workspaces(envelope, self.services)
+        if envelope.path == "/pfe/models" and envelope.method == "GET":
+            return await handle_models(envelope, self.services)
+        if envelope.path == "/pfe/readiness" and envelope.method == "GET":
+            return await handle_readiness(envelope, self.services)
+        if envelope.path == "/pfe/config/model" and envelope.method == "PUT":
+            return await handle_model_config(envelope, self.services)
+        if envelope.path == "/pfe/config/real-local" and envelope.method == "PUT":
+            return await handle_real_local_config(envelope, self.services)
         if envelope.path == "/pfe/training/jobs" and envelope.method == "POST":
             return await handle_training_jobs(envelope, self.services)
+        if envelope.path == "/pfe/training/jobs" and envelope.method == "GET":
+            return await handle_training_jobs_list(envelope, self.services)
+        if envelope.path.startswith("/pfe/training/jobs/") and envelope.path.endswith("/cancel") and envelope.method == "POST":
+            return await handle_training_job_cancel(envelope, self.services)
+        if envelope.path.startswith("/pfe/training/jobs/") and envelope.path.endswith("/retry") and envelope.method == "POST":
+            return await handle_training_job_retry(envelope, self.services)
+        if envelope.path.startswith("/pfe/training/jobs/") and envelope.path.endswith("/events") and envelope.method == "GET":
+            return await handle_training_job_events(envelope, self.services)
         if envelope.path.startswith("/pfe/training/jobs/") and envelope.path.endswith("/checkpoints") and envelope.method == "GET":
             return await handle_training_checkpoints(envelope, self.services)
         if envelope.path.startswith("/pfe/training/jobs/") and envelope.method == "GET":
@@ -3714,10 +4885,16 @@ class _LiteASGIApp:
             return await handle_eval_run(envelope, self.services)
         if envelope.path == "/pfe/eval/status" and envelope.method == "GET":
             return await handle_eval_status(envelope, self.services)
+        if envelope.path == "/pfe/adapters" and envelope.method == "GET":
+            return await handle_adapters(envelope, self.services)
         if envelope.path == "/pfe/adapters/latest" and envelope.method == "GET":
             return await handle_adapter_latest(envelope, self.services)
         if envelope.path.startswith("/pfe/adapters/") and envelope.path.endswith("/promote") and envelope.method == "POST":
             return await handle_adapter_promote(envelope, self.services)
+        if envelope.path.startswith("/pfe/adapters/") and envelope.path.endswith("/rollback") and envelope.method == "POST":
+            return await handle_adapter_rollback(envelope, self.services)
+        if envelope.path.startswith("/pfe/adapters/") and envelope.path.endswith("/archive") and envelope.method == "POST":
+            return await handle_adapter_archive(envelope, self.services)
         if envelope.path.startswith("/pfe/adapters/") and envelope.method == "GET":
             return await handle_adapter_version(envelope, self.services)
         if envelope.path == "/pfe/training/dead-letter" and envelope.method == "GET":
@@ -3766,6 +4943,22 @@ def create_app(
         @app.get("/", response_class=HTMLResponse)
         async def frontend(request: Request) -> Any:
             return await handle_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/chat", response_class=HTMLResponse)
+        async def chat_frontend(request: Request) -> Any:
+            return await handle_chat_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/chat", response_class=HTMLResponse)
+        async def pfe_chat_frontend(request: Request) -> Any:
+            return await handle_chat_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/studio", response_class=HTMLResponse)
+        async def studio_frontend(request: Request) -> Any:
+            return await handle_studio_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/studio", response_class=HTMLResponse)
+        async def pfe_studio_frontend(request: Request) -> Any:
+            return await handle_studio_frontend(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/v1/chat/completions")
         async def chat_completions(request: Request) -> Any:
@@ -3883,6 +5076,34 @@ def create_app(
         async def pfe_status(request: Request) -> Any:
             return await handle_status(await _envelope_from_fastapi_request(request), bundle)
 
+        @app.get("/pfe/runtime")
+        async def pfe_runtime(request: Request) -> Any:
+            return await handle_runtime(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/workspaces")
+        async def pfe_workspaces(request: Request) -> Any:
+            return await handle_workspaces(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/workspaces")
+        async def pfe_workspaces_create(request: Request) -> Any:
+            return await handle_workspaces(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/models")
+        async def pfe_models(request: Request) -> Any:
+            return await handle_models(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/readiness")
+        async def pfe_readiness(request: Request) -> Any:
+            return await handle_readiness(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.put("/pfe/config/model")
+        async def pfe_config_model(request: Request) -> Any:
+            return await handle_model_config(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.put("/pfe/config/real-local")
+        async def pfe_config_real_local(request: Request) -> Any:
+            return await handle_real_local_config(await _envelope_from_fastapi_request(request), bundle)
+
         # Dashboard routes
         @app.get("/dashboard", response_class=HTMLResponse)
         async def dashboard_frontend(request: Request) -> Any:
@@ -3916,6 +5137,22 @@ def create_app(
         async def pfe_training_jobs(request: Request) -> Any:
             return await handle_training_jobs(await _envelope_from_fastapi_request(request), bundle)
 
+        @app.get("/pfe/training/jobs")
+        async def pfe_training_jobs_list(request: Request) -> Any:
+            return await handle_training_jobs_list(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/training/jobs/{job_id}/events")
+        async def pfe_training_job_events(request: Request) -> Any:
+            return await handle_training_job_events(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/training/jobs/{job_id}/cancel")
+        async def pfe_training_job_cancel(request: Request) -> Any:
+            return await handle_training_job_cancel(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/training/jobs/{job_id}/retry")
+        async def pfe_training_job_retry(request: Request) -> Any:
+            return await handle_training_job_retry(await _envelope_from_fastapi_request(request), bundle)
+
         @app.get("/pfe/training/jobs/{job_id}")
         async def pfe_training_job(request: Request) -> Any:
             return await handle_training_job(await _envelope_from_fastapi_request(request), bundle)
@@ -3940,13 +5177,25 @@ def create_app(
         async def pfe_adapter_latest(request: Request) -> Any:
             return await handle_adapter_latest(await _envelope_from_fastapi_request(request), bundle)
 
-        @app.get("/pfe/adapters/{version}")
-        async def pfe_adapter_version(request: Request) -> Any:
-            return await handle_adapter_version(await _envelope_from_fastapi_request(request), bundle)
+        @app.get("/pfe/adapters")
+        async def pfe_adapters(request: Request) -> Any:
+            return await handle_adapters(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/adapters/{version}/promote")
         async def pfe_adapter_promote(request: Request) -> Any:
             return await handle_adapter_promote(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/adapters/{version}/rollback")
+        async def pfe_adapter_rollback(request: Request) -> Any:
+            return await handle_adapter_rollback(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/adapters/{version}/archive")
+        async def pfe_adapter_archive(request: Request) -> Any:
+            return await handle_adapter_archive(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/adapters/{version}")
+        async def pfe_adapter_version(request: Request) -> Any:
+            return await handle_adapter_version(await _envelope_from_fastapi_request(request), bundle)
 
         @app.get("/pfe/training/jobs/{job_id}/checkpoints")
         async def pfe_training_checkpoints(request: Request) -> Any:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run an isolated live smoke for dashboard and chat-console surfaces."""
+"""Run an isolated live smoke for dashboard, Studio, and chat feedback APIs."""
 
 from __future__ import annotations
 
@@ -62,20 +62,20 @@ def _check_dashboard_surface(base_url: str, *, request_timeout: float) -> None:
         )
 
 
-def _check_console_surface(base_url: str, *, request_timeout: float) -> None:
-    console = _request_text(f"{base_url}/", timeout=request_timeout)
-    console_body = str(console["body"])
-    if console["status"] != 200:
-        raise AssertionError(f"chat console HTML returned unexpected status: {console['status']}")
+def _check_studio_surface(base_url: str, *, request_timeout: float) -> None:
+    studio = _request_text(f"{base_url}/", timeout=request_timeout)
+    studio_body = str(studio["body"])
+    if studio["status"] != 200:
+        raise AssertionError(f"Studio HTML returned unexpected status: {studio['status']}")
     for expected in (
-        "PFE Local Chat",
-        "id=\"chatForm\"",
-        "id=\"messageInput\"",
-        "id=\"sendBtn\"",
-        "/v1/chat/completions",
-        "/pfe/feedback",
+        "PFE / 本地模型工作台",
+        "选择模型，拿到本机 API。",
+        "复制 API 地址",
+        "/pfe/runtime",
+        "/pfe/models",
+        "/pfe/training/jobs",
     ):
-        _require(console_body, expected, label="chat console HTML")
+        _require(studio_body, expected, label="Studio HTML")
 
     chat_body = _require_dict_response(
         _request_json(
@@ -136,7 +136,7 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         if healthz["body"].get("status") != "ok":  # type: ignore[union-attr]
             raise AssertionError(f"unexpected healthz payload: {healthz}")
         _check_dashboard_surface(base_url, request_timeout=args.request_timeout)
-        _check_console_surface(base_url, request_timeout=args.request_timeout)
+        _check_studio_surface(base_url, request_timeout=args.request_timeout)
     finally:
         stdout, stderr = _stop_server(process)
 
@@ -158,7 +158,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Build an isolated mock-local adapter, launch pfe serve --live, and verify "
-            "dashboard HTML/API plus chat-console chat/feedback round trip over real HTTP."
+            "dashboard HTML/API plus Studio root HTML and chat/feedback round trip over real HTTP."
         )
     )
     parser.add_argument("--repo-root", type=Path, default=repo_root)
