@@ -42,6 +42,7 @@ help:
 	@echo "make test-all      - Run all tests (requires .venv)"
 	@echo "make format        - Format code (if ruff/black available)"
 	@echo "make lint          - Lint code (if ruff available)"
+	@echo "make studio        - Start PFE Studio and open the browser"
 	@echo "make serve         - Start development server"
 	@echo "make console       - Start interactive console"
 
@@ -165,9 +166,13 @@ format:
 lint:
 	-$(PYTHON) -m ruff check pfe-core pfe-cli pfe-server tests
 
-.PHONY: serve
-serve:
+.PHONY: studio
+studio: check-venv
 	$(PYTHON) -m pfe_server --port 8921 --workspace user_default
+
+.PHONY: serve
+serve: check-venv
+	$(PYTHON) -m pfe_server --port 8921 --workspace user_default --no-open
 
 .PHONY: console
 console:

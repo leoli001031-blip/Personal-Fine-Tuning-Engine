@@ -37,16 +37,16 @@ bootstrap 默认只安装轻量 `dev` extra。需要真实训练依赖时再显�
 PFE_BOOTSTRAP_EXTRAS=dev,training tools/bootstrap_py311_env.sh
 ```
 
-启动本地 Studio 服务：
+启动 PFE Studio：
 
 ```bash
-.venv/bin/python -m pfe_server --port 8921 --workspace user_default
+.venv/bin/pfe-studio --workspace user_default
 ```
 
-然后打开：
+本地服务就绪后会自动打开浏览器。无界面或脚本环境可以关闭自动打开：
 
-```text
-http://127.0.0.1:8921/
+```bash
+.venv/bin/pfe-studio --workspace user_default --no-open
 ```
 
 Studio 里的主路径是：

@@ -38,16 +38,17 @@ real training dependencies, opt in explicitly:
 PFE_BOOTSTRAP_EXTRAS=dev,training tools/bootstrap_py311_env.sh
 ```
 
-Start the local Studio service:
+Start PFE Studio:
 
 ```bash
-.venv/bin/python -m pfe_server --port 8921 --workspace user_default
+.venv/bin/pfe-studio --workspace user_default
 ```
 
-Then open:
+It opens Studio in the browser after the local service is ready. For a headless
+or scripted run, keep the browser closed:
 
-```text
-http://127.0.0.1:8921/
+```bash
+.venv/bin/pfe-studio --workspace user_default --no-open
 ```
 
 From Studio, the main path is:

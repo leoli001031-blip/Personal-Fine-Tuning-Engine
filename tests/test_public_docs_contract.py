@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:  # pragma: no cover
+    import tomli as tomllib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,7 +21,8 @@ def test_readme_is_studio_first_for_default_user_path() -> None:
 
     assert "[Studio Workflow](#studio-workflow)" in readme
     assert "The default user surface is PFE Studio in the browser" in readme
-    assert ".venv/bin/python -m pfe_server --port 8921 --workspace user_default" in readme
+    assert ".venv/bin/pfe-studio --workspace user_default" in readme
+    assert ".venv/bin/pfe-studio --workspace user_default --no-open" in readme
     assert "select model -> copy API/web URL -> manage versions" in readme
     assert "The main control plane remains the CLI" not in readme
 
@@ -25,9 +32,16 @@ def test_chinese_readme_is_studio_first_for_default_user_path() -> None:
 
     assert "[Studio 主路径](#studio-主路径)" in readme
     assert "默认用户入口是浏览器里的 PFE Studio" in readme
-    assert ".venv/bin/python -m pfe_server --port 8921 --workspace user_default" in readme
+    assert ".venv/bin/pfe-studio --workspace user_default" in readme
+    assert ".venv/bin/pfe-studio --workspace user_default --no-open" in readme
     assert "选择模型 -> 复制 API/网页地址 -> 管理版本" in readme
     assert "主控制面仍然是 CLI" not in readme
+
+
+def test_package_exposes_studio_first_console_script() -> None:
+    pyproject = tomllib.loads(_read("pyproject.toml"))
+
+    assert pyproject["project"]["scripts"]["pfe-studio"] == "pfe_server.__main__:main"
 
 
 def test_release_docs_record_remote_gate_as_closed() -> None:
