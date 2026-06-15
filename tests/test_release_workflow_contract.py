@@ -66,6 +66,9 @@ def test_release_local_evidence_target_sequences_required_gates() -> None:
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
 
     assert "release-local-evidence:" in makefile
+    assert "smoke-studio-first-launch:" in makefile
+    assert "$(PYTHON) tools/studio_first_launch_smoke.py" in makefile
+    assert "smoke-release-strict: smoke-beta" in makefile
     assert "$(MAKE) test-e2e-mock" in makefile
     assert "$(MAKE) smoke-release-strict" in makefile
     assert "$(MAKE) benchmark-release PERF_REPORT=$(PERF_REPORT)" in makefile
