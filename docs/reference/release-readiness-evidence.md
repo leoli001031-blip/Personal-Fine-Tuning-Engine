@@ -7,9 +7,10 @@
 ## 当前结论
 
 - `smoke-beta`：通过。
+- `smoke-studio-first-launch` / `studio_first_launch_smoke.py`：新增为 strict release gate，覆盖干净 editable install 后用 `pfe-studio` console script 首次启动 Studio、访问 `/studio`、读取 handoff API 并跑通一次 chat response id。
 - `browser_ui_live_smoke.py --strict`：通过，Playwright/Chromium strict blocker 已解除。
 - `real_local_happy_path_smoke.py --strict`：通过，已用本地 tiny Hugging Face GPT-2 兼容模型跑通 PEFT real-local happy path。
-- `make smoke-release-strict`：通过。
+- `make smoke-release-strict`：通过；该目标现在包含 clean-install Studio first-launch、strict browser UI 和 real-local happy path。
 - `release_soak_smoke.py --duration-seconds 1800 --interval-seconds 2`：通过，已跑 30 分钟长稳态 live soak，覆盖 server/dashboard/queue/daemon/chat/feedback。
 - `make benchmark-release`：通过，已记录并执行 first-run、strict browser UI、real-local happy path、短 soak 的耗时和进程树峰值 RSS release budget。
 - `make release-local-evidence`：已作为一键本地 release evidence 入口落地，顺序执行 mock e2e、strict smoke、benchmark、audit report 和 bundle manifest。

@@ -130,6 +130,7 @@ def audit_release_evidence(
         "tools/github_actions_release_evidence.py",
         "tools/render_remote_release_evidence.py",
         "tools/browser_ui_live_smoke.py",
+        "tools/studio_first_launch_smoke.py",
         "tools/real_local_happy_path_smoke.py",
         "tests/test_release_evidence_audit.py",
         "tests/test_release_evidence_bundle.py",
@@ -145,6 +146,7 @@ def audit_release_evidence(
     required_targets = {
         "test-e2e-mock",
         "smoke-beta",
+        "smoke-studio-first-launch",
         "smoke-release-strict",
         "soak-release",
         "benchmark-release",
@@ -205,6 +207,15 @@ def audit_release_evidence(
         not missing_needles,
         "strict workflow gate retained" if not missing_needles else f"missing workflow text: {missing_needles}",
     )
+    add(
+        "studio_first_launch_gate",
+        "smoke-studio-first-launch:" in makefile
+        and "tools/studio_first_launch_smoke.py" in makefile
+        and "smoke-release-strict: smoke-beta" in makefile,
+        "strict smoke includes clean-install Studio first launch"
+        if "tools/studio_first_launch_smoke.py" in makefile
+        else "strict smoke does not include clean-install Studio first launch",
+    )
 
     dashboard = _read(root / "pfe-server" / "pfe_server" / "static" / "dashboard.html")
     add(
@@ -217,6 +228,8 @@ def audit_release_evidence(
     required_evidence = [
         "smoke-beta",
         "make test-e2e-mock",
+        "smoke-studio-first-launch",
+        "studio_first_launch_smoke.py",
         "make smoke-release-strict",
         "release_soak_smoke.py --duration-seconds 1800",
         "make benchmark-release",
