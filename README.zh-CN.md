@@ -8,9 +8,9 @@ Personal Finetune Engine 是一个本地优先的个性化引擎，用来把用�
 collect -> curate -> train -> eval -> promote -> serve
 ```
 
-[快速开始](#快速开始) • [CLI 主路径](#cli-主路径) • [截图](#截图) • [平台支持](#平台支持) • [文档入口](#文档入口)
+[快速开始](#快速开始) • [Studio 主路径](#studio-主路径) • [高级-cli](#高级-cli) • [截图](#截图) • [平台支持](#平台支持) • [文档入口](#文档入口)
 
-PFE 更适合被理解为一套面向操作者的本地基础设施，而不是一个开箱即用的消费级聊天产品。它的主入口是 `pfe` CLI，本地 HTTP 与浏览器界面主要承担服务暴露和观测配套角色。
+PFE 更适合被理解为一个本地优先的模型服务工作台。默认用户入口是浏览器里的 PFE Studio：选择本地模型，复制网页/API 地址，管理个性化模型版本。`pfe` CLI 仍保留给高级诊断、自动化和维护场景。
 
 ## PFE 覆盖什么
 
@@ -19,7 +19,8 @@ PFE 更适合被理解为一套面向操作者的本地基础设施，而不是�
 - SFT 与 DPO 训练路径
 - 评估、candidate 处理、promote 与 archive 流程
 - 队列、trigger、daemon 与恢复控制
-- OpenAI 兼容的本地服务，以及 dashboard 和 chat 配套界面
+- 用于模型选择、API 交接和版本管理的 PFE Studio
+- OpenAI 兼容的本地服务，以及 dashboard 和 legacy chat 配套界面
 
 ## 快速开始
 
@@ -36,27 +37,24 @@ bootstrap 默认只安装轻量 `dev` extra。需要真实训练依赖时再显�
 PFE_BOOTSTRAP_EXTRAS=dev,training tools/bootstrap_py311_env.sh
 ```
 
-建议先跑这几个命令：
+启动本地 Studio 服务：
 
 ```bash
-pfe init --workspace user_default --base-model Qwen/Qwen2.5-3B-Instruct
-pfe doctor
-pfe next --workspace user_default
-pfe status --json
-pfe console --cycles 1
+.venv/bin/python -m pfe_server --port 8921 --workspace user_default
 ```
 
-启动本地服务：
+然后打开：
 
-```bash
-pfe serve --port 8921 --live
+```text
+http://127.0.0.1:8921/
 ```
 
-打开观测面板：
+Studio 里的主路径是：
 
-```bash
-pfe dashboard
-```
+1. 选择本地模型，或粘贴本地模型路径。
+2. 复制网页地址或 OpenAI 兼容 API 地址。
+3. 查看、评估、设为当前、回退或归档模型版本。
+4. 训练条件 ready 后生成新版本。
 
 运行快速测试分层：
 
@@ -102,18 +100,36 @@ happy path。
 默认本地页面：
 
 ```text
-http://127.0.0.1:8921/dashboard
-http://127.0.0.1:8921/
+http://127.0.0.1:8921/          PFE Studio
+http://127.0.0.1:8921/dashboard 观测面板
+http://127.0.0.1:8921/chat      legacy operations chat
 ```
 
 说明：
 
-- 不带 `--live` 的 `pfe serve --port 8921` 只会展示启动计划。
+- `pfe serve --port 8921 --live` 仍然可用，但不再是唯一文档化入口。
 - `127.0.0.1:8921` 只是默认本地监听地址，不是硬编码要求。
 - 如果当前没有 promoted adapter，服务可以保持在 safe 或 mock 模式。
-- 真正加载本地模型通常需要显式 runtime 配置，例如 `--real-local`。
+- 真正加载本地模型需要显式 runtime 配置；Studio 已提供当前进程内的真实本地模型开关。
 
-## CLI 主路径
+## Studio 主路径
+
+浏览器里的工作流刻意保持很小：
+
+```text
+选择模型 -> 复制 API/网页地址 -> 管理版本
+```
+
+Studio 把最常用动作收在一起：
+
+- 工作区切换和创建
+- 本地模型选择和模型路径校验
+- OpenAI 兼容 `/v1/chat/completions` 地址与 `model` 参数交接
+- 当前版本、待确认版本、评估、设为当前、回退和归档
+- 训练预检、开始、停止和重试
+- 真实本地推理 readiness 与当前回复来源
+
+## 高级 CLI
 
 一条典型的操作者路径：
 
@@ -177,7 +193,7 @@ CLI 画面来自真实 `pfe --help` 和 `pfe doctor` 输出：
   <img src="docs/assets/screenshots/dashboard.png" alt="PFE dashboard" width="1100">
 </p>
 
-浏览器 dashboard 是补充 surface，主控制面仍然是 CLI。
+PFE Studio 是 `/` 上的默认浏览器入口。dashboard 仍作为更深入的运行观测界面。
 
 ## 平台支持
 
@@ -197,12 +213,17 @@ PFE 也提供本地 HTTP 与浏览器配套界面：
 
 - `GET /healthz`
 - `GET /pfe/status`
+- `GET /pfe/runtime`
+- `GET /pfe/models`
+- `GET /pfe/adapters`
+- `GET /pfe/readiness`
 - `GET /dashboard`
 - `POST /v1/chat/completions`
 
 仓库内置页面位于：
 
 - `pfe-server/pfe_server/static/dashboard.html`
+- `pfe-server/pfe_server/static/studio.html`
 - `pfe-server/pfe_server/static/chat.html`
 
 ## 仓库结构
@@ -220,7 +241,8 @@ tools/       仓库内辅助脚本
 ## 项目状态
 
 - Phase 1 已完成
-- Phase 2 功能性收尾完成；仍需 release-readiness 验证
+- Phase 2 功能性收尾完成
+- release readiness 已通过本地与远端 GitHub Actions strict release gate 验证
 - 公开仓库版本已经整理完成，大体积本地资产继续排除在仓库之外
 
 Phase 2 收尾说明见 [docs/reference/phase2-closeout.md](docs/reference/phase2-closeout.md)。

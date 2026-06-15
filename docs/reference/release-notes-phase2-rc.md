@@ -16,6 +16,7 @@
 - Worker daemon 启动时显式继承当前 `PFE_HOME`，避免临时 workspace 下的 daemon 落到用户级 `~/.pfe`。
 - Release soak server 日志改为落盘，避免长时间 uvicorn access log 写满 PIPE 后阻塞请求。
 - 新增 GitHub Actions workflow：PR fast gate 与 manual/nightly strict release gate 分层。
+- PFE Studio 已成为默认浏览器入口，集中承载模型选择、API 地址交接和版本管理。
 
 ## 当前验证证据
 
@@ -28,6 +29,14 @@
 - `.venv/bin/python tools/dashboard_console_live_smoke.py`
 - `.venv/bin/python tools/browser_ui_live_smoke.py --strict --browser-timeout-ms 45000`
 - `git diff --check`
+
+远端已通过：
+
+- workflow: `PFE release gates`
+- run: `https://github.com/leoli001031-blip/Personal-Fine-Tuning-Engine/actions/runs/27518991700`
+- branch: `main`
+- commit: `0c08d2791edce2ac6c48ce1f432a1eb6716fca8d`
+- conclusion: `success`
 
 30 分钟 soak 结果：
 
@@ -50,6 +59,7 @@ Performance budget 结果：
 ## 用户可期待的能力
 
 - 可以初始化本地 workspace，并通过 `pfe doctor` 查看 local model、trainer dependency、adapter、signal chain、queue/daemon readiness。
+- 可以打开 `/` 进入 PFE Studio，完成模型选择、API 地址复制和版本管理。
 - 可以生成样本、采集反馈信号、触发 deferred queue 训练、评估 adapter、promote adapter，并通过 live server 提供 OpenAI-compatible chat endpoint。
 - 可以通过 `/dashboard` 查看 adapter、signal、training、queue 和 daemon 状态。
 - 可以用 strict release gate 验证浏览器 UI、real-local tiny model 训练路径和本地服务闭环。
@@ -67,4 +77,4 @@ Performance budget 结果：
 
 ## Release readiness 状态
 
-本机 release evidence 已完整覆盖 Phase 2 strict gate、30 分钟 soak、performance budget、dashboard offline-first。剩余 release-ready 缺口是远端 GitHub Actions 结果：当前 workflow 已定义，但需要在推送后的分支或默认分支上执行一次 manual/nightly gate 并把结果补进 evidence。
+release evidence 已覆盖 Phase 2 strict gate、30 分钟 soak、performance budget、dashboard offline-first 和远端 GitHub Actions strict release gate。当前 release gate 阻塞项为 0；后续只剩非阻塞维护项，例如 GitHub Actions Node.js 20 deprecation annotation 的升级窗口。
