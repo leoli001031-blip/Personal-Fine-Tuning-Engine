@@ -742,10 +742,32 @@ def _studio_html() -> str:
     return html_path.read_text(encoding="utf-8")
 
 
+_STUDIO_STATIC_TYPES = {
+    "studio.css": "text/css; charset=utf-8",
+    "studio.js": "application/javascript; charset=utf-8",
+}
+
+
+def _studio_static_asset(asset_name: str) -> tuple[str, str] | None:
+    media_type = _STUDIO_STATIC_TYPES.get(asset_name)
+    if media_type is None:
+        return None
+    asset_path = _repo_root() / "pfe-server" / "pfe_server" / "static" / asset_name
+    if not asset_path.exists():
+        return None
+    return asset_path.read_text(encoding="utf-8"), media_type
+
+
 def _html_response(html: str, status_code: int = 200) -> Any:
     if FASTAPI_AVAILABLE and HTMLResponse is not None:
         return HTMLResponse(content=html, status_code=status_code)
     return html, status_code, {"content-type": "text/html; charset=utf-8"}
+
+
+def _text_asset_response(text_value: str, media_type: str, status_code: int = 200) -> Any:
+    if FASTAPI_AVAILABLE and Response is not None:
+        return Response(content=text_value, status_code=status_code, media_type=media_type)
+    return text_value, status_code, {"content-type": media_type}
 
 
 def _error_payload(decision_detail: str, code: str, hint: Optional[str] = None) -> dict[str, Any]:
@@ -4580,6 +4602,16 @@ async def handle_studio_frontend(envelope: RequestEnvelope, services: ServiceBun
     return _html_response(_studio_html(), status_code=200)
 
 
+async def handle_studio_static(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    del services
+    asset_name = envelope.path.rsplit("/", 1)[-1]
+    asset = _studio_static_asset(asset_name)
+    if asset is None:
+        return _json_response(_error_payload("not found", "not_found"), status_code=404)
+    text_value, media_type = asset
+    return _text_asset_response(text_value, media_type, status_code=200)
+
+
 async def handle_dashboard_frontend(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Serve the dashboard HTML."""
     del envelope, services
@@ -5007,6 +5039,8 @@ class _LiteASGIApp:
             return await handle_chat_frontend(envelope, self.services)
         if envelope.path in {"/studio", "/pfe/studio"} and envelope.method == "GET":
             return await handle_studio_frontend(envelope, self.services)
+        if envelope.path.startswith("/pfe/static/") and envelope.method == "GET":
+            return await handle_studio_static(envelope, self.services)
         if envelope.path == "/healthz" and envelope.method == "GET":
             return _json_response({"status": "ok"}, status_code=200)
         if envelope.path == "/v1/chat/completions" and envelope.method == "POST":
@@ -5177,6 +5211,12 @@ def create_app(
         @app.get("/pfe/studio", response_class=HTMLResponse)
         async def pfe_studio_frontend(request: Request) -> Any:
             return await handle_studio_frontend(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/static/{asset_name}")
+        async def pfe_static_asset(asset_name: str, request: Request) -> Any:
+            envelope = await _envelope_from_fastapi_request(request)
+            envelope.path = f"/pfe/static/{asset_name}"
+            return await handle_studio_static(envelope, bundle)
 
         @app.post("/v1/chat/completions")
         async def chat_completions(request: Request) -> Any:

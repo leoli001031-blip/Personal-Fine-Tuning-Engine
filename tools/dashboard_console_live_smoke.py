@@ -71,11 +71,14 @@ def _check_studio_surface(base_url: str, *, request_timeout: float) -> None:
         "PFE / 本地模型工作台",
         "选择模型，拿到本机 API。",
         "复制 API 地址",
-        "/pfe/runtime",
-        "/pfe/models",
-        "/pfe/training/jobs",
+        "/pfe/static/studio.css",
+        "/pfe/static/studio.js",
     ):
         _require(studio_body, expected, label="Studio HTML")
+    studio_js = _request_text(f"{base_url}/pfe/static/studio.js", timeout=request_timeout)
+    studio_js_body = str(studio_js["body"])
+    for expected in ("/pfe/runtime", "/pfe/models", "/pfe/training/jobs"):
+        _require(studio_js_body, expected, label="Studio JS")
 
     chat_body = _require_dict_response(
         _request_json(
