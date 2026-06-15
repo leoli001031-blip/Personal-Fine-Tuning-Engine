@@ -683,7 +683,7 @@
             <div class="summary-actions">
               <button class="button primary" id="openWebButton" type="button">打开网页</button>
               <button class="button" id="copyApiTopButton" type="button">复制 API 地址</button>
-              <button class="button" id="realLocalToggleButton" type="button" disabled>开启真实本地模型</button>
+              <button class="button" id="realLocalToggleButton" type="button" disabled>使用本地模型回复</button>
             </div>
           </div>
           <div class="workspace-control-row">
@@ -720,10 +720,10 @@
           </div>
           <div class="path-row">
             <div class="field">
-              <label for="modelPathInput">本地模型路径</label>
+              <label for="modelPathInput">模型文件夹</label>
               <input class="text-input" id="modelPathInput" type="text" autocomplete="off" placeholder="/Users/me/models/Qwen3-4B" />
             </div>
-            <button class="button" id="saveModelPathButton" type="button">保存路径</button>
+            <button class="button" id="saveModelPathButton" type="button">保存模型</button>
           </div>
         </div>
 
@@ -807,7 +807,7 @@
               <div class="evidence-meta" id="modelMeta">-</div>
             </div>
             <div class="evidence-item">
-              <div class="evidence-label">回复来源</div>
+              <div class="evidence-label">当前回复</div>
               <div class="evidence-value" id="requestValue">检查中</div>
               <div class="evidence-meta" id="requestMeta">-</div>
             </div>
@@ -1010,10 +1010,11 @@
     }
 
     const issueCopy = {
-      needs_local_path: "还没选择本地模型路径",
-      real_local_inference_disabled: "还没开启真实本地模型",
-      runtime_dependencies_missing: "缺少本地推理依赖",
-      model_path_not_found: "找不到这个模型路径",
+      needs_local_path: "先选择模型文件夹",
+      real_local_inference_disabled: "点“使用本地模型回复”后生效",
+      runtime_dependencies_missing: "本机推理依赖未安装",
+      missing: "找不到这个模型文件夹",
+      model_path_not_found: "找不到这个模型文件夹",
       invalid_workspace_name: "工作区名称格式不对",
     };
 
@@ -1029,6 +1030,35 @@
         .filter(Boolean);
     }
 
+    function readinessBlockers(readiness) {
+      return readiness && readiness.summary && Array.isArray(readiness.summary.blockers)
+        ? readiness.summary.blockers
+        : [];
+    }
+
+    function summaryTextFor(readiness) {
+      const summary = readiness.summary || {};
+      const blockers = readinessBlockers(readiness);
+      if (blockers.includes("needs_local_path") || blockers.includes("missing") || blockers.includes("model_path_not_found")) {
+        return "先选择模型文件夹，然后复制 API 或网页地址。";
+      }
+      if (blockers.includes("real_local_inference_disabled")) {
+        return "API 和网页地址可用；需要本地模型回复时，点“使用本地模型回复”。";
+      }
+      if (blockers.includes("runtime_dependencies_missing")) {
+        return "API 和网页地址可用；本地模型回复还需要安装推理依赖。";
+      }
+      if (summary.label === "可继续") {
+        return "本机服务可用，API 和网页地址已就绪。";
+      }
+      return summary.text || "本机服务已就绪。";
+    }
+
+    function replyModeLabel(readiness) {
+      const inference = readiness && readiness.inference ? readiness.inference : {};
+      return inference.real_local_ready ? "本地模型" : "演示回复";
+    }
+
     function classify() {
       if (state.errors.length) {
         return { label: "有问题", tone: "bad", summary: "服务接口暂时不可用。", actionReady: false };
@@ -1040,7 +1070,7 @@
         return {
           label,
           tone,
-          summary: readiness.summary.text || "本机服务已就绪。",
+          summary: summaryTextFor(readiness),
           actionReady: true,
         };
       }
@@ -1112,7 +1142,7 @@
       const button = $("realLocalToggleButton");
       const inference = state.readiness && state.readiness.inference ? state.readiness.inference : null;
       const enabled = Boolean(inference && inference.real_local_enabled);
-      button.textContent = enabled ? "关闭真实本地模型" : "开启真实本地模型";
+      button.textContent = enabled ? "暂停本地模型回复" : "使用本地模型回复";
       button.disabled = !inference;
     }
 
@@ -1139,7 +1169,9 @@
       text("modelValue", selected.label || models.selected_label || models.selected || "-");
       const modelSource = state.readiness && state.readiness.model ? state.readiness.model.source : null;
       const configuration = state.readiness && state.readiness.configuration ? state.readiness.configuration : null;
-      const sourceLabel = modelSource && modelSource.label ? modelSource.label : (selected.source ? selected.source : "config");
+      const sourceLabel = modelSource && modelSource.state && modelSource.state !== "ready"
+        ? humanIssue(modelSource.state)
+        : (modelSource && modelSource.label ? modelSource.label : (selected.source ? selected.source : "config"));
       const effectiveLabel = configuration && configuration.reload_required
         ? "需要重启"
         : (configuration && configuration.effective_scope === "next_chat_request" ? "下一次请求生效" : "");
@@ -1181,7 +1213,7 @@
         state.readiness = payload.readiness || await loadJson("/pfe/readiness");
         state.handoff = null;
         state.trainingPreflight = null;
-        toast(enabled ? "已开启真实本地模型" : "已关闭真实本地模型");
+        toast(enabled ? "已切换为本地模型回复" : "已切回演示回复");
       } catch (error) {
         toast("设置失败");
       }
@@ -1224,7 +1256,7 @@
       const input = $("modelPathInput");
       const modelId = input ? input.value.trim() : "";
       if (!modelId) {
-        toast("请输入本地模型路径");
+        toast("请输入模型文件夹");
         return;
       }
       await saveModel(modelId);
@@ -1545,8 +1577,8 @@
         const configMeta = configuration.effective_scope === "next_chat_request"
           ? "模型配置下一次请求生效"
           : "";
-        text("requestValue", readiness.inference.mode_label || "-");
-        const blockers = humanIssueList(readiness.summary && readiness.summary.blockers);
+        text("requestValue", replyModeLabel(readiness));
+        const blockers = humanIssueList(readinessBlockers(readiness));
         text("requestMeta", blockers.length
           ? blockers.join(" / ")
           : (configMeta || (readiness.summary && readiness.summary.text ? readiness.summary.text : "-")));
