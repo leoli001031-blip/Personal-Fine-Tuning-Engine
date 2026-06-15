@@ -91,6 +91,8 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("复制 API 地址", result["text"])
         self.assertIn("接入信息", result["text"])
         self.assertIn("复制接入信息", result["text"])
+        self.assertIn("测试接入", result["text"])
+        self.assertIn("未测试", result["text"])
         self.assertIn("聊天 API", result["text"])
         self.assertIn("反馈 API", result["text"])
         self.assertIn("模型参数", result["text"])
@@ -118,6 +120,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("本机推理依赖未安装", result["text"])
         self.assertIn("演示回复", result["text"])
         self.assertNotIn("开启真实本地模型", result["text"])
+        self.assertIn("/pfe/handoff/test", result["text"])
         self.assertIn("/pfe/config/real-local", result["text"])
 
         alias = self._smoke("/pfe/studio")
@@ -159,6 +162,28 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("Keep per answer: session_id, request_id", body["copy_text"])
         self.assertIn("Model parameter: local", body["copy_text"])
         self.assertIn(f"Current version: {version}", body["copy_text"])
+
+    def test_studio_handoff_test_runs_chat_and_feedback_loop(self) -> None:
+        result = self._smoke(
+            "/pfe/handoff/test",
+            method="POST",
+            body={"message": "hello from handoff test", "action": "accept"},
+            headers={"host": "127.0.0.1:9012"},
+        )
+
+        self.assertEqual(result["status_code"], 200)
+        body = result["body"]
+        self.assertEqual(body["kind"], "pfe_handoff_test")
+        self.assertTrue(body["ok"])
+        self.assertEqual(body["contract"]["chat_url"], "http://127.0.0.1:9012/v1/chat/completions")
+        self.assertEqual(body["contract"]["feedback_url"], "http://127.0.0.1:9012/pfe/feedback")
+        self.assertEqual(body["contract"]["response_id_fields"], ["session_id", "request_id"])
+        self.assertTrue(body["chat"]["ok"])
+        self.assertTrue(body["chat"]["session_id"])
+        self.assertTrue(body["chat"]["request_id"])
+        self.assertTrue(body["feedback"]["ok"])
+        self.assertEqual(body["feedback"]["signal_type"], "accept")
+        self.assertEqual(body["feedback"]["pending_found"], True)
 
     def test_studio_runtime_models_and_adapters_surfaces(self) -> None:
         config = PFEConfig()

@@ -711,6 +711,20 @@ def _json_response(payload: Any, status_code: int = 200) -> Any:
     return payload, status_code
 
 
+def _response_status_payload(response: Any) -> tuple[int, dict[str, Any]]:
+    if isinstance(response, tuple):
+        payload = response[0] if response else {}
+        status_code = int(response[1]) if len(response) > 1 else 200
+        return status_code, dict(payload) if isinstance(payload, Mapping) else {}
+    status_code = int(getattr(response, "status_code", 200) or 200)
+    body = getattr(response, "body", b"{}")
+    try:
+        payload = json.loads(body.decode("utf-8") if isinstance(body, bytes) else str(body))
+    except Exception:
+        payload = {}
+    return status_code, payload if isinstance(payload, dict) else {}
+
+
 def _frontend_html() -> str:
     html_path = _repo_root() / "pfe-server" / "pfe_server" / "static" / "chat.html"
     return html_path.read_text(encoding="utf-8")
@@ -4624,6 +4638,108 @@ async def handle_handoff(envelope: RequestEnvelope, services: ServiceBundle) -> 
     return _json_response(_build_handoff_payload(envelope, services), status_code=200)
 
 
+async def handle_handoff_test(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    message = str(body.get("message") or "hello from PFE Studio handoff test")
+    action = str(body.get("action") or "accept").strip().lower()
+    if action not in {"accept", "reject", "edit", "regenerate", "delete"}:
+        action = "accept"
+    model_parameter = "local"
+    handoff = _build_handoff_payload(envelope, services)
+    model_payload = handoff.get("model") if isinstance(handoff.get("model"), Mapping) else {}
+    if isinstance(model_payload, Mapping):
+        model_parameter = str(model_payload.get("api_parameter") or model_parameter)
+
+    chat_envelope = RequestEnvelope(
+        method="POST",
+        path="/v1/chat/completions",
+        headers=dict(envelope.headers),
+        client_host=envelope.client_host,
+        body=json.dumps(
+            {
+                "model": model_parameter,
+                "messages": [{"role": "user", "content": message}],
+                "metadata": {"source": "pfe_studio_handoff_test"},
+            }
+        ).encode("utf-8"),
+    )
+    chat_status, chat_payload = _response_status_payload(
+        await handle_chat_completions(chat_envelope, services)
+    )
+    session_id = str(chat_payload.get("session_id") or "")
+    request_id = str(chat_payload.get("request_id") or "")
+    assistant_message = ""
+    choices = chat_payload.get("choices")
+    if isinstance(choices, list) and choices:
+        choice = choices[0] if isinstance(choices[0], Mapping) else {}
+        message_payload = choice.get("message") if isinstance(choice, Mapping) else {}
+        if isinstance(message_payload, Mapping):
+            assistant_message = str(message_payload.get("content") or "")
+
+    feedback_status = 0
+    feedback_payload: dict[str, Any] = {}
+    if chat_status == 200 and session_id and request_id:
+        feedback_envelope = RequestEnvelope(
+            method="POST",
+            path="/pfe/feedback",
+            headers=dict(envelope.headers),
+            client_host=envelope.client_host,
+            body=json.dumps(
+                {
+                    "session_id": session_id,
+                    "request_id": request_id,
+                    "action": action,
+                    "response_time_seconds": 0.1,
+                    "user_message": message,
+                    "assistant_message": assistant_message,
+                    "metadata": {"source": "pfe_studio_handoff_test"},
+                }
+            ).encode("utf-8"),
+        )
+        feedback_status, feedback_payload = _response_status_payload(
+            await handle_feedback(feedback_envelope, services)
+        )
+
+    chat_ok = chat_status == 200 and bool(session_id and request_id)
+    feedback_ok = feedback_status == 200 and bool(feedback_payload.get("success"))
+    ok = chat_ok and feedback_ok
+    return _json_response(
+        {
+            "kind": "pfe_handoff_test",
+            "ok": ok,
+            "summary": "聊天和反馈闭环已通过。" if ok else "接入测试未通过。",
+            "contract": {
+                "chat_url": handoff.get("urls", {}).get("api") if isinstance(handoff.get("urls"), Mapping) else None,
+                "feedback_url": handoff.get("urls", {}).get("feedback") if isinstance(handoff.get("urls"), Mapping) else None,
+                "response_id_fields": ["session_id", "request_id"],
+            },
+            "chat": {
+                "ok": chat_ok,
+                "status_code": chat_status,
+                "session_id": session_id,
+                "request_id": request_id,
+                "model": chat_payload.get("model"),
+                "served_by": chat_payload.get("served_by"),
+                "assistant_preview": assistant_message[:160],
+            },
+            "feedback": {
+                "ok": feedback_ok,
+                "status_code": feedback_status,
+                "signal_type": feedback_payload.get("signal_type"),
+                "signal_id": feedback_payload.get("signal_id"),
+                "pending_found": bool(feedback_payload.get("metadata", {}).get("pending_found"))
+                if isinstance(feedback_payload.get("metadata"), Mapping)
+                else False,
+            },
+            "tested_at": round(time.time(), 3),
+        },
+        status_code=200,
+    )
+
+
 async def handle_readiness(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
     if not allowed:
@@ -4937,6 +5053,8 @@ class _LiteASGIApp:
             return await handle_models(envelope, self.services)
         if envelope.path == "/pfe/handoff" and envelope.method == "GET":
             return await handle_handoff(envelope, self.services)
+        if envelope.path == "/pfe/handoff/test" and envelope.method == "POST":
+            return await handle_handoff_test(envelope, self.services)
         if envelope.path == "/pfe/readiness" and envelope.method == "GET":
             return await handle_readiness(envelope, self.services)
         if envelope.path == "/pfe/config/model" and envelope.method == "PUT":
@@ -5175,6 +5293,10 @@ def create_app(
         @app.get("/pfe/handoff")
         async def pfe_handoff(request: Request) -> Any:
             return await handle_handoff(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/handoff/test")
+        async def pfe_handoff_test(request: Request) -> Any:
+            return await handle_handoff_test(await _envelope_from_fastapi_request(request), bundle)
 
         @app.get("/pfe/readiness")
         async def pfe_readiness(request: Request) -> Any:

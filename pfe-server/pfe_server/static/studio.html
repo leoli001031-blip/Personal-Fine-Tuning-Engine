@@ -394,11 +394,26 @@
       align-items: end;
     }
 
+    .handoff-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
     .handoff-summary {
       min-width: 0;
       overflow-wrap: anywhere;
       color: var(--ink);
       font-weight: 720;
+    }
+
+    .handoff-test {
+      min-width: 0;
+      overflow-wrap: anywhere;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
     }
 
     .handoff-grid {
@@ -610,6 +625,10 @@
         justify-content: flex-start;
       }
 
+      .handoff-actions {
+        justify-content: flex-start;
+      }
+
       .surface-main {
         min-height: 0;
       }
@@ -739,8 +758,12 @@
                   <label for="handoffValue">接入信息</label>
                   <div class="handoff-summary" id="handoffValue">检查中</div>
                 </div>
-                <button class="button" id="copyHandoffButton" type="button" disabled>复制接入信息</button>
+                <div class="handoff-actions">
+                  <button class="button" id="testHandoffButton" type="button" disabled>测试接入</button>
+                  <button class="button" id="copyHandoffButton" type="button" disabled>复制接入信息</button>
+                </div>
               </div>
+              <div class="handoff-test" id="handoffTestValue">未测试</div>
               <div class="handoff-grid">
                 <div>
                   <span>网页</span>
@@ -856,6 +879,7 @@
       workspaces: null,
       models: null,
       handoff: null,
+      handoffTest: null,
       adapters: null,
       readiness: null,
       evalStatus: null,
@@ -1136,6 +1160,16 @@
       text("handoffFeedbackValue", urls.feedback || "-");
       text("handoffModelValue", [model.api_parameter || "local", model.label || model.selected].filter(Boolean).join(" / "));
       text("handoffVersionValue", [versionLabel, access].filter(Boolean).join(" / "));
+      const testResult = state.handoffTest || null;
+      const testChat = testResult && testResult.chat ? testResult.chat : {};
+      const testFeedback = testResult && testResult.feedback ? testResult.feedback : {};
+      const testText = testResult
+        ? (testResult.ok
+          ? "已测试：聊天和反馈闭环通过 / " + [testChat.request_id, testFeedback.signal_type].filter(Boolean).join(" / ")
+          : "测试未通过：" + (testResult.summary || "请检查本机服务"))
+        : "未测试";
+      text("handoffTestValue", testText);
+      $("testHandoffButton").disabled = !urls.api || !urls.feedback;
       $("copyHandoffButton").disabled = !urls.api && !urls.web;
     }
 
@@ -1215,6 +1249,7 @@
         state.models = payload.models || await loadJson("/pfe/models");
         state.readiness = await loadJson("/pfe/readiness");
         state.handoff = null;
+        state.handoffTest = null;
         state.trainingPreflight = null;
         toast(payload.reload_required ? "已保存，需重启服务" : "已保存，下一次请求生效");
       } catch (error) {
@@ -1232,6 +1267,7 @@
         const payload = await sendJson("/pfe/config/real-local", { enabled });
         state.readiness = payload.readiness || await loadJson("/pfe/readiness");
         state.handoff = null;
+        state.handoffTest = null;
         state.trainingPreflight = null;
         toast(enabled ? "已切换为本地模型回复" : "已切回演示回复");
       } catch (error) {
@@ -1263,6 +1299,7 @@
         state.evalStatus = await loadJson("/pfe/eval/status").catch(() => null);
         state.status = await loadJson("/pfe/status?detail=full").catch(() => null);
         state.handoff = null;
+        state.handoffTest = null;
         state.trainingPreflight = null;
         if ($("workspaceInput")) $("workspaceInput").value = "";
         toast(payload.created ? "已创建并切换" : "已切换工作区");
@@ -1280,6 +1317,23 @@
         return;
       }
       await saveModel(modelId);
+    }
+
+    async function testHandoff() {
+      const button = $("testHandoffButton");
+      button.disabled = true;
+      text("handoffTestValue", "测试中");
+      try {
+        state.handoffTest = await postJson("/pfe/handoff/test", {
+          message: "hello from PFE Studio",
+          action: "accept",
+        });
+        toast(state.handoffTest && state.handoffTest.ok ? "接入测试通过" : "接入测试未通过");
+      } catch (error) {
+        state.handoffTest = { ok: false, summary: "请求失败" };
+        toast("接入测试失败");
+      }
+      render();
     }
 
     function versionDate(item) {
@@ -1420,6 +1474,7 @@
           state.evalStatus = payload;
           state.adapters = payload.adapters || await loadJson("/pfe/adapters");
           state.handoff = null;
+          state.handoffTest = null;
           toast("已开始评估");
           refreshEvalStatus();
         } else {
@@ -1427,6 +1482,7 @@
           state.adapters = payload.adapters || await loadJson("/pfe/adapters");
           state.readiness = await loadJson("/pfe/readiness");
           state.handoff = null;
+          state.handoffTest = null;
           toast("已完成");
         }
       } catch (error) {
@@ -1441,6 +1497,7 @@
         state.evalStatus = await loadJson("/pfe/eval/status");
         state.adapters = state.evalStatus.adapters || await loadJson("/pfe/adapters");
         state.handoff = null;
+        state.handoffTest = null;
         render();
         if (state.evalStatus && state.evalStatus.state === "running") {
           refreshEvalStatus.timer = window.setTimeout(refreshEvalStatus, 1200);
@@ -1492,6 +1549,7 @@
         state.trainingJobs = await loadJson("/pfe/training/jobs");
         state.adapters = await loadJson("/pfe/adapters");
         state.handoff = null;
+        state.handoffTest = null;
         render();
         const job = state.trainingJobs && state.trainingJobs.active;
         if (job && (job.status === "queued" || job.status === "running") && !job.cancellation_requested) {
@@ -1534,6 +1592,7 @@
         const payload = await postJson(job.cancel_url, { confirm: true });
         state.trainingJobs = payload.jobs || await loadJson("/pfe/training/jobs");
         state.handoff = null;
+        state.handoffTest = null;
         toast(payload.message || "已请求停止");
         refreshTrainingJobs();
       } catch (error) {
@@ -1556,6 +1615,7 @@
         state.trainingJobs = payload.jobs || await loadJson("/pfe/training/jobs");
         state.adapters = await loadJson("/pfe/adapters");
         state.handoff = null;
+        state.handoffTest = null;
         toast("已重新开始生成");
         refreshTrainingJobs();
       } catch (error) {
@@ -1580,6 +1640,7 @@
         state.trainingJobs = payload.jobs || await loadJson("/pfe/training/jobs");
         state.adapters = await loadJson("/pfe/adapters");
         state.handoff = null;
+        state.handoffTest = null;
         toast("已开始生成版本");
         refreshTrainingJobs();
       } catch (error) {
@@ -1657,12 +1718,14 @@
         state.trainingJobs = trainingJobs;
         state.evalStatus = evalStatus;
         state.status = status;
+        state.handoffTest = null;
       } catch (error) {
         state.errors.push(error);
         state.runtime = state.runtime || {};
         state.workspaces = state.workspaces || {};
         state.models = state.models || {};
         state.handoff = state.handoff || null;
+        state.handoffTest = state.handoffTest || null;
         state.adapters = state.adapters || {};
       }
       render();
@@ -1718,6 +1781,7 @@
     $("copyHandoffButton").addEventListener("click", () => {
       copyText(buildHandoffText());
     });
+    $("testHandoffButton").addEventListener("click", testHandoff);
     $("modelSelect").addEventListener("change", (event) => saveModel(event.target.value));
     $("workspaceSelect").addEventListener("change", (event) => saveWorkspace(event.target.value));
     $("saveWorkspaceButton").addEventListener("click", () => saveWorkspace($("workspaceInput").value));
