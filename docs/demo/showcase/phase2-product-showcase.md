@@ -30,6 +30,7 @@ Studio -> memory sample -> training -> eval gate -> promote -> base/local API co
 | [06-promoted-adapter.png](screenshots/06-promoted-adapter.png) | Adapter promoted to latest and loaded by Studio. |
 | [07-api-handoff.png](screenshots/07-api-handoff.png) | Web URL, chat API, feedback API, model parameter, and curl handoff. |
 | [08-base-vs-local-compare.png](screenshots/08-base-vs-local-compare.png) | Rendered comparison from the saved base/local API JSON responses. |
+| [09-simplified-studio.png](screenshots/09-simplified-studio.png) | Simplified Studio layout with workspace, endpoint details, and status details collapsed by default. |
 
 ## Evidence
 

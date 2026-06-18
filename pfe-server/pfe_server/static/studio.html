@@ -60,19 +60,22 @@
               <button class="button" id="realLocalToggleButton" type="button" disabled>使用本地模型回复</button>
             </div>
           </div>
-          <div class="workspace-control-row">
-            <div class="field">
-              <label for="workspaceSelect">工作区</label>
-              <div class="select-wrap">
-                <select id="workspaceSelect" aria-label="工作区"></select>
+          <details class="compact-details workspace-details">
+            <summary>工作区</summary>
+            <div class="workspace-control-row">
+              <div class="field">
+                <label for="workspaceSelect">工作区</label>
+                <div class="select-wrap">
+                  <select id="workspaceSelect" aria-label="工作区"></select>
+                </div>
               </div>
+              <div class="field">
+                <label for="workspaceInput">新工作区</label>
+                <input class="text-input" id="workspaceInput" type="text" autocomplete="off" placeholder="client-a" />
+              </div>
+              <button class="button" id="saveWorkspaceButton" type="button" disabled>创建并切换</button>
             </div>
-            <div class="field">
-              <label for="workspaceInput">新工作区</label>
-              <input class="text-input" id="workspaceInput" type="text" autocomplete="off" placeholder="client-a" />
-            </div>
-            <button class="button" id="saveWorkspaceButton" type="button" disabled>创建并切换</button>
-          </div>
+          </details>
         </div>
 
         <div class="section">
@@ -110,7 +113,7 @@
             <span class="status-pill" id="runtimeStatus">检查中</span>
           </div>
           <div class="endpoint-grid">
-            <div class="api-card primary-card">
+            <div class="api-card primary-card handoff-card">
               <div class="api-card-head">
                 <div>
                   <label for="handoffValue">接入信息</label>
@@ -121,64 +124,67 @@
                 </div>
               </div>
               <div class="handoff-test" id="handoffTestValue">未测试</div>
-              <div class="handoff-grid">
-                <div>
-                  <span>网页</span>
-                  <strong id="handoffWebValue">检查中</strong>
+            </div>
+            <details class="compact-details endpoint-details">
+              <summary>接入详情</summary>
+              <div class="endpoint-details-grid">
+                <div class="handoff-grid">
+                  <div>
+                    <span>网页</span>
+                    <strong id="handoffWebValue">检查中</strong>
+                  </div>
+                  <div>
+                    <span>聊天 API</span>
+                    <strong id="handoffApiValue">检查中</strong>
+                  </div>
+                  <div>
+                    <span>反馈 API</span>
+                    <strong id="handoffFeedbackValue">检查中</strong>
+                  </div>
+                  <div>
+                    <span>模型</span>
+                    <strong id="handoffModelValue">检查中</strong>
+                  </div>
+                  <div>
+                    <span>版本</span>
+                    <strong id="handoffVersionValue">检查中</strong>
+                  </div>
                 </div>
-                <div>
-                  <span>聊天 API</span>
-                  <strong id="handoffApiValue">检查中</strong>
+                <div class="endpoint">
+                  <div>
+                    <label for="webUrlValue">网页</label>
+                    <div class="endpoint-value" id="webUrlValue">检查中</div>
+                  </div>
+                  <button class="button" data-copy-target="webUrlValue" type="button">复制网页地址</button>
                 </div>
-                <div>
-                  <span>反馈 API</span>
-                  <strong id="handoffFeedbackValue">检查中</strong>
+                <div class="endpoint">
+                  <div>
+                    <label for="apiUrlValue">API</label>
+                    <div class="endpoint-value" id="apiUrlValue">检查中</div>
+                  </div>
+                  <button class="button" data-copy-target="apiUrlValue" type="button">复制 API 地址</button>
                 </div>
-                <div>
-                  <span>模型</span>
-                  <strong id="handoffModelValue">检查中</strong>
-                </div>
-                <div>
-                  <span>版本</span>
-                  <strong id="handoffVersionValue">检查中</strong>
+                <div class="api-card">
+                  <div class="api-card-head">
+                    <div>
+                      <label for="apiModelValue">模型参数</label>
+                      <div class="endpoint-value" id="apiModelValue">检查中</div>
+                    </div>
+                    <button class="button" data-copy-target="apiModelValue" type="button">复制 model</button>
+                  </div>
+                  <details class="api-details">
+                    <summary>调用示例</summary>
+                    <pre class="api-example" id="apiExampleValue">检查中</pre>
+                    <button class="button" data-copy-target="apiExampleValue" type="button">复制调用示例</button>
+                  </details>
                 </div>
               </div>
-            </div>
-            <div class="endpoint">
-              <div>
-                <label for="webUrlValue">网页</label>
-                <div class="endpoint-value" id="webUrlValue">检查中</div>
-              </div>
-              <button class="button" data-copy-target="webUrlValue" type="button">复制网页地址</button>
-            </div>
-            <div class="endpoint">
-              <div>
-                <label for="apiUrlValue">API</label>
-                <div class="endpoint-value" id="apiUrlValue">检查中</div>
-              </div>
-              <button class="button" data-copy-target="apiUrlValue" type="button">复制 API 地址</button>
-            </div>
-            <div class="api-card">
-              <div class="api-card-head">
-                <div>
-                  <label for="apiModelValue">模型参数</label>
-                  <div class="endpoint-value" id="apiModelValue">检查中</div>
-                </div>
-                <button class="button" data-copy-target="apiModelValue" type="button">复制 model</button>
-              </div>
-              <details class="api-details">
-                <summary>调用示例</summary>
-                <pre class="api-example" id="apiExampleValue">检查中</pre>
-                <button class="button" data-copy-target="apiExampleValue" type="button">复制调用示例</button>
-              </details>
-            </div>
+            </details>
           </div>
         </div>
 
-        <div class="section">
-          <div class="section-head">
-            <h3 class="section-title">状态</h3>
-          </div>
+        <details class="section compact-details status-details">
+          <summary>状态详情</summary>
           <div class="evidence-grid">
             <div class="evidence-item">
               <div class="evidence-label">本机服务</div>
@@ -196,7 +202,7 @@
               <div class="evidence-meta" id="requestMeta">-</div>
             </div>
           </div>
-        </div>
+        </details>
       </section>
 
       <aside class="surface" aria-labelledby="versionsTitle">

@@ -1,15 +1,16 @@
 :root {
-  --rice: #f7f1e7;
-  --paper: #fffcf6;
-  --ink: #2f2722;
-  --muted: #7c6f63;
-  --line: #ddd0c0;
-  --primary: #7a553c;
-  --primary-strong: #5f3f2a;
-  --sage: #8e9a83;
-  --clay: #c97961;
-  --amber: #b9823d;
-  --shadow: 0 20px 45px rgba(70, 51, 34, 0.12);
+  --rice: #f4f6f2;
+  --paper: #ffffff;
+  --panel: #fbfcf9;
+  --ink: #202723;
+  --muted: #68736d;
+  --line: #d9dfd8;
+  --primary: #176b4d;
+  --primary-strong: #0f513a;
+  --sage: #607568;
+  --clay: #b45f54;
+  --amber: #8b6b2a;
+  --shadow: 0 14px 34px rgba(35, 48, 41, 0.08);
   color-scheme: light;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
@@ -27,7 +28,7 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    linear-gradient(180deg, rgba(255, 252, 246, 0.72) 0%, rgba(247, 241, 231, 0) 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(244, 246, 242, 0) 34%),
     var(--rice);
   color: var(--ink);
 }
@@ -50,9 +51,9 @@ button:disabled {
 }
 
 .shell {
-  width: min(1180px, calc(100vw - 32px));
+  width: min(1120px, calc(100vw - 32px));
   margin: 0 auto;
-  padding: 28px 0 36px;
+  padding: 22px 0 30px;
 }
 
 .topbar {
@@ -61,7 +62,7 @@ button:disabled {
   justify-content: space-between;
   gap: 18px;
   min-height: 44px;
-  margin-bottom: 26px;
+  margin-bottom: 18px;
 }
 
 .brand {
@@ -127,7 +128,7 @@ button:disabled {
 .button.primary {
   border-color: var(--primary);
   background: var(--primary);
-  color: #fffaf3;
+  color: #fff;
 }
 
 .button.primary:hover {
@@ -173,25 +174,25 @@ button:disabled {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
-  gap: 18px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  gap: 16px;
   align-items: start;
 }
 
 .surface {
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: rgba(255, 252, 246, 0.92);
+  background: rgba(255, 255, 255, 0.92);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
 .surface-main {
-  min-height: 540px;
+  min-height: 0;
 }
 
 .section {
-  padding: 22px;
+  padding: 18px 20px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -204,7 +205,7 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .section-title {
@@ -217,7 +218,7 @@ button:disabled {
 .summary {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
+  gap: 14px;
   align-items: start;
 }
 
@@ -229,7 +230,7 @@ button:disabled {
 }
 
 .eyebrow {
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: var(--muted);
   font-size: 12px;
   font-weight: 760;
@@ -238,14 +239,14 @@ button:disabled {
 .summary h2 {
   max-width: 720px;
   margin: 0;
-  font-size: clamp(30px, 4vw, 44px);
-  line-height: 1.02;
+  font-size: clamp(28px, 3.2vw, 38px);
+  line-height: 1.06;
   font-weight: 780;
   letter-spacing: 0;
 }
 
 .summary-copy {
-  margin: 14px 0 0;
+  margin: 10px 0 0;
   max-width: 650px;
   color: var(--muted);
   font-size: 16px;
@@ -259,15 +260,21 @@ button:disabled {
   justify-content: flex-start;
 }
 
+.summary-actions .button:not(.primary),
+.top-actions .button,
+.handoff-actions .button {
+  background: transparent;
+}
+
 .work-facts {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .work-fact {
   min-width: 0;
-  padding: 12px 0 0;
+  padding: 10px 0 0;
   border-top: 1px solid var(--line);
 }
 
@@ -292,8 +299,8 @@ button:disabled {
 
 .model-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.35fr);
-  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, 0.32fr);
+  gap: 10px;
   align-items: end;
 }
 
@@ -302,7 +309,7 @@ button:disabled {
   grid-template-columns: minmax(180px, 0.45fr) minmax(0, 1fr) auto;
   gap: 10px;
   align-items: end;
-  margin-top: 16px;
+  margin-top: 10px;
 }
 
 .field label,
@@ -340,10 +347,10 @@ button:disabled {
 .select-wrap,
 .text-input,
 .value-box {
-  min-height: 46px;
+  min-height: 42px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffaf3;
+  background: var(--panel);
 }
 
 .text-input {
@@ -360,7 +367,7 @@ button:disabled {
 
 select {
   width: 100%;
-  min-height: 46px;
+  min-height: 42px;
   padding: 0 40px 0 13px;
   border: 0;
   outline: 0;
@@ -405,12 +412,63 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: end;
-  margin-top: 12px;
+  margin-top: 10px;
+}
+
+.compact-details {
+  color: var(--muted);
+}
+
+.compact-details > summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 720;
+  list-style: none;
+}
+
+.compact-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.compact-details > summary::before {
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  content: "";
+  transform: rotate(-45deg);
+  transition: transform 140ms ease;
+}
+
+.compact-details[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.workspace-details {
+  margin-top: 8px;
+}
+
+.status-details {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.status-details > summary {
+  margin-bottom: 0;
+}
+
+.status-details[open] > summary {
+  margin-bottom: 12px;
 }
 
 .endpoint-grid {
   display: grid;
-  gap: 12px;
+  gap: 10px;
 }
 
 .endpoint {
@@ -418,10 +476,10 @@ select {
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   align-items: end;
-  padding: 14px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffaf3;
+  background: var(--panel);
 }
 
 .endpoint-value {
@@ -436,22 +494,26 @@ select {
 
 .api-card {
   display: grid;
-  gap: 12px;
-  padding: 14px;
+  gap: 8px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffdf8;
+  background: var(--panel);
 }
 
 .api-card.primary-card {
-  background: #fffaf3;
+  background: var(--panel);
+}
+
+.handoff-card {
+  border-color: rgba(23, 107, 77, 0.22);
 }
 
 .api-card-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
-  align-items: end;
+  align-items: center;
 }
 
 .handoff-actions {
@@ -478,10 +540,20 @@ select {
 
 .handoff-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px 14px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.endpoint-details {
+  padding: 0 2px;
+}
+
+.endpoint-details-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .handoff-grid strong {
@@ -532,10 +604,10 @@ select {
 
 .evidence-item {
   min-height: 90px;
-  padding: 14px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffaf3;
+  background: var(--panel);
 }
 
 .evidence-label {
@@ -567,11 +639,11 @@ select {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  margin-bottom: 12px;
-  padding: 12px;
+  margin-bottom: 10px;
+  padding: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffdf8;
+  background: var(--panel);
 }
 
 .adapter-overview span {
@@ -597,11 +669,11 @@ select {
 
 .version-item {
   display: grid;
-  gap: 8px;
-  padding: 13px;
+  gap: 7px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffaf3;
+  background: var(--panel);
 }
 
 .version-top {
@@ -658,11 +730,11 @@ select {
 
 .training-panel {
   display: grid;
-  gap: 10px;
-  padding: 13px;
+  gap: 8px;
+  padding: 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #fffaf3;
+  background: var(--panel);
 }
 
 .training-value {
