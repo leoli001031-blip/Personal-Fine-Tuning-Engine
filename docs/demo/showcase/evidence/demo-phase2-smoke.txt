@@ -1,0 +1,34 @@
+.venv/bin/python tools/studio_model_path_smoke.py
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-iw4mm8nf
+
+STUDIO MODEL PATH SMOKE PASSED
+workspace:           studio-client
+pfe_home:            /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-iw4mm8nf/.pfe
+base_model:          /private/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-iw4mm8nf/models/studio-local
+api_url:             http://127.0.0.1:8921/v1/chat/completions
+api_model:           base
+inference_mode:      real_local
+real_local_enabled:  True
+training_preflight:  True
+training_jobs:       0
+chat_served_by:      mock
+chat_resolved_model: /private/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-iw4mm8nf/models/studio-local
+.venv/bin/python tools/memory_golden_smoke.py --strict --report-path /tmp/pfe-phase2-demo-memory-golden.json
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-memory-golden-571t9gk1
+pfe_home: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-memory-golden-571t9gk1/.pfe
+python:   /Users/lichenhao/Desktop/PFE/.venv/bin/python
+model:    /Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct
+prompt:   PFE Golden Smoke 记忆代号是什么？只回答代号。
+answer:   金线闭环-042
+
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 6925.98it/s]
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights: 100%|██████████| 290/290 [00:00<00:00, 6854.29it/s]
+MEMORY GOLDEN SMOKE PASSED
+workspace:       memory_golden
+adapter_version: 20260618-001
+base_model:      /Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct
+base_answer:     PFE Golden Smoke
+local_answer:    金线闭环-042
+report:          /tmp/pfe-phase2-demo-memory-golden.json

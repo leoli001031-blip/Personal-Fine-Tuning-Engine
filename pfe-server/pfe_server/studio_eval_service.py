@@ -25,6 +25,23 @@ LoadAdapterPath = Callable[[str], Any]
 StartBackground = Callable[[Callable[[], None]], None]
 
 
+def evaluate_pipeline(
+    pipeline: Any,
+    *,
+    base_model: str,
+    adapter: str,
+    num_samples: int,
+    workspace: str,
+) -> Any:
+    target = getattr(pipeline, "pipeline", pipeline)
+    return target.evaluate(
+        base_model=base_model,
+        adapter=adapter,
+        num_samples=num_samples,
+        workspace=workspace,
+    )
+
+
 def load_eval_report(adapter_path: Any) -> dict[str, Any]:
     report_path = Path(adapter_path) / "eval_report.json"
     if not report_path.exists():
@@ -50,7 +67,8 @@ def run_eval_job(
 ) -> None:
     try:
         base_model = request_body.get("base_model") or default_base_model()
-        result = pipeline.evaluate(
+        result = evaluate_pipeline(
+            pipeline,
             base_model=base_model,
             adapter=version,
             num_samples=int(request_body.get("num_samples", 20)),
@@ -136,6 +154,7 @@ def start_eval_job(
 
 __all__ = [
     "default_thread_starter",
+    "evaluate_pipeline",
     "load_eval_report",
     "run_eval_job",
     "start_eval_job",

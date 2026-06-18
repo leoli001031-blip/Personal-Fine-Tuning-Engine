@@ -1,0 +1,180 @@
+{
+  "workspace": "memory_golden",
+  "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+  "version": "20260618-001",
+  "prompt": "PFE Golden Smoke 记忆代号是什么？只回答代号。",
+  "expected_answer": "金线闭环-042",
+  "manifest": {
+    "artifact_format": "peft_lora",
+    "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+    "state_before_promotion": "pending_eval"
+  },
+  "verification": {
+    "base": {
+      "answer": "PFE Golden Smoke",
+      "metadata": {
+        "inference": {
+          "backend": "mlx",
+          "healthy": true,
+          "requested_backend": "auto",
+          "requires_export": false,
+          "backend_plan": {
+            "requested_backend": "auto",
+            "selected_backend": "mlx",
+            "reason": "Apple Silicon local runtime prefers mlx for the auto path",
+            "requires_export": false,
+            "required_artifact_format": null,
+            "compatible_artifact_formats": [
+              "peft_lora",
+              "mlx_lora",
+              "gguf_merged"
+            ],
+            "preferred_device": "auto",
+            "strict_local": true,
+            "metadata": {
+              "platform": "Darwin",
+              "machine": "arm64",
+              "manifest_backend": "auto",
+              "manifest_artifact_format": "peft_lora"
+            }
+          },
+          "served_by": "local",
+          "resolved_base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+          "runtime_path": "real_local",
+          "real_local_enabled": true,
+          "generation": {
+            "text": "PFE Golden Smoke",
+            "served_by": "local",
+            "runtime_path": "real_local",
+            "device": "mps",
+            "resolved_base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+            "adapter_loaded": false,
+            "adapter_requested": false,
+            "adapter_reason": null,
+            "raw_text": "PFE Golden Smoke",
+            "thinking_stripped": false,
+            "real_local_enabled": true
+          }
+        },
+        "signal_collection": {
+          "session_id": "sess-938c804b",
+          "request_id": "req-300d27e2",
+          "interaction_stored": true,
+          "response_time_seconds": 0.774
+        }
+      },
+      "served_by": "local",
+      "adapter_version": null
+    },
+    "local": {
+      "answer": "金线闭环-042",
+      "metadata": {
+        "inference": {
+          "backend": "transformers",
+          "healthy": true,
+          "requested_backend": "auto",
+          "requires_export": false,
+          "backend_plan": {
+            "requested_backend": "auto",
+            "selected_backend": "transformers",
+            "reason": "manifest already prefers transformers",
+            "requires_export": false,
+            "required_artifact_format": null,
+            "compatible_artifact_formats": [
+              "peft_lora",
+              "mlx_lora",
+              "gguf_merged"
+            ],
+            "preferred_device": "auto",
+            "strict_local": true,
+            "metadata": {
+              "platform": "Darwin",
+              "machine": "arm64",
+              "manifest_backend": "transformers",
+              "manifest_artifact_format": "peft_lora"
+            }
+          },
+          "served_by": "local",
+          "resolved_base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+          "runtime_path": "real_local",
+          "real_local_enabled": true,
+          "export_plan": {
+            "target_backend": "transformers",
+            "source_artifact_format": "peft_lora",
+            "target_artifact_format": "peft_lora",
+            "required": false,
+            "artifact_name": "adapter_model.safetensors",
+            "artifact_directory": "peft_lora",
+            "manifest_updates": {
+              "workspace": "memory_golden",
+              "adapter_dir": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-memory-golden-571t9gk1/.pfe/adapters/memory_golden/20260618-001",
+              "source_adapter_version": "20260618-001",
+              "source_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+              "training_run_id": "20260618-001",
+              "num_samples": 1,
+              "artifact_format": "peft_lora",
+              "artifact_name": "adapter_model.safetensors",
+              "inference_backend": "transformers",
+              "requires_export": false,
+              "artifact_contract": {
+                "source_artifact_role": "lora_adapter",
+                "target_artifact_role": "lora_adapter",
+                "base_model_role": "base_model"
+              },
+              "export": {
+                "exported_at": "2026-06-18T03:27:39.529133+00:00",
+                "target_backend": "transformers",
+                "source_artifact_format": "peft_lora",
+                "target_artifact_format": "peft_lora",
+                "export_required": false,
+                "export_directory": "peft_lora",
+                "source_artifact_role": "lora_adapter",
+                "target_artifact_role": "lora_adapter",
+                "base_model_role": "base_model"
+              }
+            },
+            "reason": "backend does not require a format conversion",
+            "metadata": {
+              "target_backend": "transformers",
+              "source_artifact_format": "peft_lora",
+              "target_artifact_format": "peft_lora",
+              "required_format": null,
+              "source_artifact_role": "lora_adapter",
+              "target_artifact_role": "lora_adapter",
+              "base_model_role": "base_model",
+              "artifact_contract": {
+                "source_artifact_role": "lora_adapter",
+                "target_artifact_role": "lora_adapter",
+                "base_model_role": "base_model"
+              }
+            }
+          },
+          "adapter_version": "20260618-001",
+          "artifact_format": "peft_lora",
+          "adapter_requested": true,
+          "generation": {
+            "text": "金线闭环-042",
+            "served_by": "local",
+            "runtime_path": "real_local",
+            "device": "mps",
+            "resolved_base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+            "adapter_loaded": true,
+            "adapter_requested": true,
+            "adapter_reason": null,
+            "raw_text": "金线闭环-042",
+            "thinking_stripped": false,
+            "real_local_enabled": true
+          }
+        },
+        "signal_collection": {
+          "session_id": "sess-6f7abdd3",
+          "request_id": "req-bb47bb68",
+          "interaction_stored": true,
+          "response_time_seconds": 0.867
+        }
+      },
+      "served_by": "local",
+      "adapter_version": "20260618-001"
+    }
+  }
+}
