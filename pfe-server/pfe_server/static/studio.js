@@ -11,6 +11,9 @@ const state = {
   trainingJobs: null,
   phase3: null,
   phase3Plan: null,
+  phase4: null,
+  phase4Candidates: null,
+  phase4Eval: null,
   status: null,
   errors: [],
 };
@@ -856,6 +859,122 @@ async function buildPhase3Plan() {
   render();
 }
 
+function renderPhase4() {
+  const phase4 = state.phase4 || {};
+  const sourceCount = Number(phase4.source_count || 0);
+  const chunkCount = Number(phase4.chunk_count || 0);
+  const candidateCount = Number(phase4.training_candidate_count || 0);
+  const eligibleCount = Number(phase4.eligible_training_candidate_count || 0);
+  const adapter = phase4.candidate_adapter || {};
+  const latestEval = state.phase4Eval || phase4.latest_eval_report || null;
+  const evalGate = (latestEval && latestEval.eval_gate) || phase4.eval_gate || {};
+  const delta = latestEval && latestEval.scores && latestEval.scores.local_delta
+    ? latestEval.scores.local_delta
+    : {};
+  text("phase4SourcesValue", sourceCount);
+  text("phase4ChunksValue", chunkCount);
+  text("phase4CandidatesValue", candidateCount ? candidateCount + " / " + eligibleCount + " train" : "0");
+  text("phase4AdapterValue", adapter.version ? adapter.version + " / " + (adapter.state || "planned") : "未生成");
+  text("phase4EvalDeltaValue", delta.citation_hit_rate != null ? "citation +" + delta.citation_hit_rate : "未评测");
+  text("phase4GateValue", evalGate.status || (eligibleCount ? "可评测" : "等待资料"));
+  const statusLabel = evalGate.status === "pass"
+    ? "通过"
+    : eligibleCount
+      ? "可评测"
+      : sourceCount
+        ? "可生成"
+        : "采集中";
+  const statusTone = evalGate.status === "pass" || eligibleCount ? "ok" : "warn";
+  pill("phase4Status", statusLabel, statusTone);
+
+  const list = $("phase4SourceList");
+  if (list) {
+    list.textContent = "";
+    const sources = Array.isArray(phase4.sources) ? phase4.sources : [];
+    if (!sources.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "还没有 Phase4 资料";
+      list.appendChild(empty);
+    } else {
+      for (const source of sources.slice(0, 3)) {
+        const row = document.createElement("article");
+        row.className = "corpus-row";
+        const top = document.createElement("div");
+        top.className = "signal-top";
+        const name = document.createElement("strong");
+        name.textContent = source.title || source.source_id || "source";
+        const badge = document.createElement("span");
+        badge.className = "status-pill ok";
+        badge.textContent = source.source_type || "source";
+        top.append(name, badge);
+        const meta = document.createElement("div");
+        meta.className = "signal-meta";
+        meta.textContent = [source.source_id, source.license_status].filter(Boolean).join(" / ") || "已采集";
+        row.append(top, meta);
+        list.appendChild(row);
+      }
+    }
+  }
+  const generateButton = $("phase4GenerateButton");
+  const evalButton = $("phase4EvalButton");
+  if (generateButton) generateButton.disabled = !sourceCount;
+  if (evalButton) evalButton.disabled = !eligibleCount;
+}
+
+async function addPhase4DemoSource() {
+  $("phase4AddSourceButton").disabled = true;
+  try {
+    await postJson("/pfe/phase4/sources", { demo: true });
+    state.phase4 = await loadJson("/pfe/phase4");
+    toast("已采集资料");
+  } catch (error) {
+    toast("采集失败");
+  }
+  $("phase4AddSourceButton").disabled = false;
+  render();
+}
+
+async function generatePhase4Candidates() {
+  $("phase4GenerateButton").disabled = true;
+  try {
+    state.phase4Candidates = await postJson("/pfe/phase4/training-candidates", {
+      limit: 12,
+      export: true,
+    });
+    await postJson("/pfe/phase4/candidate-plan", {}).catch(() => null);
+    state.phase4 = await loadJson("/pfe/phase4");
+    toast(state.phase4Candidates.eligible_count ? "训练样本已生成" : "没有可训练样本");
+  } catch (error) {
+    toast("生成失败");
+  }
+  $("phase4GenerateButton").disabled = false;
+  render();
+}
+
+async function runPhase4Eval() {
+  $("phase4EvalButton").disabled = true;
+  try {
+    let adapter = state.phase4 && state.phase4.candidate_adapter ? state.phase4.candidate_adapter : {};
+    if (!adapter.version) {
+      const created = await postJson("/pfe/phase4/candidate-adapter", {});
+      adapter = { version: created.adapter_version, state: created.state };
+      state.adapters = created.adapters || await loadJson("/pfe/adapters");
+    }
+    state.phase4Eval = await postJson("/pfe/phase4/eval", {
+      adapter_version: adapter.version,
+      attach_to_adapter: Boolean(adapter.version),
+    });
+    state.adapters = state.phase4Eval.adapters || await loadJson("/pfe/adapters");
+    state.phase4 = await loadJson("/pfe/phase4");
+    toast("评测完成");
+  } catch (error) {
+    toast("评测失败");
+  }
+  $("phase4EvalButton").disabled = false;
+  render();
+}
+
 async function refreshTrainingJobs() {
   window.clearTimeout(refreshTrainingJobs.timer);
   try {
@@ -1004,6 +1123,7 @@ function render() {
   renderHandoff();
   renderTrainingPreflight();
   renderPhase3();
+  renderPhase4();
   renderStatus();
   renderSummary();
 }
@@ -1015,7 +1135,7 @@ async function refresh() {
   pill("modelStatus", "检查中", "");
   pill("adapterStatus", "检查中", "");
   try {
-    const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, phase3, status] = await Promise.all([
+    const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, phase3, phase4, status] = await Promise.all([
       loadJson("/pfe/runtime"),
       loadJson("/pfe/workspaces"),
       loadJson("/pfe/models"),
@@ -1025,6 +1145,7 @@ async function refresh() {
       loadJson("/pfe/training/jobs").catch(() => null),
       loadJson("/pfe/eval/status").catch(() => null),
       loadJson("/pfe/phase3").catch(() => null),
+      loadJson("/pfe/phase4").catch(() => null),
       loadJson("/pfe/status?detail=full").catch(() => null),
     ]);
     state.runtime = runtime;
@@ -1036,6 +1157,8 @@ async function refresh() {
     state.trainingJobs = trainingJobs;
     state.evalStatus = evalStatus;
     state.phase3 = phase3;
+    state.phase4 = phase4;
+    state.phase4Eval = null;
     state.status = status;
     state.handoffTest = null;
   } catch (error) {
@@ -1047,6 +1170,7 @@ async function refresh() {
     state.handoffTest = state.handoffTest || null;
     state.adapters = state.adapters || {};
     state.phase3 = state.phase3 || null;
+    state.phase4 = state.phase4 || null;
   }
   render();
   const active = state.trainingJobs && state.trainingJobs.active;
@@ -1113,6 +1237,9 @@ $("cancelTrainingButton").addEventListener("click", cancelTraining);
 $("retryTrainingButton").addEventListener("click", retryTraining);
 $("phase3AddSignalButton").addEventListener("click", addPhase3DemoSignal);
 $("phase3PlanButton").addEventListener("click", buildPhase3Plan);
+$("phase4AddSourceButton").addEventListener("click", addPhase4DemoSource);
+$("phase4GenerateButton").addEventListener("click", generatePhase4Candidates);
+$("phase4EvalButton").addEventListener("click", runPhase4Eval);
 $("workspaceInput").addEventListener("keydown", (event) => {
   if (event.key === "Enter") saveWorkspace(event.target.value);
 });
