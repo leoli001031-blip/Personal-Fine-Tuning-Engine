@@ -46,10 +46,13 @@ class ManagementHistorySurfaceTests(unittest.TestCase):
     def _build_candidate_history(self) -> tuple[PipelineService, str]:
         service = self._service()
         service.generate(scenario="life-coach", style="温和", num_samples=8)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(first.version)
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=8)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store.attach_eval_report(second.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         service.promote_candidate(note="ready_for_rollout")
         return service, second.version
 

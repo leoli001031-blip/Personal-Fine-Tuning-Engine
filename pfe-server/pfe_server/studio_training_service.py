@@ -16,6 +16,7 @@ PersistJob = Callable[[str, dict[str, Any]], None]
 PersistOverall = Callable[[str, dict[str, Any]], None]
 BuildJobsPayload = Callable[[int], dict[str, Any]]
 StartBackground = Callable[[Callable[[], None]], None]
+AfterCompleted = Callable[[dict[str, Any]], None]
 
 
 def extract_training_adapter_version(result_msg: Any) -> str | None:
@@ -75,6 +76,7 @@ def run_training_job(
     retry_of: str | None,
     persist_job: PersistJob,
     persist_overall: PersistOverall,
+    after_completed: AfterCompleted | None = None,
 ) -> None:
     job_id = str(job_entry.get("job_id") or "")
     workspace = str(job_entry.get("workspace") or "")
@@ -119,6 +121,10 @@ def run_training_job(
                 "retry_of": retry_of,
             },
         )
+        persist_job(job_id, job_entry)
+        persist_overall(workspace, training_overall_state(job_id, job_entry))
+        if version and after_completed is not None:
+            after_completed(job_entry)
     except Exception as exc:
         job_entry["status"] = "failed"
         job_entry["error"] = str(exc)
@@ -152,6 +158,7 @@ def start_training_job(
     build_jobs_payload: BuildJobsPayload,
     job_id_factory: Callable[[], str] | None = None,
     start_background: StartBackground | None = None,
+    after_completed: AfterCompleted | None = None,
 ) -> dict[str, Any]:
     job_id = str(job_id_factory() if job_id_factory else uuid4())
     job_entry = build_training_job_entry(
@@ -180,6 +187,7 @@ def start_training_job(
             retry_of=retry_of,
             persist_job=persist_job,
             persist_overall=persist_overall,
+            after_completed=after_completed,
         )
     )
     payload = {

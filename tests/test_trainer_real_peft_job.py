@@ -6,6 +6,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 trainer_executor_module = importlib.import_module("pfe_core.trainer.executors")
@@ -165,6 +166,65 @@ class TrainerRealPeftJobTests(unittest.TestCase):
         self.assertTrue(result["real_execution"]["success"])
         self.assertEqual(result["real_execution"]["artifact_dir"], "/tmp/pfe-real-peft/peft_lora")
         self.assertIn("artifact_manifest_path", result["real_execution"])
+
+    def test_encode_sft_examples_masks_prompt_tokens_when_tokenizer_available(self) -> None:
+        class _Tokenizer:
+            pad_token_id = 0
+            eos_token_id = 2
+            eos_token = "<eos>"
+
+            def apply_chat_template(self, messages, *, tokenize=False, add_generation_prompt=False):
+                del tokenize
+                text = ""
+                for message in messages:
+                    text += f"{message['role']}:{message['content']}\n"
+                if add_generation_prompt:
+                    text += "assistant:"
+                return text
+
+            def __call__(self, text, **kwargs):
+                del kwargs
+                return {"input_ids": list(range(1, len(str(text).split()) + 1))}
+
+        rows = trainer_executor_module._encode_sft_examples(
+            tokenizer=_Tokenizer(),
+            training_examples=[{"instruction": "remember code", "chosen": "code is 42"}],
+            max_length=16,
+            vocab_size=128,
+        )
+
+        self.assertEqual(len(rows), 1)
+        labels = rows[0]["labels"]
+        self.assertIn(-100, labels)
+        self.assertTrue(any(label != -100 for label in labels))
+
+    def test_run_real_import_peft_training_does_not_fallback_to_config_on_load_error(self) -> None:
+        job_spec = self._job_spec()
+        model_dir = Path(self.tempdir.name) / "compressed-model"
+        model_dir.mkdir(parents=True, exist_ok=True)
+        (model_dir / "config.json").write_text('{"model_type": "qwen2"}\n', encoding="utf-8")
+        job_spec["recipe"]["training"]["base_model"] = str(model_dir)  # type: ignore[index]
+
+        fake_transformers = SimpleNamespace(
+            AutoModelForCausalLM=SimpleNamespace(
+                from_pretrained=lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("size mismatch"))
+            ),
+            AutoTokenizer=SimpleNamespace(from_pretrained=lambda *args, **kwargs: None),
+        )
+        fake_peft = SimpleNamespace(LoraConfig=object, get_peft_model=lambda model, config: model)
+        fake_accelerate = SimpleNamespace(Accelerator=object)
+
+        def fake_import_module(name: str):
+            return {
+                "torch": SimpleNamespace(),
+                "transformers": fake_transformers,
+                "peft": fake_peft,
+                "accelerate": fake_accelerate,
+            }[name]
+
+        with patch.object(trainer_executor_module.importlib, "import_module", side_effect=fake_import_module):
+            with self.assertRaisesRegex(Exception, "could not load the local base model"):
+                trainer_executor_module._run_real_import_peft_training(job_spec)
 
     def test_run_real_local_peft_training_keeps_artifact_dir_adapter_only(self) -> None:
         local_model_dir = Path(self.tempdir.name) / "local-model"

@@ -80,7 +80,7 @@ function apiContract() {
   return {
     url: api.chat_completions_url || runtime.api_url || "",
     method: api.method || "POST",
-    model: api.model_parameter || "local",
+    model: api.model_parameter || "base",
     feedbackUrl: api.feedback_url || "",
     authHeader: api.auth_header || "",
     contentType: api.content_type || "application/json",
@@ -127,7 +127,7 @@ function buildHandoffSnapshot() {
     model: {
       selected: models.selected || candidate.id || "",
       label: candidate.label || models.selected_label || models.selected || "",
-      api_parameter: contract.model || "local",
+      api_parameter: contract.model || "base",
     },
     version: {
       current: current.version || adapters.latest_version || "",
@@ -168,7 +168,7 @@ function buildHandoffText() {
     "Web: " + (urls.web || "-"),
     "Chat API: " + (urls.api || "-"),
     "Feedback API: " + (urls.feedback || feedback.url || "-"),
-    "Model parameter: " + (model.api_parameter || "local"),
+    "Model parameter: " + (model.api_parameter || "base"),
     "Selected model: " + (model.selected || "-"),
     "Keep per answer: " + ((closedLoop.required_response_fields || ["session_id", "request_id"]).join(", ")),
     "Report actions: " + (((feedback && feedback.actions) || ["accept", "reject", "edit", "regenerate", "delete"]).join(", ")),
@@ -283,7 +283,7 @@ function renderHandoff() {
   text("handoffWebValue", urls.web || "-");
   text("handoffApiValue", urls.api || "-");
   text("handoffFeedbackValue", urls.feedback || "-");
-  text("handoffModelValue", [model.api_parameter || "local", model.label || model.selected].filter(Boolean).join(" / "));
+  text("handoffModelValue", [model.api_parameter || "base", model.label || model.selected].filter(Boolean).join(" / "));
   text("handoffVersionValue", [versionLabel, access].filter(Boolean).join(" / "));
   const testResult = state.handoffTest || null;
   const testChat = testResult && testResult.chat ? testResult.chat : {};
@@ -468,11 +468,33 @@ function versionDate(item) {
   return item && (item.created_at || item.updated_at || item.timestamp) ? (item.created_at || item.updated_at || item.timestamp) : "";
 }
 
+function adapterShort(value) {
+  const textValue = String(value || "").trim();
+  if (!textValue) return "无";
+  const parts = textValue.split(/[\\/]/).filter(Boolean);
+  return parts[parts.length - 1] || textValue;
+}
+
+function promotionGateText(item) {
+  const gate = item && item.promotion_gate ? item.promotion_gate : {};
+  const reason = gate.reason || "";
+  if (!reason || gate.allowed) return "";
+  if (reason === "eval_required") return "上线闸门：等待评估通过";
+  if (reason === "failed_eval") return "上线闸门：评估未通过";
+  if (reason === "archived") return "上线闸门：历史版本可回退";
+  return "上线闸门：" + reason.replace(/_/g, " ");
+}
+
 function renderAdapters() {
   const adapters = state.adapters || {};
   const current = adapters.current;
   text("versionValue", current && current.version ? current.version : "暂无版本");
   text("heroVersionValue", current && current.version ? current.version : "暂无版本");
+  const pendingEval = adapters.pending_eval_adapter || null;
+  text("adapterBaseModelValue", adapterShort(adapters.base_model || (current && current.base_model) || (pendingEval && pendingEval.base_model)));
+  text("adapterLatestValue", current && current.version ? current.version : "无");
+  text("adapterPendingValue", pendingEval && pendingEval.version ? pendingEval.version : "无");
+  text("adapterLoadedValue", adapters.adapter_loaded ? "true" : "false");
   const list = $("versionList");
   list.textContent = "";
   const versions = Array.isArray(adapters.versions) ? adapters.versions : [];
@@ -500,7 +522,12 @@ function renderAdapters() {
 
     const meta = document.createElement("div");
     meta.className = "version-meta";
-    const parts = [item.artifact_format ? "本地版本" : null, versionDate(item)].filter(Boolean);
+    const parts = [
+      item.artifact_role || (item.artifact_format ? "本地版本" : null),
+      item.artifact_format || null,
+      item.requires_export_step ? "需导出" : null,
+      versionDate(item),
+    ].filter(Boolean);
     meta.textContent = parts.join(" / ") || "版本记录";
     row.append(top, meta);
     const evidence = document.createElement("div");
@@ -509,6 +536,7 @@ function renderAdapters() {
       item.training_summary && item.training_summary.summary_line,
       item.eval_summary && item.eval_summary.summary_line,
       item.decision && item.decision.summary_line,
+      promotionGateText(item),
     ].filter(Boolean);
     for (const line of evidenceLines) {
       const detail = document.createElement("div");
@@ -651,7 +679,13 @@ async function runAdapterAction(button) {
       toast("已完成");
     }
   } catch (error) {
-    toast("操作失败");
+    const payload = error && error.payload ? error.payload : {};
+    if (payload.adapters) state.adapters = payload.adapters;
+    if (payload.code === "promotion_eval_required") {
+      toast("先评估通过");
+    } else {
+      toast("操作失败");
+    }
   }
   render();
 }

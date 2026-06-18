@@ -58,6 +58,8 @@ def _default_local_base_model() -> str:
     env_override = os.environ.get("PFE_BASE_MODEL")
     if env_override:
         return env_override
+    if not _auto_local_base_model_enabled():
+        return "Qwen/Qwen2.5-3B-Instruct"
     try:
         from ..config import PFEConfig
 
@@ -68,8 +70,6 @@ def _default_local_base_model() -> str:
                 return configured
     except Exception:
         pass
-    if not _auto_local_base_model_enabled():
-        return "Qwen/Qwen2.5-3B-Instruct"
     candidate = _repo_root() / "models" / "Qwen3-4B"
     if candidate.exists():
         return str(candidate)
@@ -118,6 +118,8 @@ def _clean_llama_cpp_output(text: str) -> str:
         stripped = line.strip()
         if not stripped:
             cleaned_lines.append("")
+            continue
+        if stripped.startswith(("USER:", "SYSTEM:", "ASSISTANT:", "Human:", "AI:")):
             continue
         if stripped.startswith("common_perf_print:"):
             continue
@@ -479,7 +481,7 @@ class InferenceEngine:
             stderr_summary = stderr_lines[-1] if stderr_lines else f"exit code {completed.returncode}"
             raise InferenceError(f"llama.cpp runtime failed: {stderr_summary}")
         raw_text = str(completed.stdout or "").strip()
-        text = _clean_llama_cpp_output(raw_text) or raw_text
+        text = _clean_llama_cpp_output(raw_text)
         if not text:
             raise InferenceError("llama.cpp runtime produced an empty response")
         return {

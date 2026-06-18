@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Any
 
 from typer.testing import CliRunner
 
 from pfe_cli import main as cli_main  # noqa: E402
+from pfe_cli.training_preview_backend_resolution import target_inference_backend
 
 def _patch_cli_training_surfaces(monkeypatch: Any, service: Any) -> None:
     monkeypatch.setattr(cli_main, "_load_service", lambda *module_names: service)
@@ -74,3 +76,19 @@ def test_train_rejects_dpo_backend_for_sft() -> None:
 
     assert result.exit_code == 1
     assert "--backend dpo is only valid" in (result.stdout + result.stderr)
+
+
+def test_training_preview_targets_transformers_for_hf_qwen_directory(tmp_path: Path) -> None:
+    model_dir = tmp_path / "Qwen2.5-0.5B-Instruct"
+    model_dir.mkdir()
+    (model_dir / "config.json").write_text("{}\n", encoding="utf-8")
+    (model_dir / "model.safetensors").write_text("weights\n", encoding="utf-8")
+
+    assert target_inference_backend(str(model_dir)) == "transformers"
+
+
+def test_training_preview_targets_llama_cpp_for_gguf_file(tmp_path: Path) -> None:
+    gguf = tmp_path / "model.gguf"
+    gguf.write_text("GGUF\n", encoding="utf-8")
+
+    assert target_inference_backend(str(gguf)) == "llama_cpp"

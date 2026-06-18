@@ -211,7 +211,13 @@ class TrainerDpoIncrementalReplayTests(unittest.TestCase):
             "load",
             return_value=self._config(dpo_replay_ratio=0.75, replay_history_limit=2),
         ):
-            result = trainer.train_result(method="qlora", epochs=1, base_model="mock-llama-target", train_type="dpo")
+            result = trainer.train_result(
+                method="qlora",
+                epochs=1,
+                base_model="mock-llama-target",
+                train_type="dpo",
+                dry_run=True,
+            )
 
         self.assertEqual(result.training_config["train_type"], "dpo")
         self.assertEqual(result.training_config["dataset_plan"]["sample_type"], "dpo")
@@ -261,7 +267,13 @@ class TrainerDpoIncrementalReplayTests(unittest.TestCase):
             "load",
             return_value=self._config(),
         ):
-            result = trainer.train_result(method="qlora", epochs=1, base_model="mock-llama-target", train_type="sft")
+            result = trainer.train_result(
+                method="qlora",
+                epochs=1,
+                base_model="mock-llama-target",
+                train_type="sft",
+                dry_run=True,
+            )
 
         self.assertEqual(result.training_config["dataset_plan"]["fresh_sample_ids"], [
             "sft-new-2",

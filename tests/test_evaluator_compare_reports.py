@@ -329,10 +329,13 @@ class EvaluatorCompareReportsTests(unittest.TestCase):
                 os.environ["PFE_HOME"] = str(pfe_home)
                 pipeline = PipelineService()
                 pipeline.generate(scenario="life-coach", style="warm", num_samples=8)
-                first = pipeline.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default")
-                AdapterStore(home=pfe_home, workspace="user_default").promote(first.version)
+                first = pipeline.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default", backend="mock_local")
+                store = AdapterStore(home=pfe_home, workspace="user_default")
+                store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+                store.promote(first.version)
                 pipeline.generate(scenario="work-coach", style="direct", num_samples=8)
-                second = pipeline.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default")
+                second = pipeline.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default", backend="mock_local")
+                store.attach_eval_report(second.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
 
                 pipeline._persist_compare_evaluation_state(
                     {

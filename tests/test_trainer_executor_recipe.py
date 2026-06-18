@@ -183,7 +183,23 @@ class TrainerExecutorRecipeTests(unittest.TestCase):
         self.assertIn("run_training_job_file", bundle.script_text)
         self.assertEqual(bundle.job_json["execution_executor"], "peft")
         self.assertEqual(bundle.audit["execution_executor"], "peft")
-        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}):
+        def fake_run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+            Path(bundle.result_json_path).write_text(
+                '{"backend":"peft","status":"ready"}\n',
+                encoding="utf-8",
+            )
+            return subprocess.CompletedProcess(
+                command,
+                returncode=0,
+                stdout='{"backend":"peft","status":"ready"}\n',
+                stderr="",
+            )
+
+        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}), patch.object(
+            trainer_executor_module.subprocess,
+            "run",
+            side_effect=fake_run,
+        ):
             executed = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
         self.assertTrue(executed.attempted)
         self.assertTrue(executed.success)

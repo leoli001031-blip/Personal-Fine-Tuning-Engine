@@ -219,10 +219,13 @@ class OperationsAlertSurfaceTests(unittest.TestCase):
     def test_status_surfaces_candidate_action_guidance(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=6)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(first.version)
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=6)
-        service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store.attach_eval_report(second.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
 
         status = service.status()
 
@@ -241,11 +244,12 @@ class OperationsAlertSurfaceTests(unittest.TestCase):
     def test_status_surfaces_failed_eval_candidate_monitor_actions(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=6)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=6)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store.mark_failed_eval(second.version)
 
         status = service.status()
@@ -253,22 +257,23 @@ class OperationsAlertSurfaceTests(unittest.TestCase):
         self.assertEqual(status["operations_dashboard"]["current_focus"], "candidate_idle")
         self.assertEqual(status["operations_event_stream"]["highest_priority_action"], "archive_candidate")
         self.assertEqual(status["operations_alert_policy"]["required_action"], "archive_candidate")
-        self.assertEqual(status["operations_alert_policy"]["secondary_action"], "promote_candidate")
+        self.assertEqual(status["operations_alert_policy"]["secondary_action"], "inspect_candidate_timeline")
         self.assertEqual(
             status["operations_alert_policy"]["candidate_action_summary"]["primary_action"],
             "archive_candidate",
         )
         self.assertIn("archive_candidate", status["operations_dashboard"]["next_actions"])
-        self.assertIn("promote_candidate", status["operations_dashboard"]["next_actions"])
+        self.assertNotIn("promote_candidate", status["operations_dashboard"]["next_actions"])
 
     def test_status_surfaces_archived_candidate_monitor_actions(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=6)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=6)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store.archive(second.version)
 
         status = service.status()
@@ -479,8 +484,10 @@ class OperationsAlertSurfaceTests(unittest.TestCase):
 
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=8)
-        trained = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(trained.version)
+        trained = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(trained.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(trained.version)
         status = service.status()
 
         self.assertEqual(status["operations_overview"]["attention_reason"], "cooldown_active")

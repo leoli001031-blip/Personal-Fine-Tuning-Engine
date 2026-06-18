@@ -112,12 +112,13 @@ class ClosedLoopObservabilityTests(unittest.TestCase):
     def test_serve_preview_surfaces_real_execution_kind_without_mixing_latest_and_recent(self) -> None:
         pipeline = PipelineService()
         pipeline.generate(scenario="life-coach", style="warm", num_samples=8)
-        first_result = pipeline.train_result(method="qlora", epochs=1, train_type="sft")
+        first_result = pipeline.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first_result.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         store.promote(first_result.version)
 
         pipeline.generate(scenario="work-coach", style="direct", num_samples=8)
-        second_result = pipeline.train_result(method="qlora", epochs=1, train_type="sft")
+        second_result = pipeline.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
 
         original_optional_call = cli_main._optional_module_call
         try:

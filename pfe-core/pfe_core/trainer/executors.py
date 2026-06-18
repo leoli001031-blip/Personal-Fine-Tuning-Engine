@@ -1031,7 +1031,7 @@ def _resolve_real_local_model_source(job_spec: Mapping[str, Any]) -> dict[str, A
         "load_mode": load_mode,
         "reason": reason,
         "requested_base_model": base_model,
-        "local_only": bool(training.get("local_only", job_spec.get("local_only", False))),
+        "local_only": bool(training.get("local_only", job_spec.get("local_only", False))) or available,
     }
 
 
@@ -1106,6 +1106,136 @@ def _resolve_model_sequence_length(config: Any, *, default: int = 48) -> int:
     if lengths:
         return max(8, min([default, *lengths]))
     return default
+
+
+def _resolve_training_sequence_length(config: Any, *, default: int = 192, maximum: int = 512) -> int:
+    candidates = [
+        getattr(config, "n_positions", None),
+        getattr(config, "n_ctx", None),
+        getattr(config, "max_position_embeddings", None),
+        getattr(config, "seq_length", None),
+    ]
+    lengths = [int(value) for value in candidates if isinstance(value, (int, float)) and int(value) > 0]
+    if lengths:
+        return max(32, min([default, maximum, *lengths]))
+    return default
+
+
+def _build_sft_prompt_and_text(tokenizer: Any, instruction: str, chosen: str) -> tuple[str, str]:
+    messages = [{"role": "user", "content": instruction}]
+    full_messages = [*messages, {"role": "assistant", "content": chosen}]
+    apply_chat_template = getattr(tokenizer, "apply_chat_template", None)
+    if callable(apply_chat_template):
+        try:
+            prompt_text = apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            full_text = apply_chat_template(full_messages, tokenize=False, add_generation_prompt=False)
+            return str(prompt_text), str(full_text)
+        except Exception:
+            pass
+    prompt_text = f"USER: {instruction}\nASSISTANT:"
+    full_text = f"{prompt_text} {chosen}"
+    return prompt_text, full_text
+
+
+def _encode_sft_examples(
+    *,
+    tokenizer: Any | None,
+    training_examples: list[Mapping[str, Any]],
+    max_length: int,
+    vocab_size: int,
+) -> list[dict[str, Any]]:
+    encoded_rows: list[dict[str, Any]] = []
+    if tokenizer is None:
+        for item in training_examples:
+            instruction = str(item.get("instruction") or "")
+            chosen = str(item.get("chosen") or "")
+            text = (instruction + "\n" + chosen).strip()
+            token_ids = _encode_training_text(text, max_length=max_length, vocab_size=max(vocab_size, 16))
+            padded = token_ids + [0] * (max_length - len(token_ids))
+            attention = [1] * len(token_ids) + [0] * (max_length - len(token_ids))
+            encoded_rows.append(
+                {
+                    "input_ids": padded,
+                    "attention_mask": attention,
+                    "labels": list(padded),
+                }
+            )
+        return encoded_rows
+
+    pad_token_id = getattr(tokenizer, "pad_token_id", None)
+    eos_token_id = getattr(tokenizer, "eos_token_id", None)
+    if pad_token_id is None and eos_token_id is not None:
+        try:
+            tokenizer.pad_token = tokenizer.eos_token
+        except Exception:
+            pass
+        pad_token_id = getattr(tokenizer, "pad_token_id", None)
+    pad_token_id = int(pad_token_id if pad_token_id is not None else 0)
+
+    for item in training_examples:
+        instruction = str(item.get("instruction") or "")
+        chosen = str(item.get("chosen") or "")
+        prompt_text, full_text = _build_sft_prompt_and_text(tokenizer, instruction, chosen)
+        full = tokenizer(full_text, truncation=True, max_length=max_length, add_special_tokens=False)
+        prompt = tokenizer(prompt_text, truncation=True, max_length=max_length, add_special_tokens=False)
+        input_ids = [int(token) for token in list(full.get("input_ids") or [])]
+        if not input_ids:
+            continue
+        attention = [1] * len(input_ids)
+        labels = list(input_ids)
+        prompt_length = min(len(list(prompt.get("input_ids") or [])), len(labels))
+        for index in range(prompt_length):
+            labels[index] = -100
+        if all(label == -100 for label in labels):
+            labels[-1] = input_ids[-1]
+        padding = max_length - len(input_ids)
+        if padding > 0:
+            input_ids = input_ids + [pad_token_id] * padding
+            attention = attention + [0] * padding
+            labels = labels + [-100] * padding
+        encoded_rows.append(
+            {
+                "input_ids": input_ids[:max_length],
+                "attention_mask": attention[:max_length],
+                "labels": labels[:max_length],
+            }
+        )
+    return encoded_rows
+
+
+def _load_training_tokenizer(transformers: Any, source_path: str | None, *, local_only: bool) -> Any | None:
+    tokenizer_cls = getattr(transformers, "AutoTokenizer", None)
+    if tokenizer_cls is None or source_path is None:
+        return None
+    try:
+        return tokenizer_cls.from_pretrained(source_path, local_files_only=local_only)
+    except Exception:
+        return None
+
+
+def _build_lora_config(peft: Any, model_config: Any) -> Any:
+    lora_config_cls = getattr(peft, "LoraConfig", None)
+    if lora_config_cls is None:
+        raise TrainingError("real peft training requires peft.LoraConfig")
+    kwargs: dict[str, Any] = {
+        "r": 16,
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "bias": "none",
+        "task_type": "CAUSAL_LM",
+    }
+    model_type = str(getattr(model_config, "model_type", "") or "").lower()
+    if model_type.startswith("qwen"):
+        kwargs["target_modules"] = [
+            "q_proj",
+            "k_proj",
+            "v_proj",
+            "o_proj",
+            "gate_proj",
+            "up_proj",
+            "down_proj",
+        ]
+    return lora_config_cls(**kwargs)
 
 
 def _resolve_toy_peft_output_dir(job_spec: Mapping[str, Any]) -> Path:
@@ -1458,84 +1588,56 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
     peft = importlib.import_module("peft")
     accelerate = importlib.import_module("accelerate")
 
-    auto_config_cls = getattr(transformers, "AutoConfig", None)
     auto_model_cls = getattr(transformers, "AutoModelForCausalLM", None)
-    gpt2_config_cls = getattr(transformers, "GPT2Config", None)
-    gpt2_model_cls = getattr(transformers, "GPT2LMHeadModel", None)
-    lora_config_cls = getattr(peft, "LoraConfig", None)
     get_peft_model = getattr(peft, "get_peft_model", None)
     accelerator_cls = getattr(accelerate, "Accelerator", None)
-    if None in (lora_config_cls, get_peft_model, accelerator_cls):
-        raise TrainingError("real import peft training requires peft.LoraConfig, peft.get_peft_model, and accelerate.Accelerator")
-    if None in (auto_config_cls, auto_model_cls, gpt2_config_cls, gpt2_model_cls):
-        raise TrainingError("real import peft training requires transformers AutoConfig/AutoModelForCausalLM and GPT2 fallback classes")
+    if None in (get_peft_model, accelerator_cls):
+        raise TrainingError("real import peft training requires peft.get_peft_model and accelerate.Accelerator")
+    if auto_model_cls is None:
+        raise TrainingError("real import peft training requires transformers AutoModelForCausalLM")
 
     training_examples = list(job_spec.get("training_examples") or [])
     if not training_examples:
         raise TrainingError("real import peft training requires at least one serialized training example")
 
-    model = None
     load_mode = str(local_source.get("load_mode") or "synthetic")
     source_kind = str(local_source.get("source_kind") or "synthetic")
     source_path = local_source.get("source_path")
     config_path = local_source.get("config_path")
     local_only = bool(local_source.get("local_only", True))
+    if source_path is None:
+        raise TrainingError("real import peft training requires a local model directory with weights")
     load_kwargs = _build_local_model_load_kwargs(local_only=local_only)
-    if source_path is not None:
-        try:
-            model = auto_model_cls.from_pretrained(source_path, **load_kwargs)
-            load_mode = "from_pretrained"
-            source_kind = "path"
-        except Exception:
-            model = None
+    try:
+        model = auto_model_cls.from_pretrained(str(source_path), **load_kwargs)
+    except Exception as exc:
+        raise TrainingError(
+            "real import peft training could not load the local base model with transformers; "
+            "use an unquantized Hugging Face causal LM directory for training. "
+            f"source={source_path}; error={exc.__class__.__name__}: {exc}"
+        ) from exc
+    load_mode = "from_pretrained"
+    source_kind = "path"
 
-    if model is None and config_path is not None:
-        config = auto_config_cls.from_pretrained(config_path, local_files_only=local_only)
-        model = auto_model_cls.from_config(config)
-        load_mode = "from_config"
-        source_kind = "config"
-
-    if model is None:
-        config = gpt2_config_cls(
-            vocab_size=128,
-            n_positions=48,
-            n_ctx=48,
-            n_embd=32,
-            n_layer=1,
-            n_head=1,
-            bos_token_id=1,
-            eos_token_id=2,
-        )
-        model = gpt2_model_cls(config)
-        load_mode = "synthetic_config"
-        source_kind = "synthetic"
-
-    lora_config = lora_config_cls(
-        r=16,
-        lora_alpha=32,
-        lora_dropout=0.05,
-        bias="none",
-        task_type="CAUSAL_LM",
-    )
+    try:
+        if hasattr(model.config, "use_cache"):
+            model.config.use_cache = False
+    except Exception:
+        pass
+    lora_config = _build_lora_config(peft, model.config)
     model = get_peft_model(model, lora_config)
 
     vocab_size = int(getattr(model.config, "vocab_size", 128) or 128)
-    max_length = _resolve_model_sequence_length(model.config)
-    encoded_rows: list[dict[str, Any]] = []
-    for item in training_examples:
-        instruction = str(item.get("instruction") or "")
-        chosen = str(item.get("chosen") or "")
-        text = (instruction + "\n" + chosen).strip()
-        token_ids = _encode_training_text(text, max_length=max_length, vocab_size=max(vocab_size, 16))
-        padded = token_ids + [0] * (max_length - len(token_ids))
-        attention = [1] * len(token_ids) + [0] * (max_length - len(token_ids))
-        encoded_rows.append(
-            {
-                "input_ids": padded,
-                "attention_mask": attention,
-                "labels": list(padded),
-            }
-        )
+    max_length = _resolve_training_sequence_length(model.config)
+    tokenizer = _load_training_tokenizer(transformers, str(source_path), local_only=local_only)
+    encoded_rows = _encode_sft_examples(
+        tokenizer=tokenizer,
+        training_examples=training_examples,
+        max_length=max_length,
+        vocab_size=max(vocab_size, 16),
+    )
+    if not encoded_rows:
+        raise TrainingError("real import peft training did not produce any tokenized training rows")
 
     train_loss: float | None = None
     forward_error: str | None = None
@@ -1545,40 +1647,45 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
         model, optimizer = accelerator.prepare(model, optimizer)
     except Exception:
         pass
+    losses: list[float] = []
+    recipe = dict(job_spec.get("recipe") or {})
+    training_recipe = dict(recipe.get("training") or {})
+    epochs = max(1, int(training_recipe.get("epochs") or 1))
     try:
-        batch = encoded_rows[0]
-        input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
-        attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
-        labels = torch.tensor(batch["labels"], dtype=torch.long).unsqueeze(0)
         model.train()
-        optimizer.zero_grad()
-        outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-        loss = getattr(outputs, "loss", None)
-        if loss is not None:
-            if hasattr(accelerator, "backward"):
-                accelerator.backward(loss)
-            else:
-                loss.backward()
-            optimizer.step()
-            train_loss = float(loss.detach().cpu().item())
+        device = getattr(accelerator, "device", None)
+        for _epoch in range(epochs):
+            for batch in encoded_rows:
+                input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
+                attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
+                labels = torch.tensor(batch["labels"], dtype=torch.long).unsqueeze(0)
+                if device is not None:
+                    input_ids = input_ids.to(device)
+                    attention_mask = attention_mask.to(device)
+                    labels = labels.to(device)
+                try:
+                    optimizer.zero_grad(set_to_none=True)
+                except TypeError:
+                    optimizer.zero_grad()
+                outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
+                loss = getattr(outputs, "loss", None)
+                if loss is None:
+                    continue
+                if hasattr(accelerator, "backward"):
+                    accelerator.backward(loss)
+                else:
+                    loss.backward()
+                optimizer.step()
+                losses.append(float(loss.detach().cpu().item()))
+        if losses:
+            train_loss = round(float(sum(losses) / len(losses)), 6)
     except Exception as exc:
         forward_error = f"{exc.__class__.__name__}: {exc}"
 
     if train_loss is None:
-        train_loss = round(
-            float(
-                (
-                    sum(sum(row["input_ids"]) for row in encoded_rows)
-                    + sum(sum(row["attention_mask"]) for row in encoded_rows)
-                    + len(training_examples)
-                    + max_length
-                )
-                / max(len(encoded_rows) * max_length, 1)
-            ),
-            6,
-        )
+        reason = forward_error or "model forward pass did not return a loss"
+        raise TrainingError(f"real import peft training failed: {reason}")
 
-    recipe = dict(job_spec.get("recipe") or {})
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     artifact_dir = output_dir / "peft_lora"
     save_model = model
@@ -1629,6 +1736,10 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
             "source_path": source_path,
             "config_path": config_path,
             "load_mode": load_mode,
+            "tokenizer_loaded": tokenizer is not None,
+            "max_length": max_length,
+            "epochs": epochs,
+            "steps": len(losses),
             "dependency_ready": True,
             "source_ready": bool(source_path or config_path),
             "executor_ready": True,
@@ -1775,11 +1886,8 @@ def _run_real_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]
         forward_error = f"{exc.__class__.__name__}: {exc}"
 
     if train_loss is None:
-        token_total = sum(sum(row["input_ids"]) for row in encoded_rows)
-        attention_total = sum(sum(row["attention_mask"]) for row in encoded_rows)
-        text_total = sum(len(str(item.get("instruction") or "") + str(item.get("chosen") or "")) for item in training_examples)
-        fallback = (token_total + attention_total + text_total + max_length + len(training_examples))
-        train_loss = round(float(fallback / max(len(encoded_rows) * max_length, 1)), 6)
+        reason = forward_error or "model forward pass did not return a loss"
+        raise TrainingError(f"real local peft training failed: {reason}")
 
     artifact_bundle = _materialize_toy_peft_job_artifacts(
         output_dir=output_dir,
@@ -1863,7 +1971,7 @@ def execute_peft_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) 
                 "execution_mode": "real_import",
                 "job_spec": dict(job_spec),
                 "recipe": recipe,
-                "status": "ready",
+                "status": "failed",
                 "import_probe": import_probe,
                 "readiness_summary": readiness_summary,
                 "real_execution": {
@@ -1889,7 +1997,7 @@ def execute_peft_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) 
                 "execution_mode": "real_local",
                 "job_spec": dict(job_spec),
                 "recipe": recipe,
-                "status": "ready",
+                "status": "failed",
                 "import_probe": import_probe,
                 "readiness_summary": readiness_summary,
                 "real_execution": {
@@ -2223,6 +2331,9 @@ def run_materialized_training_job_bundle(
     failure_category = _classify_failure(completed.returncode, completed_stderr)
     runner_status = str(runner_result.get("status") or "").lower()
     runner_failed = runner_status in {"blocked", "error", "failed"}
+    real_execution = runner_result.get("real_execution") if isinstance(runner_result.get("real_execution"), dict) else {}
+    if isinstance(real_execution, dict) and real_execution.get("success") is False:
+        runner_failed = True
     if failure_category is None and runner_failed:
         failure_category = "runner_failed"
     diagnostics: dict[str, Any] = {

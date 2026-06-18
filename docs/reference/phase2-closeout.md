@@ -160,15 +160,28 @@ PFE_REAL_LOCAL_MODEL=/Users/lichenhao/.cache/pfe/release-models/tiny-gpt2-local
 本机发现了可选本地模型目录：
 
 ```text
+models/Qwen2.5-0.5B-Instruct
 models/Qwen2.5-0.5B-Instruct-4bit
 models/Qwen3-4B
 ```
+
+其中 `models/Qwen2.5-0.5B-Instruct` 是当前 PEFT/LoRA 训练 happy path；`models/Qwen2.5-0.5B-Instruct-4bit` 只作为推理或诊断候选，不再作为 Transformers PEFT 训练金线路径。
 
 其他机器复现真实 full happy path 时，需要先安装 training/e2e 依赖，再执行：
 
 ```bash
 PFE_REAL_LOCAL_MODEL=/abs/path/to/local-model make smoke-real-local-happy
 ```
+
+记忆闭环回归使用：
+
+```bash
+make smoke-memory-golden
+```
+
+该 smoke 会创建隔离 `PFE_HOME`/workspace，写入 1 条记忆样本，训练 `Qwen2.5-0.5B-Instruct` 的 PEFT/LoRA adapter，并验证 `model=base` 不包含该记忆、`model=local` 精确回答。
+
+Studio 训练完成后会自动启动 candidate eval。当前 eval gate 在原有 `pipeline.evaluate` 报告之外追加 `memory`、`ordinary_chat`、`refusal` 三类 Studio suite；suite 失败会把 adapter 写为 `failed_eval`，并阻止 Studio/API/CLI promote 路径把该版本设为 latest。
 
 ### 3.4 全量默认回归
 

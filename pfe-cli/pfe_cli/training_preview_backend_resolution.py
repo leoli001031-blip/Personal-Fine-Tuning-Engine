@@ -3,13 +3,23 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from .training_preview_deps import TrainingPreviewDeps
 
 
 def target_inference_backend(base_model: str | None) -> str:
-    return "llama_cpp" if "llama" in str(base_model or "").lower() else "transformers"
+    model_path = Path(str(base_model or "")).expanduser()
+    if model_path.is_file() and model_path.suffix.lower() == ".gguf":
+        return "llama_cpp"
+    if model_path.is_dir():
+        has_hf_weights = any(model_path.glob("*.safetensors")) or (model_path / "pytorch_model.bin").exists()
+        has_config = (model_path / "config.json").exists()
+        has_gguf = any(model_path.glob("*.gguf"))
+        if has_gguf and not (has_hf_weights or has_config):
+            return "llama_cpp"
+    return "transformers"
 
 
 def backend_dispatch(

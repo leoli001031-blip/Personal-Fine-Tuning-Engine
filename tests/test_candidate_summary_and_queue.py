@@ -30,13 +30,15 @@ class CandidateSummaryAndQueueTests(unittest.TestCase):
     def test_status_surfaces_candidate_summary_when_pending_eval_exists(self) -> None:
         service = PipelineService()
         service.generate(scenario="life-coach", style="温和", num_samples=8)
-        service.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default")
+        service.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default", backend="mock_local")
 
         status = service.status()
         candidate = status["candidate_summary"]
         self.assertEqual(candidate["candidate_state"], "pending_eval")
         self.assertEqual(candidate["pending_eval_count"], 1)
-        self.assertTrue(candidate["candidate_needs_promotion"])
+        self.assertFalse(candidate["candidate_needs_promotion"])
+        self.assertEqual(candidate["promotion_gate_reason"], "eval_required")
+        self.assertEqual(candidate["promotion_gate_action"], "run_eval")
 
         text = _format_status(status, workspace="user_default")
         clean = strip_ansi(text)
@@ -88,7 +90,7 @@ class CandidateSummaryAndQueueTests(unittest.TestCase):
     def test_server_status_surfaces_candidate_summary_and_queue(self) -> None:
         service = PipelineService()
         service.generate(scenario="life-coach", style="温和", num_samples=8)
-        service.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default")
+        service.train_result(method="mock_local", epochs=1, base_model="base", workspace="user_default", backend="mock_local")
 
         plan = build_serve_plan(workspace=str(self.pfe_home), dry_run=False)
         app = plan.app

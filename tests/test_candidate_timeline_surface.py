@@ -9,6 +9,7 @@ from typer.testing import CliRunner
 
 import pfe_cli.main as cli_main
 from pfe_cli.main import _format_candidate_timeline
+from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.pipeline import PipelineService
 
 class CandidateTimelineSurfaceTests(unittest.TestCase):
@@ -28,11 +29,13 @@ class CandidateTimelineSurfaceTests(unittest.TestCase):
     def _build_timeline(self) -> tuple[PipelineService, str, str]:
         service = PipelineService()
         service.generate(scenario="life-coach", style="温和", num_samples=8)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         service.promote_candidate(note="ready_for_rollout")
 
         service.generate(scenario="work-coach", style="direct", num_samples=8)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         service.archive_candidate(note="archive_after_review")
         return service, first.version, second.version
 

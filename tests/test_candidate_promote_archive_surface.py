@@ -32,13 +32,24 @@ class CandidatePromoteArchiveSurfaceTests(unittest.TestCase):
 
     def _build_promoted_and_candidate(self) -> tuple[PipelineService, str, str]:
         service = PipelineService()
-        service.generate(scenario="life-coach", style="温和", num_samples=8)
-        first_result = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(first_result.version)
+        store = AdapterStore(home=self.pfe_home)
+        first = store.create_training_version(
+            base_model="base-a",
+            training_config={"backend": "mock_local", "train_type": "sft"},
+        )
+        promoted_version = str(first["version"])
+        store.mark_pending_eval(promoted_version, num_samples=8, metrics={"loss": 0.1})
+        store.attach_eval_report(promoted_version, {"recommendation": "deploy", "comparison": "improved", "scores": {}})
+        store.promote(promoted_version)
 
-        service.generate(scenario="work-coach", style="direct", num_samples=8)
-        second_result = service.train_result(method="qlora", epochs=1, train_type="sft")
-        return service, first_result.version, second_result.version
+        second = store.create_training_version(
+            base_model="base-b",
+            training_config={"backend": "mock_local", "train_type": "sft"},
+        )
+        candidate_version = str(second["version"])
+        store.mark_pending_eval(candidate_version, num_samples=8, metrics={"loss": 0.08})
+        store.attach_eval_report(candidate_version, {"recommendation": "deploy", "comparison": "improved", "scores": {}})
+        return service, promoted_version, candidate_version
 
     def test_cli_status_shows_archive_after_promoting_candidate(self) -> None:
         service, promoted_version, candidate_version = self._build_promoted_and_candidate()
@@ -98,6 +109,26 @@ class CandidatePromoteArchiveSurfaceTests(unittest.TestCase):
         self.assertEqual(lifecycle["counts"]["promoted"], 1)
         self.assertEqual(lifecycle["counts"]["archived"], 1)
         self.assertIn(promoted_version, lifecycle["archived_versions"])
+
+    def test_adapter_promote_cli_blocks_unevaluated_candidate(self) -> None:
+        store = AdapterStore(home=self.pfe_home)
+        created = store.create_training_version(
+            base_model="base",
+            training_config={"backend": "mock_local", "train_type": "sft"},
+        )
+        version = str(created["version"])
+        store.mark_pending_eval(version, num_samples=1, metrics={"loss": 0.1})
+        runner = CliRunner()
+
+        result = runner.invoke(
+            adapter_app,
+            ["promote", version, "--workspace", "user_default"],
+        )
+
+        clean = strip_ansi(result.stderr or result.stdout)
+        self.assertEqual(result.exit_code, 1, msg=result.stdout + result.stderr)
+        self.assertIn("evaluation recommendation=deploy is required", clean)
+        self.assertIsNone(store.current_latest_version())
 
     def test_http_status_shows_archive_after_promoting_candidate(self) -> None:
         service, promoted_version, candidate_version = self._build_promoted_and_candidate()

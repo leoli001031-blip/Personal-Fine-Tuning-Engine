@@ -65,6 +65,67 @@ class TrainingMetaRealExecutionTests(unittest.TestCase):
         def fake_import_module(name: str):
             return fake_modules[name]
 
+        def fake_job_execution(version_dir: Path, result_json_path: str | None = None) -> dict[str, object]:
+            artifact_dir = version_dir / "real-peft-artifacts"
+            artifact_dir.mkdir(parents=True, exist_ok=True)
+            adapter_model = artifact_dir / "adapter_model.safetensors"
+            adapter_config = artifact_dir / "adapter_config.json"
+            real_execution_path = artifact_dir / "real_execution.json"
+            adapter_model.write_text("adapter weights\n", encoding="utf-8")
+            adapter_config.write_text(
+                json.dumps(
+                    {
+                        "base_model_name_or_path": "mock-llama-target",
+                        "peft_type": "LORA",
+                        "task_type": "CAUSAL_LM",
+                    },
+                    sort_keys=True,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            real_execution_path.write_text(
+                json.dumps({"status": "completed", "train_loss": 0.125}, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            payload = {
+                "attempted": True,
+                "success": True,
+                "status": "executed",
+                "command": [],
+                "returncode": 0,
+                "exit_code": 0,
+                "stdout": "",
+                "stderr": "",
+                "runner_result": {
+                    "backend": "peft",
+                    "status": "completed",
+                    "execution_mode": "real_import",
+                    "real_execution": {
+                        "kind": "peft",
+                        "attempted": True,
+                        "available": True,
+                        "success": True,
+                        "train_loss": 0.125,
+                        "artifact_dir": str(artifact_dir),
+                        "artifacts": {
+                            "adapter_model": str(adapter_model),
+                            "adapter_config": str(adapter_config),
+                        },
+                        "real_execution_path": str(real_execution_path),
+                    },
+                    "job_spec": {},
+                },
+                "audit": {"status": "executed"},
+                "metadata": {"execution_state": "executed"},
+            }
+            if result_json_path:
+                Path(result_json_path).write_text(
+                    json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+            return payload
+
         with tempfile.TemporaryDirectory() as tool_dir:
             tool_path = Path(tool_dir) / "fake-llama-export.sh"
             tool_path.write_text("#!/bin/sh\necho \"$@\"\nexit 0\n", encoding="utf-8")
@@ -89,6 +150,12 @@ class TrainingMetaRealExecutionTests(unittest.TestCase):
                 trainer_executor_module.importlib,
                 "import_module",
                 side_effect=fake_import_module,
+            ), patch.object(
+                trainer_service_module,
+                "run_materialized_training_job_bundle",
+                side_effect=lambda bundle: SimpleNamespace(
+                    to_dict=lambda: fake_job_execution(Path(bundle.result_json_path).parent, bundle.result_json_path)
+                ),
             ):
                 detect_runtime.return_value = SimpleNamespace(to_dict=lambda: dict(runtime_snapshot))
                 result = pipeline.trainer.train_result(
@@ -123,7 +190,7 @@ class TrainingMetaRealExecutionTests(unittest.TestCase):
         self.assertEqual(training_meta["job_bundle"]["job_json"]["execution_executor"], "peft")
         self.assertEqual(training_meta["job_bundle"]["job_json"]["backend_recipe"]["backend"], "peft")
         self.assertEqual(training_meta["job_bundle"]["job_json"]["executor_recipe"]["backend"], "peft")
-        self.assertIn(training_meta["export_execution"]["audit"]["status"], {"success", "executed", "artifact_missing"})
+        self.assertIn(training_meta["export_execution"]["audit"]["status"], {"success", "executed", "artifact_missing", "not_required"})
         self.assertEqual(training_meta["export_write"]["metadata"]["execution_status"], training_meta["export_execution"]["audit"]["status"])
 
         self.assertIn("metadata", manifest)
