@@ -301,6 +301,46 @@
             </div>
           </div>
         </div>
+        <div class="section">
+          <div class="section-head">
+            <h3 class="section-title">真实资料闭环</h3>
+            <span class="status-pill" id="phase4Status">待检查</span>
+          </div>
+          <div class="phase4-panel">
+            <div class="phase4-state">
+              <div>
+                <span>Sources</span>
+                <strong id="phase4SourcesValue">0</strong>
+              </div>
+              <div>
+                <span>Chunks</span>
+                <strong id="phase4ChunksValue">0</strong>
+              </div>
+              <div>
+                <span>Candidates</span>
+                <strong id="phase4CandidatesValue">0</strong>
+              </div>
+              <div>
+                <span>Adapter</span>
+                <strong id="phase4AdapterValue">未生成</strong>
+              </div>
+              <div>
+                <span>Delta</span>
+                <strong id="phase4EvalDeltaValue">未评测</strong>
+              </div>
+              <div>
+                <span>Gate</span>
+                <strong id="phase4GateValue">等待资料</strong>
+              </div>
+            </div>
+            <div class="corpus-list" id="phase4SourceList"></div>
+            <div class="version-actions">
+              <button class="button" id="phase4AddSourceButton" type="button">采集资料</button>
+              <button class="button primary" id="phase4GenerateButton" type="button">生成样本</button>
+              <button class="button" id="phase4EvalButton" type="button">对比评测</button>
+            </div>
+          </div>
+        </div>
       </aside>
     </div>
     <div class="footer-signature">zc / PFE Studio</div>

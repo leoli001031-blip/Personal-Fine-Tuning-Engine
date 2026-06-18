@@ -78,6 +78,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("/pfe/models", js)
         self.assertIn("/pfe/handoff", js)
         self.assertIn("/pfe/phase3", js)
+        self.assertIn("/pfe/phase4", js)
 
     def test_chat_alias_serves_legacy_operations_frontend(self) -> None:
         result = self._smoke("/chat")
@@ -172,6 +173,18 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("/pfe/phase3/candidate-plan", js)
         self.assertIn(".phase3-panel", css)
         self.assertIn(".signal-row", css)
+        self.assertIn("真实资料闭环", result["text"])
+        self.assertIn("Sources", result["text"])
+        self.assertIn("Chunks", result["text"])
+        self.assertIn("Candidates", result["text"])
+        self.assertIn("采集资料", result["text"])
+        self.assertIn("生成样本", result["text"])
+        self.assertIn("对比评测", result["text"])
+        self.assertIn("还没有 Phase4 资料", js)
+        self.assertIn("/pfe/phase4/sources", js)
+        self.assertIn("/pfe/phase4/training-candidates", js)
+        self.assertIn("/pfe/phase4/eval", js)
+        self.assertIn(".phase4-panel", css)
 
         alias = self._smoke("/pfe/studio")
         self.assertEqual(alias["status_code"], 200)
@@ -213,6 +226,76 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(plan["body"]["sample_count"], 1)
         self.assertEqual(plan["body"]["eval_gate"]["current_state"], "ready_for_eval")
         self.assertEqual(plan["body"]["handoff"]["promote_endpoint"], "/pfe/candidate/promote")
+
+    def test_phase4_api_exposes_real_corpus_candidates_adapter_and_eval(self) -> None:
+        self.app.state.pfe_services.workspace = "user_default"
+        source_path = Path(self.tempdir.name) / "phase4-source.md"
+        source_path.write_text(
+            (
+                "# Phase4 source\n\n"
+                "Phase4 collects real research material, preserves source and chunk provenance, "
+                "generates citation-grounded training candidates, and compares base/local answers. "
+                "Insufficient evidence must be marked as requiring more material or human confirmation."
+            ),
+            encoding="utf-8",
+        )
+
+        summary = self._smoke("/pfe/phase4")
+        self.assertEqual(summary["status_code"], 200)
+        self.assertEqual(summary["body"]["kind"], "phase4_real_corpus_loop")
+        self.assertEqual(summary["body"]["personas"][0]["persona_id"], "research-notes-organizer")
+
+        source = self._smoke(
+            "/pfe/phase4/sources",
+            method="POST",
+            body={"path": str(source_path), "title": "Phase4 source", "license_status": "local_user_provided"},
+        )
+        self.assertEqual(source["status_code"], 200)
+        self.assertGreaterEqual(source["body"]["chunk_count"], 1)
+        self.assertEqual(source["body"]["source"]["source_type"], "md")
+
+        chunks = self._smoke("/pfe/phase4/chunks")
+        self.assertEqual(chunks["status_code"], 200)
+        self.assertGreaterEqual(len(chunks["body"]["chunks"]), 1)
+        self.assertIn("provenance", chunks["body"]["chunks"][0])
+
+        candidates = self._smoke(
+            "/pfe/phase4/training-candidates",
+            method="POST",
+            body={"limit": 5, "export": True},
+        )
+        self.assertEqual(candidates["status_code"], 200)
+        self.assertGreaterEqual(candidates["body"]["eligible_count"], 1)
+        self.assertIn("export", candidates["body"])
+        self.assertTrue(candidates["body"]["candidates"][0]["source_ids"])
+
+        sample_export = self._smoke(
+            "/pfe/phase4/training-candidates/export",
+            method="POST",
+            body={"target": "samples_db"},
+        )
+        self.assertEqual(sample_export["status_code"], 200)
+        self.assertGreaterEqual(sample_export["body"]["saved_samples"], 1)
+
+        plan = self._smoke("/pfe/phase4/candidate-plan", method="POST")
+        self.assertEqual(plan["status_code"], 200)
+        self.assertEqual(plan["body"]["kind"], "phase4_candidate_training_plan")
+        self.assertEqual(plan["body"]["handoff"]["training_endpoint"], "/pfe/training/jobs")
+
+        adapter = self._smoke("/pfe/phase4/candidate-adapter", method="POST")
+        self.assertEqual(adapter["status_code"], 200)
+        self.assertEqual(adapter["body"]["state"], "pending_eval")
+        self.assertEqual(adapter["body"]["training"]["real_training"], "skipped")
+
+        report = self._smoke(
+            "/pfe/phase4/eval",
+            method="POST",
+            body={"adapter_version": adapter["body"]["adapter_version"], "attach_to_adapter": True},
+        )
+        self.assertEqual(report["status_code"], 200)
+        self.assertEqual(report["body"]["kind"], "phase4_eval_report")
+        self.assertIn(report["body"]["eval_gate"]["status"], {"pass", "review"})
+        self.assertGreater(report["body"]["scores"]["local_delta"]["citation_hit_rate"], 0)
 
     def test_feedback_endpoint_mirrors_phase3_inbox(self) -> None:
         feedback = self._smoke(

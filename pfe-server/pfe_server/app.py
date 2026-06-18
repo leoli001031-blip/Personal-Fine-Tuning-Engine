@@ -1276,6 +1276,13 @@ def _phase3_store(services: ServiceBundle) -> Any:
     return Phase3SignalLoopStore(home=_resolve_pfe_home(), workspace=services.workspace)
 
 
+def _phase4_store(services: ServiceBundle) -> Any:
+    _ensure_core_import_path()
+    from pfe_core.phase4_real_corpus import Phase4CorpusStore
+
+    return Phase4CorpusStore(home=_resolve_pfe_home(), workspace=services.workspace)
+
+
 def _build_training_preflight_payload(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -4134,6 +4141,212 @@ async def handle_phase3_candidate_plan(
         return _json_response(_error_payload("phase3 plan failed", "phase3_plan_failed", str(exc)), status_code=500)
 
 
+async def handle_phase4_summary(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        return _json_response(_phase4_store(services).summary(), status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 unavailable", "phase4_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase4_sources(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase4_store(services)
+    if envelope.method == "POST":
+        body = _load_request_json(envelope.body)
+        try:
+            if _body_bool(body, "demo"):
+                demo_path = store.imports_dir / "research-notes-demo.md"
+                demo_path.write_text(
+                    "\n".join(
+                        [
+                            "# Phase4 research notes demo",
+                            "",
+                            "PFE Phase4 collects source material, chunks it with provenance, and generates citation-grounded training candidates.",
+                            "The assistant should summarize only the supplied material, preserve source/chunk citations, and mark open questions.",
+                            "For legal, medical, or financial material, the assistant must avoid conclusions and require human confirmation.",
+                        ]
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+                result = store.ingest_path(
+                    demo_path,
+                    title="Phase4 research notes demo",
+                    license_status="local_demo_material",
+                    metadata={"created_by": "studio_demo_source"},
+                )
+            elif body.get("url"):
+                result = store.ingest_url(
+                    str(body.get("url") or ""),
+                    title=str(body.get("title") or "") or None,
+                    license_status=str(body.get("license_status") or body.get("license") or "") or None,
+                    metadata=dict(body.get("metadata") or {}),
+                )
+            else:
+                result = store.ingest_path(
+                    str(body.get("path") or body.get("source_path") or ""),
+                    title=str(body.get("title") or "") or None,
+                    license_status=str(body.get("license_status") or body.get("license") or "") or None,
+                    metadata=dict(body.get("metadata") or {}),
+                )
+        except Exception as exc:
+            return _json_response(_error_payload("invalid phase4 source", "invalid_request", str(exc)), status_code=422)
+        result["workspace"] = services.workspace
+        return _json_response(result, status_code=200)
+
+    source_type = envelope.query_params.get("source_type")
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 100)
+    return _json_response(
+        {"workspace": services.workspace, "sources": store.list_sources(source_type=source_type, limit=limit)},
+        status_code=200,
+    )
+
+
+async def handle_phase4_chunks(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase4_store(services)
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 200)
+    return _json_response(
+        {
+            "workspace": services.workspace,
+            "chunks": store.list_chunks(
+                source_id=envelope.query_params.get("source_id"),
+                safety_flag=envelope.query_params.get("safety_flag"),
+                limit=limit,
+            ),
+        },
+        status_code=200,
+    )
+
+
+async def handle_phase4_training_candidates(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase4_store(services)
+    if envelope.method == "POST":
+        body = _load_request_json(envelope.body)
+        limit = int(body.get("limit") or envelope.query_params.get("limit") or 24)
+        try:
+            result = store.generate_training_candidates(limit=max(1, limit))
+            if _body_bool(body, "export"):
+                result["export"] = store.export_training_candidates(
+                    format=str(body.get("format") or "jsonl"),
+                    path=str(body.get("path") or "") or None,
+                )
+            return _json_response(result, status_code=200)
+        except Exception as exc:
+            return _json_response(_error_payload("phase4 candidate generation failed", "phase4_candidates_failed", str(exc)), status_code=500)
+
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 200)
+    eligible: bool | None = None
+    if "eligible_for_training" in envelope.query_params:
+        eligible = _query_bool(envelope.query_params, "eligible_for_training")
+    return _json_response(
+        {
+            "workspace": services.workspace,
+            "candidates": store.list_training_candidates(eligible_for_training=eligible, limit=limit),
+        },
+        status_code=200,
+    )
+
+
+async def handle_phase4_training_export(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        if str(body.get("target") or "").strip().lower() == "samples_db":
+            result = _phase4_store(services).export_to_training_samples()
+        else:
+            result = _phase4_store(services).export_training_candidates(
+                format=str(body.get("format") or envelope.query_params.get("format") or "jsonl"),
+                path=str(body.get("path") or "") or None,
+            )
+        return _json_response(result, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 export failed", "phase4_export_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_training_plan(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        plan = _phase4_store(services).build_training_plan(
+            base_model=str(body.get("base_model") or _load_config_base_model() or "local-default"),
+        )
+        plan["adapters"] = _build_adapters_payload(services)
+        return _json_response(plan, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 plan failed", "phase4_plan_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_candidate_adapter(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        result = _phase4_store(services).materialize_mock_candidate_adapter(
+            base_model=str(body.get("base_model") or _load_config_base_model() or "local-default"),
+        )
+        result["adapters"] = _build_adapters_payload(services)
+        return _json_response(result, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 candidate adapter failed", "phase4_adapter_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_eval(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        report = _phase4_store(services).build_eval_report(
+            adapter_version=str(body.get("adapter_version") or "") or None,
+            base_model=str(body.get("base_model") or _load_config_base_model() or "local-default"),
+            attach_to_adapter=_body_bool(body, "attach_to_adapter"),
+        )
+        report["adapters"] = _build_adapters_payload(services)
+        return _json_response(report, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 eval failed", "phase4_eval_failed", str(exc)), status_code=500)
+
+
 
 def _start_training_job(
     services: ServiceBundle,
@@ -5409,6 +5622,22 @@ class _LiteASGIApp:
             return await handle_phase3_training_candidates(envelope, self.services)
         if envelope.path == "/pfe/phase3/candidate-plan" and envelope.method == "POST":
             return await handle_phase3_candidate_plan(envelope, self.services)
+        if envelope.path == "/pfe/phase4" and envelope.method == "GET":
+            return await handle_phase4_summary(envelope, self.services)
+        if envelope.path == "/pfe/phase4/sources" and envelope.method in {"GET", "POST"}:
+            return await handle_phase4_sources(envelope, self.services)
+        if envelope.path == "/pfe/phase4/chunks" and envelope.method == "GET":
+            return await handle_phase4_chunks(envelope, self.services)
+        if envelope.path == "/pfe/phase4/training-candidates" and envelope.method in {"GET", "POST"}:
+            return await handle_phase4_training_candidates(envelope, self.services)
+        if envelope.path == "/pfe/phase4/training-candidates/export" and envelope.method == "POST":
+            return await handle_phase4_training_export(envelope, self.services)
+        if envelope.path == "/pfe/phase4/candidate-plan" and envelope.method == "POST":
+            return await handle_phase4_training_plan(envelope, self.services)
+        if envelope.path == "/pfe/phase4/candidate-adapter" and envelope.method == "POST":
+            return await handle_phase4_candidate_adapter(envelope, self.services)
+        if envelope.path == "/pfe/phase4/eval" and envelope.method == "POST":
+            return await handle_phase4_eval(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -5621,6 +5850,46 @@ def create_app(
         @app.post("/pfe/phase3/candidate-plan")
         async def pfe_phase3_candidate_plan(request: Request) -> Any:
             return await handle_phase3_candidate_plan(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4")
+        async def pfe_phase4(request: Request) -> Any:
+            return await handle_phase4_summary(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4/sources")
+        async def pfe_phase4_sources(request: Request) -> Any:
+            return await handle_phase4_sources(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/sources")
+        async def pfe_phase4_source_ingest(request: Request) -> Any:
+            return await handle_phase4_sources(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4/chunks")
+        async def pfe_phase4_chunks(request: Request) -> Any:
+            return await handle_phase4_chunks(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4/training-candidates")
+        async def pfe_phase4_training_candidates(request: Request) -> Any:
+            return await handle_phase4_training_candidates(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/training-candidates")
+        async def pfe_phase4_training_candidate_generate(request: Request) -> Any:
+            return await handle_phase4_training_candidates(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/training-candidates/export")
+        async def pfe_phase4_training_candidate_export(request: Request) -> Any:
+            return await handle_phase4_training_export(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/candidate-plan")
+        async def pfe_phase4_candidate_plan(request: Request) -> Any:
+            return await handle_phase4_training_plan(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/candidate-adapter")
+        async def pfe_phase4_candidate_adapter(request: Request) -> Any:
+            return await handle_phase4_candidate_adapter(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/eval")
+        async def pfe_phase4_eval(request: Request) -> Any:
+            return await handle_phase4_eval(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:

@@ -818,13 +818,15 @@ select {
   line-height: 1.45;
 }
 
-.phase3-panel {
+.phase3-panel,
+.phase4-panel {
   display: grid;
   gap: 10px;
 }
 
 .phase3-meta,
-.phase3-state {
+.phase3-state,
+.phase4-state {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
@@ -832,7 +834,9 @@ select {
 
 .phase3-meta > div,
 .phase3-state > div,
-.signal-row {
+.phase4-state > div,
+.signal-row,
+.corpus-row {
   min-width: 0;
   padding: 10px 11px;
   border: 1px solid var(--line);
@@ -841,7 +845,8 @@ select {
 }
 
 .phase3-meta label,
-.phase3-state span {
+.phase3-state span,
+.phase4-state span {
   display: block;
   margin-bottom: 7px;
   color: var(--muted);
@@ -849,7 +854,8 @@ select {
   font-weight: 760;
 }
 
-.phase3-state strong {
+.phase3-state strong,
+.phase4-state strong {
   display: block;
   min-width: 0;
   margin-top: 4px;
@@ -861,12 +867,14 @@ select {
   white-space: nowrap;
 }
 
-.signal-list {
+.signal-list,
+.corpus-list {
   display: grid;
   gap: 8px;
 }
 
-.signal-row {
+.signal-row,
+.corpus-row {
   display: grid;
   gap: 5px;
 }
@@ -951,6 +959,7 @@ select {
   .handoff-grid,
   .phase3-meta,
   .phase3-state,
+  .phase4-state,
   .evidence-grid {
     grid-template-columns: 1fr;
   }
