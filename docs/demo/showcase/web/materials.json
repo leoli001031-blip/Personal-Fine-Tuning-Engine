@@ -1,0 +1,60 @@
+{
+  "updated_at": "2026-06-18",
+  "project": "PFE / 本地模型工作台",
+  "work_order": "Phase2 Demo 展示网页素材",
+  "status": "已保存",
+  "primary_result": {
+    "prompt": "PFE Phase2 Demo 记忆代号是什么？只回答代号。",
+    "expected": "DEMO-PHASE2-042",
+    "base_answer": "记忆代号是“Memory”。",
+    "local_answer": "DEMO-PHASE2-042",
+    "adapter_version": "20260618-001"
+  },
+  "assets": [
+    {
+      "file": "showcase-preview.png",
+      "source": "web/index.html",
+      "role": "preview",
+      "caption": "展示页首屏预览"
+    },
+    {
+      "file": "assets/studio-workbench.png",
+      "source": "../screenshots/10-warm-simple-effective-studio.png",
+      "role": "hero",
+      "caption": "简化后的暖米咖 Studio 主界面"
+    },
+    {
+      "file": "assets/base-local-proof.png",
+      "source": "../screenshots/08-base-vs-local-compare.png",
+      "role": "proof",
+      "caption": "base/local API 对比"
+    },
+    {
+      "file": "assets/eval-gate.png",
+      "source": "../screenshots/05-eval-gate.png",
+      "role": "loop",
+      "caption": "评估闸门通过"
+    },
+    {
+      "file": "assets/promoted-adapter.png",
+      "source": "../screenshots/06-promoted-adapter.png",
+      "role": "loop",
+      "caption": "adapter 已推广"
+    },
+    {
+      "file": "assets/api-handoff.png",
+      "source": "../screenshots/07-api-handoff.png",
+      "role": "handoff",
+      "caption": "API 接入信息"
+    }
+  ],
+  "evidence": [
+    "../evidence/demo-phase2-smoke.txt",
+    "../evidence/smoke-memory-golden.txt",
+    "../evidence/base-vs-local-summary.json",
+    "../evidence/demo-eval-summary.json",
+    "../evidence/demo-promote-summary.json",
+    "../evidence/base-response.json",
+    "../evidence/local-response.json"
+  ]
+}

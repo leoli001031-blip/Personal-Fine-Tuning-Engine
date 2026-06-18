@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PFE / 本地模型工作台</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-bar" aria-label="展示页导航">
+    <a class="brand" href="#top" aria-label="PFE 展示页首页">
+      <span class="signature">zc</span>
+      <span>PFE / 本地模型工作台</span>
+    </a>
+    <nav>
+      <a href="#result">结果</a>
+      <a href="#loop">闭环</a>
+      <a href="#materials">素材</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="heroTitle">
+      <div class="hero-copy">
+        <span class="status-bean">已完成</span>
+        <h1 id="heroTitle">PFE / 本地模型工作台</h1>
+        <p>local 命中目标记忆，base 未命中；训练、评估、推广和 API 接入都有真实证据。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#materials">查看素材</a>
+          <a class="button" href="../phase2-product-showcase.md">证据包</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section result-section" id="result" aria-labelledby="resultTitle">
+      <div class="section-head">
+        <span class="status-bean">可继续</span>
+        <h2 id="resultTitle">同题对比</h2>
+        <p>同一个记忆问题，base 没有答出目标代号，local adapter 命中。</p>
+      </div>
+      <div class="comparison">
+        <div class="answer-row">
+          <span>base</span>
+          <strong>记忆代号是“Memory”。</strong>
+          <em>未命中</em>
+        </div>
+        <div class="answer-row good">
+          <span>local</span>
+          <strong>DEMO-PHASE2-042</strong>
+          <em>命中</em>
+        </div>
+      </div>
+      <figure class="wide-shot">
+        <img src="assets/base-local-proof.png" alt="base 和 local API 输出对比截图" />
+        <figcaption>真实 API response 生成的对比图。</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="loop" aria-labelledby="loopTitle">
+      <div class="section-head">
+        <span class="status-bean">已通过</span>
+        <h2 id="loopTitle">训练到接入</h2>
+        <p>展示页只保留 Demo 讲清楚所需的四个节点。</p>
+      </div>
+      <div class="timeline">
+        <article class="timeline-item">
+          <div>
+            <span>01</span>
+            <h3>生成版本</h3>
+          </div>
+          <p>真实 PEFT 训练完成，产出 adapter <code>20260618-001</code>。</p>
+        </article>
+        <article class="timeline-item">
+          <div>
+            <span>02</span>
+            <h3>评估闸门</h3>
+          </div>
+          <p><code>recommendation=deploy</code>，promotion gate 放行。</p>
+        </article>
+        <article class="timeline-item">
+          <div>
+            <span>03</span>
+            <h3>设为当前</h3>
+          </div>
+          <p>adapter 已推广并被 Studio 加载。</p>
+        </article>
+        <article class="timeline-item">
+          <div>
+            <span>04</span>
+            <h3>API 接入</h3>
+          </div>
+          <p>聊天 API 和反馈 API 都有可复制 handoff。</p>
+        </article>
+      </div>
+      <div class="shot-grid">
+        <figure>
+          <img src="assets/eval-gate.png" alt="评估闸门通过截图" />
+          <figcaption>Eval gate</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/promoted-adapter.png" alt="adapter 推广完成截图" />
+          <figcaption>Promoted adapter</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/api-handoff.png" alt="API handoff 截图" />
+          <figcaption>API handoff</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section materials-section" id="materials" aria-labelledby="materialsTitle">
+      <div class="section-head">
+        <span class="status-bean">已保存</span>
+        <h2 id="materialsTitle">网页素材</h2>
+        <p>截图、日志和 JSON 证据已整理成可复用素材。</p>
+      </div>
+      <div class="evidence-list">
+        <a class="evidence-row" href="assets/studio-workbench.png">
+          <span>截图</span>
+          <strong>studio-workbench.png</strong>
+          <em>主视觉</em>
+        </a>
+        <a class="evidence-row" href="assets/base-local-proof.png">
+          <span>截图</span>
+          <strong>base-local-proof.png</strong>
+          <em>效果对比</em>
+        </a>
+        <a class="evidence-row" href="../evidence/demo-phase2-smoke.txt">
+          <span>日志</span>
+          <strong>demo-phase2-smoke.txt</strong>
+          <em>已通过</em>
+        </a>
+        <a class="evidence-row" href="../evidence/demo-eval-summary.json">
+          <span>JSON</span>
+          <strong>demo-eval-summary.json</strong>
+          <em>deploy</em>
+        </a>
+        <a class="evidence-row" href="../evidence/demo-promote-summary.json">
+          <span>JSON</span>
+          <strong>demo-promote-summary.json</strong>
+          <em>loaded</em>
+        </a>
+        <a class="evidence-row" href="materials.json">
+          <span>清单</span>
+          <strong>materials.json</strong>
+          <em>可复用</em>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer-signature">zc / PFE Phase2 Demo</footer>
+</body>
+</html>

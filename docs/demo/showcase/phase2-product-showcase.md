@@ -33,6 +33,13 @@ Studio -> memory sample -> training -> eval gate -> promote -> base/local API co
 | [09-simplified-studio.png](screenshots/09-simplified-studio.png) | Simplified Studio layout with workspace, endpoint details, and status details collapsed by default. |
 | [10-warm-simple-effective-studio.png](screenshots/10-warm-simple-effective-studio.png) | Warm Workbench version of the simplified Studio: short status beans, one clear work order, and base/local proof visible in the main surface. |
 
+## Web Showcase
+
+- [web/index.html](web/index.html) is a static showcase page for the Phase2 demo.
+- [web/materials.json](web/materials.json) lists the selected screenshots and evidence files used by the page.
+- [web/README.md](web/README.md) summarizes the reusable webpage material pack.
+- [web/showcase-preview.png](web/showcase-preview.png) is a browser-captured preview of the showcase page.
+
 ## Evidence
 
 | Evidence | Result |
