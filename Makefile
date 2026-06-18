@@ -11,6 +11,7 @@ PERF_REPORT ?= /tmp/pfe-release-perf-report.json
 REMOTE_EVIDENCE_REPORT ?= /tmp/pfe-github-actions-release-evidence.json
 BUNDLE_REPORT ?= /tmp/pfe-release-evidence-bundle.json
 REMOTE_EVIDENCE_MARKDOWN ?= /tmp/pfe-remote-release-evidence.md
+DEMO_MEMORY_REPORT ?= /tmp/pfe-phase2-demo-memory-golden.json
 
 .PHONY: help
 help:
@@ -30,6 +31,7 @@ help:
 	@echo "make smoke-studio-first-launch - Clean-install and launch Studio from the console script"
 	@echo "make smoke-real-local-happy - Opt-in real local model happy path (set PFE_REAL_LOCAL_MODEL)"
 	@echo "make smoke-memory-golden - Run the isolated 0.5B memory golden smoke"
+	@echo "make demo-phase2-smoke - Run the Phase2 demo handoff and memory golden checks"
 	@echo "make smoke-beta - Run the beta-ready smoke chain"
 	@echo "make smoke-release-strict - Run beta smoke plus required browser/model gates"
 	@echo "make soak-release - Run a bounded live release soak over server/dashboard/queue/daemon"
@@ -114,6 +116,11 @@ smoke-real-local-happy: check-venv
 .PHONY: smoke-memory-golden
 smoke-memory-golden: check-venv
 	$(PYTHON) tools/memory_golden_smoke.py
+
+.PHONY: demo-phase2-smoke
+demo-phase2-smoke: check-venv
+	$(PYTHON) tools/studio_model_path_smoke.py
+	$(PYTHON) tools/memory_golden_smoke.py --strict --report-path $(DEMO_MEMORY_REPORT)
 
 .PHONY: smoke-beta
 smoke-beta: smoke-first-run smoke-auto-train-queue smoke-real-local-readiness smoke-studio-model-path smoke-server-live smoke-dashboard-console-live
