@@ -31,6 +31,7 @@ Studio -> memory sample -> training -> eval gate -> promote -> base/local API co
 | [07-api-handoff.png](screenshots/07-api-handoff.png) | Web URL, chat API, feedback API, model parameter, and curl handoff. |
 | [08-base-vs-local-compare.png](screenshots/08-base-vs-local-compare.png) | Rendered comparison from the saved base/local API JSON responses. |
 | [09-simplified-studio.png](screenshots/09-simplified-studio.png) | Simplified Studio layout with workspace, endpoint details, and status details collapsed by default. |
+| [10-warm-simple-effective-studio.png](screenshots/10-warm-simple-effective-studio.png) | Warm Workbench version of the simplified Studio: short status beans, one clear work order, and base/local proof visible in the main surface. |
 
 ## Evidence
 

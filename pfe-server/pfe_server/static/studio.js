@@ -178,7 +178,7 @@ function buildHandoffText() {
 
 const issueCopy = {
   needs_local_path: "先选择模型文件夹",
-  real_local_inference_disabled: "点“使用本地模型回复”后生效",
+  real_local_inference_disabled: "点“本地回复”后生效",
   runtime_dependencies_missing: "本机推理依赖未安装",
   missing: "找不到这个模型文件夹",
   model_path_not_found: "找不到这个模型文件夹",
@@ -210,13 +210,13 @@ function summaryTextFor(readiness) {
     return "先选择模型文件夹，然后复制 API 或网页地址。";
   }
   if (blockers.includes("real_local_inference_disabled")) {
-    return "API 和网页地址可用；需要本地模型回复时，点“使用本地模型回复”。";
+    return "API 和网页地址已就绪；需要本地回复时再打开本地模型。";
   }
   if (blockers.includes("runtime_dependencies_missing")) {
     return "API 和网页地址可用；本地模型回复还需要安装推理依赖。";
   }
   if (summary.label === "可继续") {
-    return "本机服务可用，API 和网页地址已就绪。";
+    return "本机服务可用，结果证据和接入地址已整理好。";
   }
   return summary.text || "本机服务已就绪。";
 }
@@ -321,7 +321,7 @@ function renderRealLocalToggle() {
   const button = $("realLocalToggleButton");
   const inference = state.readiness && state.readiness.inference ? state.readiness.inference : null;
   const enabled = Boolean(inference && inference.real_local_enabled);
-  button.textContent = enabled ? "暂停本地模型回复" : "使用本地模型回复";
+  button.textContent = enabled ? "暂停回复" : "本地回复";
   button.disabled = !inference;
 }
 
@@ -494,7 +494,7 @@ function renderAdapters() {
   text("adapterBaseModelValue", adapterShort(adapters.base_model || (current && current.base_model) || (pendingEval && pendingEval.base_model)));
   text("adapterLatestValue", current && current.version ? current.version : "无");
   text("adapterPendingValue", pendingEval && pendingEval.version ? pendingEval.version : "无");
-  text("adapterLoadedValue", adapters.adapter_loaded ? "true" : "false");
+  text("adapterLoadedValue", adapters.adapter_loaded ? "是" : "否");
   const list = $("versionList");
   list.textContent = "";
   const versions = Array.isArray(adapters.versions) ? adapters.versions : [];
@@ -506,7 +506,7 @@ function renderAdapters() {
     pill("adapterStatus", "需确认", "warn");
     return;
   }
-  for (const item of versions.slice(0, 8)) {
+  for (const item of versions.slice(0, 4)) {
     const row = document.createElement("article");
     row.className = "version-item";
     const top = document.createElement("div");
