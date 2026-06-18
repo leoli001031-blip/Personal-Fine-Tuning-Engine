@@ -150,7 +150,7 @@ class CLINextTests(unittest.TestCase):
             result = runner.invoke(cli_main.app, ["next", "--workspace", "alice", "--json"])
             self.assertEqual(result.exit_code, 0, msg=result.stdout)
             plan = json.loads(result.stdout)
-            self.assertEqual(plan["state"], "candidate_ready")
+            self.assertEqual(plan["state"], "evaluate_candidate")
             self.assertIn("pfe eval --base-model base --adapter", "\n".join(plan["commands"]))
             self.assertIn("pfe adapter promote", "\n".join(plan["commands"]))
 

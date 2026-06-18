@@ -44,10 +44,13 @@ class OperationsConsoleSurfaceTests(unittest.TestCase):
     def test_status_exposes_operations_console_sections(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=8)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(first.version)
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=8)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store.attach_eval_report(second.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         service.promote_candidate(note="ready_for_rollout")
         service._append_train_queue_item(
             {
@@ -437,11 +440,12 @@ class OperationsConsoleSurfaceTests(unittest.TestCase):
     def test_status_uses_candidate_idle_actions_for_failed_eval_candidate(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=6)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=6)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store.mark_failed_eval(second.version)
 
         status = service.status()
@@ -451,37 +455,38 @@ class OperationsConsoleSurfaceTests(unittest.TestCase):
         self.assertEqual(status["operations_overview"]["required_action"], "archive_candidate")
         self.assertEqual(
             status["operations_overview"]["summary_line"],
-            "current_focus=candidate_idle | required_action=archive_candidate | next_actions=archive_candidate,promote_candidate",
+            "current_focus=candidate_idle | required_action=archive_candidate | next_actions=archive_candidate",
         )
         self.assertEqual(
             status["operations_overview"]["inspection_summary_line"],
-            "current_focus=candidate_idle | required_action=archive_candidate | next_actions=archive_candidate,promote_candidate",
+            "current_focus=candidate_idle | required_action=archive_candidate | next_actions=archive_candidate",
         )
         self.assertEqual(status["operations_console"]["monitor_focus"], "candidate_idle")
         self.assertIn("current_focus=candidate_idle", status["operations_console"]["summary_line"])
         self.assertIn("required_action=archive_candidate", status["operations_console"]["summary_line"])
-        self.assertIn("next_actions=archive_candidate,promote_candidate", status["operations_console"]["summary_line"])
+        self.assertIn("next_actions=archive_candidate", status["operations_console"]["summary_line"])
         self.assertEqual(status["operations_console"]["dashboard"]["current_focus"], "candidate_idle")
         self.assertEqual(status["operations_event_stream"]["dashboard"]["current_focus"], "candidate_idle")
         self.assertEqual(status["operations_dashboard"]["required_action"], "archive_candidate")
-        self.assertEqual(status["operations_dashboard"]["secondary_action"], "promote_candidate")
+        self.assertEqual(status["operations_dashboard"]["secondary_action"], "inspect_candidate_timeline")
         self.assertEqual(status["operations_event_stream"]["dashboard"]["required_action"], "archive_candidate")
-        self.assertEqual(status["operations_event_stream"]["dashboard"]["secondary_action"], "promote_candidate")
+        self.assertEqual(status["operations_event_stream"]["dashboard"]["secondary_action"], "inspect_candidate_timeline")
         self.assertEqual(status["operations_alert_policy"]["required_action"], "archive_candidate")
-        self.assertEqual(status["operations_alert_policy"]["secondary_action"], "promote_candidate")
+        self.assertEqual(status["operations_alert_policy"]["secondary_action"], "inspect_candidate_timeline")
         self.assertEqual(
-            status["operations_console"]["next_actions"][:2],
-            ["archive_candidate", "promote_candidate"],
+            status["operations_console"]["next_actions"][:1],
+            ["archive_candidate"],
         )
 
     def test_status_uses_candidate_idle_inspect_actions_for_archived_candidate(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=6)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=6)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store.archive(second.version)
 
         status = service.status()

@@ -101,6 +101,23 @@ class TrainerRealExecutionTests(unittest.TestCase):
         self.assertEqual(summary["path"], "real_import")
         self.assertEqual(summary["kind"], "real_peft")
 
+    def test_execute_peft_training_marks_real_import_failure_as_failed(self) -> None:
+        job_spec = self._job_spec()
+        with patch.object(
+            trainer_executor_module,
+            "_probe_real_peft_runtime",
+            return_value={"available": True, "missing_modules": [], "required_modules": ["torch", "transformers", "peft", "accelerate"]},
+        ), patch.object(
+            trainer_executor_module,
+            "_run_real_import_peft_training",
+            side_effect=RuntimeError("forward failed"),
+        ):
+            result = trainer_executor_module.execute_peft_training(job_spec=job_spec, dry_run=False)
+
+        self.assertEqual(result["status"], "failed")
+        self.assertFalse(result["real_execution"]["success"])
+        self.assertIn("forward failed", result["real_execution"]["error"])
+
     def test_run_materialized_training_job_bundle_recovers_result_from_result_json(self) -> None:
         backend_dispatch = {
             "requested_backend": "peft",
@@ -163,6 +180,66 @@ class TrainerRealExecutionTests(unittest.TestCase):
         self.assertTrue(run_result.runner_result["real_execution"]["success"])
         self.assertEqual(run_result.metadata["result_json_path"], str(result_json_path))
         self.assertEqual(run_result.audit["result_json_path"], str(result_json_path))
+
+    def test_run_materialized_training_job_bundle_fails_when_real_execution_failed(self) -> None:
+        backend_dispatch = {
+            "requested_backend": "peft",
+            "execution_backend": "peft",
+            "execution_executor": "peft",
+            "executor_mode": "real_import",
+            "reasons": ["using requested backend peft"],
+            "requires_export_step": False,
+            "export_steps": [],
+            "export_format": None,
+            "export_backend": None,
+            "capability": {"artifact_format": "peft_lora"},
+        }
+        plan = trainer_executor_module.build_training_execution_recipe(
+            backend_dispatch=backend_dispatch,
+            runtime={"runtime_device": "cpu"},
+            method="qlora",
+            epochs=1,
+            train_type="sft",
+            base_model_name="mock-llama-target",
+            num_train_samples=1,
+            num_fresh_samples=1,
+            num_replay_samples=0,
+            replay_ratio=0.0,
+            train_examples=[
+                {
+                    "sample_id": "sample-1",
+                    "instruction": "hello",
+                    "chosen": "world",
+                    "rejected": None,
+                    "sample_type": "sft",
+                }
+            ],
+            allow_mock_fallback=True,
+        )
+        bundle = trainer_executor_module.materialize_training_job_bundle(
+            execution_plan=plan,
+            output_dir=self.pfe_home / "adapters" / "user_default" / "20260323-778",
+        )
+        result_json_path = Path(bundle.result_json_path)
+        expected_payload = {
+            "backend": "peft",
+            "status": "completed",
+            "real_execution": {
+                "kind": "real_peft",
+                "success": False,
+                "error": "RuntimeError: forward failed",
+            },
+        }
+        result_json_path.write_text(json.dumps(expected_payload, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+
+        fake_completed = SimpleNamespace(returncode=0, stdout="", stderr="")
+        with patch.object(trainer_executor_module.subprocess, "run", return_value=fake_completed):
+            run_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
+
+        self.assertTrue(run_result.attempted)
+        self.assertFalse(run_result.success)
+        self.assertEqual(run_result.status, "failed")
+        self.assertEqual(run_result.failure_category, "runner_failed")
 
 if __name__ == "__main__":
     unittest.main()

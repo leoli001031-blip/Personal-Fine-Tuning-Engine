@@ -12,6 +12,11 @@ from .studio_eval_jobs import (
     build_eval_running_state,
     build_eval_status_payload,
 )
+from .studio_eval_suite import (
+    merge_studio_eval_suite_report,
+    normalize_suite_names,
+    run_studio_eval_suite,
+)
 
 
 PersistEvalState = Callable[[str, dict[str, Any]], None]
@@ -44,13 +49,29 @@ def run_eval_job(
     persist_state: PersistEvalState,
 ) -> None:
     try:
+        base_model = request_body.get("base_model") or default_base_model()
         result = pipeline.evaluate(
-            base_model=request_body.get("base_model") or default_base_model(),
+            base_model=base_model,
             adapter=version,
             num_samples=int(request_body.get("num_samples", 20)),
             workspace=workspace,
         )
-        eval_report = load_eval_report(load_adapter_path(version))
+        adapter_path = load_adapter_path(version)
+        eval_report = load_eval_report(adapter_path)
+        suite = normalize_suite_names(request_body.get("suite"))
+        if suite:
+            from pfe_core.adapter_store import create_adapter_store
+            from pfe_core.storage import list_samples
+
+            suite_report = run_studio_eval_suite(
+                base_model=str(base_model),
+                adapter_path=str(adapter_path),
+                adapter_version=version,
+                suite=suite,
+                samples=list_samples(limit=100),
+            )
+            eval_report = merge_studio_eval_suite_report(eval_report, suite_report)
+            create_adapter_store(workspace=workspace).attach_eval_report(version, eval_report)
         state = build_eval_completed_state(
             version=version,
             requested_version=requested_version,

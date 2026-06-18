@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -44,6 +45,30 @@ class AdapterStore:
 
     def _write_manifest(self, version: str, payload: dict[str, Any]) -> None:
         write_json(self._manifest_path(version), payload)
+
+    def _load_promotion_eval_report(self, version: str, manifest: dict[str, Any]) -> dict[str, Any]:
+        report_path = self._version_path(version) / "eval_report.json"
+        if report_path.exists():
+            try:
+                data = json.loads(report_path.read_text(encoding="utf-8"))
+            except Exception:
+                data = {}
+            if isinstance(data, dict):
+                return data
+        summary = manifest.get("eval_summary")
+        return dict(summary) if isinstance(summary, dict) else {}
+
+    def _assert_eval_allows_promotion(self, version: str, manifest: dict[str, Any]) -> None:
+        report = self._load_promotion_eval_report(version, manifest)
+        if str(report.get("recommendation") or "") != "deploy":
+            raise AdapterError(
+                f"cannot promote version {version}; evaluation recommendation=deploy is required"
+            )
+        suite = report.get("studio_eval_suite")
+        if isinstance(suite, dict) and suite and not suite.get("passed"):
+            raise AdapterError(
+                f"cannot promote version {version}; Studio eval suite did not pass"
+            )
 
     def merge_manifest(self, version: str, updates: dict[str, Any]) -> dict[str, Any]:
         manifest = self._read_manifest(version)
@@ -282,6 +307,8 @@ class AdapterStore:
                 raise AdapterError(f"cannot promote version {resolved} from state {state}")
         elif not can_promote_from(state):
             raise AdapterError(f"cannot promote version {resolved} from state {state}")
+        else:
+            self._assert_eval_allows_promotion(resolved, manifest)
 
         current = self.current_latest_version()
         if current and current != resolved:

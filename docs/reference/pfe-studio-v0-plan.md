@@ -182,7 +182,7 @@ POST /pfe/workspaces
 Studio 主界面已开始把 readiness/preflight 的内部 blocker code 翻译成用户可读文案，例如“还没选择本地模型路径”“还没开启真实本地模型”“缺少本地推理依赖”；API 仍保留原始 code 供测试和诊断使用。
 当前也已开始 v0.3 前端收口：首屏从工程式摘要改为“当前工作单”，直接展示模型、回复模式、版本和 API 四个事实；主动作收敛为“复制 API / 测试接入 / 打开网页 / 使用本地模型回复”；模型路径旁新增短状态豆，接入区优先展示聊天 API、反馈 API 和可复制接入信息；调用示例默认折叠；版本空态使用“还没有模型版本”这类用户语言。浏览器验证覆盖 390px 移动宽度无横向溢出，以及 Studio 点击流仍能保存模型路径、开启本地回复并得到“可生成版本”。
 
-技术债治理也已开始落地：Studio runtime/API handoff 合同已抽到 `pfe_server.studio_contracts`；workspaces/models 的发现、校验和 payload 组装已抽到 `pfe_server.studio_resources`；training job 的 URL、事件、列表 payload 合同已抽到 `pfe_server.studio_jobs`；training job 的 JSON 读写、内存态合并、active job 查询、取消和 retry 事件持久化已抽到 `pfe_server.studio_job_store`；eval job 的 running/completed/failed/status payload 合同已抽到 `pfe_server.studio_eval_jobs`；训练 job 的后台启动、执行、失败记录和 overall state 持久化编排已抽到 `pfe_server.studio_training_service`；评估 job 的 running state 创建、后台 evaluate、eval report 读取和 completed/failed state 持久化编排已抽到 `pfe_server.studio_eval_service`。`app.py` 继续负责路由接线、配置读写、当前进程副作用和 adapter/version 校验。后续应继续把配置副作用和路由注册重复问题拆出，并用当前 smoke 保护对外行为不漂。
+技术债治理也已开始落地：Studio runtime/API handoff 合同已抽到 `pfe_server.studio_contracts`；workspaces/models 的发现、校验和 payload 组装已抽到 `pfe_server.studio_resources`；training job 的 URL、事件、列表 payload 合同已抽到 `pfe_server.studio_jobs`；training job 的 JSON 读写、内存态合并、active job 查询、取消和 retry 事件持久化已抽到 `pfe_server.studio_job_store`；eval job 的 running/completed/failed/status payload 合同已抽到 `pfe_server.studio_eval_jobs`；训练 job 的后台启动、执行、失败记录和 overall state 持久化编排已抽到 `pfe_server.studio_training_service`；评估 job 的 running state 创建、后台 evaluate、eval report 读取、Studio eval suite 合并和 completed/failed state 持久化编排已抽到 `pfe_server.studio_eval_service`，三类 suite 判定集中在 `pfe_server.studio_eval_suite`。`app.py` 继续负责路由接线、配置读写、当前进程副作用和 adapter/version 校验。后续应继续把配置副作用和路由注册重复问题拆出，并用当前 smoke 保护对外行为不漂。
 评估启动的防重入已改为读取当前 eval state，包括磁盘上的 `eval_status.json`；这避免服务重启或内存态丢失后再次并发启动同一 workspace 的评估。
 
 当前已落地训练入口的安全半步：`POST /pfe/training/jobs` 默认只返回训练预检和 `confirmation_required`，不会创建 job，也不会启动后台训练；只有显式传入 `confirm=true`，且预检没有阻塞项，才沿用现有训练路径创建任务。`GET /pfe/training/jobs` 返回当前工作区最近训练任务、最新任务、进行中任务和整体训练状态；单个 `GET /pfe/training/jobs/{id}` 返回稳定 `status_url`、`events_url`、`cancel_url` 和 `retry_url`；`GET /pfe/training/jobs/{id}/events` 返回 queued、started、completed/failed/cancelled/retry_requested 等 JSON 事件列表；`POST /pfe/training/jobs/{id}/cancel` 需要 `confirm=true`，queued 任务会被取消，running 任务只记录取消请求，不假装能强行中断底层训练，并且当前进程内的 running job 会保留同一个 job 对象，避免后台完成时覆盖掉取消请求事件；`POST /pfe/training/jobs/{id}/retry` 只允许 failed/cancelled 任务，复用原 `training_config`，仍然先走 preflight 和确认合同。Studio 右侧“版本生成”面板先调用预检路径，启动后显示最近任务状态和最新事件，活动任务可点击“停止生成”，失败或已取消任务可点击“重新生成”，`tools/studio_model_path_smoke.py` 也会验证预检不会裸触发训练。
@@ -200,7 +200,7 @@ POST /pfe/adapters/{version}/archive
 
 当前已落地第一版 HTTP action：`promote`、`rollback`、`archive` 均要求 `confirm=true`；`rollback` 可以显式恢复已归档历史版本为当前版本。`GET /pfe/adapters` 也会把原始 `metrics` / `eval_report` 收敛成用户可读的 `training_summary`、`eval_summary` 和 `decision`，让 Studio 版本列表显示训练样本、评估结论和建议动作。Studio 版本列表会在对应版本上显示 `设为当前`、`回退`、`归档` 操作。
 
-当前也已落地评估触发的安全入口：`POST /pfe/eval` 需要 `confirm=true`，请求体传入 `version` 后会启动后台评估；`GET /pfe/eval/status` 返回当前评估状态、目标版本和刷新后的版本列表。Studio 版本列表会对可评估版本显示 `评估`，评估运行时显示 `评估中` 并轮询刷新，完成后沿用 `eval_summary` / `decision` 展示评估结论和建议动作。
+当前也已落地评估触发的安全入口：`POST /pfe/eval` 需要 `confirm=true`，请求体传入 `version` 后会启动后台评估；`GET /pfe/eval/status` 返回当前评估状态、目标版本和刷新后的版本列表。Studio 自动训练完成后会以 `suite=["memory","ordinary_chat","refusal"]` 触发评估：`memory` 使用本次训练样本验证记忆答案，`ordinary_chat` 验证普通可用回答，`refusal` 验证不会编造私有 API key。suite 失败会把 adapter 写为 `failed_eval`，且底层 `AdapterStore.promote` 也要求 `recommendation=deploy`，避免绕过前端直接 promote。Studio 版本列表会对可评估版本显示 `评估`，评估运行时显示 `评估中` 并轮询刷新，完成后沿用 `eval_summary` / `decision` 展示评估结论和建议动作。
 
 ### v1: 作业化训练
 
@@ -289,14 +289,14 @@ PFE Studio 默认是 local-first 单用户工作台。
 
 ## 9. 当前验证证据
 
-截至 2026-06-15，Phase2 第一批闭环已经可以用本地轻量模型跑过完整 release strict gate：
+截至 2026-06-17，Phase2 的训练金线应使用未量化 Hugging Face 目录跑真实 PEFT/LoRA；4bit 目录只保留为推理或诊断候选：
 
 ```bash
-PFE_REAL_LOCAL_MODEL="$PWD/models/Qwen2.5-0.5B-Instruct-4bit" make smoke-release-strict
+PFE_GOLDEN_SMOKE_MODEL="$PWD/models/Qwen2.5-0.5B-Instruct" make smoke-memory-golden
 ```
 
-该命令会先跑 `make smoke-beta`，再跑浏览器级 Studio 点击流和真实本地模型 happy path。当前已验证：
+该命令会创建隔离 workspace，写入 1 条记忆样本，训练 0.5B，并分别验证 `model=base` 不知道、`model=local` 精确回答。当前 Studio/release 证据仍保留：
 
 - Studio 浏览器 smoke 会打开 `/`，保存本地模型路径，开启真实本地模型，触发训练预检，并得到 `studio_training: 可生成版本`。
-- 真实本地 happy path 会使用 `models/Qwen2.5-0.5B-Instruct-4bit` 完成 PEFT 真实路径，并在 manifest 中记录 `kind=real_peft | path=real_import`。
-- 15GB 级别的大模型不是 release gate 的必要前置；优先使用这个 276MB 本地模型做闭环验证。
+- 真实本地 happy path 可使用 tiny Hugging Face 兼容模型跑 release gate；记忆闭环用 `models/Qwen2.5-0.5B-Instruct` 跑 Golden Smoke。
+- 15GB 级别的大模型不是 release gate 的必要前置；优先使用 0.5B 未量化模型做训练闭环验证。

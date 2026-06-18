@@ -313,7 +313,7 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
     )
 
     candidate_next_output = run(["next", "--workspace", workspace])
-    _require(candidate_next_output, "state: candidate_ready", label="candidate next output")
+    _require(candidate_next_output, "state: evaluate_candidate", label="candidate next output")
     _require(candidate_next_output, f"pfe eval --base-model base --adapter {version}", label="candidate next output")
 
     if args.stop_after == "queue":

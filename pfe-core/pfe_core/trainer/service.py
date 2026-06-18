@@ -20,8 +20,6 @@ from ..inference.export_runtime import (
     build_export_runtime_spec,
     build_llama_cpp_export_command_plan,
     execute_llama_cpp_export_command,
-    resolve_llama_cpp_export_tool_path,
-    validate_llama_cpp_export_toolchain,
     write_materialized_export_plan,
 )
 from ..profile_extractor import get_user_profile_store
@@ -396,20 +394,15 @@ class TrainerService:
         }
 
     def _resolve_target_inference_backend(self, *, base_model_name: str) -> str:
-        normalized = str(base_model_name or "").strip().lower()
-        if "llama" in normalized:
+        model_path = Path(str(base_model_name or "")).expanduser()
+        if model_path.is_file() and model_path.suffix.lower() == ".gguf":
             return "llama_cpp"
-
-        model_path = Path(base_model_name).expanduser()
-        looks_like_local_text_model = model_path.exists() and any(
-            family in normalized for family in ("qwen", "llama", "mistral", "gemma")
-        )
-        if looks_like_local_text_model:
-            tool_resolution = resolve_llama_cpp_export_tool_path()
-            toolchain = validate_llama_cpp_export_toolchain(tool_resolution)
-            if bool(toolchain.get("ready", False)):
+        if model_path.is_dir():
+            has_hf_weights = any(model_path.glob("*.safetensors")) or (model_path / "pytorch_model.bin").exists()
+            has_config = (model_path / "config.json").exists()
+            has_gguf = any(model_path.glob("*.gguf"))
+            if has_gguf and not (has_hf_weights or has_config):
                 return "llama_cpp"
-
         return "transformers"
 
     def _get_profile_adjusted_params(self, user_id: str | None = None) -> dict[str, Any]:
@@ -1508,6 +1501,28 @@ class TrainerService:
         executor_spec["job_execution"] = job_execution
         training_config["job_bundle"] = job_bundle.to_dict()
         training_config["job_execution"] = job_execution
+        if not dry_run and not bool(job_execution.get("success", False)):
+            runner_result = dict(job_execution.get("runner_result") or {})
+            real_execution = dict(runner_result.get("real_execution") or {})
+            failure_detail = (
+                real_execution.get("error")
+                or real_execution.get("forward_error")
+                or job_execution.get("failure_category")
+                or "training executor failed"
+            )
+            mark_failed_eval = getattr(store, "mark_failed_eval", None)
+            if callable(mark_failed_eval):
+                mark_failed_eval(
+                    version,
+                    {
+                        "comparison": "training_failed",
+                        "recommendation": "keep_previous",
+                        "scores": {},
+                        "error": str(failure_detail),
+                        "job_execution": job_execution,
+                    },
+                )
+            raise TrainingError(f"training executor failed for adapter {version}: {failure_detail}")
         pre_export_real_execution_artifacts = _extract_real_execution_artifacts(job_execution)
         pre_export_artifact_sync = _sync_real_execution_artifacts_into_version_dir(
             version_dir=version_dir,

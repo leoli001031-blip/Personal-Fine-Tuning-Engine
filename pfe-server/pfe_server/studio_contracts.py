@@ -5,8 +5,8 @@ import time
 from typing import Any, Mapping
 
 
-API_MODEL_PARAMETER = "local"
-API_MODEL_ALIASES = ("local", "local-default", "base")
+API_MODEL_PARAMETER = "base"
+API_MODEL_ALIASES = ("base", "local", "local-default")
 FEEDBACK_ACTIONS = ("accept", "reject", "edit", "regenerate", "delete")
 RESPONSE_ID_FIELDS = ("session_id", "request_id")
 

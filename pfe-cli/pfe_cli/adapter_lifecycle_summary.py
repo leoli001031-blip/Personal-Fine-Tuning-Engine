@@ -36,7 +36,7 @@ def _format_lifecycle_summary_from_text(result: str) -> list[str] | None:
 
     version_lines: list[tuple[str, str, bool, str, str]] = []
     latest_version = None
-    for raw_line in stripped.splitlines():
+    for raw_line in result.strip("\n").splitlines():
         line = raw_line.rstrip()
         match = re.match(
             r"^([* ])\s+([^\s]+)\s+state=([^\s]+)\s+samples=([^\s]+)\s+format=([^\s]+)$",

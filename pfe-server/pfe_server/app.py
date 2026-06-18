@@ -824,14 +824,19 @@ def _load_status_snapshot(workspace: str) -> dict[str, Any]:
                 continue
             candidate_row = row
             break
+        candidate_gate = _adapter_promotion_gate(candidate_row) if candidate_row else {"allowed": False, "reason": "no_candidate"}
         snapshot["candidate_summary"] = {
             "latest_promoted_version": latest_version,
             "recent_version": recent_row.get("version") if recent_row else None,
             "candidate_version": candidate_row.get("version") if candidate_row else None,
             "candidate_state": candidate_row.get("state") if candidate_row else None,
             "candidate_exists": bool(candidate_row),
-            "candidate_can_promote": bool(candidate_row and candidate_row.get("state") in {"training", "pending_eval", "failed_eval"}),
+            "candidate_can_promote": bool(candidate_gate.get("allowed")),
             "candidate_can_archive": bool(candidate_row and candidate_row.get("state") not in {"archived"}),
+            "candidate_needs_eval": bool(candidate_row and candidate_gate.get("reason") == "eval_required"),
+            "promotion_gate_status": "open" if candidate_gate.get("allowed") else "blocked",
+            "promotion_gate_reason": candidate_gate.get("reason"),
+            "promotion_gate_action": candidate_gate.get("required_action"),
             "pending_eval_count": len(pending_rows),
             "pending_eval_versions": [row.get("version") for row in pending_rows],
             "training_count": len(training_rows),
@@ -839,7 +844,7 @@ def _load_status_snapshot(workspace: str) -> dict[str, Any]:
             "failed_eval_count": len(failed_rows),
             "failed_eval_versions": [row.get("version") for row in failed_rows],
             "has_pending_candidate": bool(pending_rows or training_rows),
-            "candidate_needs_promotion": bool(candidate_row and candidate_row.get("state") == "pending_eval"),
+            "candidate_needs_promotion": bool(candidate_row and candidate_row.get("state") == "pending_eval" and candidate_gate.get("allowed")),
         }
         snapshot["candidate_action"] = {
             "action": "promote_candidate",
@@ -1445,8 +1450,11 @@ def _adapter_eval_summary(row: Mapping[str, Any]) -> dict[str, Any]:
             "style_preference_hit_rate",
             "quality_preservation",
             "generic_quality_score",
+            "studio_eval_suite_pass_rate",
         ),
     )
+    suite_summary = _coerce_json_mapping(report.get("studio_eval_suite"))
+    suite_passed = suite_summary.get("passed") if suite_summary else None
     if recommendation == "deploy":
         label = "评估通过"
         state = "passed"
@@ -1462,6 +1470,8 @@ def _adapter_eval_summary(row: Mapping[str, Any]) -> dict[str, Any]:
     parts = [f"评估结论：{label}"]
     if comparison:
         parts.append(str(comparison))
+    if suite_summary:
+        parts.append("suite passed" if suite_passed else "suite failed")
     for key, value in list(selected_scores.items())[:2]:
         parts.append(f"{key} {_compact_metric_value(value)}")
     return {
@@ -1470,8 +1480,59 @@ def _adapter_eval_summary(row: Mapping[str, Any]) -> dict[str, Any]:
         "recommendation": recommendation or None,
         "comparison": comparison,
         "scores": selected_scores,
+        "suite": suite_summary or None,
         "summary_line": " / ".join(parts),
     }
+
+
+def _artifact_role_label(artifact_format: str | None) -> str:
+    normalized = str(artifact_format or "").strip().lower().replace("-", "_")
+    if normalized in {"peft_lora", "mlx_lora"}:
+        return "LoRA adapter"
+    if normalized == "gguf_merged":
+        return "Merged GGUF"
+    return "Base model"
+
+
+def _adapter_requires_export_step(row: Mapping[str, Any]) -> bool:
+    metadata = row.get("metadata")
+    if isinstance(metadata, str) and metadata.strip():
+        try:
+            parsed = json.loads(metadata)
+            metadata = parsed if isinstance(parsed, Mapping) else {}
+        except Exception:
+            metadata = {}
+    metadata_map = dict(metadata or {}) if isinstance(metadata, Mapping) else {}
+    training = dict(metadata_map.get("training") or {}) if isinstance(metadata_map.get("training"), Mapping) else {}
+    backend_plan = dict(metadata_map.get("backend_plan") or {}) if isinstance(metadata_map.get("backend_plan"), Mapping) else {}
+    return bool(
+        training.get("requires_export_step")
+        or backend_plan.get("requires_export_step")
+        or str(row.get("artifact_format") or "").strip().lower() == "gguf_merged"
+    )
+
+
+def _adapter_promotion_gate(
+    row: Mapping[str, Any],
+    *,
+    eval_summary: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    raw_state = str(row.get("state") or "").lower()
+    recommendation = str((eval_summary or _adapter_eval_summary(row)).get("recommendation") or "").lower()
+    suite = (eval_summary or _adapter_eval_summary(row)).get("suite")
+    if raw_state == "promoted":
+        return {"allowed": True, "reason": "already_promoted", "required_action": None}
+    if raw_state == "failed_eval" or recommendation == "keep_previous":
+        return {"allowed": False, "reason": "failed_eval", "required_action": "archive_or_retry"}
+    if isinstance(suite, Mapping) and suite and not suite.get("passed"):
+        return {"allowed": False, "reason": "studio_eval_suite_failed", "required_action": "inspect_eval_suite"}
+    if recommendation == "deploy":
+        return {"allowed": True, "reason": "eval_passed", "required_action": None}
+    if raw_state in {"pending_eval", "training"}:
+        return {"allowed": False, "reason": "eval_required", "required_action": "run_eval"}
+    if raw_state == "archived":
+        return {"allowed": False, "reason": "archived", "required_action": "rollback"}
+    return {"allowed": False, "reason": "not_promotable", "required_action": "inspect_adapter"}
 
 
 def _adapter_decision_summary(
@@ -1496,8 +1557,8 @@ def _adapter_decision_summary(
         label = "先补样本或手动确认"
         return {"label": label, "tone": "warn", "primary_action": None, "summary_line": f"建议：{label}"}
     if raw_state in {"pending_eval", "training"}:
-        label = "可手动确认"
-        return {"label": label, "tone": "warn", "primary_action": "promote", "summary_line": f"建议：{label}"}
+        label = "先评估"
+        return {"label": label, "tone": "warn", "primary_action": "eval", "summary_line": f"建议：{label}"}
     if raw_state == "promoted":
         label = "可回退到此版本"
         return {"label": label, "tone": "warn", "primary_action": "rollback", "summary_line": f"建议：{label}"}
@@ -1550,11 +1611,15 @@ def _build_adapters_payload(services: ServiceBundle) -> dict[str, Any]:
             eval_running = bool(running_version and version == running_version)
             if eval_running:
                 eval_summary = running_eval_summary()
+            promotion_gate = _adapter_promotion_gate(row, eval_summary=eval_summary)
             item["user_state"] = _adapter_user_state(row, latest_version=latest_version)
             item["training_summary"] = _adapter_training_summary(row)
             item["eval_summary"] = eval_summary
             item["decision"] = _adapter_decision_summary(row, latest_version=latest_version, eval_summary=eval_summary)
-            item["can_promote"] = item["user_state"] in {"待确认", "可回退"}
+            item["artifact_role"] = _artifact_role_label(str(item.get("artifact_format") or ""))
+            item["requires_export_step"] = _adapter_requires_export_step(row)
+            item["promotion_gate"] = promotion_gate
+            item["can_promote"] = bool(promotion_gate.get("allowed") and raw_state != "promoted")
             item["can_rollback"] = bool(not item.get("latest") and raw_state in {"promoted", "archived"})
             item["can_archive"] = bool(not item.get("latest") and raw_state != "archived")
             item["can_eval"] = bool(raw_state in {"pending_eval", "failed_eval", "promoted"} and not eval_running)
@@ -1568,9 +1633,17 @@ def _build_adapters_payload(services: ServiceBundle) -> dict[str, Any]:
             versions.append(item)
         pending = [item for item in versions if item.get("user_state") == "待确认"]
         fallback = next((item for item in versions if item.get("user_state") == "可回退"), None)
+        current = next((item for item in versions if item.get("latest")), None)
+        pending_eval = next((item for item in versions if item.get("state") == "pending_eval"), None)
+        adapter_loaded = bool(current and current.get("path") and Path(str(current.get("path"))).exists())
         return {
             "latest_version": latest_version,
-            "current": next((item for item in versions if item.get("latest")), None),
+            "current": current,
+            "base_model": (current or pending_eval or {}).get("base_model"),
+            "latest_adapter": current,
+            "pending_eval_adapter": pending_eval,
+            "adapter_loaded": adapter_loaded,
+            "adapter_loaded_source": "latest_symlink" if adapter_loaded else "none",
             "pending": pending,
             "fallback": fallback,
             "versions": versions,
@@ -3864,6 +3937,51 @@ def _start_training_job(
     workspace = services.workspace
     store = _training_job_store(workspace)
 
+    def _after_completed(job_entry: dict[str, Any]) -> None:
+        version = str(job_entry.get("adapter_version") or "")
+        if not version:
+            return
+        try:
+            from pfe_core.adapter_store import create_adapter_store
+
+            adapter_store = create_adapter_store(workspace=workspace)
+            adapter_store.load(version)
+
+            def _persist_eval_state(eval_workspace: str, state: dict[str, Any]) -> None:
+                _eval_overall_state[eval_workspace] = state
+                _save_json_state(_eval_state_path(eval_workspace), state)
+
+            start_studio_eval_job(
+                pipeline=services.pipeline,
+                workspace=workspace,
+                version=version,
+                requested_version=version,
+                request_body={
+                    "version": version,
+                    "confirm": True,
+                    "num_samples": 20,
+                    "suite": ["memory", "ordinary_chat", "refusal"],
+                    "source": "studio_training_auto_eval",
+                },
+                default_base_model=_default_chat_base_model,
+                load_adapter_path=adapter_store.load,
+                persist_state=_persist_eval_state,
+                build_adapters_payload=lambda: _build_adapters_payload(services),
+            )
+            job_entry["auto_eval"] = {
+                "state": "started",
+                "adapter_version": version,
+                "status_url": EVAL_STATUS_URL,
+                "suite": ["memory", "ordinary_chat", "refusal"],
+            }
+        except Exception as exc:
+            job_entry["auto_eval"] = {
+                "state": "failed_to_start",
+                "adapter_version": version,
+                "status_url": EVAL_STATUS_URL,
+                "error": str(exc),
+            }
+
     payload = start_studio_training_job(
         workspace=workspace,
         pipeline=services.pipeline,
@@ -3875,6 +3993,7 @@ def _start_training_job(
         persist_job=store.persist_job,
         persist_overall=store.persist_overall,
         build_jobs_payload=lambda limit: store.build_jobs_payload(limit=limit),
+        after_completed=_after_completed,
     )
     return _json_response(payload, status_code=202)
 
@@ -4458,6 +4577,25 @@ async def handle_adapter_promote(
     try:
         from pfe_core.adapter_store import create_adapter_store
         store = create_adapter_store(workspace=services.workspace)
+        rows = store.list_version_records(limit=1000)
+        row = next((item for item in rows if str(item.get("version") or "") == version), None)
+        if row is None:
+            return _json_response(_error_payload("adapter not found", "not_found"), status_code=404)
+        gate = _adapter_promotion_gate(row)
+        if not gate.get("allowed"):
+            payload = _error_payload(
+                f"adapter {version} cannot be promoted before evaluation passes",
+                "promotion_eval_required",
+                "run /pfe/eval for this adapter and promote only when recommendation=deploy",
+            )
+            payload.update(
+                {
+                    "version": version,
+                    "promotion_gate": gate,
+                    "adapters": _build_adapters_payload(services),
+                }
+            )
+            return _json_response(payload, status_code=409)
         previous_version = store.current_latest_version()
         message = store.promote(version)
         return _json_response(

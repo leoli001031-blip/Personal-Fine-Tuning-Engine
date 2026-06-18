@@ -85,6 +85,7 @@ def test_load_status_snapshot_degrades_when_latest_manifest_is_missing(pfe_home:
         training_config={"backend": "mock_local", "train_type": "sft"},
     )
     store.mark_pending_eval(created["version"], num_samples=1)
+    store.attach_eval_report(created["version"], {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
     store.promote(created["version"])
 
     version_dir = pfe_home / "adapters" / "user_default" / created["version"]

@@ -29,11 +29,13 @@ class CandidateSummarySurfaceTests(unittest.TestCase):
     def _build_promoted_and_pending_service(self) -> tuple[PipelineService, str, str]:
         service = PipelineService()
         service.generate(scenario="life-coach", style="温和", num_samples=8)
-        first_result = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(first_result.version)
+        first_result = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first_result.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(first_result.version)
 
         service.generate(scenario="work-coach", style="direct", num_samples=8)
-        second_result = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second_result = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         return service, first_result.version, second_result.version
 
     def test_cli_status_keeps_latest_promoted_and_recent_candidate_distinct(self) -> None:
@@ -47,7 +49,9 @@ class CandidateSummarySurfaceTests(unittest.TestCase):
         self.assertEqual(candidate_summary["candidate_version"], pending_version)
         self.assertEqual(candidate_summary["candidate_state"], "pending_eval")
         self.assertTrue(candidate_summary["has_pending_candidate"])
-        self.assertTrue(candidate_summary["candidate_needs_promotion"])
+        self.assertFalse(candidate_summary["candidate_needs_promotion"])
+        self.assertEqual(candidate_summary["promotion_gate_reason"], "eval_required")
+        self.assertEqual(candidate_summary["promotion_gate_action"], "run_eval")
         self.assertEqual(candidate_summary["pending_eval_count"], 1)
 
         text = _format_status(status, workspace="user_default")
@@ -74,7 +78,9 @@ class CandidateSummarySurfaceTests(unittest.TestCase):
         self.assertEqual(candidate_summary["recent_version"], pending_version)
         self.assertEqual(candidate_summary["candidate_state"], "pending_eval")
         self.assertTrue(candidate_summary["has_pending_candidate"])
-        self.assertTrue(candidate_summary["candidate_needs_promotion"])
+        self.assertFalse(candidate_summary["candidate_needs_promotion"])
+        self.assertEqual(candidate_summary["promotion_gate_reason"], "eval_required")
+        self.assertEqual(candidate_summary["promotion_gate_action"], "run_eval")
         self.assertEqual(body["metadata"]["snapshot"]["candidate_summary"]["candidate_version"], pending_version)
         self.assertEqual(body["metadata"]["snapshot"]["candidate_summary"]["latest_promoted_version"], promoted_version)
         self.assertEqual(body["metadata"]["candidate_summary"]["candidate_version"], pending_version)

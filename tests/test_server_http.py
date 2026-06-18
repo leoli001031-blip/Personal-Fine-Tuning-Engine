@@ -121,6 +121,10 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("调用示例", result["text"])
         self.assertIn("复制调用示例", result["text"])
         self.assertIn("版本生成", result["text"])
+        self.assertIn("Base model", result["text"])
+        self.assertIn("Latest adapter", result["text"])
+        self.assertIn("Pending eval", result["text"])
+        self.assertIn("Adapter loaded", result["text"])
         self.assertIn("检查条件", result["text"])
         self.assertIn("还没有模型版本", js)
         self.assertIn("最近任务", result["text"])
@@ -129,6 +133,8 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("version-evidence", css)
         self.assertIn("eval_summary", js)
         self.assertIn("decision", js)
+        self.assertIn("promotion_gate", js)
+        self.assertIn("上线闸门：等待评估通过", js)
         self.assertIn("/pfe/eval/status", js)
         self.assertIn("评估", js)
         self.assertIn("会成为 API 回复使用的模型版本。", js)
@@ -159,6 +165,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         config.save(home=self.pfe_home)
         store = self._server_adapter_store()
         version = self._create_pending_adapter(store, base_model="Qwen/Qwen3-4B")
+        store.attach_eval_report(version, {"recommendation": "deploy", "comparison": "improved", "scores": {}})
         store.promote(version)
 
         result = self._smoke("/pfe/handoff", headers={"host": "127.0.0.1:9012"})
@@ -171,7 +178,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(body["urls"]["api"], "http://127.0.0.1:9012/v1/chat/completions")
         self.assertEqual(body["urls"]["feedback"], "http://127.0.0.1:9012/pfe/feedback")
         self.assertEqual(body["model"]["selected"], "Qwen/Qwen3-4B")
-        self.assertEqual(body["model"]["api_parameter"], "local")
+        self.assertEqual(body["model"]["api_parameter"], "base")
         self.assertIn("local-default", body["model"]["aliases"])
         self.assertEqual(body["version"]["current"], version)
         self.assertEqual(body["version"]["latest"], version)
@@ -186,7 +193,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("Chat API: http://127.0.0.1:9012/v1/chat/completions", body["copy_text"])
         self.assertIn("Feedback API: http://127.0.0.1:9012/pfe/feedback", body["copy_text"])
         self.assertIn("Keep per answer: session_id, request_id", body["copy_text"])
-        self.assertIn("Model parameter: local", body["copy_text"])
+        self.assertIn("Model parameter: base", body["copy_text"])
         self.assertIn(f"Current version: {version}", body["copy_text"])
 
     def test_studio_handoff_test_runs_chat_and_feedback_loop(self) -> None:
@@ -226,11 +233,11 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(runtime["body"]["api"]["method"], "POST")
         self.assertEqual(runtime["body"]["api"]["chat_completions_url"], "http://127.0.0.1:9012/v1/chat/completions")
         self.assertEqual(runtime["body"]["api"]["feedback_url"], "http://127.0.0.1:9012/pfe/feedback")
-        self.assertEqual(runtime["body"]["api"]["model_parameter"], "local")
+        self.assertEqual(runtime["body"]["api"]["model_parameter"], "base")
         self.assertIn("local-default", runtime["body"]["api"]["model_aliases"])
         self.assertEqual(runtime["body"]["api"]["response_id_fields"], ["session_id", "request_id"])
         self.assertIn("accept", runtime["body"]["api"]["feedback_actions"])
-        self.assertEqual(runtime["body"]["api"]["request_body"]["model"], "local")
+        self.assertEqual(runtime["body"]["api"]["request_body"]["model"], "base")
         self.assertEqual(runtime["body"]["api"]["feedback_body"]["action"], "accept")
         self.assertEqual(runtime["body"]["access_scope"], "仅本机")
         self.assertIn("privacy_mode", runtime["body"])
@@ -251,6 +258,10 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("count", adapters["body"])
         self.assertIn("pending", adapters["body"])
         self.assertIn("latest_version", adapters["body"])
+        self.assertIn("base_model", adapters["body"])
+        self.assertIn("latest_adapter", adapters["body"])
+        self.assertIn("pending_eval_adapter", adapters["body"])
+        self.assertIn("adapter_loaded", adapters["body"])
 
         workspaces = self._smoke("/pfe/workspaces")
         self.assertEqual(workspaces["status_code"], 200)
@@ -527,6 +538,24 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(missing_confirmation["body"]["code"], "confirmation_required")
         self.assertIsNone(store.current_latest_version())
 
+        blocked = self._smoke(
+            f"/pfe/adapters/{version}/promote",
+            method="POST",
+            body={"confirm": True},
+        )
+        self.assertEqual(blocked["status_code"], 409)
+        self.assertEqual(blocked["body"]["code"], "promotion_eval_required")
+        self.assertEqual(blocked["body"]["promotion_gate"]["reason"], "eval_required")
+        self.assertIsNone(store.current_latest_version())
+
+        store.attach_eval_report(
+            version,
+            {
+                "recommendation": "deploy",
+                "comparison": "improved",
+                "scores": {"quality_preservation": 1.0},
+            },
+        )
         promoted = self._smoke(
             f"/pfe/adapters/{version}/promote",
             method="POST",
@@ -543,8 +572,10 @@ class ServerHttpSmokeTests(unittest.TestCase):
     def test_studio_adapter_rollback_restores_archived_previous_version(self) -> None:
         store = self._server_adapter_store()
         first = self._create_pending_adapter(store, base_model="base-a")
+        store.attach_eval_report(first, {"recommendation": "deploy", "comparison": "improved", "scores": {}})
         store.promote(first)
         second = self._create_pending_adapter(store, base_model="base-b")
+        store.attach_eval_report(second, {"recommendation": "deploy", "comparison": "improved", "scores": {}})
         store.promote(second)
         self.assertEqual(store.current_latest_version(), second)
         self.assertEqual(
@@ -567,6 +598,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
     def test_studio_adapter_archive_requires_confirmation_and_blocks_current(self) -> None:
         store = self._server_adapter_store()
         current = self._create_pending_adapter(store, base_model="base-a")
+        store.attach_eval_report(current, {"recommendation": "deploy", "comparison": "improved", "scores": {}})
         store.promote(current)
         candidate = self._create_pending_adapter(store, base_model="base-b")
 
@@ -600,6 +632,14 @@ class ServerHttpSmokeTests(unittest.TestCase):
 
     def test_studio_adapters_include_user_readable_evaluation_evidence(self) -> None:
         store = self._server_adapter_store()
+        unevaluated = self._create_pending_adapter(store, base_model="base-pending")
+        pending_result = self._smoke("/pfe/adapters")
+        pending_item = next(row for row in pending_result["body"]["versions"] if row["version"] == unevaluated)
+        self.assertEqual(pending_result["body"]["pending_eval_adapter"]["version"], unevaluated)
+        self.assertFalse(pending_item["can_promote"])
+        self.assertEqual(pending_item["promotion_gate"]["reason"], "eval_required")
+        self.assertEqual(pending_item["decision"]["primary_action"], "eval")
+
         version = self._create_pending_adapter(
             store,
             base_model="base-eval",
@@ -631,6 +671,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("评估结论：评估通过", item["eval_summary"]["summary_line"])
         self.assertEqual(item["decision"]["label"], "建议设为当前")
         self.assertEqual(item["decision"]["primary_action"], "promote")
+        self.assertTrue(item["can_promote"])
         self.assertTrue(item["can_eval"])
         self.assertEqual(item["action_api"]["eval"], "/pfe/eval")
 
@@ -649,6 +690,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(failed_item["eval_summary"]["label"], "有问题")
         self.assertEqual(failed_item["decision"]["label"], "建议保留旧版")
         self.assertEqual(failed_item["decision"]["primary_action"], "archive")
+        self.assertFalse(failed_item["can_promote"])
         self.assertTrue(failed_item["can_eval"])
 
     def test_studio_eval_requires_confirmation_and_updates_version_evidence(self) -> None:
@@ -1117,12 +1159,13 @@ class ServerHttpSmokeTests(unittest.TestCase):
                 job_result = self._smoke(f"/pfe/training/jobs/{new_job_id}")
                 self.assertEqual(job_result["status_code"], 200)
                 completed = job_result["body"]
-                if completed.get("status") == "completed":
+                if completed.get("status") == "completed" and "auto_eval" in completed:
                     break
                 time.sleep(0.05)
             self.assertEqual(completed["status"], "completed")
             self.assertEqual(completed["retry_of"], job_id)
             self.assertEqual(completed["adapter_version"], "20260615-998")
+            self.assertEqual(completed["auto_eval"]["state"], "failed_to_start")
 
             original_events = self._smoke(f"/pfe/training/jobs/{job_id}/events")
             self.assertEqual(original_events["status_code"], 200)

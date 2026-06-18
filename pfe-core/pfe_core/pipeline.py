@@ -937,6 +937,21 @@ class PipelineService:
         recent_row: dict[str, Any] | None,
         compare_evaluation: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        def _row_payload(row: dict[str, Any] | None, key: str) -> dict[str, Any]:
+            if not row:
+                return {}
+            value = row.get(key)
+            if isinstance(value, dict):
+                return dict(value)
+            if isinstance(value, str) and value.strip():
+                try:
+                    parsed = json.loads(value)
+                    if isinstance(parsed, dict):
+                        return dict(parsed)
+                except Exception:
+                    return {}
+            return {}
+
         latest_version_text = str(latest_version) if latest_version is not None else None
         pending_rows = [row for row in rows if row.get("state") == "pending_eval"]
         training_rows = [row for row in rows if row.get("state") == "training"]
@@ -959,6 +974,27 @@ class PipelineService:
             candidate_version=candidate_row.get("version") if candidate_row else None,
             compare_evaluation=compare_evaluation,
         )
+        eval_report = _row_payload(candidate_row, "eval_report")
+        eval_recommendation = str(eval_report.get("recommendation") or "")
+        eval_suite = eval_report.get("studio_eval_suite")
+        if candidate_row and candidate_state in {"training", "pending_eval"} and eval_recommendation != "deploy":
+            promotion_gate = {
+                "status": "blocked",
+                "reason": "eval_required",
+                "action": "run_eval",
+            }
+        if candidate_row and (candidate_state == "failed_eval" or eval_recommendation == "keep_previous"):
+            promotion_gate = {
+                "status": "blocked",
+                "reason": "failed_eval",
+                "action": "archive_or_retry",
+            }
+        if candidate_row and isinstance(eval_suite, Mapping) and eval_suite and not eval_suite.get("passed"):
+            promotion_gate = {
+                "status": "blocked",
+                "reason": "studio_eval_suite_failed",
+                "action": "inspect_eval_suite",
+            }
         candidate_can_promote = bool(
             candidate_row
             and candidate_state in {"training", "pending_eval", "failed_eval"}
@@ -981,10 +1017,12 @@ class PipelineService:
             "failed_eval_count": len(failed_rows),
             "failed_eval_versions": [row.get("version") for row in failed_rows],
             "has_pending_candidate": bool(pending_rows or training_rows),
-            "candidate_needs_promotion": bool(candidate_row and candidate_state == "pending_eval"),
+            "candidate_needs_promotion": bool(candidate_row and candidate_state == "pending_eval" and promotion_gate.get("status") != "blocked"),
             "promotion_gate_status": promotion_gate.get("status"),
             "promotion_gate_reason": promotion_gate.get("reason"),
             "promotion_gate_action": promotion_gate.get("action"),
+            "eval_recommendation": eval_recommendation or None,
+            "studio_eval_suite_passed": bool(eval_suite.get("passed")) if isinstance(eval_suite, Mapping) else None,
         }
         compare = dict(compare_evaluation or {})
         if compare:
@@ -5959,6 +5997,7 @@ class PipelineService:
         train_type: str = "sft",
         workspace: str | None = None,
         backend_hint: str | None = None,
+        backend: str | None = None,
     ) -> Any:
         return self.trainer.train_result(
             method=method,
@@ -5967,6 +6006,7 @@ class PipelineService:
             train_type=train_type,
             workspace=workspace,
             backend_hint=backend_hint,
+            backend=backend,
         )
 
     def train_incremental(

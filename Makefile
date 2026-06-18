@@ -29,6 +29,7 @@ help:
 	@echo "make smoke-browser-ui-live - Optional Playwright browser smoke for dashboard/Studio UI"
 	@echo "make smoke-studio-first-launch - Clean-install and launch Studio from the console script"
 	@echo "make smoke-real-local-happy - Opt-in real local model happy path (set PFE_REAL_LOCAL_MODEL)"
+	@echo "make smoke-memory-golden - Run the isolated 0.5B memory golden smoke"
 	@echo "make smoke-beta - Run the beta-ready smoke chain"
 	@echo "make smoke-release-strict - Run beta smoke plus required browser/model gates"
 	@echo "make soak-release - Run a bounded live release soak over server/dashboard/queue/daemon"
@@ -109,6 +110,10 @@ smoke-studio-first-launch: check-venv
 .PHONY: smoke-real-local-happy
 smoke-real-local-happy: check-venv
 	$(PYTHON) tools/real_local_happy_path_smoke.py
+
+.PHONY: smoke-memory-golden
+smoke-memory-golden: check-venv
+	$(PYTHON) tools/memory_golden_smoke.py
 
 .PHONY: smoke-beta
 smoke-beta: smoke-first-run smoke-auto-train-queue smoke-real-local-readiness smoke-studio-model-path smoke-server-live smoke-dashboard-console-live

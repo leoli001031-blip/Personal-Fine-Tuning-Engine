@@ -223,6 +223,7 @@ class TrainQueueSurfaceTests(unittest.TestCase):
                 "artifact_format": "peft_lora",
                 "base_model": "Qwen/Qwen3-4B",
                 "num_samples": 10,
+                "eval_report": {"recommendation": "deploy", "comparison": "improved"},
             },
             {
                 "version": "20260325-001",

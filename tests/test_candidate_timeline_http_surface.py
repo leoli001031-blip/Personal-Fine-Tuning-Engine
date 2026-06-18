@@ -43,10 +43,13 @@ class CandidateTimelineHttpSurfaceTests(unittest.TestCase):
     def _build_candidate_timeline(self) -> tuple[PipelineService, str, str]:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=8)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(first.version)
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=8)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store.attach_eval_report(second.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         service.promote_candidate(note="ready_for_rollout")
         service.archive_candidate(note="archive_after_review")
         return service, first.version, second.version

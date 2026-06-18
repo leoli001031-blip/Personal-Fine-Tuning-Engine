@@ -26,6 +26,7 @@ class _NoopTrainerStore:
         self.version_dir = version_dir
         self.created_training_config: dict[str, object] | None = None
         self.pending_eval_calls: list[dict[str, object]] = []
+        self.failed_eval_calls: list[dict[str, object]] = []
 
     def create_training_version(
         self,
@@ -41,6 +42,74 @@ class _NoopTrainerStore:
 
     def mark_pending_eval(self, version: str, *, num_samples: int, metrics: dict[str, object] | None = None) -> None:
         self.pending_eval_calls.append({"version": version, "num_samples": num_samples, "metrics": dict(metrics or {})})
+
+    def mark_failed_eval(self, version: str, report: dict[str, object] | None = None) -> None:
+        self.failed_eval_calls.append({"version": version, "report": dict(report or {})})
+
+
+def _successful_peft_job_execution(version_dir: Path, result_json_path: str | None = None) -> dict[str, object]:
+    artifact_dir = version_dir / "real-peft-artifacts"
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    adapter_model = artifact_dir / "adapter_model.safetensors"
+    adapter_config = artifact_dir / "adapter_config.json"
+    real_execution_path = artifact_dir / "real_execution.json"
+    adapter_model.write_text("adapter weights\n", encoding="utf-8")
+    adapter_config.write_text(
+        json.dumps(
+            {
+                "base_model_name_or_path": "mock-llama-target",
+                "peft_type": "LORA",
+                "task_type": "CAUSAL_LM",
+            },
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    real_execution_path.write_text(
+        json.dumps({"status": "completed", "train_loss": 0.125}, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    payload = {
+        "attempted": True,
+        "success": True,
+        "status": "executed",
+        "command": [],
+        "returncode": 0,
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "",
+        "runner_result": {
+            "backend": "peft",
+            "status": "completed",
+            "execution_mode": "real_import",
+            "real_execution": {
+                "kind": "peft",
+                "path": "real_import",
+                "runtime_path": "real_import",
+                "attempted": True,
+                "available": True,
+                "success": True,
+                "train_loss": 0.125,
+                "num_examples": 8,
+                "artifact_dir": str(artifact_dir),
+                "artifacts": {
+                    "adapter_model": str(adapter_model),
+                    "adapter_config": str(adapter_config),
+                },
+                "real_execution_path": str(real_execution_path),
+            },
+            "job_spec": {},
+        },
+        "audit": {"status": "executed"},
+        "metadata": {"execution_state": "executed"},
+    }
+    if result_json_path:
+        Path(result_json_path).write_text(
+            json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
+    return payload
 
 class TrainerRuntimeTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -170,7 +239,17 @@ class TrainerRuntimeTests(unittest.TestCase):
             trainer_service_module.importlib.util,
             "find_spec",
             side_effect=fake_find_spec,
-        ), patch.object(trainer_service_module.importlib, "import_module", side_effect=fake_import_module):
+        ), patch.object(
+            trainer_service_module.importlib,
+            "import_module",
+            side_effect=fake_import_module,
+        ), patch.object(
+            trainer_service_module,
+            "run_materialized_training_job_bundle",
+            side_effect=lambda bundle: SimpleNamespace(
+                to_dict=lambda: _successful_peft_job_execution(version_dir, bundle.result_json_path)
+            ),
+        ):
             detect_runtime.return_value = type("_Runtime", (), {"to_dict": lambda self: dict(runtime_snapshot)})()
             result = trainer.train_result(
                 method="qlora",
@@ -207,9 +286,11 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertTrue(Path(result.job_bundle["result_json_path"]).exists())
         self.assertIn("dry_run", result.export_runtime)
         self.assertIn("manifest_updates", result.export_runtime)
-        self.assertIn("command", result.export_command_plan)
+        self.assertEqual(result.export_command_plan["target_backend"], "transformers")
+        self.assertEqual(result.export_command_plan["status"], "not_required")
+        self.assertEqual(result.export_command_plan["target_artifact_format"], "peft_lora")
         self.assertIn("audit", result.export_execution)
-        self.assertEqual(result.export_execution["audit"]["status"], "tool_missing")
+        self.assertEqual(result.export_execution["audit"]["status"], "not_required")
         self.assertIn("requires_export_step", result.audit_info)
         self.assertEqual(store.created_training_config["backend"], "peft")
         self.assertEqual(store.created_training_config["requested_backend"], "peft")
@@ -242,7 +323,7 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertTrue(Path(training_meta["job_bundle"]["result_json_path"]).exists())
         self.assertEqual(training_meta["backend_plan"]["recommended_backend"], result.backend_plan["recommended_backend"])
         self.assertEqual(training_meta["export_runtime"]["dry_run"], True)
-        self.assertEqual(training_meta["export_execution"]["audit"]["status"], "tool_missing")
+        self.assertEqual(training_meta["export_execution"]["audit"]["status"], "not_required")
         self.assertEqual(training_meta["export_artifact_summary"]["status"], result.export_execution["audit"]["status"])
 
     def test_train_result_defaults_base_model_from_initialized_config(self) -> None:
@@ -300,12 +381,31 @@ class TrainerRuntimeTests(unittest.TestCase):
             execution_plan=plan,
             output_dir=self.pfe_home / "adapters" / "user_default" / "20260323-998",
         )
-        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}):
-            runner_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
-
         job_json_path = Path(bundle.job_json_path)
         script_path = Path(bundle.script_path)
         result_json_path = Path(bundle.result_json_path)
+        failed_payload = {
+            "backend": bundle.job_json["execution_backend"],
+            "status": "failed",
+            "error": "fixture runner failed",
+        }
+
+        def fake_run(command: list[str], **kwargs: object):
+            result_json_path.write_text(json.dumps(failed_payload, sort_keys=True) + "\n", encoding="utf-8")
+            return trainer_executor_module.subprocess.CompletedProcess(
+                command,
+                returncode=0,
+                stdout=json.dumps(failed_payload, sort_keys=True) + "\n",
+                stderr="",
+            )
+
+        with patch.dict(os.environ, {"PFE_REAL_TRAINING": "1"}), patch.object(
+            trainer_executor_module.subprocess,
+            "run",
+            side_effect=fake_run,
+        ):
+            runner_result = trainer_executor_module.run_materialized_training_job_bundle(bundle, force_dry_run=False)
+
         self.assertTrue(job_json_path.exists())
         self.assertTrue(script_path.exists())
         self.assertTrue(result_json_path.exists())
@@ -318,17 +418,18 @@ class TrainerRuntimeTests(unittest.TestCase):
         expected_executor = plan["job_spec"]["execution_executor"]
         self.assertIn(expected_executor, {"mock_local", "peft"})
         self.assertEqual(bundle.job_json["execution_executor"], expected_executor)
-        self.assertEqual(runner_result.status, "executed")
+        self.assertEqual(runner_result.status, "failed")
         self.assertTrue(runner_result.attempted)
-        self.assertTrue(runner_result.success)
+        self.assertFalse(runner_result.success)
         self.assertEqual(runner_result.materialization["execution_executor"], expected_executor)
-        self.assertEqual(runner_result.audit["status"], "executed")
+        self.assertEqual(runner_result.audit["status"], "failed")
         self.assertEqual(runner_result.audit["result_json_path"], str(result_json_path))
-        self.assertEqual(runner_result.metadata["execution_state"], "executed")
+        self.assertEqual(runner_result.metadata["execution_state"], "failed")
         self.assertEqual(runner_result.metadata["result_json_path"], str(result_json_path))
+        self.assertEqual(runner_result.failure_category, "runner_failed")
         result_payload = json.loads(result_json_path.read_text(encoding="utf-8"))
         self.assertIn(result_payload["backend"], {bundle.job_json["execution_backend"], "mock_local"})
-        self.assertIn(result_payload["status"], {"prepared", "ready", "completed"})
+        self.assertEqual(result_payload["status"], "failed")
 
     def test_backend_dispatch_skeleton_distinguishes_training_branches(self) -> None:
         trainer = TrainerService()
@@ -476,11 +577,13 @@ class TrainerRuntimeTests(unittest.TestCase):
             "find_spec",
             return_value=None,
         ), patch.object(trainer_service_module.importlib, "import_module", side_effect=ImportError("missing dependency")):
+            base_gguf = Path(self.tempdir.name) / "base-model.gguf"
+            base_gguf.write_text("GGUF", encoding="utf-8")
             detect_runtime.return_value = type("_Runtime", (), {"to_dict": lambda self: dict(runtime_snapshot)})()
             result = trainer.train_result(
                 method="qlora",
                 epochs=1,
-                base_model="mock-llama-target",
+                base_model=str(base_gguf),
                 train_type="sft",
                 backend_hint="peft",
             )
@@ -538,6 +641,8 @@ class TrainerRuntimeTests(unittest.TestCase):
             return fake_modules[name]
 
         with tempfile.TemporaryDirectory() as tool_dir:
+            base_gguf = Path(tool_dir) / "base-model.gguf"
+            base_gguf.write_text("GGUF", encoding="utf-8")
             tool_path = Path(tool_dir) / "fake-llama-export.sh"
             tool_path.write_text(
                 "#!/bin/sh\n"
@@ -562,12 +667,18 @@ class TrainerRuntimeTests(unittest.TestCase):
                 trainer_service_module.importlib.util,
                 "find_spec",
                 side_effect=fake_find_spec,
-            ), patch.object(trainer_service_module.importlib, "import_module", side_effect=fake_import_module):
+            ), patch.object(trainer_service_module.importlib, "import_module", side_effect=fake_import_module), patch.object(
+                trainer_service_module,
+                "run_materialized_training_job_bundle",
+                side_effect=lambda bundle: SimpleNamespace(
+                    to_dict=lambda: _successful_peft_job_execution(version_dir, bundle.result_json_path)
+                ),
+            ):
                 detect_runtime.return_value = type("_Runtime", (), {"to_dict": lambda self: dict(runtime_snapshot)})()
                 result = trainer.train_result(
                     method="qlora",
                     epochs=1,
-                    base_model="mock-llama-target",
+                    base_model=str(base_gguf),
                     train_type="sft",
                     backend_hint="peft",
                 )
@@ -579,7 +690,7 @@ class TrainerRuntimeTests(unittest.TestCase):
         self.assertTrue(result.export_execution["output_artifact_validation"]["valid"])
         self.assertEqual(result.export_write["write_state"], "validated")
 
-    def test_local_qwen_model_prefers_llama_cpp_when_toolchain_ready(self) -> None:
+    def test_local_qwen_hf_model_keeps_transformers_peft_artifact(self) -> None:
         pipeline = PipelineService()
         pipeline.generate(scenario="life-coach", style="温和、共情", num_samples=8)
 
@@ -652,7 +763,13 @@ class TrainerRuntimeTests(unittest.TestCase):
                 trainer_service_module.importlib.util,
                 "find_spec",
                 side_effect=fake_find_spec,
-            ), patch.object(trainer_service_module.importlib, "import_module", side_effect=fake_import_module):
+            ), patch.object(trainer_service_module.importlib, "import_module", side_effect=fake_import_module), patch.object(
+                trainer_service_module,
+                "run_materialized_training_job_bundle",
+                side_effect=lambda bundle: SimpleNamespace(
+                    to_dict=lambda: _successful_peft_job_execution(version_dir, bundle.result_json_path)
+                ),
+            ):
                 detect_runtime.return_value = type("_Runtime", (), {"to_dict": lambda self: dict(runtime_snapshot)})()
                 result = trainer.train_result(
                     method="qlora",
@@ -662,10 +779,10 @@ class TrainerRuntimeTests(unittest.TestCase):
                     backend_hint="peft",
                 )
 
-        self.assertEqual(result.export_runtime["target_backend"], "llama_cpp")
-        self.assertEqual(result.export_command_plan["command_metadata"]["converter_kind"], "lora")
+        self.assertEqual(result.export_runtime["target_backend"], "transformers")
+        self.assertEqual(result.export_runtime["target_artifact_format"], "peft_lora")
+        self.assertFalse(result.export_execution["attempted"])
         self.assertTrue(result.export_execution["success"])
-        self.assertTrue(result.export_execution["output_artifact_validation"]["valid"])
         self.assertTrue(result.training_config["pre_export_artifact_sync"]["available"])
 
 if __name__ == "__main__":

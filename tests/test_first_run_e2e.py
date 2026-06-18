@@ -57,7 +57,7 @@ def test_first_run_smoke_script_reaches_usable_local_surfaces() -> None:
     assert "$ pfe trigger process-next --workspace first_run" in output
     assert "process_next" in output
     assert "state: queue_ready" in output
-    assert "state: candidate_ready" in output
+    assert "state: evaluate_candidate" in output
     assert "queue adapter version:" in output
     assert "$ pfe eval --base-model base --adapter " in output
     assert "[ EVALUATION RESULT ]" in output
@@ -100,7 +100,7 @@ def test_first_run_smoke_can_stop_after_auto_train_queue() -> None:
     assert "$ pfe trigger process-next --workspace first_run" in output
     assert "process_next" in output
     assert "state: queue_ready" in output
-    assert "state: candidate_ready" in output
+    assert "state: evaluate_candidate" in output
     assert "queue adapter version:" in output
     assert "AUTO-TRAIN QUEUE SMOKE PASSED" in output
     assert "manifest:" in output

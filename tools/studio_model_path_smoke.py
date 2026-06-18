@@ -171,9 +171,11 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
             raise AssertionError(f"handoff contract did not expose response ids: {runtime}")
         if "accept" not in set(api_contract.get("feedback_actions") or []):
             raise AssertionError(f"handoff contract did not expose feedback actions: {runtime}")
-        if api_contract.get("model_parameter") != "local":
+        if api_contract.get("model_parameter") != "base":
             raise AssertionError(f"unexpected api model parameter: {runtime}")
-        if api_contract.get("request_body", {}).get("model") != "local":
+        if "local" not in set(api_contract.get("model_aliases") or []):
+            raise AssertionError(f"handoff contract did not expose local model alias: {runtime}")
+        if api_contract.get("request_body", {}).get("model") != "base":
             raise AssertionError(f"unexpected api request example: {runtime}")
         if runtime.get("workspace") != workspace_name:
             raise AssertionError(f"runtime did not switch workspace: {runtime}")

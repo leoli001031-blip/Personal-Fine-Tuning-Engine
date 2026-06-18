@@ -28,10 +28,10 @@ def test_runtime_payload_exposes_openai_chat_handoff_contract() -> None:
     assert payload["uptime_seconds"] == 5.432
     assert payload["api"]["kind"] == "openai_chat_completions"
     assert payload["api"]["method"] == "POST"
-    assert payload["api"]["model_parameter"] == "local"
-    assert payload["api"]["model_aliases"] == ["local", "local-default", "base"]
+    assert payload["api"]["model_parameter"] == "base"
+    assert payload["api"]["model_aliases"] == ["base", "local", "local-default"]
     assert payload["api"]["auth_header"] == "Authorization: Bearer $PFE_API_KEY"
     assert payload["api"]["response_id_fields"] == ["session_id", "request_id"]
     assert "accept" in payload["api"]["feedback_actions"]
-    assert payload["api"]["request_body"]["model"] == "local"
+    assert payload["api"]["request_body"]["model"] == "base"
     assert payload["api"]["feedback_body"]["action"] == "accept"

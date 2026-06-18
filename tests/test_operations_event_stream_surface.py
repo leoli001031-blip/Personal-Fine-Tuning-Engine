@@ -121,8 +121,10 @@ class OperationsEventStreamSurfaceTests(unittest.TestCase):
     def test_status_exposes_queue_review_policy_in_event_stream_for_auto_queue(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=8)
-        trained = service.train_result(method="qlora", epochs=1, train_type="sft")
-        AdapterStore(home=self.pfe_home).promote(trained.version)
+        trained = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
+        store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(trained.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
+        store.promote(trained.version)
         service._append_train_queue_item(
             {
                 "job_id": "job-queue-auto-1",
@@ -259,11 +261,12 @@ class OperationsEventStreamSurfaceTests(unittest.TestCase):
     def test_status_exposes_candidate_action_summary_in_event_stream(self) -> None:
         service = self._service()
         service.generate(scenario="life-coach", style="warm", num_samples=6)
-        first = service.train_result(method="qlora", epochs=1, train_type="sft")
+        first = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store = AdapterStore(home=self.pfe_home)
+        store.attach_eval_report(first.version, {"recommendation": "deploy", "comparison": "fixture", "scores": {}})
         store.promote(first.version)
         service.generate(scenario="work-coach", style="direct", num_samples=6)
-        second = service.train_result(method="qlora", epochs=1, train_type="sft")
+        second = service.train_result(method="qlora", epochs=1, train_type="sft", backend="mock_local")
         store.archive(second.version)
 
         status = service.status()

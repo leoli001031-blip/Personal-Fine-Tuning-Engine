@@ -5,11 +5,13 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from pfe_core.inference.engine import (
     InferenceConfig,
     InferenceEngine,
+    InferenceError,
     _clean_llama_cpp_output,
     _resolve_llama_cpp_runtime_binary,
     _strip_thinking_output,
@@ -50,6 +52,32 @@ class InferenceRuntimeTests(unittest.TestCase):
             "AI"
         )
         self.assertEqual(_clean_llama_cpp_output(raw), "你好，有什么可以帮助你的吗？")
+
+    def test_clean_llama_cpp_output_drops_prompt_echo_lines(self) -> None:
+        raw = "USER: 用一句中文回复：PFE 本地模型测试。\nASSISTANT:"
+        self.assertEqual(_clean_llama_cpp_output(raw), "")
+
+    def test_llama_cpp_prompt_echo_is_not_returned_as_answer(self) -> None:
+        engine = InferenceEngine(InferenceConfig(base_model="local-default"))
+        with patch(
+            "pfe_core.inference.engine._resolve_llama_cpp_runtime_binary",
+            return_value={"available": True, "path": "/tmp/llama-completion"},
+        ), patch(
+            "pfe_core.inference.engine._resolve_base_gguf_path",
+            return_value={"available": True, "path": "/tmp/base.gguf"},
+        ), patch(
+            "pfe_core.inference.engine.subprocess.run",
+            return_value=SimpleNamespace(
+                returncode=0,
+                stdout="USER: 用一句中文回复：PFE 本地模型测试。\nASSISTANT:",
+                stderr="",
+            ),
+        ):
+            with self.assertRaises(InferenceError):
+                engine._generate_llama_cpp_response(
+                    [{"role": "user", "content": "用一句中文回复：PFE 本地模型测试。"}],
+                    resolved_base_model=str(Path(self.tempdir.name) / "fake-base-model"),
+                )
 
     def test_resolve_base_model_reference_can_disable_repo_auto_discovery(self) -> None:
         os.environ.pop("PFE_BASE_MODEL", None)
