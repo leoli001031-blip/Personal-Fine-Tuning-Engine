@@ -198,6 +198,26 @@ class TrainerRealPeftJobTests(unittest.TestCase):
         self.assertIn(-100, labels)
         self.assertTrue(any(label != -100 for label in labels))
 
+    def test_load_training_tokenizer_rejects_empty_vocab_tokenizer(self) -> None:
+        class _EmptyTokenizer:
+            vocab_size = 0
+
+            def __call__(self, text, **kwargs):
+                del text, kwargs
+                return {"input_ids": []}
+
+        fake_transformers = SimpleNamespace(
+            AutoTokenizer=SimpleNamespace(from_pretrained=lambda *args, **kwargs: _EmptyTokenizer())
+        )
+
+        tokenizer = trainer_executor_module._load_training_tokenizer(
+            fake_transformers,
+            "tiny-model-without-tokenizer-files",
+            local_only=True,
+        )
+
+        self.assertIsNone(tokenizer)
+
     def test_run_real_import_peft_training_does_not_fallback_to_config_on_load_error(self) -> None:
         job_spec = self._job_spec()
         model_dir = Path(self.tempdir.name) / "compressed-model"
