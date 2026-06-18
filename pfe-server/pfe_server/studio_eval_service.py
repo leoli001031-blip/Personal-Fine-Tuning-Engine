@@ -11,6 +11,7 @@ from .studio_eval_jobs import (
     build_eval_failed_state,
     build_eval_running_state,
     build_eval_status_payload,
+    running_eval_summary,
 )
 from .studio_eval_suite import (
     merge_studio_eval_suite_report,
@@ -111,6 +112,30 @@ def default_thread_starter(target: Callable[[], None]) -> None:
     threading.Thread(target=target, daemon=True).start()
 
 
+def _mark_started_version_running(adapters: Mapping[str, Any], version: str) -> dict[str, Any]:
+    payload = dict(adapters)
+    versions = []
+    if isinstance(payload.get("versions"), list):
+        for item in list(payload.get("versions") or []):
+            if not isinstance(item, Mapping):
+                continue
+            version_item = dict(item)
+            if str(version_item.get("version") or "") == version:
+                version_item["eval_running"] = True
+                version_item["can_eval"] = False
+                version_item["eval_summary"] = running_eval_summary()
+            versions.append(version_item)
+        payload["versions"] = versions
+    pending = payload.get("pending_eval_adapter")
+    if isinstance(pending, Mapping) and str(pending.get("version") or "") == version:
+        pending_item = dict(pending)
+        pending_item["eval_running"] = True
+        pending_item["can_eval"] = False
+        pending_item["eval_summary"] = running_eval_summary()
+        payload["pending_eval_adapter"] = pending_item
+    return payload
+
+
 def start_eval_job(
     *,
     pipeline: Any,
@@ -148,7 +173,7 @@ def start_eval_job(
         )
     )
     payload = build_eval_status_payload(running_state)
-    payload["adapters"] = build_adapters_payload()
+    payload["adapters"] = _mark_started_version_running(build_adapters_payload(), version)
     return payload
 
 

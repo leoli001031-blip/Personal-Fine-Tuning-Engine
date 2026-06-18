@@ -9,6 +9,8 @@ const state = {
   evalStatus: null,
   trainingPreflight: null,
   trainingJobs: null,
+  phase3: null,
+  phase3Plan: null,
   status: null,
   errors: [],
 };
@@ -742,6 +744,118 @@ function renderTrainingPreflight() {
   startButton.disabled = !ready;
 }
 
+function renderPhase3() {
+  const phase3 = state.phase3 || {};
+  const personas = Array.isArray(phase3.personas) ? phase3.personas : [];
+  const scenarios = Array.isArray(phase3.scenarios) ? phase3.scenarios : [];
+  const personaSelect = $("phase3PersonaSelect");
+  const scenarioSelect = $("phase3ScenarioSelect");
+  const previousPersona = personaSelect && personaSelect.value ? personaSelect.value : "";
+  const previousScenario = scenarioSelect && scenarioSelect.value ? scenarioSelect.value : "";
+  if (personaSelect) {
+    personaSelect.textContent = "";
+    for (const persona of personas.length ? personas : [{ persona_id: "ops-analyst", name: "ops-analyst" }]) {
+      const option = document.createElement("option");
+      option.value = persona.persona_id || "";
+      option.textContent = persona.name || persona.persona_id || "-";
+      option.selected = option.value === previousPersona;
+      personaSelect.appendChild(option);
+    }
+    if (!personaSelect.value && personaSelect.options.length) personaSelect.options[0].selected = true;
+  }
+  if (scenarioSelect) {
+    scenarioSelect.textContent = "";
+    for (const scenario of scenarios.length ? scenarios : [{ scenario_id: "contract-risk-summary", name: "contract-risk-summary" }]) {
+      const option = document.createElement("option");
+      option.value = scenario.scenario_id || "";
+      option.textContent = scenario.name || scenario.scenario_id || "-";
+      option.selected = option.value === previousScenario;
+      scenarioSelect.appendChild(option);
+    }
+    if (!scenarioSelect.value && scenarioSelect.options.length) scenarioSelect.options[0].selected = true;
+  }
+  const signals = Array.isArray(phase3.signals) ? phase3.signals : [];
+  const eligibleCount = Number(phase3.eligible_training_count || 0);
+  const plan = state.phase3Plan || phase3.latest_plan || null;
+  text("phase3CandidateValue", plan ? ((plan.candidate_adapter && plan.candidate_adapter.state) || "planned") + " / " + (plan.sample_count || 0) + " samples" : eligibleCount + " 个候选信号");
+  const evalGate = plan && plan.eval_gate ? plan.eval_gate : {};
+  text("phase3EvalValue", evalGate.current_state || (eligibleCount ? "可生成计划" : "等待信号"));
+  pill("phase3Status", eligibleCount ? "有候选" : "采集中", eligibleCount ? "ok" : "warn");
+  const list = $("phase3SignalList");
+  if (!list) return;
+  list.textContent = "";
+  if (!signals.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "还没有 Phase3 信号";
+    list.appendChild(empty);
+    return;
+  }
+  for (const signal of signals.slice(0, 4)) {
+    const row = document.createElement("article");
+    row.className = "signal-row";
+    const top = document.createElement("div");
+    top.className = "signal-top";
+    const type = document.createElement("strong");
+    type.textContent = signal.signal_type || "signal";
+    const badge = document.createElement("span");
+    badge.className = "status-pill " + (signal.eligible_for_training ? "ok" : "warn");
+    badge.textContent = signal.eligible_for_training ? "train" : "review";
+    top.append(type, badge);
+    const meta = document.createElement("div");
+    meta.className = "signal-meta";
+    const route = signal.route || {};
+    const lanes = Array.isArray(route.lanes) ? route.lanes.join(" / ") : "-";
+    meta.textContent = lanes + " / " + (route.reason || route.excluded_reason || "已记录");
+    row.append(top, meta);
+    list.appendChild(row);
+  }
+}
+
+async function addPhase3DemoSignal() {
+  $("phase3AddSignalButton").disabled = true;
+  const selectedScenario = $("phase3ScenarioSelect") && $("phase3ScenarioSelect").value ? $("phase3ScenarioSelect").value : "contract-risk-summary";
+  try {
+    await postJson("/pfe/phase3/signals", {
+      signal_type: "edit",
+      user_input: "请整理合同交付条款：乙方需 7 日内交付，逾期每日按合同总价 1% 承担违约金。",
+      model_output: "该条款没有风险，可以直接签。",
+      corrected_output: "摘要：乙方需 7 日内交付。风险提示：逾期违约金口径和上限需人工确认。本输出不是法律结论。",
+      confidence: 0.9,
+      metadata: {
+        scenario_id: selectedScenario,
+        source: "studio_demo_signal",
+      },
+      scenario_id: selectedScenario,
+    });
+    state.phase3 = await loadJson("/pfe/phase3");
+    toast("已采集示例信号");
+  } catch (error) {
+    toast("采集失败");
+  }
+  $("phase3AddSignalButton").disabled = false;
+  render();
+}
+
+async function buildPhase3Plan() {
+  $("phase3PlanButton").disabled = true;
+  const selectedPersona = $("phase3PersonaSelect") && $("phase3PersonaSelect").value ? $("phase3PersonaSelect").value : "ops-analyst";
+  const selectedScenario = $("phase3ScenarioSelect") && $("phase3ScenarioSelect").value ? $("phase3ScenarioSelect").value : "contract-risk-summary";
+  try {
+    state.phase3Plan = await postJson("/pfe/phase3/candidate-plan", {
+      persona_id: selectedPersona,
+      scenario_id: selectedScenario,
+      limit: 12,
+    });
+    state.phase3 = await loadJson("/pfe/phase3");
+    toast(state.phase3Plan.sample_count ? "训练计划已生成" : "还没有可训练信号");
+  } catch (error) {
+    toast("生成计划失败");
+  }
+  $("phase3PlanButton").disabled = false;
+  render();
+}
+
 async function refreshTrainingJobs() {
   window.clearTimeout(refreshTrainingJobs.timer);
   try {
@@ -889,6 +1003,7 @@ function render() {
   renderAdapters();
   renderHandoff();
   renderTrainingPreflight();
+  renderPhase3();
   renderStatus();
   renderSummary();
 }
@@ -900,7 +1015,7 @@ async function refresh() {
   pill("modelStatus", "检查中", "");
   pill("adapterStatus", "检查中", "");
   try {
-    const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, status] = await Promise.all([
+    const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, phase3, status] = await Promise.all([
       loadJson("/pfe/runtime"),
       loadJson("/pfe/workspaces"),
       loadJson("/pfe/models"),
@@ -909,6 +1024,7 @@ async function refresh() {
       loadJson("/pfe/readiness"),
       loadJson("/pfe/training/jobs").catch(() => null),
       loadJson("/pfe/eval/status").catch(() => null),
+      loadJson("/pfe/phase3").catch(() => null),
       loadJson("/pfe/status?detail=full").catch(() => null),
     ]);
     state.runtime = runtime;
@@ -919,6 +1035,7 @@ async function refresh() {
     state.readiness = readiness;
     state.trainingJobs = trainingJobs;
     state.evalStatus = evalStatus;
+    state.phase3 = phase3;
     state.status = status;
     state.handoffTest = null;
   } catch (error) {
@@ -929,6 +1046,7 @@ async function refresh() {
     state.handoff = state.handoff || null;
     state.handoffTest = state.handoffTest || null;
     state.adapters = state.adapters || {};
+    state.phase3 = state.phase3 || null;
   }
   render();
   const active = state.trainingJobs && state.trainingJobs.active;
@@ -993,6 +1111,8 @@ $("trainingPreflightButton").addEventListener("click", requestTrainingPreflight)
 $("startTrainingButton").addEventListener("click", startTraining);
 $("cancelTrainingButton").addEventListener("click", cancelTraining);
 $("retryTrainingButton").addEventListener("click", retryTraining);
+$("phase3AddSignalButton").addEventListener("click", addPhase3DemoSignal);
+$("phase3PlanButton").addEventListener("click", buildPhase3Plan);
 $("workspaceInput").addEventListener("keydown", (event) => {
   if (event.key === "Enter") saveWorkspace(event.target.value);
 });

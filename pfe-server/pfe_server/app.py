@@ -1269,6 +1269,13 @@ def _load_request_json(body: bytes) -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def _phase3_store(services: ServiceBundle) -> Any:
+    _ensure_core_import_path()
+    from pfe_core.phase3_signal_loop import Phase3SignalLoopStore
+
+    return Phase3SignalLoopStore(home=_resolve_pfe_home(), workspace=services.workspace)
+
+
 def _build_training_preflight_payload(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -3115,7 +3122,37 @@ async def handle_signal_ingest(
             status_code=422,
         )
     response = await services.pipeline.ingest_signal(request)
-    return _json_response(response.model_dump(mode="json"), status_code=200)
+    payload = response.model_dump(mode="json")
+    try:
+        metadata = dict(request.metadata or {})
+        user_action = dict(request.user_action or {})
+        phase3_signal = _phase3_store(services).ingest_feedback(
+            signal_id=request.event_id,
+            action=str(user_action.get("type") or request.event_type),
+            persona_id=str(metadata.get("persona_id") or "ops-analyst"),
+            scenario_id=str(metadata.get("scenario_id") or metadata.get("scenario") or "contract-risk-summary"),
+            user_input=request.user_input or "",
+            model_output=request.model_output or "",
+            edited_text=str(user_action.get("edited_text") or user_action.get("final_text") or ""),
+            user_feedback=str(metadata.get("user_feedback") or ""),
+            source="pfe_signal",
+            confidence=float(metadata.get("confidence", 0.7) or 0.7),
+            session_id=request.session_id,
+            request_id=request.request_id,
+            metadata={
+                **metadata,
+                "source_event_ids": list(request.source_event_ids or []),
+                "adapter_version": request.adapter_version,
+            },
+        )
+        payload.setdefault("metadata", {})["phase3"] = {
+            "recorded": True,
+            "eligible_for_training": bool(phase3_signal.get("eligible_for_training")),
+            "route": phase3_signal.get("route") or {},
+        }
+    except Exception as exc:
+        payload.setdefault("metadata", {})["phase3"] = {"recorded": False, "error": str(exc)}
+    return _json_response(payload, status_code=200)
 
 
 async def handle_feedback(
@@ -3157,6 +3194,7 @@ async def handle_feedback(
     )
 
     pipeline_ingest_result: dict[str, Any] | None = None
+    phase3_ingest_result: dict[str, Any] | None = None
 
     if CHAT_COLLECTOR_AVAILABLE and ChatCollector is not None and CollectorConfig is not None and ChatInteraction is not None:
         try:
@@ -3219,6 +3257,31 @@ async def handle_feedback(
     if signal_id is None:
         signal_id = f"sig-{uuid4().hex[:12]}"
 
+    try:
+        feedback_metadata = dict(request.metadata or {})
+        phase3_ingest_result = _phase3_store(services).ingest_feedback(
+            signal_id=signal_id,
+            action=request.action,
+            persona_id=str(feedback_metadata.get("persona_id") or "ops-analyst"),
+            scenario_id=str(feedback_metadata.get("scenario_id") or feedback_metadata.get("scenario") or "contract-risk-summary"),
+            user_input=user_message,
+            model_output=assistant_message,
+            edited_text=request.edited_text,
+            user_feedback=str(feedback_metadata.get("user_feedback") or ""),
+            source="pfe_feedback",
+            confidence=confidence,
+            session_id=request.session_id,
+            request_id=request.request_id,
+            metadata={
+                **feedback_metadata,
+                "extraction_rule": extraction_rule,
+                "response_time_seconds": request.response_time_seconds,
+                "adapter_version": request.adapter_version,
+            },
+        )
+    except Exception as exc:
+        phase3_ingest_result = {"recorded": False, "error": str(exc)}
+
     return _json_response(
         FeedbackResponse(
             success=True,
@@ -3236,6 +3299,15 @@ async def handle_feedback(
                 "collector_available": CHAT_COLLECTOR_AVAILABLE,
                 "pending_found": pending is not None,
                 "pipeline_ingest": pipeline_ingest_result or {},
+                "phase3": {
+                    "recorded": bool(phase3_ingest_result and phase3_ingest_result.get("signal_id")),
+                    "signal_id": phase3_ingest_result.get("signal_id") if isinstance(phase3_ingest_result, Mapping) else None,
+                    "eligible_for_training": bool(phase3_ingest_result.get("eligible_for_training"))
+                    if isinstance(phase3_ingest_result, Mapping)
+                    else False,
+                    "route": phase3_ingest_result.get("route") if isinstance(phase3_ingest_result, Mapping) else {},
+                    "error": phase3_ingest_result.get("error") if isinstance(phase3_ingest_result, Mapping) else None,
+                },
             },
         ).model_dump(mode="json"),
         status_code=200,
@@ -3922,6 +3994,144 @@ async def handle_signals(
         return _json_response({"signals": signals}, status_code=200)
     except Exception as exc:
         return _json_response({"signals": [], "error": str(exc)}, status_code=500)
+
+
+async def handle_phase3_summary(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        return _json_response(_phase3_store(services).summary(), status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_personas(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        store = _phase3_store(services)
+        return _json_response({"workspace": services.workspace, "personas": store.personas()}, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_scenarios(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        store = _phase3_store(services)
+        return _json_response({"workspace": services.workspace, "scenarios": store.scenarios()}, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_signals(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase3_store(services)
+    if envelope.method == "POST":
+        body = _load_request_json(envelope.body)
+        metadata = dict(body.get("metadata") or {})
+        try:
+            record = store.ingest_feedback(
+                action=str(body.get("signal_type") or body.get("action") or "accept"),
+                persona_id=str(body.get("persona_id") or "ops-analyst"),
+                scenario_id=str(body.get("scenario_id") or "contract-risk-summary"),
+                user_input=str(body.get("user_input") or body.get("context") or ""),
+                model_output=str(body.get("model_output") or ""),
+                edited_text=str(body.get("corrected_output") or body.get("edited_text") or "") or None,
+                user_feedback=str(body.get("user_feedback") or body.get("preference") or ""),
+                source=str(body.get("source") or "phase3_api"),
+                confidence=float(body.get("confidence", 0.7) or 0.7),
+                session_id=str(body.get("session_id") or ""),
+                request_id=str(body.get("request_id") or ""),
+                metadata=metadata,
+                signal_id=str(body.get("signal_id") or "") or None,
+            )
+        except Exception as exc:
+            return _json_response(_error_payload("invalid phase3 signal", "invalid_request", str(exc)), status_code=422)
+        return _json_response({"workspace": services.workspace, "signal": record}, status_code=200)
+
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 50)
+    signal_type = envelope.query_params.get("type") or envelope.query_params.get("signal_type")
+    eligible: bool | None = None
+    if "eligible_for_training" in envelope.query_params:
+        eligible = _query_bool(envelope.query_params, "eligible_for_training")
+    return _json_response(
+        {
+            "workspace": services.workspace,
+            "signals": store.list_signals(
+                signal_type=signal_type,
+                eligible_for_training=eligible,
+                limit=limit,
+            ),
+        },
+        status_code=200,
+    )
+
+
+async def handle_phase3_training_candidates(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 20)
+    try:
+        from pfe_core.phase3_signal_loop import training_sample_from_signal
+
+        store = _phase3_store(services)
+        signals = store.candidate_signals(limit=limit)
+        samples = [training_sample_from_signal(item) for item in signals]
+        return _json_response(
+            {
+                "workspace": services.workspace,
+                "count": len(samples),
+                "signals": [item.to_dict() for item in signals],
+                "samples": samples,
+            },
+            status_code=200,
+        )
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_candidate_plan(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    limit = int(body.get("limit") or envelope.query_params.get("limit") or 12)
+    try:
+        plan = _phase3_store(services).build_candidate_plan(
+            persona_id=str(body.get("persona_id") or "ops-analyst"),
+            scenario_id=str(body.get("scenario_id") or "contract-risk-summary"),
+            limit=max(1, limit),
+        )
+        plan["adapters"] = _build_adapters_payload(services)
+        return _json_response(plan, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 plan failed", "phase3_plan_failed", str(exc)), status_code=500)
 
 
 
@@ -5187,6 +5397,18 @@ class _LiteASGIApp:
             return await handle_signal_ingest(envelope, self.services)
         if envelope.path == "/pfe/feedback" and envelope.method == "POST":
             return await handle_feedback(envelope, self.services)
+        if envelope.path == "/pfe/phase3" and envelope.method == "GET":
+            return await handle_phase3_summary(envelope, self.services)
+        if envelope.path == "/pfe/phase3/personas" and envelope.method == "GET":
+            return await handle_phase3_personas(envelope, self.services)
+        if envelope.path == "/pfe/phase3/scenarios" and envelope.method == "GET":
+            return await handle_phase3_scenarios(envelope, self.services)
+        if envelope.path == "/pfe/phase3/signals" and envelope.method in {"GET", "POST"}:
+            return await handle_phase3_signals(envelope, self.services)
+        if envelope.path == "/pfe/phase3/training-candidates" and envelope.method == "GET":
+            return await handle_phase3_training_candidates(envelope, self.services)
+        if envelope.path == "/pfe/phase3/candidate-plan" and envelope.method == "POST":
+            return await handle_phase3_candidate_plan(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -5371,6 +5593,34 @@ def create_app(
         @app.post("/pfe/feedback")
         async def pfe_feedback(request: Request) -> Any:
             return await handle_feedback(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3")
+        async def pfe_phase3(request: Request) -> Any:
+            return await handle_phase3_summary(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/personas")
+        async def pfe_phase3_personas(request: Request) -> Any:
+            return await handle_phase3_personas(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/scenarios")
+        async def pfe_phase3_scenarios(request: Request) -> Any:
+            return await handle_phase3_scenarios(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/signals")
+        async def pfe_phase3_signals(request: Request) -> Any:
+            return await handle_phase3_signals(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase3/signals")
+        async def pfe_phase3_signal_ingest(request: Request) -> Any:
+            return await handle_phase3_signals(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/training-candidates")
+        async def pfe_phase3_training_candidates(request: Request) -> Any:
+            return await handle_phase3_training_candidates(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase3/candidate-plan")
+        async def pfe_phase3_candidate_plan(request: Request) -> Any:
+            return await handle_phase3_candidate_plan(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:
