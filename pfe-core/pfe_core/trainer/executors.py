@@ -1208,9 +1208,22 @@ def _load_training_tokenizer(transformers: Any, source_path: str | None, *, loca
     if tokenizer_cls is None or source_path is None:
         return None
     try:
-        return tokenizer_cls.from_pretrained(source_path, local_files_only=local_only)
+        tokenizer = tokenizer_cls.from_pretrained(source_path, local_files_only=local_only)
     except Exception:
         return None
+    try:
+        vocab_size = int(getattr(tokenizer, "vocab_size", 0) or 0)
+    except Exception:
+        vocab_size = 0
+    if vocab_size <= 0:
+        return None
+    try:
+        probe = tokenizer("pfe tokenizer probe", add_special_tokens=False)
+        if not list(probe.get("input_ids") or []):
+            return None
+    except Exception:
+        return None
+    return tokenizer
 
 
 def _build_lora_config(peft: Any, model_config: Any) -> Any:
