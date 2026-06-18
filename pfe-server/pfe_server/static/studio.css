@@ -818,6 +818,82 @@ select {
   line-height: 1.45;
 }
 
+.phase3-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.phase3-meta,
+.phase3-state {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.phase3-meta > div,
+.phase3-state > div,
+.signal-row {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.phase3-meta label,
+.phase3-state span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.phase3-state strong {
+  display: block;
+  min-width: 0;
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signal-list {
+  display: grid;
+  gap: 8px;
+}
+
+.signal-row {
+  display: grid;
+  gap: 5px;
+}
+
+.signal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.signal-top strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.signal-meta {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
 .footer-signature {
   margin-top: 18px;
   color: rgba(122, 85, 60, 0.24);
@@ -873,6 +949,8 @@ select {
   .path-row,
   .api-card-head,
   .handoff-grid,
+  .phase3-meta,
+  .phase3-state,
   .evidence-grid {
     grid-template-columns: 1fr;
   }

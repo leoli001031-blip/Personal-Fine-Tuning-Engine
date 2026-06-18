@@ -264,6 +264,43 @@
             </div>
           </div>
         </div>
+        <div class="section">
+          <div class="section-head">
+            <h3 class="section-title">信号闭环</h3>
+            <span class="status-pill" id="phase3Status">待检查</span>
+          </div>
+          <div class="phase3-panel">
+            <div class="phase3-meta">
+              <div>
+                <label for="phase3PersonaSelect">Persona</label>
+                <div class="select-wrap">
+                  <select id="phase3PersonaSelect" aria-label="Phase3 persona"></select>
+                </div>
+              </div>
+              <div>
+                <label for="phase3ScenarioSelect">Scenario</label>
+                <div class="select-wrap">
+                  <select id="phase3ScenarioSelect" aria-label="Phase3 scenario"></select>
+                </div>
+              </div>
+            </div>
+            <div class="phase3-state">
+              <div>
+                <span>候选训练</span>
+                <strong id="phase3CandidateValue">未生成</strong>
+              </div>
+              <div>
+                <span>Eval gate</span>
+                <strong id="phase3EvalValue">等待信号</strong>
+              </div>
+            </div>
+            <div class="signal-list" id="phase3SignalList"></div>
+            <div class="version-actions">
+              <button class="button" id="phase3AddSignalButton" type="button">采集示例</button>
+              <button class="button primary" id="phase3PlanButton" type="button">生成计划</button>
+            </div>
+          </div>
+        </div>
       </aside>
     </div>
     <div class="footer-signature">zc / PFE Studio</div>

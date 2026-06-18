@@ -77,6 +77,7 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("/pfe/runtime", js)
         self.assertIn("/pfe/models", js)
         self.assertIn("/pfe/handoff", js)
+        self.assertIn("/pfe/phase3", js)
 
     def test_chat_alias_serves_legacy_operations_frontend(self) -> None:
         result = self._smoke("/chat")
@@ -157,10 +158,87 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertNotIn("开启真实本地模型", result["text"] + js)
         self.assertIn("/pfe/handoff/test", js)
         self.assertIn("/pfe/config/real-local", js)
+        self.assertIn("信号闭环", result["text"])
+        self.assertIn("Persona", result["text"])
+        self.assertIn("Scenario", result["text"])
+        self.assertIn("phase3PersonaSelect", result["text"])
+        self.assertIn("phase3ScenarioSelect", result["text"])
+        self.assertIn("候选训练", result["text"])
+        self.assertIn("Eval gate", result["text"])
+        self.assertIn("采集示例", result["text"])
+        self.assertIn("生成计划", result["text"])
+        self.assertIn("还没有 Phase3 信号", js)
+        self.assertIn("/pfe/phase3/signals", js)
+        self.assertIn("/pfe/phase3/candidate-plan", js)
+        self.assertIn(".phase3-panel", css)
+        self.assertIn(".signal-row", css)
 
         alias = self._smoke("/pfe/studio")
         self.assertEqual(alias["status_code"], 200)
         self.assertIn("PFE / 本地模型工作台", alias["text"])
+
+    def test_phase3_api_exposes_signal_loop_and_candidate_plan(self) -> None:
+        summary = self._smoke("/pfe/phase3")
+        self.assertEqual(summary["status_code"], 200)
+        self.assertEqual(summary["body"]["kind"], "phase3_signal_loop")
+        self.assertEqual(summary["body"]["personas"][0]["persona_id"], "ops-analyst")
+        self.assertEqual(summary["body"]["scenarios"][0]["scenario_id"], "contract-risk-summary")
+
+        signal = self._smoke(
+            "/pfe/phase3/signals",
+            method="POST",
+            body={
+                "signal_type": "accept",
+                "user_input": "请整理合同付款条款。",
+                "model_output": "摘要：付款节点明确；风险：逾期责任需人工确认。",
+                "confidence": 0.9,
+            },
+        )
+        self.assertEqual(signal["status_code"], 200)
+        self.assertTrue(signal["body"]["signal"]["eligible_for_training"])
+        self.assertEqual(signal["body"]["signal"]["route"]["training_target"], "sft_candidate")
+
+        candidates = self._smoke("/pfe/phase3/training-candidates")
+        self.assertEqual(candidates["status_code"], 200)
+        self.assertEqual(candidates["body"]["count"], 1)
+        self.assertEqual(candidates["body"]["samples"][0]["scenario_id"], "contract-risk-summary")
+
+        plan = self._smoke(
+            "/pfe/phase3/candidate-plan",
+            method="POST",
+            body={"persona_id": "ops-analyst", "scenario_id": "contract-risk-summary"},
+        )
+        self.assertEqual(plan["status_code"], 200)
+        self.assertEqual(plan["body"]["kind"], "phase3_candidate_training_plan")
+        self.assertEqual(plan["body"]["sample_count"], 1)
+        self.assertEqual(plan["body"]["eval_gate"]["current_state"], "ready_for_eval")
+        self.assertEqual(plan["body"]["handoff"]["promote_endpoint"], "/pfe/candidate/promote")
+
+    def test_feedback_endpoint_mirrors_phase3_inbox(self) -> None:
+        feedback = self._smoke(
+            "/pfe/feedback",
+            method="POST",
+            body={
+                "session_id": "sess-phase3-feedback",
+                "request_id": "req-phase3-feedback",
+                "action": "edit",
+                "user_message": "请整理合同交付条款。",
+                "assistant_message": "该条款完全没问题。",
+                "edited_text": "摘要：交付期为 7 日；风险：违约金和验收口径需人工确认。",
+                "metadata": {"scenario_id": "contract-risk-summary"},
+            },
+        )
+        self.assertEqual(feedback["status_code"], 200)
+        self.assertTrue(feedback["body"]["metadata"]["phase3"]["recorded"])
+        self.assertTrue(feedback["body"]["metadata"]["phase3"]["eligible_for_training"])
+
+        signals = self._smoke(
+            "/pfe/phase3/signals",
+            query_params={"eligible_for_training": "true"},
+        )
+        self.assertEqual(signals["status_code"], 200)
+        self.assertEqual(len(signals["body"]["signals"]), 1)
+        self.assertEqual(signals["body"]["signals"][0]["signal_type"], "correction")
 
     def test_studio_handoff_surface_exposes_copyable_user_contract(self) -> None:
         config = PFEConfig()
