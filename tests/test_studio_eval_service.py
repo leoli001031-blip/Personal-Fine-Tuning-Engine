@@ -3,6 +3,7 @@ from pathlib import Path
 
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_server.studio_eval_service import (
+    evaluate_pipeline,
     load_eval_report,
     run_eval_job,
     start_eval_job,
@@ -20,6 +21,35 @@ class FakePipeline:
         if self.fail:
             raise RuntimeError("eval failed")
         return self.result
+
+
+class WrappedPipeline:
+    def __init__(self, pipeline: FakePipeline):
+        self.pipeline = pipeline
+
+    async def evaluate(self, *, adapter_version=None, workspace=None):
+        return {"adapter_version": adapter_version, "workspace": workspace}
+
+
+def test_evaluate_pipeline_uses_wrapped_core_pipeline() -> None:
+    inner = FakePipeline(result="EVAL COMPLETE")
+    result = evaluate_pipeline(
+        WrappedPipeline(inner),
+        base_model="base-a",
+        adapter="20260615-001",
+        num_samples=3,
+        workspace="client-a",
+    )
+
+    assert result == "EVAL COMPLETE"
+    assert inner.evaluate_calls == [
+        {
+            "base_model": "base-a",
+            "adapter": "20260615-001",
+            "num_samples": 3,
+            "workspace": "client-a",
+        }
+    ]
 
 
 def test_load_eval_report_reads_json_mapping(tmp_path: Path) -> None:

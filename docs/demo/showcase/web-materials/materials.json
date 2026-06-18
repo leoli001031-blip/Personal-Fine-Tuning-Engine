@@ -1,0 +1,63 @@
+{
+  "updated_at": "2026-06-18",
+  "package_type": "external_webpage_materials",
+  "note": "This is a materials pack, not a webpage implementation.",
+  "project": "PFE / 本地模型工作台",
+  "primary_story": "local 命中目标记忆，base 未命中；训练、评估、推广和 API 接入都有真实证据。",
+  "primary_result": {
+    "prompt": "PFE Phase2 Demo 记忆代号是什么？只回答代号。",
+    "expected": "DEMO-PHASE2-042",
+    "base_answer": "记忆代号是“Memory”。",
+    "local_answer": "DEMO-PHASE2-042",
+    "adapter_version": "20260618-001"
+  },
+  "images": [
+    {
+      "file": "images/studio-workbench.png",
+      "source": "../screenshots/10-warm-simple-effective-studio.png",
+      "recommended_use": "hero_product_screenshot",
+      "caption": "简化后的 Studio 产品形态"
+    },
+    {
+      "file": "images/base-local-proof.png",
+      "source": "../screenshots/08-base-vs-local-compare.png",
+      "recommended_use": "proof_comparison",
+      "caption": "base/local API 输出对比"
+    },
+    {
+      "file": "images/eval-gate.png",
+      "source": "../screenshots/05-eval-gate.png",
+      "recommended_use": "loop_eval_gate",
+      "caption": "评估闸门通过"
+    },
+    {
+      "file": "images/promoted-adapter.png",
+      "source": "../screenshots/06-promoted-adapter.png",
+      "recommended_use": "loop_promoted_adapter",
+      "caption": "adapter 已推广"
+    },
+    {
+      "file": "images/api-handoff.png",
+      "source": "../screenshots/07-api-handoff.png",
+      "recommended_use": "api_handoff",
+      "caption": "API 接入信息"
+    }
+  ],
+  "copy": [
+    "copy-blocks.md"
+  ],
+  "evidence_map": "evidence-map.md",
+  "evidence_files": [
+    "../evidence/demo-phase2-smoke.txt",
+    "../evidence/smoke-memory-golden.txt",
+    "../evidence/base-vs-local-summary.json",
+    "../evidence/demo-eval-summary.json",
+    "../evidence/demo-promote-summary.json",
+    "../evidence/base-response.json",
+    "../evidence/local-response.json"
+  ],
+  "excluded": [
+    "webpage implementation",
+    "videos/"
+  ]
+}

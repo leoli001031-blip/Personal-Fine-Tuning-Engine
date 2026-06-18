@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PFE Phase2 Base vs Local</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f6f7f4;
+        color: #1d2420;
+      }
+
+      body {
+        margin: 0;
+        padding: 42px;
+      }
+
+      main {
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: 34px;
+        letter-spacing: 0;
+      }
+
+      .sub {
+        margin-bottom: 28px;
+        color: #546059;
+        font-size: 16px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+      }
+
+      .panel {
+        min-height: 210px;
+        padding: 22px;
+        border: 1px solid #d9ded7;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 6px 18px rgba(38, 46, 42, 0.08);
+      }
+
+      .label {
+        margin-bottom: 10px;
+        color: #68756e;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .answer {
+        min-height: 72px;
+        font-size: 24px;
+        line-height: 1.35;
+      }
+
+      .local .answer {
+        color: #0f6b4d;
+        font-weight: 760;
+      }
+
+      .meta {
+        display: grid;
+        gap: 8px;
+        margin-top: 18px;
+        color: #3f4a44;
+        font-size: 14px;
+      }
+
+      .meta div {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        padding-top: 8px;
+        border-top: 1px solid #eef1ed;
+      }
+
+      .result {
+        margin-top: 20px;
+        padding: 18px 20px;
+        border: 1px solid #b7dec8;
+        border-radius: 8px;
+        background: #e7f5ed;
+        color: #174a32;
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      code {
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #eef1ed;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>PFE Phase2 API Comparison</h1>
+      <div class="sub">Prompt: <code>PFE Phase2 Demo 记忆代号是什么？只回答代号。</code></div>
+
+      <div class="grid">
+        <section class="panel base">
+          <div class="label">model=base</div>
+          <div class="answer">记忆代号是“Memory”。</div>
+          <div class="meta">
+            <div><span>adapter version</span><strong>null</strong></div>
+            <div><span>adapter requested</span><strong>null</strong></div>
+            <div><span>adapter loaded</span><strong>false</strong></div>
+          </div>
+        </section>
+
+        <section class="panel local">
+          <div class="label">model=local</div>
+          <div class="answer">DEMO-PHASE2-042</div>
+          <div class="meta">
+            <div><span>adapter version</span><strong>20260618-001</strong></div>
+            <div><span>adapter requested</span><strong>true</strong></div>
+            <div><span>adapter loaded</span><strong>true</strong></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="result">
+        Result: base does not reveal the memory; local answers <code>DEMO-PHASE2-042</code> with the promoted adapter.
+      </div>
+    </main>
+  </body>
+</html>
