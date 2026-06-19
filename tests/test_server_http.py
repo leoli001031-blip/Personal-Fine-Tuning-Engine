@@ -297,6 +297,43 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn(report["body"]["eval_gate"]["status"], {"pass", "review"})
         self.assertGreater(report["body"]["scores"]["local_delta"]["citation_hit_rate"], 0)
 
+    def test_phase6_api_exposes_candidate_adapter_trial_mode(self) -> None:
+        self.app.state.pfe_services.workspace = "user_default"
+
+        preflight = self._smoke(
+            "/pfe/phase6/preflight",
+            method="POST",
+            body={"require_local_model": True, "model_path": str(Path(self.tempdir.name) / "missing-qwen36")},
+        )
+        self.assertEqual(preflight["status_code"], 200)
+        self.assertEqual(preflight["body"]["kind"], "phase6_qwen36_mlx_preflight")
+        self.assertFalse(preflight["body"]["ready_for_real_training"])
+        self.assertIn("local_model_missing", preflight["body"]["blocked_by"])
+
+        trial = self._smoke(
+            "/pfe/phase6/trial",
+            method="POST",
+            body={
+                "demo": True,
+                "require_local_model": True,
+                "model_path": str(Path(self.tempdir.name) / "missing-qwen36"),
+            },
+        )
+        self.assertEqual(trial["status_code"], 200)
+        self.assertEqual(trial["body"]["candidate_samples"]["requires"], ["source", "chunk", "provenance", "signal_id"])
+        self.assertEqual(trial["body"]["eval_gate"]["status"], "blocked")
+        self.assertFalse(trial["body"]["eval_gate"]["promotion_allowed"])
+        self.assertEqual(trial["body"]["decision"]["action"], "archive")
+
+        summary = self._smoke("/pfe/phase6")
+        self.assertEqual(summary["status_code"], 200)
+        self.assertEqual(summary["body"]["kind"], "phase6_candidate_adapter_trial_mode")
+        self.assertEqual(summary["body"]["trial"]["trial_id"], trial["body"]["trial_id"])
+
+        eval_report = self._smoke("/pfe/phase6/trial/eval", method="POST")
+        self.assertEqual(eval_report["status_code"], 200)
+        self.assertEqual(eval_report["body"]["kind"], "phase6_candidate_adapter_trial_eval_report")
+
     def test_feedback_endpoint_mirrors_phase3_inbox(self) -> None:
         feedback = self._smoke(
             "/pfe/feedback",

@@ -1283,6 +1283,13 @@ def _phase4_store(services: ServiceBundle) -> Any:
     return Phase4CorpusStore(home=_resolve_pfe_home(), workspace=services.workspace)
 
 
+def _phase6_store(services: ServiceBundle) -> Any:
+    _ensure_core_import_path()
+    from pfe_core.phase6_candidate_adapter_trial import Phase6CandidateAdapterTrialStore
+
+    return Phase6CandidateAdapterTrialStore(home=_resolve_pfe_home(), workspace=services.workspace)
+
+
 def _build_training_preflight_payload(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -4347,6 +4354,107 @@ async def handle_phase4_eval(
         return _json_response(_error_payload("phase4 eval failed", "phase4_eval_failed", str(exc)), status_code=500)
 
 
+def _phase6_demo_fetch_text(source: Mapping[str, Any]) -> str:
+    title = str(source.get("title") or "Common Paper source")
+    return (
+        f"# {title}\n\n"
+        "1. Service scope. The provider supplies a cloud service for internal business use. "
+        "2. Data use. Customer content may be processed only as needed to provide and improve "
+        "the service, and personal data handling requires a data processing addendum. "
+        "3. Fees, renewal, suspension, and termination rights must be checked against the full agreement. "
+        "4. Boundary. This material supports contract summarization and risk flagging only; "
+        "it does not support final legal conclusions and requires human confirmation. "
+    ) * 3
+
+
+async def handle_phase6_summary(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        return _json_response(_phase6_store(services).summary(), status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 unavailable", "phase6_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase6_preflight(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body) if envelope.method == "POST" else {}
+    try:
+        from pfe_core.phase6_candidate_adapter_trial import PHASE6_RECOMMENDED_MODEL, qwen36_mlx_preflight
+
+        report = qwen36_mlx_preflight(
+            model_id=str(body.get("model_id") or envelope.query_params.get("model_id") or PHASE6_RECOMMENDED_MODEL),
+            model_path=str(body.get("model_path") or envelope.query_params.get("model_path") or "") or None,
+            require_local_model=_body_bool(body, "require_local_model")
+            or ("require_local_model" in envelope.query_params and _query_bool(envelope.query_params, "require_local_model")),
+            allow_remote_download=_body_bool(body, "allow_remote_download")
+            or ("allow_remote_download" in envelope.query_params and _query_bool(envelope.query_params, "allow_remote_download")),
+        )
+        report["workspace"] = services.workspace
+        return _json_response(report, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 preflight failed", "phase6_preflight_failed", str(exc)), status_code=500)
+
+
+async def handle_phase6_trial(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    if envelope.method == "GET":
+        return await handle_phase6_summary(envelope, services)
+    body = _load_request_json(envelope.body)
+    try:
+        from pfe_core.phase6_candidate_adapter_trial import PHASE6_RECOMMENDED_MODEL, run_phase6_candidate_adapter_trial
+
+        result = run_phase6_candidate_adapter_trial(
+            home=_resolve_pfe_home(),
+            workspace=services.workspace,
+            model_id=str(body.get("model_id") or PHASE6_RECOMMENDED_MODEL),
+            source_limit=int(body.get("source_limit") or 4 if _body_bool(body, "demo") else body.get("source_limit") or 10),
+            candidate_limit=int(body.get("candidate_limit") or 20 if _body_bool(body, "demo") else body.get("candidate_limit") or 60),
+            holdout_count=int(body.get("holdout_count") or 12 if _body_bool(body, "demo") else body.get("holdout_count") or 16),
+            require_local_model=_body_bool(body, "require_local_model"),
+            allow_remote_download=_body_bool(body, "allow_remote_download"),
+            model_path=str(body.get("model_path") or "") or None,
+            fetch_text=_phase6_demo_fetch_text if _body_bool(body, "demo") else None,
+            real_model_calls=_body_bool(body, "real_model_calls"),
+        )
+        result["adapters"] = _build_adapters_payload(services)
+        return _json_response(result, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 trial failed", "phase6_trial_failed", str(exc)), status_code=500)
+
+
+async def handle_phase6_eval(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        summary = _phase6_store(services).summary()
+        report = dict(summary.get("eval_report") or {})
+        if not report:
+            return _json_response(_error_payload("phase6 eval missing", "phase6_eval_missing", "run /pfe/phase6/trial first"), status_code=404)
+        report["adapters"] = _build_adapters_payload(services)
+        return _json_response(report, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 eval failed", "phase6_eval_failed", str(exc)), status_code=500)
+
+
 
 def _start_training_job(
     services: ServiceBundle,
@@ -5638,6 +5746,14 @@ class _LiteASGIApp:
             return await handle_phase4_candidate_adapter(envelope, self.services)
         if envelope.path == "/pfe/phase4/eval" and envelope.method == "POST":
             return await handle_phase4_eval(envelope, self.services)
+        if envelope.path == "/pfe/phase6" and envelope.method == "GET":
+            return await handle_phase6_summary(envelope, self.services)
+        if envelope.path == "/pfe/phase6/preflight" and envelope.method in {"GET", "POST"}:
+            return await handle_phase6_preflight(envelope, self.services)
+        if envelope.path == "/pfe/phase6/trial" and envelope.method in {"GET", "POST"}:
+            return await handle_phase6_trial(envelope, self.services)
+        if envelope.path == "/pfe/phase6/trial/eval" and envelope.method == "POST":
+            return await handle_phase6_eval(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -5890,6 +6006,30 @@ def create_app(
         @app.post("/pfe/phase4/eval")
         async def pfe_phase4_eval(request: Request) -> Any:
             return await handle_phase4_eval(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase6")
+        async def pfe_phase6(request: Request) -> Any:
+            return await handle_phase6_summary(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase6/preflight")
+        async def pfe_phase6_preflight(request: Request) -> Any:
+            return await handle_phase6_preflight(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase6/preflight")
+        async def pfe_phase6_preflight_post(request: Request) -> Any:
+            return await handle_phase6_preflight(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase6/trial")
+        async def pfe_phase6_trial(request: Request) -> Any:
+            return await handle_phase6_trial(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase6/trial")
+        async def pfe_phase6_trial_create(request: Request) -> Any:
+            return await handle_phase6_trial(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase6/trial/eval")
+        async def pfe_phase6_trial_eval(request: Request) -> Any:
+            return await handle_phase6_eval(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:
