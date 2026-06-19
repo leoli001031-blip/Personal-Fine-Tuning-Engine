@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-06-19T17:58:59.630678+00:00",
+  "kind": "phase9_training_attempt",
+  "status": "trained",
+  "training": {
+    "adapter_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase9-output-format-ysym_8r5/.pfe/adapters/phase9_output_format_training/20260620-001/mlx_output/adapters",
+    "adapter_state": "pending_eval",
+    "adapter_version": "20260620-001",
+    "base_model": "mlx-community/Qwen3-0.6B-4bit",
+    "init_log": {
+      "command": "pfe init --workspace phase9_output_format_training --base-model mlx-community/Qwen3-0.6B-4bit --home .pfe",
+      "log_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase9-output-format-ysym_8r5/phase9-command-logs/pfe-init.json",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "PFE workspace initialized\nconfig path: .pfe/config.toml\nworkspace:   phase9_output_format_training\nbase model:  mlx-community/Qwen3-0.6B-4bit\n\nNext steps:\n  pfe doctor --workspace phase9_output_format_training\n  pfe next --workspace phase9_output_format_training\n  pfe serve --port 8921 --workspace phase9_output_format_training --live\n",
+      "timed_out": false
+    },
+    "manifest_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase9-output-format-ysym_8r5/.pfe/adapters/phase9_output_format_training/20260620-001/adapter_manifest.json",
+    "mock_fallback": false,
+    "real_execution_summary": {},
+    "real_training": "completed",
+    "train_log": {
+      "command": "pfe train --workspace phase9_output_format_training --base-model mlx-community/Qwen3-0.6B-4bit --backend mlx --real-local --train-type sft --epochs 12",
+      "log_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase9-output-format-ysym_8r5/phase9-command-logs/pfe-train-mlx.json",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "PFE train plan\nrequest: method=qlora | epochs=12 | train_type=sft | workspace=phase9_output_format_training\ntrainer: runtime_device=mps\njob-execution: status=planned | executor_mode=real | execution_intent=real_local | execution_state=planned\nbackend-dispatch: execution_backend=mlx | execution_mode=real | runtime_device=mps | requires_export_step=no\nexport-write: gguf_export=not_required | write_state=planned | target_artifact_format=peft_lora | execution_intent=real_local | artifact_name=adapter_model.safetensors\n════════════════════════════════════════════════════════════════════════════════\n                             [ TRAINING COMPLETE ]\n════════════════════════════════════════════════════════════════════════════════\n┌──[ TRAINING RESULT ]─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐\n│  version:                 20260620-001                                                                                                                                                                 │\n│  path:                    /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase9-output-format-ysym_8r5/.pfe/adapters/phase9_output_format_training/20260620-001                                  │\n│  samples:                 51                                                                                                                                                                           │\n│  backend:                 mlx | device=mps                                                                                                                                                             │\n│  execution:               executed                                                                                                                                                                     │\n│  export:                  NOT REQUIRED                                                                                                                                                                 │\n│  metrics:                 fresh=51 | replay=0                                                                                                                                                          │\n└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘\n\n    [✓] Training job completed successfully\n\n",
+      "timed_out": false
+    },
+    "training_command": "pfe train --backend mlx --real-local --train-type sft"
+  },
+  "workspace": "phase9_output_format_training"
+}

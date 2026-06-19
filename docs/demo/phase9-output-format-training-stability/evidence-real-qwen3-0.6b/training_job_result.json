@@ -1,0 +1,43 @@
+{
+  "backend": "mlx",
+  "dry_run": false,
+  "execution_mode": "real_import",
+  "result": {
+    "adapter_path": "mlx_output/adapters",
+    "config": {
+      "batch_size": 1,
+      "gradient_checkpointing": true,
+      "learning_rate": 0.0001,
+      "logging_steps": 10,
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "lora_r": 16,
+      "max_seq_length": 2048,
+      "num_epochs": 12,
+      "quantization_bits": 4,
+      "save_steps": 100,
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "warmup_steps": 100
+    },
+    "error": null,
+    "final_loss": 0.0,
+    "loss_history": [
+      0.0
+    ],
+    "metadata": {
+      "base_model": "mlx-community/Qwen3-0.6B-4bit",
+      "data_file": "mlx_output/train_data.jsonl",
+      "dataset_format": "prompt_completion_output_only_loss",
+      "device": "Device(gpu, 0)",
+      "output_only_loss_masking": true
+    },
+    "num_samples": 51,
+    "num_steps": 12,
+    "output_dir": "mlx_output",
+    "success": true
+  },
+  "status": "completed"
+}
