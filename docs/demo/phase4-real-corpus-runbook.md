@@ -144,17 +144,38 @@ curl http://127.0.0.1:8921/pfe/training/jobs \
 如果当前机器没有配置可训练小模型，可以运行 Phase4 real train smoke。它会明确输出 skip reason，并用现有 adapter store 生成一个 mock fallback candidate adapter：
 
 ```bash
-python tools/phase4_real_train_smoke.py
+.venv/bin/python tools/phase4_real_train_smoke.py
 ```
 
-要尝试真实训练，需要显式设置本地模型路径：
+要尝试真实训练，有两种方式。
+
+方式 A：使用 repo 内置 tiny Hugging Face 模型准备器，跑一个可复现的小模型真实训练证明：
+
+```bash
+.venv/bin/python tools/phase4_real_train_smoke.py \
+  --prepare-tiny-model \
+  --strict-real \
+  --timeout 120
+```
+
+方式 B：显式设置已有本地模型路径：
 
 ```bash
 PFE_PHASE4_REAL_TRAIN_MODEL=/absolute/path/to/Qwen2.5-0.5B-Instruct \
-  python tools/phase4_real_train_smoke.py
+  .venv/bin/python tools/phase4_real_train_smoke.py --strict-real --timeout 120
 ```
 
-如果模型路径不存在或 preflight 未就绪，smoke 会输出 `real_training=skipped` 和具体原因。
+真实路径会输出：
+
+- `real_training=completed`
+- `adapter_version`
+- `manifest_path`
+- `real_execution_summary.kind`
+- `real_execution_summary.path`
+- `real_execution_summary.train_loss`
+- `real_execution_summary.num_examples`
+
+如果没有显式 opt-in、模型路径不存在或依赖缺失，smoke 会输出 `real_training=skipped` 和具体原因，并保留 mock fallback candidate adapter。
 
 ## 7. Base/Local 对比评测
 
@@ -205,7 +226,16 @@ python tools/phase4_eval_smoke.py
 训练 handoff 或明确 skip：
 
 ```bash
-python tools/phase4_real_train_smoke.py
+.venv/bin/python tools/phase4_real_train_smoke.py
+```
+
+真实 tiny 训练证明：
+
+```bash
+.venv/bin/python tools/phase4_real_train_smoke.py \
+  --prepare-tiny-model \
+  --strict-real \
+  --timeout 120
 ```
 
 ## 9. Phase4 成功判断
