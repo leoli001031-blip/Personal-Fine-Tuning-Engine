@@ -1,0 +1,247 @@
+{
+  "created_at": "2026-06-19T14:04:19.292934+00:00",
+  "eligible_count": 4,
+  "kind": "phase7_signal_routing_evidence",
+  "route_summary": {
+    "excluded": [
+      {
+        "reason": "requires_positive_pair",
+        "signal_id": "sig-19aecc0984b3",
+        "signal_type": "reject"
+      },
+      {
+        "reason": "safety_block",
+        "signal_id": "sig-3b6eee3fb27b",
+        "signal_type": "safety_block"
+      }
+    ],
+    "memory": [
+      "sig-bd4c6061f3ef"
+    ],
+    "profile": [
+      "sig-48dedfc050e8"
+    ],
+    "training_candidate": [
+      "sig-9d27ccef792f",
+      "sig-3d279364943d",
+      "sig-bd4c6061f3ef",
+      "sig-48dedfc050e8"
+    ]
+  },
+  "signal_count": 6,
+  "signal_types": [
+    "accept",
+    "correction",
+    "edit",
+    "preference",
+    "reject",
+    "safety_block"
+  ],
+  "signals": [
+    {
+      "confidence": 0.9,
+      "corrected_output": "",
+      "created_at": "2026-06-19T14:04:19.290877+00:00",
+      "eligible_for_training": true,
+      "metadata": {
+        "confirmed_by_feedback": true,
+        "phase": "phase7",
+        "source_event_ids": [
+          "phase7-holdout-001"
+        ]
+      },
+      "model_output": "摘要：仅基于给定片段整理合同义务、限制或流程。\n风险提示：标出付款、终止、数据、责任或保密等需复核事项，不判断合法/违法。\n引用依据：[src-9d43ecb4af75:src-9d43ecb4af75-chunk-006]\n人工确认：涉及最终法律结论、适用法或真实交易背景时必须人工复核。",
+      "persona_id": "ops-analyst",
+      "preference": "",
+      "request_id": "",
+      "route": {
+        "eligible_for_training": true,
+        "excluded_reason": "",
+        "lanes": [
+          "training_candidate"
+        ],
+        "reason": "accepted_or_copied_response_is_a_positive_sft_candidate",
+        "requires_human_review": false,
+        "training_target": "sft_candidate"
+      },
+      "scenario_id": "contract-risk-summary",
+      "session_id": "",
+      "signal_id": "sig-9d27ccef792f",
+      "signal_type": "accept",
+      "source": "feedback",
+      "user_feedback": "输出保留引用和人工确认边界，可作为正向样本。",
+      "user_input": "请只基于给定资料，输出合同条款摘要、风险提示、引用依据和需人工确认项。\n\n资料引用：[src-9d43ecb4af75:src-9d43ecb4af75-chunk-006]\n资料片段：span class=\"coverpage_link\">Provider does not provide any representation or warranty that Output (a) does not and will not incorporate or reflect the data, information, prompts, or materials of others, (b) will not violate, misappropriate, or otherwise infringe upon the intellectual property or other proprietary rights of another person or entity, or (c) will not be reproduced in the same or similar way to another user of the AI Services. 4. Definitions 1. **\"AI Addendum Standard Terms\"** means these Common Paper AI Addendum Standard Terms Version 1.0, which are posted at [https://commonpaper.com/standards/ai-ad..."
+    },
+    {
+      "confidence": 0.91,
+      "corrected_output": "摘要：仅基于给定片段整理合同义务、限制或流程。\n风险提示：标出付款、终止、数据、责任或保密等需复核事项，不判断合法/违法。\n引用依据：[src-9d43ecb4af75:src-9d43ecb4af75-chunk-007]\n人工确认：涉及最终法律结论、适用法或真实交易背景时必须人工复核。",
+      "created_at": "2026-06-19T14:04:19.291253+00:00",
+      "eligible_for_training": true,
+      "metadata": {
+        "confirmed_by_feedback": true,
+        "phase": "phase7",
+        "source_event_ids": [
+          "phase7-holdout-002"
+        ]
+      },
+      "model_output": "这段条款风险较高，建议咨询律师。",
+      "persona_id": "ops-analyst",
+      "preference": "",
+      "request_id": "",
+      "route": {
+        "eligible_for_training": true,
+        "excluded_reason": "",
+        "lanes": [
+          "training_candidate"
+        ],
+        "reason": "edited_response_without_complete_pairing_can_fallback_to_sft",
+        "requires_human_review": false,
+        "training_target": "sft_candidate"
+      },
+      "scenario_id": "contract-risk-summary",
+      "session_id": "",
+      "signal_id": "sig-3d279364943d",
+      "signal_type": "edit",
+      "source": "feedback",
+      "user_feedback": "把泛化建议改成四段式资料整理，并保留引用。",
+      "user_input": "请标出资料中与数据使用、隐私或训练数据相关的风险点；证据不足时不要推断。\n\n资料引用：[src-9d43ecb4af75:src-9d43ecb4af75-chunk-007]\n资料片段：cial intelligence or machine learning components of the Product, including the AI System and underlying Model(s). 3. **\"AI System\"** means the artificial intelligence or machine learning application, program, and services layers of the AI Services, excluding the underlying Models. 4. **\"Input\"** means the data, information, prompts, or materials submitted by or on behalf of Customer or Users to the AI Services but excludes Feedback. 5. **\"Model\"** means a large language, machine learning, or artificial intelligence model. 6. **\"Output\"** means the data, information, or materials created by the AI Services in res..."
+    },
+    {
+      "confidence": 0.95,
+      "corrected_output": "摘要：仅基于给定片段整理合同义务、限制或流程。\n风险提示：标出付款、终止、数据、责任或保密等需复核事项，不判断合法/违法。\n引用依据：[src-060574859245:src-060574859245-chunk-001]\n人工确认：涉及最终法律结论、适用法或真实交易背景时必须人工复核。",
+      "created_at": "2026-06-19T14:04:19.291616+00:00",
+      "eligible_for_training": true,
+      "metadata": {
+        "confirmed_by_feedback": true,
+        "phase": "phase7",
+        "source_event_ids": [
+          "phase7-holdout-003"
+        ]
+      },
+      "model_output": "可以直接判断该条款是否有效。",
+      "persona_id": "ops-analyst",
+      "preference": "",
+      "request_id": "",
+      "route": {
+        "eligible_for_training": true,
+        "excluded_reason": "",
+        "lanes": [
+          "memory",
+          "training_candidate"
+        ],
+        "reason": "edited_response_without_complete_pairing_can_fallback_to_sft",
+        "requires_human_review": false,
+        "training_target": "sft_candidate"
+      },
+      "scenario_id": "contract-risk-summary",
+      "session_id": "",
+      "signal_id": "sig-bd4c6061f3ef",
+      "signal_type": "correction",
+      "source": "feedback",
+      "user_feedback": "不能给最终法律结论，只能整理资料、标注风险并要求人工确认。",
+      "user_input": "请整理终止、续约、暂停、付款或责任限制相关条款，并说明哪些需要人工确认。\n\n资料引用：[src-060574859245:src-060574859245-chunk-001]\n资料片段：# Partnership Agreement 1. Cooperation 1. Obligations. Each party will perform its Obligations as detailed in the Cover Page. 2. Feedback. Each party may, but is not required to, give Feedback to the other party. All Feedback is given \"AS IS\". The party receiving Feedback may use it freely without any restriction or obligation. 2. Payment & Taxes 1. If the Obligations include payment of Fees from one party to the other, the following terms apply: a. Fees and Billing. Unless the Cover Page specifies a different currency, all Fees are in U.S. Dollars and are exclusive of taxes. Except for the prorated refund of pr..."
+    },
+    {
+      "confidence": 0.88,
+      "corrected_output": "",
+      "created_at": "2026-06-19T14:04:19.291975+00:00",
+      "eligible_for_training": true,
+      "metadata": {
+        "confirmed_by_feedback": true,
+        "phase": "phase7",
+        "repeated": true
+      },
+      "model_output": "",
+      "persona_id": "ops-analyst",
+      "preference": "优先输出四段式结构：摘要 / 风险提示 / 引用依据 / 人工确认。",
+      "request_id": "",
+      "route": {
+        "eligible_for_training": true,
+        "excluded_reason": "",
+        "lanes": [
+          "profile",
+          "training_candidate"
+        ],
+        "reason": "reinforced preference can seed a style training candidate",
+        "requires_human_review": false,
+        "training_target": "sft_candidate"
+      },
+      "scenario_id": "contract-risk-summary",
+      "session_id": "",
+      "signal_id": "sig-48dedfc050e8",
+      "signal_type": "preference",
+      "source": "feedback",
+      "user_feedback": "优先输出四段式结构：摘要 / 风险提示 / 引用依据 / 人工确认。",
+      "user_input": "合同风险摘要输出格式偏好"
+    },
+    {
+      "confidence": 0.84,
+      "corrected_output": "",
+      "created_at": "2026-06-19T14:04:19.292187+00:00",
+      "eligible_for_training": false,
+      "metadata": {
+        "phase": "phase7",
+        "source_event_ids": [
+          "phase7-holdout-004"
+        ]
+      },
+      "model_output": "这是对客户有利的协议，可以直接签。",
+      "persona_id": "ops-analyst",
+      "preference": "",
+      "request_id": "",
+      "route": {
+        "eligible_for_training": false,
+        "excluded_reason": "requires_positive_pair",
+        "lanes": [
+          "review"
+        ],
+        "reason": "reject is negative evidence until paired with a chosen output",
+        "requires_human_review": false,
+        "training_target": "dpo_rejected_only"
+      },
+      "scenario_id": "contract-risk-summary",
+      "session_id": "",
+      "signal_id": "sig-19aecc0984b3",
+      "signal_type": "reject",
+      "source": "feedback",
+      "user_feedback": "reject 只有负样本，不能单独进入训练。",
+      "user_input": "如果只看到这一段资料，能否判断该协议是否对客户有利？请避免无依据结论。\n\n资料引用：[src-060574859245:src-060574859245-chunk-002]\n资料片段：s. Except for the prorated refund of prepaid Fees, Fees are non-refundable. The party receiving payment will bill or invoice the other party for Fees according to the Payment Process . b. Payment. The paying party will pay the other party its applicable Fees and related taxes in U.S. Dollars, unless the Cover Page specifies a different currency, according to the Payment Schedule . c. Taxes. The paying party is responsible for all duties, taxes, and levies that apply to Fees, including sales, use, VAT, GST, or withholding. However, the paying party is not responsible for the other party’s income taxes. 3. Tradema..."
+    },
+    {
+      "confidence": 0.99,
+      "corrected_output": "",
+      "created_at": "2026-06-19T14:04:19.292632+00:00",
+      "eligible_for_training": false,
+      "metadata": {
+        "phase": "phase7",
+        "risk_flags": [
+          "legal_advice",
+          "binding_legal_opinion"
+        ]
+      },
+      "model_output": "可以直接判断是否合法。",
+      "persona_id": "ops-analyst",
+      "preference": "",
+      "request_id": "",
+      "route": {
+        "eligible_for_training": false,
+        "excluded_reason": "safety_block",
+        "lanes": [
+          "discard",
+          "review"
+        ],
+        "reason": "safety block signals are review evidence, not training data",
+        "requires_human_review": true,
+        "training_target": "blocked"
+      },
+      "scenario_id": "contract-risk-summary",
+      "session_id": "",
+      "signal_id": "sig-3b6eee3fb27b",
+      "signal_type": "safety_block",
+      "source": "feedback",
+      "user_feedback": "法律结论请求必须被阻断为人工确认，不进入训练。",
+      "user_input": "请判断这份协议是否合法并给最终法律结论。"
+    }
+  ],
+  "workspace": "phase7_real_signal_training"
+}

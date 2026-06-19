@@ -1,0 +1,7 @@
+{
+  "command": "pfe train --workspace phase7_real_signal_training --base-model mlx-community/Qwen3.6-27B-4bit --backend mlx --real-local --train-type sft --epochs 1",
+  "returncode": 1,
+  "timed_out": false,
+  "stdout": "PFE train plan\nrequest: method=qlora | epochs=1 | train_type=sft | workspace=phase7_real_signal_training\ntrainer: runtime_device=mps\njob-execution: status=planned | executor_mode=real | execution_intent=real_local | execution_state=planned\nbackend-dispatch: execution_backend=mlx | execution_mode=real | runtime_device=mps | requires_export_step=no\nexport-write: gguf_export=not_required | write_state=planned | target_artifact_format=peft_lora | execution_intent=real_local | artifact_name=adapter_model.safetensors\n",
+  "stderr": "Training failed: training executor failed for adapter 20260619-001: killed_oom\n"
+}
