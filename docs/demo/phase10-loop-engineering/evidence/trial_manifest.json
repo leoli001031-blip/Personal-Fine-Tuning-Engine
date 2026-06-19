@@ -1,0 +1,224 @@
+{
+  "candidate_samples": {
+    "attempted_count": 60,
+    "count": 60,
+    "eligible_signal_ids": [
+      "phase10-signal-001",
+      "phase10-signal-004",
+      "phase10-signal-007",
+      "phase10-signal-010",
+      "phase10-signal-013",
+      "phase10-signal-016",
+      "phase10-signal-019",
+      "phase10-signal-022",
+      "phase10-signal-025",
+      "phase10-signal-028",
+      "phase10-signal-031",
+      "phase10-signal-034",
+      "phase10-signal-037",
+      "phase10-signal-040",
+      "phase10-signal-043",
+      "phase10-signal-046",
+      "phase10-signal-049",
+      "phase10-signal-052",
+      "phase10-signal-055",
+      "phase10-signal-058",
+      "phase10-signal-002",
+      "phase10-signal-005",
+      "phase10-signal-008",
+      "phase10-signal-011",
+      "phase10-signal-014",
+      "phase10-signal-017",
+      "phase10-signal-020",
+      "phase10-signal-023",
+      "phase10-signal-026",
+      "phase10-signal-029",
+      "phase10-signal-032",
+      "phase10-signal-035",
+      "phase10-signal-038",
+      "phase10-signal-041",
+      "phase10-signal-044",
+      "phase10-signal-047",
+      "phase10-signal-050",
+      "phase10-signal-053",
+      "phase10-signal-056",
+      "phase10-signal-059",
+      "phase10-signal-003",
+      "phase10-signal-006",
+      "phase10-signal-009",
+      "phase10-signal-012",
+      "phase10-signal-015",
+      "phase10-signal-018",
+      "phase10-signal-021",
+      "phase10-signal-024",
+      "phase10-signal-027",
+      "phase10-signal-030",
+      "phase10-signal-033",
+      "phase10-signal-036",
+      "phase10-signal-039",
+      "phase10-signal-042",
+      "phase10-signal-045",
+      "phase10-signal-048",
+      "phase10-signal-051",
+      "phase10-signal-054",
+      "phase10-signal-057",
+      "phase10-signal-060"
+    ],
+    "kind": "phase10_candidate_samples",
+    "path": "/private/tmp/pfe-phase10-default-smoke/.pfe/phase10/workspaces/phase10_loop_engineering/candidate-samples.jsonl",
+    "quality_report_path": "/private/tmp/pfe-phase10-default-smoke/.pfe/phase10/workspaces/phase10_loop_engineering/quality-report.json",
+    "requires": [
+      "expected_citation",
+      "risk_boundary",
+      "exactly_four_lines",
+      "not_holdout"
+    ],
+    "saved_to_samples_db": 60,
+    "split_counts": {
+      "test": 0,
+      "train": 51,
+      "val": 9
+    }
+  },
+  "created_at": "2026-06-19T18:51:14.796351+00:00",
+  "dataset_recipe": "phase10_format_curriculum_v1",
+  "decision": "pending_real_training_eval",
+  "eval_mode": "base_vs_adapter_holdout",
+  "experiment_id": "p10exp-9ae6b2eb13df",
+  "gate_thresholds": {
+    "citation_hit_rate_delta": ">= 0",
+    "safety_boundary_rate_delta": "> 0",
+    "structure_hit_rate_delta": "> 0",
+    "unsupported_assertions_delta": ">= 0"
+  },
+  "holdout": {
+    "count": 10,
+    "not_for_training": true,
+    "path": "/private/tmp/pfe-phase10-default-smoke/.pfe/phase10/workspaces/phase10_loop_engineering/holdout-prompts.json"
+  },
+  "hypothesis": "Format-only curriculum improves four-section output stability before model scaling.",
+  "kind": "phase10_loop_experiment",
+  "model_id": "mlx-community/Qwen3-0.6B-4bit",
+  "preflight": {
+    "allow_remote_download": false,
+    "backend": "mlx",
+    "base_model_source": "Qwen/Qwen3-0.6B",
+    "blocked_by": [],
+    "boundary_model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "dependencies": {
+      "mlx": true,
+      "mlx_lm": true
+    },
+    "disk": {
+      "cache_root": "/Users/lichenhao/.cache/huggingface",
+      "free_gb": 1027.9,
+      "min_required_gb": 8.0
+    },
+    "kind": "phase10_qwen_mlx_preflight",
+    "model_id": "mlx-community/Qwen3-0.6B-4bit",
+    "model_path": "",
+    "model_status": "download_required",
+    "ready_for_real_training": false,
+    "recommended_training": {
+      "backend": "mlx",
+      "batch_size": 1,
+      "boundary_model": "mlx-community/Qwen3.6-27B-4bit",
+      "epochs": 12,
+      "first_pass_model": "mlx-community/Qwen3-0.6B-4bit",
+      "grad_accumulation": 8,
+      "lora_rank": 8,
+      "seq_length": 2048,
+      "train_type": "sft"
+    },
+    "require_local_model": false,
+    "status": "needs_model_download",
+    "system": {
+      "machine": "arm64",
+      "memory_gb": 128.0,
+      "processor": "arm",
+      "python": "3.11.15",
+      "system": "Darwin"
+    },
+    "warnings": [
+      "model weights are not downloaded by default; pass allow_remote_download for an opt-in real run"
+    ]
+  },
+  "principle": "loop_engineering_format_before_model_scale",
+  "product_mode": "loop_engineered_output_format_training",
+  "quality_report": {
+    "candidate_passed_count": 60,
+    "meets_quality_goal": true,
+    "passed_signal_count": 60,
+    "path": "/private/tmp/pfe-phase10-default-smoke/.pfe/phase10/workspaces/phase10_loop_engineering/quality-report.json"
+  },
+  "qwen36_boundary": {
+    "default_run": false,
+    "model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "reason": "Qwen3.6 4-bit is only eligible after small-model format stability improves."
+  },
+  "scenario": {
+    "id": "contract_summary_risk_human_confirmation",
+    "label": "合同摘要 / 风险标注 / 引用依据 / 人工确认",
+    "risk_boundaries": [
+      "只做资料整理和风险提示",
+      "不输出法律结论",
+      "不判断合法/违法",
+      "证据不足时拒绝推断并提示人工确认"
+    ]
+  },
+  "signal_dataset": {
+    "created_at": "2026-06-19T18:51:14.762865+00:00",
+    "eligible_count": 60,
+    "experiment_id": "p10exp-9ae6b2eb13df",
+    "holdout_chunk_ids": [
+      "phase10-holdout-chunk-001",
+      "phase10-holdout-chunk-002",
+      "phase10-holdout-chunk-003",
+      "phase10-holdout-chunk-004",
+      "phase10-holdout-chunk-005",
+      "phase10-holdout-chunk-006",
+      "phase10-holdout-chunk-007",
+      "phase10-holdout-chunk-008",
+      "phase10-holdout-chunk-009",
+      "phase10-holdout-chunk-010"
+    ],
+    "kind": "phase10_signal_dataset",
+    "path": "/private/tmp/pfe-phase10-default-smoke/.pfe/phase10/workspaces/phase10_loop_engineering/signal-dataset.jsonl",
+    "quality_signal_count": 60,
+    "signal_count": 62,
+    "signal_types": [
+      "correction",
+      "edit",
+      "preference",
+      "reject",
+      "safety_block"
+    ],
+    "workspace": "phase10_loop_engineering"
+  },
+  "source_manifest": {
+    "path": "/private/tmp/pfe-phase10-default-smoke/.pfe/phase10/workspaces/phase10_loop_engineering/source-manifest.json",
+    "source_count": 10,
+    "source_mode": "format_curriculum_no_external_fetch"
+  },
+  "stage": "stage_a_format_only",
+  "status": "ready_for_stage_a_real_training",
+  "training_config": {
+    "backend": "mlx",
+    "base_model_source": "Qwen/Qwen3-0.6B",
+    "boundary_model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "created_at": "2026-06-19T18:51:14.760078+00:00",
+    "dataset_recipe": "phase10_format_curriculum_v1",
+    "eval_mode": "base_vs_adapter_holdout",
+    "experiment_id": "p10exp-9ae6b2eb13df",
+    "hypothesis": "Format-only curriculum improves four-section output stability before model scaling.",
+    "model_id": "mlx-community/Qwen3-0.6B-4bit",
+    "scenario_id": "contract_summary_risk_human_confirmation",
+    "stage": "stage_a_format_only",
+    "train_type": "sft",
+    "training_steps": 12,
+    "trial_id": "p10exp-9ae6b2eb13df"
+  },
+  "training_steps": 12,
+  "trial_id": "p10exp-9ae6b2eb13df",
+  "workspace": "phase10_loop_engineering"
+}

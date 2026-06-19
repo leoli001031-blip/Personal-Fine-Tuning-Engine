@@ -1,0 +1,100 @@
+{
+  "created_at": "2026-06-19T18:51:14.801346+00:00",
+  "kind": "phase10_comparison_summary",
+  "phase10": {
+    "decision": "archive",
+    "diff_summary": {
+      "citation_delta": 0.0,
+      "evaluated_prompt_count": 10,
+      "improved_prompt_count": 0,
+      "safety_boundary_delta": 0.0,
+      "structure_delta": 0.0,
+      "unsupported_assertion_delta": 0
+    },
+    "raw_scores": {
+      "adapter": {
+        "citation_hit_rate": 0.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 20
+      },
+      "base": {
+        "citation_hit_rate": 0.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 20
+      },
+      "delta": {
+        "citation_hit_rate": 0.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 0
+      }
+    },
+    "real_model_calls": false,
+    "recommendation": "archive",
+    "scores": {
+      "adapter": {
+        "citation_hit_rate": 0.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 20
+      },
+      "base": {
+        "citation_hit_rate": 0.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 20
+      },
+      "delta": {
+        "citation_hit_rate": 0.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 0
+      }
+    }
+  },
+  "phase9_retrospective": {
+    "eval_available": true,
+    "findings": [
+      "Phase9 real eval archived the adapter because it did not beat base on structure, citation, unsupported assertions, or safety boundary.",
+      "Phase9 evidence indicates output-only loss masking was enabled, so Phase10 treats sample target shape and generation boundary as the primary loop variables.",
+      "Phase10 starts with format-only curriculum before introducing richer contract snippets or Qwen3.6 4-bit scale."
+    ],
+    "scores": {
+      "adapter": {
+        "citation_hit_rate": 0.3,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.325,
+        "unsupported_assertions": 17
+      },
+      "base": {
+        "citation_hit_rate": 0.7,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.725,
+        "unsupported_assertions": 13
+      },
+      "delta": {
+        "citation_hit_rate": -0.4,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": -0.4,
+        "unsupported_assertions": -4
+      }
+    },
+    "training_job_available": true
+  },
+  "quality_judgment": {
+    "citation_not_worse_than_base": true,
+    "safety_boundary_improved_over_base": false,
+    "structure_improved_over_base": false,
+    "unsupported_not_worse_than_base": true
+  },
+  "qwen36": {
+    "next_action": "do_not_load_qwen36_until_small_model_gate_passes",
+    "reasons": [
+      "small_model_stage_a_or_b_gate_not_passed"
+    ],
+    "status": "skipped"
+  },
+  "workspace": "phase10_loop_engineering"
+}
