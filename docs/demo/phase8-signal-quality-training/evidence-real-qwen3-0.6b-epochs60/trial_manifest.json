@@ -1,0 +1,312 @@
+{
+  "boundary_model_note": {
+    "default_run": false,
+    "model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "reason": "Phase7 Qwen3.6-27B MLX real training hit Metal OOM on this Mac; keep as preflight/dry-run boundary only."
+  },
+  "candidate_samples": {
+    "attempted_count": 60,
+    "count": 60,
+    "eligible_signal_ids": [
+      "phase8-signal-001",
+      "phase8-signal-004",
+      "phase8-signal-007",
+      "phase8-signal-010",
+      "phase8-signal-013",
+      "phase8-signal-016",
+      "phase8-signal-019",
+      "phase8-signal-022",
+      "phase8-signal-025",
+      "phase8-signal-028",
+      "phase8-signal-031",
+      "phase8-signal-034",
+      "phase8-signal-037",
+      "phase8-signal-040",
+      "phase8-signal-043",
+      "phase8-signal-046",
+      "phase8-signal-049",
+      "phase8-signal-052",
+      "phase8-signal-055",
+      "phase8-signal-058",
+      "phase8-signal-002",
+      "phase8-signal-005",
+      "phase8-signal-008",
+      "phase8-signal-011",
+      "phase8-signal-014",
+      "phase8-signal-017",
+      "phase8-signal-020",
+      "phase8-signal-023",
+      "phase8-signal-026",
+      "phase8-signal-029",
+      "phase8-signal-032",
+      "phase8-signal-035",
+      "phase8-signal-038",
+      "phase8-signal-041",
+      "phase8-signal-044",
+      "phase8-signal-047",
+      "phase8-signal-050",
+      "phase8-signal-053",
+      "phase8-signal-056",
+      "phase8-signal-059",
+      "phase8-signal-003",
+      "phase8-signal-006",
+      "phase8-signal-009",
+      "phase8-signal-012",
+      "phase8-signal-015",
+      "phase8-signal-018",
+      "phase8-signal-021",
+      "phase8-signal-024",
+      "phase8-signal-027",
+      "phase8-signal-030",
+      "phase8-signal-033",
+      "phase8-signal-036",
+      "phase8-signal-039",
+      "phase8-signal-042",
+      "phase8-signal-045",
+      "phase8-signal-048",
+      "phase8-signal-051",
+      "phase8-signal-054",
+      "phase8-signal-057",
+      "phase8-signal-060"
+    ],
+    "kind": "phase8_candidate_samples",
+    "path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/candidate-samples.jsonl",
+    "quality_report_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/quality-report.json",
+    "requires": [
+      "source",
+      "chunk",
+      "expected_citation",
+      "risk_boundary",
+      "quality_gate_passed",
+      "not_holdout"
+    ],
+    "saved_to_samples_db": 60,
+    "split_counts": {
+      "test": 0,
+      "train": 51,
+      "val": 9
+    }
+  },
+  "created_at": "2026-06-19T15:36:08.011678+00:00",
+  "holdout": {
+    "count": 10,
+    "not_for_training": true,
+    "path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/holdout-prompts.json"
+  },
+  "kind": "phase8_signal_quality_training_trial",
+  "preflight": {
+    "allow_remote_download": true,
+    "backend": "mlx",
+    "base_model_source": "Qwen/Qwen3-0.6B",
+    "blocked_by": [],
+    "boundary_model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "dependencies": {
+      "mlx": true,
+      "mlx_lm": true
+    },
+    "disk": {
+      "cache_root": "/Users/lichenhao/.cache/huggingface",
+      "free_gb": 1028.3,
+      "min_required_gb": 8.0
+    },
+    "kind": "phase8_qwen_mlx_preflight",
+    "model_id": "mlx-community/Qwen3-0.6B-4bit",
+    "model_path": "",
+    "model_status": "remote_hub_model",
+    "ready_for_real_training": true,
+    "recommended_training": {
+      "backend": "mlx",
+      "batch_size": 1,
+      "boundary_model": "mlx-community/Qwen3.6-27B-4bit",
+      "epochs": 12,
+      "first_pass_model": "mlx-community/Qwen3-0.6B-4bit",
+      "grad_accumulation": 8,
+      "lora_rank": 8,
+      "seq_length": 2048,
+      "train_type": "sft"
+    },
+    "require_local_model": false,
+    "status": "ready",
+    "system": {
+      "machine": "arm64",
+      "memory_gb": 128.0,
+      "processor": "arm",
+      "python": "3.11.15",
+      "system": "Darwin"
+    },
+    "warnings": []
+  },
+  "principle": "signal_quality_before_model_scale",
+  "product_mode": "signal_quality_driven_candidate_training",
+  "quality_report": {
+    "candidate_passed_count": 60,
+    "meets_quality_goal": true,
+    "passed_signal_count": 60,
+    "path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/quality-report.json"
+  },
+  "scenario": {
+    "id": "contract_summary_risk_human_confirmation",
+    "label": "合同摘要 / 风险标注 / 引用依据 / 人工确认",
+    "risk_boundaries": [
+      "只做资料整理和风险提示",
+      "不输出法律结论",
+      "不判断合法/违法",
+      "证据不足时拒绝推断并提示人工确认"
+    ]
+  },
+  "signal_dataset": {
+    "created_at": "2026-06-19T15:36:07.966256+00:00",
+    "eligible_count": 60,
+    "holdout_chunk_ids": [
+      "src-01191a2395e5-chunk-021",
+      "src-01191a2395e5-chunk-022",
+      "src-01191a2395e5-chunk-023",
+      "src-01191a2395e5-chunk-024",
+      "src-01191a2395e5-chunk-025",
+      "src-01191a2395e5-chunk-026",
+      "src-01191a2395e5-chunk-027",
+      "src-01191a2395e5-chunk-028",
+      "src-01191a2395e5-chunk-029",
+      "src-01191a2395e5-chunk-030"
+    ],
+    "kind": "phase8_signal_dataset",
+    "path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/signal-dataset.jsonl",
+    "quality_signal_count": 60,
+    "signal_count": 62,
+    "signal_types": [
+      "correction",
+      "edit",
+      "preference",
+      "reject",
+      "safety_block"
+    ],
+    "workspace": "phase8_signal_quality_training"
+  },
+  "source_ingest": {
+    "ingested": [
+      {
+        "chunk_count": 10,
+        "content_sha256": "51accb97035821280371ff3088871e3866927ef0ce60e64ed5244883f11b6cfe",
+        "curated_source_id": "cp-mnda",
+        "phase4_source_id": "src-cd6f81d0778b",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/Mutual-NDA/main/Mutual-NDA.md",
+        "title": "Common Paper Mutual NDA",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 33,
+        "content_sha256": "b4aa93c94bcb4da763fc2338406d3aec2ac1f0a6e32612f114121d609dece05a",
+        "curated_source_id": "cp-dpa",
+        "phase4_source_id": "src-038c7db0ba5b",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/DPA/main/DPA.md",
+        "title": "Common Paper Data Processing Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 11,
+        "content_sha256": "6dd783192c644bdc1f00849d27e294578af11cd06148c7b566805ebef38f026a",
+        "curated_source_id": "cp-sla",
+        "phase4_source_id": "src-1938b4d7e482",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/SLA/main/sla.md",
+        "title": "Common Paper Service Level Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 45,
+        "content_sha256": "cc11a7dd556e0c1512aed33516dd9d283e5db276e55123a142706ef3ec7f0f1e",
+        "curated_source_id": "cp-psa",
+        "phase4_source_id": "src-55d03da3fb1c",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/PSA/main/psa.md",
+        "title": "Common Paper Professional Services Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 18,
+        "content_sha256": "2f8f61068ea5284a7cc8857c3fa049ec10a12bed83aa93ed27991f917f338a8c",
+        "curated_source_id": "cp-baa",
+        "phase4_source_id": "src-2e458583ced6",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/BAA/main/BAA.md",
+        "title": "Common Paper Business Associate Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 55,
+        "content_sha256": "808bc3662d7e65b9d52ae3b76cf0a0b71a4c5be2e41191871b37453895840365",
+        "curated_source_id": "cp-sla-license",
+        "phase4_source_id": "src-fa36784cd2fc",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/Software-License-Agreement/main/Software-License-Agreement.md",
+        "title": "Common Paper Software License Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 19,
+        "content_sha256": "778f8432394241e37157cb3951a5b048edbf40aac8a6a3948a1c78bc44fc6bab",
+        "curated_source_id": "cp-design-partner",
+        "phase4_source_id": "src-44a0335c704a",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/Design-Partner-Agreement/main/design-partner-agreement.md",
+        "title": "Common Paper Design Partner Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 28,
+        "content_sha256": "a7cf8decf157093a0d0acd1f35668980c7667e06de6aae3798b996397752b0c3",
+        "curated_source_id": "cp-pilot",
+        "phase4_source_id": "src-215f46528ce7",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/Pilot-Agreement/main/Pilot-Agreement.md",
+        "title": "Common Paper Pilot Agreement",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 7,
+        "content_sha256": "49d44a8ef0d5b0cadfc75abda509683d30e6a45af4ab29c6304a1e1a4d544be7",
+        "curated_source_id": "cp-ai-addendum",
+        "phase4_source_id": "src-b4feef4a1705",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/AI-Addendum/main/AI-Addendum.md",
+        "title": "Common Paper AI Addendum",
+        "training_allowed": true
+      },
+      {
+        "chunk_count": 30,
+        "content_sha256": "87400796568ab676c324b9a5f561432dd3f0f8114ef68a748ab188f642912da3",
+        "curated_source_id": "cp-partnership",
+        "phase4_source_id": "src-01191a2395e5",
+        "source_url": "https://raw.githubusercontent.com/CommonPaper/Partnership-Agreement/main/Partnership-Agreement.md",
+        "title": "Common Paper Partnership Agreement",
+        "training_allowed": true
+      }
+    ],
+    "ingested_count": 10,
+    "kind": "phase8_source_ingest",
+    "manifest_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/source-manifest.json",
+    "review_only": [
+      {
+        "review_reason": "pii_audit_high",
+        "route": "review_only",
+        "source_id": "cp-csa",
+        "title": "Common Paper Cloud Service Agreement"
+      }
+    ],
+    "review_only_count": 1,
+    "workspace": "phase8_signal_quality_training"
+  },
+  "source_manifest": {
+    "meets_source_goal": true,
+    "path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase8-signal-quality-njen9obf/.pfe/phase8/workspaces/phase8_signal_quality_training/source-manifest.json",
+    "review_only_count": 1,
+    "source_count": 11,
+    "training_allowed_count": 10
+  },
+  "status": "ready_for_real_training_attempt",
+  "training_config": {
+    "backend": "mlx",
+    "base_model_source": "Qwen/Qwen3-0.6B",
+    "boundary_model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "created_at": "2026-06-19T15:36:03.002855+00:00",
+    "model_id": "mlx-community/Qwen3-0.6B-4bit",
+    "scenario_id": "contract_summary_risk_human_confirmation",
+    "train_type": "sft",
+    "trial_id": "p8trial-0854e4f4cf67"
+  },
+  "trial_id": "p8trial-0854e4f4cf67",
+  "workspace": "phase8_signal_quality_training"
+}
