@@ -400,8 +400,13 @@ class MLXTrainerBackend:
             # Save adapter config
             adapter_path = output_path / "adapters"
             adapter_path.mkdir(exist_ok=True)
-            config_dict = cfg.to_dict()
-            config_dict["base_model"] = base_model
+            config_dict = {
+                "fine_tune_type": "lora",
+                "num_layers": num_lora_layers,
+                "lora_parameters": lora_config,
+                "base_model": base_model,
+                "pfe_training_config": cfg.to_dict(),
+            }
             with open(adapter_path / "adapter_config.json", "w") as f:
                 json.dump(config_dict, f, indent=2)
 

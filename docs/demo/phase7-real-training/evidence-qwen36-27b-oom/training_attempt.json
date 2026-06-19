@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-06-19T13:56:30.230402+00:00",
+  "kind": "phase7_training_attempt",
+  "status": "training_blocked",
+  "training": {
+    "base_model": "mlx-community/Qwen3.6-27B-4bit",
+    "init_log": {
+      "command": "pfe init --workspace phase7_real_signal_training --base-model mlx-community/Qwen3.6-27B-4bit --home .pfe",
+      "log_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase7-real-signal-1u5ozols/phase7-command-logs/pfe-init.json",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "PFE workspace initialized\nconfig path: .pfe/config.toml\nworkspace:   phase7_real_signal_training\nbase model:  mlx-community/Qwen3.6-27B-4bit\n\nNext steps:\n  pfe doctor --workspace phase7_real_signal_training\n  pfe next --workspace phase7_real_signal_training\n  pfe serve --port 8921 --workspace phase7_real_signal_training --live\n",
+      "timed_out": false
+    },
+    "mock_fallback": false,
+    "real_training": "blocked",
+    "skip_reason": "pfe_train_failed",
+    "train_log": {
+      "command": "pfe train --workspace phase7_real_signal_training --base-model mlx-community/Qwen3.6-27B-4bit --backend mlx --real-local --train-type sft --epochs 1",
+      "log_path": "/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-phase7-real-signal-1u5ozols/phase7-command-logs/pfe-train-mlx.json",
+      "returncode": 1,
+      "stderr": "Training failed: training executor failed for adapter 20260619-001: killed_oom\n",
+      "stdout": "PFE train plan\nrequest: method=qlora | epochs=1 | train_type=sft | workspace=phase7_real_signal_training\ntrainer: runtime_device=mps\njob-execution: status=planned | executor_mode=real | execution_intent=real_local | execution_state=planned\nbackend-dispatch: execution_backend=mlx | execution_mode=real | runtime_device=mps | requires_export_step=no\nexport-write: gguf_export=not_required | write_state=planned | target_artifact_format=peft_lora | execution_intent=real_local | artifact_name=adapter_model.safetensors\n",
+      "timed_out": false
+    }
+  },
+  "workspace": "phase7_real_signal_training"
+}
