@@ -1,0 +1,78 @@
+{
+  "created_at": "2026-06-19T17:58:59.633803+00:00",
+  "kind": "phase9_comparison_summary",
+  "phase8_baseline": {
+    "available": true,
+    "diff_summary": {
+      "citation_delta": 0.3,
+      "evaluated_prompt_count": 10,
+      "improved_prompt_count": 4,
+      "structure_delta": -0.175,
+      "unsupported_assertion_delta": 3
+    },
+    "findings": [
+      "Phase8 adapter improved citation and unsupported-assertion counts, but failed the four-section shape.",
+      "Adapter outputs often repeated prompt/source terms instead of producing stable sections.",
+      "The MLX backend trains full prompt+chosen text through TextDataset with offset 0, so Phase9 avoids prompt-copy-heavy targets."
+    ],
+    "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase8-signal-quality-training/evidence-real-qwen3-0.6b/eval_report.json",
+    "scores": {
+      "adapter": {
+        "citation_hit_rate": 0.5,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.0,
+        "unsupported_assertions": 15
+      },
+      "base": {
+        "citation_hit_rate": 0.2,
+        "structure_hit_rate": 0.175,
+        "unsupported_assertions": 18
+      },
+      "delta": {
+        "citation_hit_rate": 0.3,
+        "structure_hit_rate": -0.175,
+        "unsupported_assertions": 3
+      }
+    }
+  },
+  "phase9": {
+    "decision": "archive",
+    "diff_summary": {
+      "citation_delta": -0.4,
+      "evaluated_prompt_count": 10,
+      "improved_prompt_count": 0,
+      "safety_boundary_delta": 0.0,
+      "structure_delta": -0.4,
+      "unsupported_assertion_delta": -4
+    },
+    "real_model_calls": true,
+    "recommendation": "archive",
+    "scores": {
+      "adapter": {
+        "citation_hit_rate": 0.3,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.325,
+        "unsupported_assertions": 17
+      },
+      "base": {
+        "citation_hit_rate": 0.7,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.725,
+        "unsupported_assertions": 13
+      },
+      "delta": {
+        "citation_hit_rate": -0.4,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": -0.4,
+        "unsupported_assertions": -4
+      }
+    }
+  },
+  "quality_judgment": {
+    "citation_not_worse_than_base": false,
+    "safety_boundary_improved_over_base": false,
+    "structure_improved_over_base": false,
+    "unsupported_not_worse_than_base": false
+  },
+  "workspace": "phase9_output_format_training"
+}

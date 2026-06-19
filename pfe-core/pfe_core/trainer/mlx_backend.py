@@ -272,13 +272,30 @@ class MLXTrainerBackend:
         for item in train_data:
             if "text" in item:
                 text = item["text"]
+                formatted_data.append({"text": text})
             elif "instruction" in item and "output" in item:
-                text = f"{item['instruction']}\n{item['output']}"
+                formatted_data.append(
+                    {
+                        "prompt": str(item["instruction"]),
+                        "completion": str(item["output"]),
+                    }
+                )
             elif "instruction" in item and "chosen" in item:
-                text = f"{item['instruction']}\n{item['chosen']}"
+                formatted_data.append(
+                    {
+                        "prompt": str(item["instruction"]),
+                        "completion": str(item["chosen"]),
+                    }
+                )
+            elif "prompt" in item and "completion" in item:
+                formatted_data.append(
+                    {
+                        "prompt": str(item["prompt"]),
+                        "completion": str(item["completion"]),
+                    }
+                )
             else:
                 continue
-            formatted_data.append({"text": text})
 
         with open(data_file, "w", encoding="utf-8") as f:
             for item in formatted_data:
@@ -361,13 +378,24 @@ class MLXTrainerBackend:
 
         try:
             import mlx.optimizers as optim
-            from mlx_lm.tuner.datasets import TextDataset
+            from mlx_lm.tuner.datasets import CompletionsDataset, TextDataset
             from mlx_lm.tuner.trainer import TrainingArgs, train
 
             # Load formatted training data and preprocess to (tokens, offset) tuples
             with open(data_file, "r", encoding="utf-8") as f:
                 text_data = [json.loads(line) for line in f]
-            text_ds = TextDataset(text_data, tokenizer)
+            dataset_format = "text_full_loss"
+            if text_data and "prompt" in text_data[0] and "completion" in text_data[0]:
+                text_ds = CompletionsDataset(
+                    text_data,
+                    tokenizer,
+                    prompt_key="prompt",
+                    completion_key="completion",
+                    mask_prompt=True,
+                )
+                dataset_format = "prompt_completion_output_only_loss"
+            else:
+                text_ds = TextDataset(text_data, tokenizer)
             train_dataset = [text_ds.process(d) for d in text_ds]
 
             # Build optimizer and training arguments
@@ -429,6 +457,8 @@ class MLXTrainerBackend:
                 metadata={
                     "base_model": base_model,
                     "data_file": str(data_file),
+                    "dataset_format": dataset_format,
+                    "output_only_loss_masking": dataset_format == "prompt_completion_output_only_loss",
                     "device": str(mx.default_device()),
                 },
             )
