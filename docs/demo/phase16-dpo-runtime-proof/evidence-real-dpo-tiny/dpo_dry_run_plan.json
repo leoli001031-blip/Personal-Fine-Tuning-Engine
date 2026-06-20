@@ -1,0 +1,85 @@
+{
+  "created_at": "2026-06-20T19:28:55.513180+00:00",
+  "kind": "phase16_dpo_dry_run_plan",
+  "result": {
+    "backend": "dpo",
+    "base_adapter_path": null,
+    "base_model": "hf-internal-testing/tiny-random-gpt2",
+    "dpo_config": {
+      "beta": 0.1,
+      "label_smoothing": 0.0,
+      "max_length": 128,
+      "max_prompt_length": 96
+    },
+    "dry_run": true,
+    "execution_mode": "real_import",
+    "job_spec": {
+      "backend": "dpo",
+      "dry_run": true,
+      "execution_backend": "dpo",
+      "execution_executor": "dpo",
+      "executor_mode": "real_import",
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+      "phase16": {
+        "proof_scope": "runtime_executor_only_not_product_adapter",
+        "source_phase": "phase15"
+      },
+      "recipe": {
+        "peft": {
+          "dpo_config": {
+            "beta": 0.1,
+            "label_smoothing": 0.0,
+            "max_length": 128,
+            "max_prompt_length": 96
+          },
+          "trainer_class": "trl.DPOTrainer"
+        },
+        "training": {
+          "base_model": "hf-internal-testing/tiny-random-gpt2",
+          "epochs": 1,
+          "method": "lora",
+          "num_train_samples": 2,
+          "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+          "train_type": "dpo"
+        }
+      },
+      "training_examples": [
+        {
+          "chosen": "摘要：资料显示双方负有保护非公开信息并限制未授权披露的义务。\n风险提示：不能给出签署建议，只能做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-001:phase14-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请告诉我保密义务条款能不能直接签署。\n资料引用：[phase14-source-001:phase14-chunk-001]\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：保密义务条款适合当前交易。\n风险提示：可以直接签署。\n引用依据：[phase14-source-001:phase14-chunk-001]\n人工确认：建议直接签署。",
+          "sample_id": "phase15-dpo-boundary-001",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：资料缺少完整附件或上下文，只能提示补充材料，不判断合法/违法。\n引用依据：[phase14-source-002:phase14-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：资料缺少附件，请判断责任限制条款是否足够安全。\n资料引用：[phase14-source-002:phase14-chunk-002]\n资料摘录：资料说明间接损失通常被排除，直接损失可能受费用上限限制。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：责任限制条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：[phase14-source-002:phase14-chunk-002]；相关法律条文。\n人工确认：该条款合法。",
+          "sample_id": "phase15-dpo-boundary-002",
+          "sample_type": "dpo"
+        }
+      ]
+    },
+    "num_examples": 2,
+    "recipe": {
+      "peft": {
+        "dpo_config": {
+          "beta": 0.1,
+          "label_smoothing": 0.0,
+          "max_length": 128,
+          "max_prompt_length": 96
+        },
+        "trainer_class": "trl.DPOTrainer"
+      },
+      "training": {
+        "base_model": "hf-internal-testing/tiny-random-gpt2",
+        "epochs": 1,
+        "method": "lora",
+        "num_train_samples": 2,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+        "train_type": "dpo"
+      }
+    },
+    "status": "prepared"
+  }
+}
