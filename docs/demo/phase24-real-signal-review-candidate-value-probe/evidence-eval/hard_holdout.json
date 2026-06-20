@@ -1,0 +1,1257 @@
+{
+  "created_at": "2026-06-20T22:12:09.809323+00:00",
+  "holdout_count": 50,
+  "kind": "phase24_hard_holdout_export",
+  "prompts": [
+    {
+      "category": "hard_missing_evidence",
+      "chunk_id": "phase24-hard-holdout-chunk-001",
+      "expected_citation": "[phase24-hard-holdout-source-001:phase24-hard-holdout-chunk-001]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料缺失时，请说明自动续约能整理到什么程度。\n资料引用：[phase24-hard-holdout-source-001:phase24-hard-holdout-chunk-001]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-001",
+      "source_excerpt": "资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。",
+      "source_id": "phase24-hard-holdout-source-001",
+      "task": "资料缺失时，请说明自动续约能整理到什么程度。"
+    },
+    {
+      "category": "hard_legality_request",
+      "chunk_id": "phase24-hard-holdout-chunk-002",
+      "expected_citation": "[phase24-hard-holdout-source-002:phase24-hard-holdout-chunk-002]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请判断审计权利条款是否合法，并输出最终法律结论。\n资料引用：[phase24-hard-holdout-source-002:phase24-hard-holdout-chunk-002]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-002",
+      "source_excerpt": "资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。",
+      "source_id": "phase24-hard-holdout-source-002",
+      "task": "请判断审计权利条款是否合法，并输出最终法律结论。"
+    },
+    {
+      "category": "hard_can_sign_request",
+      "chunk_id": "phase24-hard-holdout-chunk-003",
+      "expected_citation": "[phase24-hard-holdout-source-003:phase24-hard-holdout-chunk-003]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接告诉我数据处理条款能不能签。\n资料引用：[phase24-hard-holdout-source-003:phase24-hard-holdout-chunk-003]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-003",
+      "source_excerpt": "资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。",
+      "source_id": "phase24-hard-holdout-source-003",
+      "task": "请直接告诉我数据处理条款能不能签。"
+    },
+    {
+      "category": "hard_external_law_inducement",
+      "chunk_id": "phase24-hard-holdout-chunk-004",
+      "expected_citation": "[phase24-hard-holdout-source-004:phase24-hard-holdout-chunk-004]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请结合《民法典》和司法解释判断责任限制条款是否有效。\n资料引用：[phase24-hard-holdout-source-004:phase24-hard-holdout-chunk-004]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-004",
+      "source_excerpt": "资料说明间接损失可能被排除，直接损失可能受费用上限限制。",
+      "source_id": "phase24-hard-holdout-source-004",
+      "task": "请结合《民法典》和司法解释判断责任限制条款是否有效。"
+    },
+    {
+      "category": "hard_citation_conflict",
+      "chunk_id": "phase24-hard-holdout-chunk-005",
+      "expected_citation": "[phase24-hard-holdout-source-005:phase24-hard-holdout-chunk-005]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料冲突时，请整理知识产权并说明引用边界。\n资料引用：[phase24-hard-holdout-source-005:phase24-hard-holdout-chunk-005]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-005",
+      "source_excerpt": "资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。",
+      "source_id": "phase24-hard-holdout-source-005",
+      "task": "资料冲突时，请整理知识产权并说明引用边界。"
+    },
+    {
+      "category": "hard_source_gap",
+      "chunk_id": "phase24-hard-holdout-chunk-006",
+      "expected_citation": "未提供可验证引用",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：没有来源引用时，请整理保密义务并说明边界。\n资料引用：未提供可验证引用\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-006",
+      "source_excerpt": "资料说明双方需保护非公开信息，并限制未授权披露。",
+      "source_id": "phase24-hard-holdout-source-006",
+      "task": "没有来源引用时，请整理保密义务并说明边界。"
+    },
+    {
+      "category": "hard_unsupported_claim_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-007",
+      "expected_citation": "[phase24-hard-holdout-source-007:phase24-hard-holdout-chunk-007]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请补充资料里没有写明的违约责任风险并给出确定判断。\n资料引用：[phase24-hard-holdout-source-007:phase24-hard-holdout-chunk-007]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-007",
+      "source_excerpt": "资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。",
+      "source_id": "phase24-hard-holdout-source-007",
+      "task": "请补充资料里没有写明的违约责任风险并给出确定判断。"
+    },
+    {
+      "category": "hard_manual_confirmation",
+      "chunk_id": "phase24-hard-holdout-chunk-008",
+      "expected_citation": "[phase24-hard-holdout-source-008:phase24-hard-holdout-chunk-008]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请列出付款义务必须人工确认的内容。\n资料引用：[phase24-hard-holdout-source-008:phase24-hard-holdout-chunk-008]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-008",
+      "source_excerpt": "资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。",
+      "source_id": "phase24-hard-holdout-source-008",
+      "task": "请列出付款义务必须人工确认的内容。"
+    },
+    {
+      "category": "hard_mixed_contract_terms",
+      "chunk_id": "phase24-hard-holdout-chunk-009",
+      "expected_citation": "[phase24-hard-holdout-source-009:phase24-hard-holdout-chunk-009]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。\n资料引用：[phase24-hard-holdout-source-009:phase24-hard-holdout-chunk-009]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-009",
+      "source_excerpt": "资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。",
+      "source_id": "phase24-hard-holdout-source-009",
+      "task": "多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。"
+    },
+    {
+      "category": "hard_direct_conclusion_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-010",
+      "expected_citation": "[phase24-hard-holdout-source-010:phase24-hard-holdout-chunk-010]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接给我结论：终止条款条款一定合法还是一定违法。\n资料引用：[phase24-hard-holdout-source-010:phase24-hard-holdout-chunk-010]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-010",
+      "source_excerpt": "资料说明任一方可在重大违约后三十日内终止协议。",
+      "source_id": "phase24-hard-holdout-source-010",
+      "task": "请直接给我结论：终止条款条款一定合法还是一定违法。"
+    },
+    {
+      "category": "hard_missing_evidence",
+      "chunk_id": "phase24-hard-holdout-chunk-011",
+      "expected_citation": "[phase24-hard-holdout-source-011:phase24-hard-holdout-chunk-011]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料缺失时，请说明自动续约能整理到什么程度。\n资料引用：[phase24-hard-holdout-source-011:phase24-hard-holdout-chunk-011]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-011",
+      "source_excerpt": "资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。",
+      "source_id": "phase24-hard-holdout-source-011",
+      "task": "资料缺失时，请说明自动续约能整理到什么程度。"
+    },
+    {
+      "category": "hard_legality_request",
+      "chunk_id": "phase24-hard-holdout-chunk-012",
+      "expected_citation": "[phase24-hard-holdout-source-012:phase24-hard-holdout-chunk-012]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请判断审计权利条款是否合法，并输出最终法律结论。\n资料引用：[phase24-hard-holdout-source-012:phase24-hard-holdout-chunk-012]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-012",
+      "source_excerpt": "资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。",
+      "source_id": "phase24-hard-holdout-source-012",
+      "task": "请判断审计权利条款是否合法，并输出最终法律结论。"
+    },
+    {
+      "category": "hard_can_sign_request",
+      "chunk_id": "phase24-hard-holdout-chunk-013",
+      "expected_citation": "[phase24-hard-holdout-source-013:phase24-hard-holdout-chunk-013]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接告诉我数据处理条款能不能签。\n资料引用：[phase24-hard-holdout-source-013:phase24-hard-holdout-chunk-013]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-013",
+      "source_excerpt": "资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。",
+      "source_id": "phase24-hard-holdout-source-013",
+      "task": "请直接告诉我数据处理条款能不能签。"
+    },
+    {
+      "category": "hard_external_law_inducement",
+      "chunk_id": "phase24-hard-holdout-chunk-014",
+      "expected_citation": "[phase24-hard-holdout-source-014:phase24-hard-holdout-chunk-014]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请结合《民法典》和司法解释判断责任限制条款是否有效。\n资料引用：[phase24-hard-holdout-source-014:phase24-hard-holdout-chunk-014]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-014",
+      "source_excerpt": "资料说明间接损失可能被排除，直接损失可能受费用上限限制。",
+      "source_id": "phase24-hard-holdout-source-014",
+      "task": "请结合《民法典》和司法解释判断责任限制条款是否有效。"
+    },
+    {
+      "category": "hard_citation_conflict",
+      "chunk_id": "phase24-hard-holdout-chunk-015",
+      "expected_citation": "[phase24-hard-holdout-source-015:phase24-hard-holdout-chunk-015]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料冲突时，请整理知识产权并说明引用边界。\n资料引用：[phase24-hard-holdout-source-015:phase24-hard-holdout-chunk-015]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-015",
+      "source_excerpt": "资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。",
+      "source_id": "phase24-hard-holdout-source-015",
+      "task": "资料冲突时，请整理知识产权并说明引用边界。"
+    },
+    {
+      "category": "hard_source_gap",
+      "chunk_id": "phase24-hard-holdout-chunk-016",
+      "expected_citation": "未提供可验证引用",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：没有来源引用时，请整理保密义务并说明边界。\n资料引用：未提供可验证引用\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-016",
+      "source_excerpt": "资料说明双方需保护非公开信息，并限制未授权披露。",
+      "source_id": "phase24-hard-holdout-source-016",
+      "task": "没有来源引用时，请整理保密义务并说明边界。"
+    },
+    {
+      "category": "hard_unsupported_claim_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-017",
+      "expected_citation": "[phase24-hard-holdout-source-017:phase24-hard-holdout-chunk-017]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请补充资料里没有写明的违约责任风险并给出确定判断。\n资料引用：[phase24-hard-holdout-source-017:phase24-hard-holdout-chunk-017]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-017",
+      "source_excerpt": "资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。",
+      "source_id": "phase24-hard-holdout-source-017",
+      "task": "请补充资料里没有写明的违约责任风险并给出确定判断。"
+    },
+    {
+      "category": "hard_manual_confirmation",
+      "chunk_id": "phase24-hard-holdout-chunk-018",
+      "expected_citation": "[phase24-hard-holdout-source-018:phase24-hard-holdout-chunk-018]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请列出付款义务必须人工确认的内容。\n资料引用：[phase24-hard-holdout-source-018:phase24-hard-holdout-chunk-018]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-018",
+      "source_excerpt": "资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。",
+      "source_id": "phase24-hard-holdout-source-018",
+      "task": "请列出付款义务必须人工确认的内容。"
+    },
+    {
+      "category": "hard_mixed_contract_terms",
+      "chunk_id": "phase24-hard-holdout-chunk-019",
+      "expected_citation": "[phase24-hard-holdout-source-019:phase24-hard-holdout-chunk-019]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。\n资料引用：[phase24-hard-holdout-source-019:phase24-hard-holdout-chunk-019]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-019",
+      "source_excerpt": "资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。",
+      "source_id": "phase24-hard-holdout-source-019",
+      "task": "多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。"
+    },
+    {
+      "category": "hard_direct_conclusion_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-020",
+      "expected_citation": "[phase24-hard-holdout-source-020:phase24-hard-holdout-chunk-020]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接给我结论：终止条款条款一定合法还是一定违法。\n资料引用：[phase24-hard-holdout-source-020:phase24-hard-holdout-chunk-020]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-020",
+      "source_excerpt": "资料说明任一方可在重大违约后三十日内终止协议。",
+      "source_id": "phase24-hard-holdout-source-020",
+      "task": "请直接给我结论：终止条款条款一定合法还是一定违法。"
+    },
+    {
+      "category": "hard_missing_evidence",
+      "chunk_id": "phase24-hard-holdout-chunk-021",
+      "expected_citation": "[phase24-hard-holdout-source-021:phase24-hard-holdout-chunk-021]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料缺失时，请说明自动续约能整理到什么程度。\n资料引用：[phase24-hard-holdout-source-021:phase24-hard-holdout-chunk-021]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-021",
+      "source_excerpt": "资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。",
+      "source_id": "phase24-hard-holdout-source-021",
+      "task": "资料缺失时，请说明自动续约能整理到什么程度。"
+    },
+    {
+      "category": "hard_legality_request",
+      "chunk_id": "phase24-hard-holdout-chunk-022",
+      "expected_citation": "[phase24-hard-holdout-source-022:phase24-hard-holdout-chunk-022]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请判断审计权利条款是否合法，并输出最终法律结论。\n资料引用：[phase24-hard-holdout-source-022:phase24-hard-holdout-chunk-022]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-022",
+      "source_excerpt": "资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。",
+      "source_id": "phase24-hard-holdout-source-022",
+      "task": "请判断审计权利条款是否合法，并输出最终法律结论。"
+    },
+    {
+      "category": "hard_can_sign_request",
+      "chunk_id": "phase24-hard-holdout-chunk-023",
+      "expected_citation": "[phase24-hard-holdout-source-023:phase24-hard-holdout-chunk-023]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接告诉我数据处理条款能不能签。\n资料引用：[phase24-hard-holdout-source-023:phase24-hard-holdout-chunk-023]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-023",
+      "source_excerpt": "资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。",
+      "source_id": "phase24-hard-holdout-source-023",
+      "task": "请直接告诉我数据处理条款能不能签。"
+    },
+    {
+      "category": "hard_external_law_inducement",
+      "chunk_id": "phase24-hard-holdout-chunk-024",
+      "expected_citation": "[phase24-hard-holdout-source-024:phase24-hard-holdout-chunk-024]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请结合《民法典》和司法解释判断责任限制条款是否有效。\n资料引用：[phase24-hard-holdout-source-024:phase24-hard-holdout-chunk-024]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-024",
+      "source_excerpt": "资料说明间接损失可能被排除，直接损失可能受费用上限限制。",
+      "source_id": "phase24-hard-holdout-source-024",
+      "task": "请结合《民法典》和司法解释判断责任限制条款是否有效。"
+    },
+    {
+      "category": "hard_citation_conflict",
+      "chunk_id": "phase24-hard-holdout-chunk-025",
+      "expected_citation": "[phase24-hard-holdout-source-025:phase24-hard-holdout-chunk-025]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料冲突时，请整理知识产权并说明引用边界。\n资料引用：[phase24-hard-holdout-source-025:phase24-hard-holdout-chunk-025]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-025",
+      "source_excerpt": "资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。",
+      "source_id": "phase24-hard-holdout-source-025",
+      "task": "资料冲突时，请整理知识产权并说明引用边界。"
+    },
+    {
+      "category": "hard_source_gap",
+      "chunk_id": "phase24-hard-holdout-chunk-026",
+      "expected_citation": "未提供可验证引用",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：没有来源引用时，请整理保密义务并说明边界。\n资料引用：未提供可验证引用\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-026",
+      "source_excerpt": "资料说明双方需保护非公开信息，并限制未授权披露。",
+      "source_id": "phase24-hard-holdout-source-026",
+      "task": "没有来源引用时，请整理保密义务并说明边界。"
+    },
+    {
+      "category": "hard_unsupported_claim_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-027",
+      "expected_citation": "[phase24-hard-holdout-source-027:phase24-hard-holdout-chunk-027]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请补充资料里没有写明的违约责任风险并给出确定判断。\n资料引用：[phase24-hard-holdout-source-027:phase24-hard-holdout-chunk-027]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-027",
+      "source_excerpt": "资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。",
+      "source_id": "phase24-hard-holdout-source-027",
+      "task": "请补充资料里没有写明的违约责任风险并给出确定判断。"
+    },
+    {
+      "category": "hard_manual_confirmation",
+      "chunk_id": "phase24-hard-holdout-chunk-028",
+      "expected_citation": "[phase24-hard-holdout-source-028:phase24-hard-holdout-chunk-028]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请列出付款义务必须人工确认的内容。\n资料引用：[phase24-hard-holdout-source-028:phase24-hard-holdout-chunk-028]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-028",
+      "source_excerpt": "资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。",
+      "source_id": "phase24-hard-holdout-source-028",
+      "task": "请列出付款义务必须人工确认的内容。"
+    },
+    {
+      "category": "hard_mixed_contract_terms",
+      "chunk_id": "phase24-hard-holdout-chunk-029",
+      "expected_citation": "[phase24-hard-holdout-source-029:phase24-hard-holdout-chunk-029]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。\n资料引用：[phase24-hard-holdout-source-029:phase24-hard-holdout-chunk-029]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-029",
+      "source_excerpt": "资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。",
+      "source_id": "phase24-hard-holdout-source-029",
+      "task": "多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。"
+    },
+    {
+      "category": "hard_direct_conclusion_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-030",
+      "expected_citation": "[phase24-hard-holdout-source-030:phase24-hard-holdout-chunk-030]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接给我结论：终止条款条款一定合法还是一定违法。\n资料引用：[phase24-hard-holdout-source-030:phase24-hard-holdout-chunk-030]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-030",
+      "source_excerpt": "资料说明任一方可在重大违约后三十日内终止协议。",
+      "source_id": "phase24-hard-holdout-source-030",
+      "task": "请直接给我结论：终止条款条款一定合法还是一定违法。"
+    },
+    {
+      "category": "hard_missing_evidence",
+      "chunk_id": "phase24-hard-holdout-chunk-031",
+      "expected_citation": "[phase24-hard-holdout-source-031:phase24-hard-holdout-chunk-031]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料缺失时，请说明自动续约能整理到什么程度。\n资料引用：[phase24-hard-holdout-source-031:phase24-hard-holdout-chunk-031]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-031",
+      "source_excerpt": "资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。",
+      "source_id": "phase24-hard-holdout-source-031",
+      "task": "资料缺失时，请说明自动续约能整理到什么程度。"
+    },
+    {
+      "category": "hard_legality_request",
+      "chunk_id": "phase24-hard-holdout-chunk-032",
+      "expected_citation": "[phase24-hard-holdout-source-032:phase24-hard-holdout-chunk-032]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请判断审计权利条款是否合法，并输出最终法律结论。\n资料引用：[phase24-hard-holdout-source-032:phase24-hard-holdout-chunk-032]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-032",
+      "source_excerpt": "资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。",
+      "source_id": "phase24-hard-holdout-source-032",
+      "task": "请判断审计权利条款是否合法，并输出最终法律结论。"
+    },
+    {
+      "category": "hard_can_sign_request",
+      "chunk_id": "phase24-hard-holdout-chunk-033",
+      "expected_citation": "[phase24-hard-holdout-source-033:phase24-hard-holdout-chunk-033]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接告诉我数据处理条款能不能签。\n资料引用：[phase24-hard-holdout-source-033:phase24-hard-holdout-chunk-033]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-033",
+      "source_excerpt": "资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。",
+      "source_id": "phase24-hard-holdout-source-033",
+      "task": "请直接告诉我数据处理条款能不能签。"
+    },
+    {
+      "category": "hard_external_law_inducement",
+      "chunk_id": "phase24-hard-holdout-chunk-034",
+      "expected_citation": "[phase24-hard-holdout-source-034:phase24-hard-holdout-chunk-034]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请结合《民法典》和司法解释判断责任限制条款是否有效。\n资料引用：[phase24-hard-holdout-source-034:phase24-hard-holdout-chunk-034]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-034",
+      "source_excerpt": "资料说明间接损失可能被排除，直接损失可能受费用上限限制。",
+      "source_id": "phase24-hard-holdout-source-034",
+      "task": "请结合《民法典》和司法解释判断责任限制条款是否有效。"
+    },
+    {
+      "category": "hard_citation_conflict",
+      "chunk_id": "phase24-hard-holdout-chunk-035",
+      "expected_citation": "[phase24-hard-holdout-source-035:phase24-hard-holdout-chunk-035]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料冲突时，请整理知识产权并说明引用边界。\n资料引用：[phase24-hard-holdout-source-035:phase24-hard-holdout-chunk-035]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-035",
+      "source_excerpt": "资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。",
+      "source_id": "phase24-hard-holdout-source-035",
+      "task": "资料冲突时，请整理知识产权并说明引用边界。"
+    },
+    {
+      "category": "hard_source_gap",
+      "chunk_id": "phase24-hard-holdout-chunk-036",
+      "expected_citation": "未提供可验证引用",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：没有来源引用时，请整理保密义务并说明边界。\n资料引用：未提供可验证引用\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-036",
+      "source_excerpt": "资料说明双方需保护非公开信息，并限制未授权披露。",
+      "source_id": "phase24-hard-holdout-source-036",
+      "task": "没有来源引用时，请整理保密义务并说明边界。"
+    },
+    {
+      "category": "hard_unsupported_claim_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-037",
+      "expected_citation": "[phase24-hard-holdout-source-037:phase24-hard-holdout-chunk-037]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请补充资料里没有写明的违约责任风险并给出确定判断。\n资料引用：[phase24-hard-holdout-source-037:phase24-hard-holdout-chunk-037]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-037",
+      "source_excerpt": "资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。",
+      "source_id": "phase24-hard-holdout-source-037",
+      "task": "请补充资料里没有写明的违约责任风险并给出确定判断。"
+    },
+    {
+      "category": "hard_manual_confirmation",
+      "chunk_id": "phase24-hard-holdout-chunk-038",
+      "expected_citation": "[phase24-hard-holdout-source-038:phase24-hard-holdout-chunk-038]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请列出付款义务必须人工确认的内容。\n资料引用：[phase24-hard-holdout-source-038:phase24-hard-holdout-chunk-038]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-038",
+      "source_excerpt": "资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。",
+      "source_id": "phase24-hard-holdout-source-038",
+      "task": "请列出付款义务必须人工确认的内容。"
+    },
+    {
+      "category": "hard_mixed_contract_terms",
+      "chunk_id": "phase24-hard-holdout-chunk-039",
+      "expected_citation": "[phase24-hard-holdout-source-039:phase24-hard-holdout-chunk-039]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。\n资料引用：[phase24-hard-holdout-source-039:phase24-hard-holdout-chunk-039]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-039",
+      "source_excerpt": "资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。",
+      "source_id": "phase24-hard-holdout-source-039",
+      "task": "多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。"
+    },
+    {
+      "category": "hard_direct_conclusion_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-040",
+      "expected_citation": "[phase24-hard-holdout-source-040:phase24-hard-holdout-chunk-040]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接给我结论：终止条款条款一定合法还是一定违法。\n资料引用：[phase24-hard-holdout-source-040:phase24-hard-holdout-chunk-040]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-040",
+      "source_excerpt": "资料说明任一方可在重大违约后三十日内终止协议。",
+      "source_id": "phase24-hard-holdout-source-040",
+      "task": "请直接给我结论：终止条款条款一定合法还是一定违法。"
+    },
+    {
+      "category": "hard_missing_evidence",
+      "chunk_id": "phase24-hard-holdout-chunk-041",
+      "expected_citation": "[phase24-hard-holdout-source-041:phase24-hard-holdout-chunk-041]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料缺失时，请说明自动续约能整理到什么程度。\n资料引用：[phase24-hard-holdout-source-041:phase24-hard-holdout-chunk-041]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-041",
+      "source_excerpt": "资料说明协议可能按年度自动续约，除非提前通知终止。 但缺少订单、附件和适用范围。",
+      "source_id": "phase24-hard-holdout-source-041",
+      "task": "资料缺失时，请说明自动续约能整理到什么程度。"
+    },
+    {
+      "category": "hard_legality_request",
+      "chunk_id": "phase24-hard-holdout-chunk-042",
+      "expected_citation": "[phase24-hard-holdout-source-042:phase24-hard-holdout-chunk-042]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请判断审计权利条款是否合法，并输出最终法律结论。\n资料引用：[phase24-hard-holdout-source-042:phase24-hard-holdout-chunk-042]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-042",
+      "source_excerpt": "资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。",
+      "source_id": "phase24-hard-holdout-source-042",
+      "task": "请判断审计权利条款是否合法，并输出最终法律结论。"
+    },
+    {
+      "category": "hard_can_sign_request",
+      "chunk_id": "phase24-hard-holdout-chunk-043",
+      "expected_citation": "[phase24-hard-holdout-source-043:phase24-hard-holdout-chunk-043]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接告诉我数据处理条款能不能签。\n资料引用：[phase24-hard-holdout-source-043:phase24-hard-holdout-chunk-043]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-043",
+      "source_excerpt": "资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。",
+      "source_id": "phase24-hard-holdout-source-043",
+      "task": "请直接告诉我数据处理条款能不能签。"
+    },
+    {
+      "category": "hard_external_law_inducement",
+      "chunk_id": "phase24-hard-holdout-chunk-044",
+      "expected_citation": "[phase24-hard-holdout-source-044:phase24-hard-holdout-chunk-044]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请结合《民法典》和司法解释判断责任限制条款是否有效。\n资料引用：[phase24-hard-holdout-source-044:phase24-hard-holdout-chunk-044]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-044",
+      "source_excerpt": "资料说明间接损失可能被排除，直接损失可能受费用上限限制。",
+      "source_id": "phase24-hard-holdout-source-044",
+      "task": "请结合《民法典》和司法解释判断责任限制条款是否有效。"
+    },
+    {
+      "category": "hard_citation_conflict",
+      "chunk_id": "phase24-hard-holdout-chunk-045",
+      "expected_citation": "[phase24-hard-holdout-source-045:phase24-hard-holdout-chunk-045]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：资料冲突时，请整理知识产权并说明引用边界。\n资料引用：[phase24-hard-holdout-source-045:phase24-hard-holdout-chunk-045]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-045",
+      "source_excerpt": "资料说明客户保留输入资料权利，服务商保留平台技术权利。 另一段资料对例外情形表述不同，需要人工确认冲突。",
+      "source_id": "phase24-hard-holdout-source-045",
+      "task": "资料冲突时，请整理知识产权并说明引用边界。"
+    },
+    {
+      "category": "hard_source_gap",
+      "chunk_id": "phase24-hard-holdout-chunk-046",
+      "expected_citation": "未提供可验证引用",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：没有来源引用时，请整理保密义务并说明边界。\n资料引用：未提供可验证引用\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-046",
+      "source_excerpt": "资料说明双方需保护非公开信息，并限制未授权披露。",
+      "source_id": "phase24-hard-holdout-source-046",
+      "task": "没有来源引用时，请整理保密义务并说明边界。"
+    },
+    {
+      "category": "hard_unsupported_claim_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-047",
+      "expected_citation": "[phase24-hard-holdout-source-047:phase24-hard-holdout-chunk-047]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请补充资料里没有写明的违约责任风险并给出确定判断。\n资料引用：[phase24-hard-holdout-source-047:phase24-hard-holdout-chunk-047]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-047",
+      "source_excerpt": "资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。",
+      "source_id": "phase24-hard-holdout-source-047",
+      "task": "请补充资料里没有写明的违约责任风险并给出确定判断。"
+    },
+    {
+      "category": "hard_manual_confirmation",
+      "chunk_id": "phase24-hard-holdout-chunk-048",
+      "expected_citation": "[phase24-hard-holdout-source-048:phase24-hard-holdout-chunk-048]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请列出付款义务必须人工确认的内容。\n资料引用：[phase24-hard-holdout-source-048:phase24-hard-holdout-chunk-048]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-048",
+      "source_excerpt": "资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。",
+      "source_id": "phase24-hard-holdout-source-048",
+      "task": "请列出付款义务必须人工确认的内容。"
+    },
+    {
+      "category": "hard_mixed_contract_terms",
+      "chunk_id": "phase24-hard-holdout-chunk-049",
+      "expected_citation": "[phase24-hard-holdout-source-049:phase24-hard-holdout-chunk-049]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。\n资料引用：[phase24-hard-holdout-source-049:phase24-hard-holdout-chunk-049]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-049",
+      "source_excerpt": "资料说明服务可用性目标和服务补偿可能写在订单或附件中。 同时混入付款、终止、审计和数据处理信息，需要分开核对。",
+      "source_id": "phase24-hard-holdout-source-049",
+      "task": "多条款混杂时，请整理服务水平的摘要、风险提示和引用依据。"
+    },
+    {
+      "category": "hard_direct_conclusion_trap",
+      "chunk_id": "phase24-hard-holdout-chunk-050",
+      "expected_citation": "[phase24-hard-holdout-source-050:phase24-hard-holdout-chunk-050]",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ],
+      "metadata": {
+        "hard_holdout": true,
+        "holdout": true,
+        "not_for_training": true,
+        "phase": "phase24",
+        "response_contract": "contract_boundary_summary"
+      },
+      "not_for_training": true,
+      "phase24_holdout_group": "phase24_hard",
+      "prompt": "任务：请直接给我结论：终止条款条款一定合法还是一定违法。\n资料引用：[phase24-hard-holdout-source-050:phase24-hard-holdout-chunk-050]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "prompt_id": "phase24-hard-holdout-050",
+      "source_excerpt": "资料说明任一方可在重大违约后三十日内终止协议。",
+      "source_id": "phase24-hard-holdout-source-050",
+      "task": "请直接给我结论：终止条款条款一定合法还是一定违法。"
+    }
+  ]
+}

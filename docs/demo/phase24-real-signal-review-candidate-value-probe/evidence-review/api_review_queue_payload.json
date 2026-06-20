@@ -1,0 +1,4165 @@
+{
+  "auto_promotion_allowed": false,
+  "kind": "phase24_review_queue_surface",
+  "queue": {
+    "created_at": "2026-06-20T22:12:09.807468+00:00",
+    "items": [
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-001",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-001",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807328+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-002",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-002",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807330+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-003",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-003",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807332+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-004",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-004",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807333+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-005",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-005",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807335+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-006",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-006",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807337+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-007",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-007",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807354+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-008",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-008",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807357+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-009",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-009",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807359+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-010",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-010",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807360+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-011",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-011",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807362+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-012",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-012",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807363+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "reason": "a single accept can support memory/review but is not enough for Phase23 training",
+          "requires_human_review": true,
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "queue_id": "phase24-review-phase24-signal-013",
+        "reason": "accept_not_enough_for_training",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-013",
+        "signal_type": "accept",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807365+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-014",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-014",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807366+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-015",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-015",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807367+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-016",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-016",
+        "signal_type": "preference",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807369+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-017",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-017",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807370+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-018",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-018",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807371+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-019",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-019",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807373+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-020",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-020",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807374+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-021",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-021",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807376+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-022",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-022",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807377+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-023",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-023",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807378+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-024",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-024",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807379+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-025",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-025",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807381+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-026",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-026",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807382+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-027",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-027",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807383+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-028",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-028",
+        "signal_type": "preference",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807385+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-029",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-029",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807386+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-030",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-030",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807387+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-031",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-031",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807388+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "low-information feedback cannot form a training target",
+          "requires_human_review": true,
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-032",
+        "reason": "low_information_feedback",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-032",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807390+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "reason": "a single accept can support memory/review but is not enough for Phase23 training",
+          "requires_human_review": true,
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "queue_id": "phase24-review-phase24-signal-033",
+        "reason": "accept_not_enough_for_training",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-033",
+        "signal_type": "accept",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807392+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-034",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-034",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807393+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-035",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-035",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807395+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-036",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-036",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807396+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-037",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-037",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807397+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-038",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-038",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807399+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-039",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-039",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807400+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-040",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-040",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807401+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-041",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-041",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807403+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-042",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-042",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807404+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-043",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-043",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807405+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "low-information feedback cannot form a training target",
+          "requires_human_review": true,
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-044",
+        "reason": "low_information_feedback",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-044",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807407+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-045",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-045",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807408+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-046",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-046",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807409+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-047",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-047",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807410+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-048",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-048",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807411+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-049",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-049",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807413+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-050",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-050",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807414+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-051",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-051",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807416+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-052",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-052",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807417+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-053",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-053",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807418+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-054",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-054",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807420+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-055",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-055",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807421+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-056",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-056",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807422+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-057",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-057",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807424+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-058",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-058",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807425+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-059",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-059",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807426+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-060",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-060",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807428+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-061",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-061",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807429+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-062",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-062",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807430+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-063",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-063",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807432+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-064",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-064",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807433+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-065",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-065",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807434+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-066",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-066",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807436+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-067",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-067",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807437+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-068",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-068",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807438+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-069",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-069",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807440+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-070",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-070",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807441+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-071",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-071",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807443+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-072",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-072",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807444+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "reason": "a single accept can support memory/review but is not enough for Phase23 training",
+          "requires_human_review": true,
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "queue_id": "phase24-review-phase24-signal-073",
+        "reason": "accept_not_enough_for_training",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-073",
+        "signal_type": "accept",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807445+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-074",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-074",
+        "signal_type": "correction",
+        "state": "pending_review",
+        "updated_at": "2026-06-20T22:12:09.807451+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-075",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-075",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807452+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-076",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-076",
+        "signal_type": "preference",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807454+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-077",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-077",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807455+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-078",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-078",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807457+00:00"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-079",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-079",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807459+00:00"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "low-information feedback cannot form a training target",
+          "requires_human_review": true,
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-080",
+        "reason": "low_information_feedback",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-080",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807460+00:00"
+      }
+    ],
+    "kind": "phase24_review_queue",
+    "queue_count": 80,
+    "state_counts": {
+      "excluded": 53,
+      "needs_more_context": 10,
+      "pending_review": 17
+    }
+  },
+  "review_summary": {
+    "created_at": "2026-06-20T22:12:09.807838+00:00",
+    "items": [
+      {
+        "decided_at": "2026-06-20T22:12:09.807496+00:00",
+        "decision_reason": "pii_detected",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-001",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-001",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807328+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807502+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-002",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-002",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807330+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807505+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-003",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-003",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807332+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807510+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-004",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-004",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807333+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807514+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-005",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-005",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807335+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807519+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-006",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-006",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807337+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807523+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-007",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-007",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807354+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807529+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-008",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-008",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807357+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807533+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-009",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-009",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807359+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807538+00:00",
+        "decision_reason": "contract_output_incomplete",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-010",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-010",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807360+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807543+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-011",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-011",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807362+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807547+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-012",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-012",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807363+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807550+00:00",
+        "decision_reason": "accept_not_enough_for_training",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "reason": "a single accept can support memory/review but is not enough for Phase23 training",
+          "requires_human_review": true,
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "queue_id": "phase24-review-phase24-signal-013",
+        "reason": "accept_not_enough_for_training",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-013",
+        "signal_type": "accept",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807365+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807555+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-014",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-014",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807366+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807559+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-015",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-015",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807367+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807562+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-016",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-016",
+        "signal_type": "preference",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807369+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807567+00:00",
+        "decision_reason": "external_law_inducement",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-017",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-017",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807370+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807571+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-018",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-018",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807371+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807575+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-019",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-019",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807373+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807578+00:00",
+        "decision_reason": "pii_detected",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-020",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-020",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807374+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807582+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-021",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-021",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807376+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807586+00:00",
+        "decision_reason": "contract_output_incomplete",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-022",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-022",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807377+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807589+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-023",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-023",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807378+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807600+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-024",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-024",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807379+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807605+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-025",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-025",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807381+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807609+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-026",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-026",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807382+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807613+00:00",
+        "decision_reason": "external_law_inducement",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-027",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-027",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807383+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807617+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-028",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-028",
+        "signal_type": "preference",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807385+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807621+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-029",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-029",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807386+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807625+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-030",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-030",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807387+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807629+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-031",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-031",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807388+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807633+00:00",
+        "decision_reason": "low_information_feedback",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "low-information feedback cannot form a training target",
+          "requires_human_review": true,
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-032",
+        "reason": "low_information_feedback",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-032",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807390+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807636+00:00",
+        "decision_reason": "accept_not_enough_for_training",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "reason": "a single accept can support memory/review but is not enough for Phase23 training",
+          "requires_human_review": true,
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "queue_id": "phase24-review-phase24-signal-033",
+        "reason": "accept_not_enough_for_training",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-033",
+        "signal_type": "accept",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807392+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807640+00:00",
+        "decision_reason": "contract_output_incomplete",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-034",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-034",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807393+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807644+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-035",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-035",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807395+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807648+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-036",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-036",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807396+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807652+00:00",
+        "decision_reason": "external_law_inducement",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-037",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-037",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807397+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807656+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-038",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-038",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807399+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807658+00:00",
+        "decision_reason": "pii_detected",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-039",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-039",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807400+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807662+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-040",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-040",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807401+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807666+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-041",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-041",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807403+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807670+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-042",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-042",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807404+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807673+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-043",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-043",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807405+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807677+00:00",
+        "decision_reason": "low_information_feedback",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "low-information feedback cannot form a training target",
+          "requires_human_review": true,
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-044",
+        "reason": "low_information_feedback",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-044",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807407+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807681+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-045",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-045",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807408+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807685+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-046",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-046",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807409+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807689+00:00",
+        "decision_reason": "external_law_inducement",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-047",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-047",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807410+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807693+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-048",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-048",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807411+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807697+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-049",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-049",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807413+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807701+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-050",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-050",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807414+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807705+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-051",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-051",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807416+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807710+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-052",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-052",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807417+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807712+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-053",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-053",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807418+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807717+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-054",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-054",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807420+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807722+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-055",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-055",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807421+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807726+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-056",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-056",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807422+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807729+00:00",
+        "decision_reason": "external_law_inducement",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-057",
+        "reason": "external_law_inducement",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-057",
+        "signal_type": "accept",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807424+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807732+00:00",
+        "decision_reason": "pii_detected",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-058",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-058",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807425+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807736+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-059",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-059",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807426+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807740+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-060",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-060",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807428+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807744+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-061",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-061",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807429+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807748+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-062",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-062",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807430+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807751+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-063",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-063",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807432+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807755+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-064",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-064",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807433+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807759+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-065",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-065",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807434+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807763+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-066",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-066",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807436+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807767+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-067",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-067",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807437+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807771+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-068",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-068",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807438+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807775+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-069",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-069",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807440+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807779+00:00",
+        "decision_reason": "contract_output_incomplete",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "training targets must keep four sections, citation, and explicit boundary",
+          "requires_human_review": true,
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-070",
+        "reason": "contract_output_incomplete",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-070",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807441+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807783+00:00",
+        "decision_reason": "requires_positive_pair",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "reason": "reject is negative evidence until paired with a chosen output",
+          "requires_human_review": true,
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "queue_id": "phase24-review-phase24-signal-071",
+        "reason": "requires_positive_pair",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-071",
+        "signal_type": "reject",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807443+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807787+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-072",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-072",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807444+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807790+00:00",
+        "decision_reason": "accept_not_enough_for_training",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "reason": "a single accept can support memory/review but is not enough for Phase23 training",
+          "requires_human_review": true,
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "queue_id": "phase24-review-phase24-signal-073",
+        "reason": "accept_not_enough_for_training",
+        "recommended_state": "needs_more_context",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-073",
+        "signal_type": "accept",
+        "state": "needs_more_context",
+        "updated_at": "2026-06-20T22:12:09.807445+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807794+00:00",
+        "decision_reason": "phase23_safe_candidate_and_phase24_review_approved",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "queue_id": "phase24-review-phase24-signal-074",
+        "reason": "eligible_after_phase23_rules_pending_phase24_review",
+        "recommended_state": "pending_review",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-074",
+        "signal_type": "correction",
+        "state": "approved_for_candidate",
+        "updated_at": "2026-06-20T22:12:09.807451+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807811+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-075",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-075",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807452+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807816+00:00",
+        "decision_reason": "high_risk_domain_conclusion",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "high-risk or externally induced conclusions stay out of training candidates",
+          "requires_human_review": true,
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-076",
+        "reason": "high_risk_domain_conclusion",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-076",
+        "signal_type": "preference",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807454+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807819+00:00",
+        "decision_reason": "pii_detected",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "reason": "PII risk is excluded before training candidate generation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-077",
+        "reason": "detected_high_risk_pii",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-077",
+        "signal_type": "reject",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807455+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807823+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-078",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-078",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807457+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807827+00:00",
+        "decision_reason": "safety_block",
+        "feedback_source": "scripted_probe_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "safety blocks are audit evidence, not training data",
+          "requires_human_review": true,
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-079",
+        "reason": "safety_block",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-079",
+        "signal_type": "safety_block",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807459+00:00"
+      },
+      {
+        "decided_at": "2026-06-20T22:12:09.807831+00:00",
+        "decision_reason": "low_information_feedback",
+        "feedback_source": "curated_review_feedback",
+        "phase23_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "reason": "low-information feedback cannot form a training target",
+          "requires_human_review": true,
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "queue_id": "phase24-review-phase24-signal-080",
+        "reason": "low_information_feedback",
+        "recommended_state": "excluded",
+        "reviewer": "phase24_rule_reviewer",
+        "signal_id": "phase24-signal-080",
+        "signal_type": "correction",
+        "state": "excluded",
+        "updated_at": "2026-06-20T22:12:09.807460+00:00"
+      }
+    ],
+    "kind": "phase24_reviewed_signals",
+    "reviewed_count": 80,
+    "state_counts": {
+      "approved_for_candidate": 17,
+      "excluded": 53,
+      "needs_more_context": 10
+    }
+  },
+  "status": "ready"
+}
