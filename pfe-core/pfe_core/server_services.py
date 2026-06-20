@@ -118,13 +118,18 @@ class InferenceServiceAdapter:
 
         import os
         workspace = os.environ.get("PFE_WORKSPACE")
+        metadata = dict(request.metadata or {})
+        if getattr(request, "response_contract", None):
+            metadata["response_contract"] = request.response_contract
+        if routing_info:
+            metadata["routing"] = routing_info
         payload = self.pipeline.chat_completion(
             messages=messages,
             model=request.model,
             adapter_version=adapter_version,
             temperature=request.temperature,
             max_tokens=request.max_tokens,
-            metadata={**(request.metadata or {}), "routing": routing_info} if routing_info else request.metadata,
+            metadata=metadata,
             request_id=request.request_id,
             session_id=request.session_id,
             workspace=workspace,

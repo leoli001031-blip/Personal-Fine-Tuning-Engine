@@ -14,6 +14,12 @@ import json
 import os
 
 from .backends import plan_inference_backend
+from .contracts import (
+    BOUNDARY_CONTRACT_ID,
+    apply_response_contract,
+    enforce_boundary_contract_output,
+    resolve_response_contract,
+)
 from .export import plan_export
 from ..errors import AdapterError, InferenceError
 
@@ -729,10 +735,17 @@ class InferenceEngine:
     def generate(self, messages: list[dict], **kwargs) -> str:
         if not messages:
             raise InferenceError("messages cannot be empty")
+        metadata = _safe_metadata_dict(kwargs.get("metadata"))
+        response_contract = resolve_response_contract(metadata=metadata)
+        contract_messages = messages
+        contract_info: dict[str, object] = {"applied": False, "contract": None}
+        if response_contract == BOUNDARY_CONTRACT_ID:
+            contract_messages, contract_info = apply_response_contract(messages, metadata)
+            metadata = {**metadata, "response_contract": response_contract}
+            kwargs = {**kwargs, "metadata": metadata}
         last_user = next((message.get("content", "") for message in reversed(messages) if message.get("role") == "user"), "")
         if not last_user:
             last_user = messages[-1].get("content", "")
-        metadata = kwargs.get("metadata")
         real_local_enabled = self._real_local_inference_enabled(metadata)
 
         if real_local_enabled:
@@ -744,20 +757,57 @@ class InferenceEngine:
             )
             runtime_attempts = []
             if primary_runtime == "llama_cpp":
-                runtime_attempts.append(("llama_cpp", lambda: self._generate_llama_cpp_response(messages, resolved_base_model=resolved_base_model, **kwargs)))
+                runtime_attempts.append(
+                    (
+                        "llama_cpp",
+                        lambda: self._generate_llama_cpp_response(
+                            contract_messages,
+                            resolved_base_model=resolved_base_model,
+                            **kwargs,
+                        ),
+                    )
+                )
             if primary_runtime != "llama_cpp":
-                runtime_attempts.append(("transformers", lambda: self._generate_real_response(messages, resolved_base_model=resolved_base_model, **kwargs)))
-                runtime_attempts.append(("llama_cpp", lambda: self._generate_llama_cpp_response(messages, resolved_base_model=resolved_base_model, **kwargs)))
+                runtime_attempts.append(
+                    (
+                        "transformers",
+                        lambda: self._generate_real_response(
+                            contract_messages,
+                            resolved_base_model=resolved_base_model,
+                            **kwargs,
+                        ),
+                    )
+                )
+                runtime_attempts.append(
+                    (
+                        "llama_cpp",
+                        lambda: self._generate_llama_cpp_response(
+                            contract_messages,
+                            resolved_base_model=resolved_base_model,
+                            **kwargs,
+                        ),
+                    )
+                )
 
             attempted_failures: list[str] = []
             for runtime_name, runner in runtime_attempts:
                 try:
                     response = runner()
+                    text = str(response["text"])
+                    if response_contract == BOUNDARY_CONTRACT_ID:
+                        text, contract_output = enforce_boundary_contract_output(
+                            text,
+                            messages=messages,
+                            metadata=metadata,
+                        )
+                        response["text"] = text
+                        response["response_contract"] = contract_info
+                        response["contract_output"] = contract_output
                     self.last_generation_info = dict(response)
                     self.last_generation_info["real_local_enabled"] = True
                     if attempted_failures:
                         self.last_generation_info["previous_runtime_failures"] = attempted_failures
-                    return str(response["text"])
+                    return text
                 except Exception as exc:
                     attempted_failures.append(f"{runtime_name}: {exc.__class__.__name__}: {exc}")
             self.last_generation_info = {
@@ -784,6 +834,15 @@ class InferenceEngine:
                 "real_local_enabled": False,
             }
 
+        if response_contract == BOUNDARY_CONTRACT_ID:
+            fallback, contract_output = enforce_boundary_contract_output(
+                "",
+                messages=messages,
+                metadata=metadata,
+            )
+            self.last_generation_info["response_contract"] = contract_info
+            self.last_generation_info["contract_output"] = contract_output
+            return fallback
         if self.adapter_manifest:
             version = self.adapter_manifest.get("version", "latest")
             return (
