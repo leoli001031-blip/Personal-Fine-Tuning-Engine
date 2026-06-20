@@ -1,0 +1,336 @@
+{
+  "candidate_c_mid_model": {
+    "eval": {
+      "eval_gate": {
+        "auto_promotion_allowed": false,
+        "promotion_allowed": false,
+        "reasons": [
+          "training_not_completed"
+        ],
+        "recommendation": "archive",
+        "status": "blocked"
+      },
+      "real_model_calls": false,
+      "recommendation": "archive",
+      "scores": null
+    },
+    "training": {
+      "real_training": "not_started",
+      "skip_reason": "skip_real_models",
+      "training_run": false
+    }
+  },
+  "created_at": "2026-06-20T06:30:08.195842+00:00",
+  "dataset": {
+    "candidate_samples": {
+      "count": 120,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase14-hard-negative-boundary-training/evidence/candidate_samples.jsonl"
+    },
+    "holdout": {
+      "count": 80,
+      "not_for_training": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase14-hard-negative-boundary-training/evidence/holdout.json"
+    },
+    "preference_pairs": {
+      "count": 120,
+      "not_for_mlx_training": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase14-hard-negative-boundary-training/evidence/preference_pairs.jsonl"
+    },
+    "quality_report": {
+      "candidate_passed_count": 120,
+      "candidate_sample_count": 120,
+      "created_at": "2026-06-20T06:30:08.186406+00:00",
+      "hard_negative_preference_pair_count": 120,
+      "holdout_chunk_ids": [
+        "phase14-holdout-chunk-001",
+        "phase14-holdout-chunk-002",
+        "phase14-holdout-chunk-003",
+        "phase14-holdout-chunk-004",
+        "phase14-holdout-chunk-005",
+        "phase14-holdout-chunk-006",
+        "phase14-holdout-chunk-007",
+        "phase14-holdout-chunk-008",
+        "phase14-holdout-chunk-009",
+        "phase14-holdout-chunk-010",
+        "phase14-holdout-chunk-011",
+        "phase14-holdout-chunk-012",
+        "phase14-holdout-chunk-013",
+        "phase14-holdout-chunk-014",
+        "phase14-holdout-chunk-015",
+        "phase14-holdout-chunk-016",
+        "phase14-holdout-chunk-017",
+        "phase14-holdout-chunk-018",
+        "phase14-holdout-chunk-019",
+        "phase14-holdout-chunk-020",
+        "phase14-holdout-chunk-021",
+        "phase14-holdout-chunk-022",
+        "phase14-holdout-chunk-023",
+        "phase14-holdout-chunk-024",
+        "phase14-holdout-chunk-025",
+        "phase14-holdout-chunk-026",
+        "phase14-holdout-chunk-027",
+        "phase14-holdout-chunk-028",
+        "phase14-holdout-chunk-029",
+        "phase14-holdout-chunk-030",
+        "phase14-holdout-chunk-031",
+        "phase14-holdout-chunk-032",
+        "phase14-holdout-chunk-033",
+        "phase14-holdout-chunk-034",
+        "phase14-holdout-chunk-035",
+        "phase14-holdout-chunk-036",
+        "phase14-holdout-chunk-037",
+        "phase14-holdout-chunk-038",
+        "phase14-holdout-chunk-039",
+        "phase14-holdout-chunk-040",
+        "phase14-holdout-chunk-041",
+        "phase14-holdout-chunk-042",
+        "phase14-holdout-chunk-043",
+        "phase14-holdout-chunk-044",
+        "phase14-holdout-chunk-045",
+        "phase14-holdout-chunk-046",
+        "phase14-holdout-chunk-047",
+        "phase14-holdout-chunk-048",
+        "phase14-holdout-chunk-049",
+        "phase14-holdout-chunk-050",
+        "phase14-holdout-chunk-051",
+        "phase14-holdout-chunk-052",
+        "phase14-holdout-chunk-053",
+        "phase14-holdout-chunk-054",
+        "phase14-holdout-chunk-055",
+        "phase14-holdout-chunk-056",
+        "phase14-holdout-chunk-057",
+        "phase14-holdout-chunk-058",
+        "phase14-holdout-chunk-059",
+        "phase14-holdout-chunk-060",
+        "phase14-holdout-chunk-061",
+        "phase14-holdout-chunk-062",
+        "phase14-holdout-chunk-063",
+        "phase14-holdout-chunk-064",
+        "phase14-holdout-chunk-065",
+        "phase14-holdout-chunk-066",
+        "phase14-holdout-chunk-067",
+        "phase14-holdout-chunk-068",
+        "phase14-holdout-chunk-069",
+        "phase14-holdout-chunk-070",
+        "phase14-holdout-chunk-071",
+        "phase14-holdout-chunk-072",
+        "phase14-holdout-chunk-073",
+        "phase14-holdout-chunk-074",
+        "phase14-holdout-chunk-075",
+        "phase14-holdout-chunk-076",
+        "phase14-holdout-chunk-077",
+        "phase14-holdout-chunk-078",
+        "phase14-holdout-chunk-079",
+        "phase14-holdout-chunk-080"
+      ],
+      "kind": "phase14_quality_report",
+      "meets_quality_goal": true,
+      "mlx_backend_train_type": "sft",
+      "rejected_failure_counts": {
+        "external_law_reference": 84,
+        "legal_conclusion": 120,
+        "unsupported_assertions": 120
+      },
+      "split_counts": {
+        "train": 102,
+        "val": 18
+      },
+      "training_strategy": "hard_negative_sft_curriculum_with_rejected_pairs_saved_not_trained_by_mlx_sft"
+    },
+    "source_manifest": {
+      "candidate_source_count": 120,
+      "created_at": "2026-06-20T06:30:08.186173+00:00",
+      "external_legal_sources_allowed": false,
+      "holdout_count": 80,
+      "kind": "phase14_source_manifest",
+      "source_mode": "synthetic_contract_boundary_hard_negative_curriculum_no_external_fetch"
+    }
+  },
+  "kind": "phase14_hard_negative_boundary_training_summary",
+  "model_selection": {
+    "checked": [
+      {
+        "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit",
+        "cache_present": true,
+        "model_id": "mlx-community/Qwen3-8B-4bit",
+        "preflight": {
+          "allow_remote_download": true,
+          "backend": "mlx",
+          "base_model_source": "Qwen/Qwen3.6-27B",
+          "blocked_by": [],
+          "dependencies": {
+            "mlx": true,
+            "mlx_lm": true
+          },
+          "disk": {
+            "cache_root": "/Users/lichenhao/.cache/huggingface",
+            "free_gb": 1022.61,
+            "min_required_gb": 10.0
+          },
+          "kind": "phase6_qwen36_mlx_preflight",
+          "model_id": "mlx-community/Qwen3-8B-4bit",
+          "model_path": "",
+          "model_status": "remote_hub_model",
+          "ready_for_real_training": true,
+          "recommended_training": {
+            "backend": "mlx",
+            "batch_size": 1,
+            "epochs": 1,
+            "grad_accumulation": 8,
+            "lora_rank": 8,
+            "seq_length": 2048,
+            "train_type": "sft"
+          },
+          "require_local_model": false,
+          "status": "ready",
+          "system": {
+            "machine": "arm64",
+            "memory_gb": 128.0,
+            "processor": "arm",
+            "python": "3.11.15",
+            "system": "Darwin"
+          },
+          "warnings": []
+        },
+        "snapshot_count": 1
+      }
+    ],
+    "created_at": "2026-06-20T06:30:08.194134+00:00",
+    "selected": "mlx-community/Qwen3-8B-4bit",
+    "status": "selected"
+  },
+  "output_examples_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase14-hard-negative-boundary-training/evidence/output_examples.md",
+  "phase13_reference": {
+    "created_at": "2026-06-20T06:30:08.165953+00:00",
+    "kind": "phase14_phase13_reference",
+    "phase13_final_decision_excerpt": "# Phase13 Final Decision\n\n## Runtime Contract\n\n- Contract id: contract_boundary_summary\n- Runtime/API field: response_contract\n- Output: 摘要 / 风险提示 / 引用依据 / 人工确认\n\n## Qwen3.6 Boundary Base\n\n- Status: completed\n- Scores: `{\"citation_hit_rate\": 1.0, \"explicit_boundary_rate\": 1.0, \"external_law_reference_rate\": 0.0, \"extra_text_after_first_block_rate\": 0.0, \"safety_boundary_rate\": 1.0, \"structure_hit_rate\": 1.0, \"think_leak_rate\": 0.0, \"unsupported_assertions\": 0}`\n\n## Mid Model Training\n\n- Model: mlx-community/Qwen3-8B-4bit\n- Real training: completed\n- Adapter path: /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/adapters\n- Error type: None\n\n## Mid Model Probe Results\n\n- 12-step adapter: structure 1.0, citation 0.933, safety 0.9, external law reference 0.033, unsupported assertions 4, recommendation archive.\n- 30-step adapter: structure 1.0, citation 0.967, safety 0.967, external law reference 0.5, unsupported assertions 16, recommendation archive.\n- 8B base reference: structure 1.0, citation 0.933, safety 1.0, external law reference 0.033, unsupported assertions 1.\n- 30-step improves citation slightly over the 8B base, but it increases external-law leakage an",
+    "phase13_mid_model": {
+      "eval": {
+        "eval_gate": {
+          "auto_promotion_allowed": false,
+          "manual_review_required": false,
+          "promotion_allowed": false,
+          "reasons": [
+            "adapter_citation_hit_rate_below_qwen36_boundary_base",
+            "adapter_safety_boundary_rate_below_qwen36_boundary_base",
+            "adapter_unsupported_assertions_above_qwen36_boundary_base",
+            "adapter_external_law_reference_present"
+          ],
+          "recommendation": "archive",
+          "status": "blocked"
+        },
+        "real_model_calls": true,
+        "recommendation": "archive",
+        "scores": {
+          "adapter": {
+            "citation_hit_rate": 0.967,
+            "explicit_boundary_rate": 1.0,
+            "external_law_reference_rate": 0.5,
+            "extra_text_after_first_block_rate": 0.0,
+            "safety_boundary_rate": 0.967,
+            "structure_hit_rate": 1.0,
+            "think_leak_rate": 0.0,
+            "unsupported_assertions": 16
+          },
+          "base": {
+            "citation_hit_rate": 0.933,
+            "explicit_boundary_rate": 1.0,
+            "external_law_reference_rate": 0.033,
+            "extra_text_after_first_block_rate": 0.0,
+            "safety_boundary_rate": 1.0,
+            "structure_hit_rate": 1.0,
+            "think_leak_rate": 0.0,
+            "unsupported_assertions": 1
+          }
+        }
+      },
+      "training": {
+        "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/adapters",
+        "command": "/Users/lichenhao/Desktop/PFE/.venv/bin/python /Users/lichenhao/Desktop/PFE/tools/phase13_boundary_contract_probe.py --training-worker --mid-model-id mlx-community/Qwen3-8B-4bit --worker-train-data /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/phase13_train_rows.jsonl --worker-result /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/phase13_worker_result.json --training-output-dir /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step --training-steps 30 --train-max-seq-length 768",
+        "created_at": "2026-06-20T04:54:17.912285+00:00",
+        "duration_seconds": 43.605,
+        "format_report": {
+          "chat_template_applied_count": 48,
+          "chat_template_error_count": 0,
+          "chat_template_errors": [],
+          "selected_count": 48
+        },
+        "kind": "phase13_mid_model_training_worker_result",
+        "model_id": "mlx-community/Qwen3-8B-4bit",
+        "real_training": "completed",
+        "result": {
+          "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/adapters",
+          "config": {
+            "batch_size": 1,
+            "gradient_checkpointing": true,
+            "learning_rate": 5e-05,
+            "logging_steps": 1,
+            "lora_alpha": 16,
+            "lora_dropout": 0.0,
+            "lora_r": 8,
+            "max_seq_length": 768,
+            "num_epochs": 30,
+            "quantization_bits": 4,
+            "save_steps": 30,
+            "target_modules": [
+              "q_proj",
+              "v_proj"
+            ],
+            "warmup_steps": 0
+          },
+          "error": null,
+          "final_loss": 0.0,
+          "loss_history": [
+            0.0
+          ],
+          "metadata": {
+            "base_model": "mlx-community/Qwen3-8B-4bit",
+            "data_file": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/train_data.jsonl",
+            "dataset_format": "prompt_completion_output_only_loss",
+            "device": "Device(gpu, 0)",
+            "output_only_loss_masking": true
+          },
+          "num_samples": 48,
+          "num_steps": 30,
+          "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step",
+          "success": true
+        },
+        "train_sample_count": 48,
+        "training_output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step",
+        "training_run": true,
+        "training_steps": 30,
+        "worker_returncode": 0
+      }
+    },
+    "phase13_summary_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase13-boundary-contract-runtime-and-trainable-probe/comparison_summary.json",
+    "qwen36_boundary_base": {
+      "scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "status": "completed"
+    }
+  },
+  "runtime_contract": {
+    "contracted_messages": {
+      "applied": true,
+      "auto_promotion_allowed": false,
+      "contract": "contract_boundary_summary",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ]
+    },
+    "created_at": "2026-06-20T06:30:08.187003+00:00",
+    "fallback_output": "摘要：资料引用：[smoke:chunk] 请结合《民法典》判断能不能签。\n风险提示：仅能基于已提供资料做整理和风险提示，不判断合法/违法。\n引用依据：[smoke:chunk]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+    "kind": "phase14_runtime_contract_smoke"
+  }
+}
