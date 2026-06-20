@@ -35,6 +35,7 @@ class ChatCompletionRequest(PFEBaseModel):
     max_tokens: Optional[int] = None
     stream: bool = False
     adapter_version: Optional[str] = None
+    response_contract: Optional[str] = None
     request_id: Optional[str] = None
     session_id: Optional[str] = None
     metadata: dict[str, Any] = Field(default_factory=dict)

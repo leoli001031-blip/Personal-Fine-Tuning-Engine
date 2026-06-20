@@ -1,0 +1,57 @@
+{
+  "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/adapters",
+  "command": "/Users/lichenhao/Desktop/PFE/.venv/bin/python /Users/lichenhao/Desktop/PFE/tools/phase13_boundary_contract_probe.py --training-worker --mid-model-id mlx-community/Qwen3-8B-4bit --worker-train-data /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/phase13_train_rows.jsonl --worker-result /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/phase13_worker_result.json --training-output-dir /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step --training-steps 30 --train-max-seq-length 768",
+  "created_at": "2026-06-20T04:54:17.912285+00:00",
+  "duration_seconds": 43.605,
+  "format_report": {
+    "chat_template_applied_count": 48,
+    "chat_template_error_count": 0,
+    "chat_template_errors": [],
+    "selected_count": 48
+  },
+  "kind": "phase13_mid_model_training_worker_result",
+  "model_id": "mlx-community/Qwen3-8B-4bit",
+  "real_training": "completed",
+  "result": {
+    "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/adapters",
+    "config": {
+      "batch_size": 1,
+      "gradient_checkpointing": true,
+      "learning_rate": 5e-05,
+      "logging_steps": 1,
+      "lora_alpha": 16,
+      "lora_dropout": 0.0,
+      "lora_r": 8,
+      "max_seq_length": 768,
+      "num_epochs": 30,
+      "quantization_bits": 4,
+      "save_steps": 30,
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "warmup_steps": 0
+    },
+    "error": null,
+    "final_loss": 0.0,
+    "loss_history": [
+      0.0
+    ],
+    "metadata": {
+      "base_model": "mlx-community/Qwen3-8B-4bit",
+      "data_file": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/train_data.jsonl",
+      "dataset_format": "prompt_completion_output_only_loss",
+      "device": "Device(gpu, 0)",
+      "output_only_loss_masking": true
+    },
+    "num_samples": 48,
+    "num_steps": 30,
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step",
+    "success": true
+  },
+  "train_sample_count": 48,
+  "training_output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step",
+  "training_run": true,
+  "training_steps": 30,
+  "worker_returncode": 0
+}

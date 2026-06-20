@@ -74,6 +74,11 @@ from .studio_training_contracts import (
     training_request_from_body as studio_training_request_from_body,
 )
 from .studio_training_service import start_training_job as start_studio_training_job
+from pfe_core.inference.contracts import (
+    BOUNDARY_CONTRACT_ID,
+    build_boundary_contract_fallback,
+    resolve_response_contract,
+)
 
 # ChatCollector integration - import from pfe_core if available
 def _try_import_chat_collector() -> tuple[bool, Any, Any, Any]:
@@ -370,7 +375,14 @@ class MockInferenceService:
             if message.role == "user" and message.content:
                 last_user = message.content
                 break
-        reply = self._build_reply(last_user=last_user, metadata=request.metadata)
+        metadata = dict(request.metadata or {})
+        if request.response_contract:
+            metadata["response_contract"] = request.response_contract
+        reply = self._build_reply(
+            last_user=last_user,
+            metadata=metadata,
+            messages=[message.model_dump(mode="json") for message in request.messages],
+        )
         completion_tokens = max(1, math.ceil(len(reply) / 4))
         prompt_tokens = max(1, math.ceil(sum(len(m.content or "") for m in request.messages) / 4))
         return ChatCompletionResponse(
@@ -392,7 +404,7 @@ class MockInferenceService:
             served_by="mock",
             metadata={
                 "note": "OpenAI-compatible inference only; personalization requires /pfe/signal.",
-                "request_metadata": request.metadata,
+                "request_metadata": metadata,
             },
         )
 
@@ -447,7 +459,14 @@ class MockInferenceService:
             extraction_rule=f"mock_{action}",
         )]
 
-    def _build_reply(self, last_user: str, metadata: Mapping[str, Any]) -> str:
+    def _build_reply(
+        self,
+        last_user: str,
+        metadata: Mapping[str, Any],
+        messages: list[dict[str, Any]] | None = None,
+    ) -> str:
+        if resolve_response_contract(metadata=metadata) == BOUNDARY_CONTRACT_ID:
+            return build_boundary_contract_fallback(messages or [{"role": "user", "content": last_user}], metadata)
         style = str(metadata.get("style_hint", "helpful")) if metadata else "helpful"
         if last_user:
             return f"[mock-{style}] I heard: {last_user}"
