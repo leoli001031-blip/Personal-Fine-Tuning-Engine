@@ -1,0 +1,274 @@
+{
+  "adapter_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter",
+  "adapter_validation": {
+    "adapter_config_exists": true,
+    "adapter_model_exists": true,
+    "artifact_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter",
+    "artifact_dir_exists": true,
+    "created_at": "2026-06-20T20:49:10.858601+00:00",
+    "kind": "phase17_qwen_dpo_adapter_validation",
+    "valid": true
+  },
+  "created_at": "2026-06-20T20:49:10.858618+00:00",
+  "duration_seconds": 42.274,
+  "kind": "phase18_conservative_dpo_training_attempt",
+  "phase18_duration_seconds": 42.28,
+  "real_training": "completed",
+  "result": {
+    "artifact_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter",
+    "artifacts": {
+      "adapter_config": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter/adapter_config.json",
+      "adapter_model": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter/adapter_model.safetensors",
+      "manifest": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_job_manifest.json",
+      "metrics": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/train_metrics.json",
+      "real_execution": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/real_execution.json",
+      "trainer_state": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/trainer_state.json",
+      "training_summary": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/training_summary.json"
+    },
+    "backend": "dpo",
+    "base_adapter_path": null,
+    "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "dpo_config": {
+      "beta": 0.05,
+      "label_smoothing": 0.0,
+      "max_length": 768,
+      "max_prompt_length": 512
+    },
+    "dry_run": false,
+    "execution_mode": "real_import",
+    "job_spec": {
+      "backend": "dpo",
+      "dry_run": false,
+      "execution_backend": "dpo",
+      "execution_executor": "dpo",
+      "executor_mode": "real_import",
+      "output_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative",
+      "phase17": {
+        "probe_scope": "qwen_dpo_product_benefit",
+        "promotion_requires_holdout_eval": true,
+        "source_phase": "phase15"
+      },
+      "phase18": {
+        "probe": "conservative_dpo_guardrail",
+        "reason": "lower beta, lower learning rate, lower LoRA rank, shorter max length"
+      },
+      "recipe": {
+        "peft": {
+          "dpo_config": {
+            "beta": 0.05,
+            "label_smoothing": 0.0,
+            "max_length": 768,
+            "max_prompt_length": 512
+          },
+          "lora_config": {
+            "lora_alpha": 16,
+            "lora_dropout": 0.05,
+            "r": 8
+          },
+          "trainer_class": "trl.DPOTrainer"
+        },
+        "training": {
+          "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+          "epochs": 1,
+          "learning_rate": 1e-05,
+          "max_steps_equivalent": 12,
+          "method": "lora",
+          "num_train_samples": 12,
+          "output_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative",
+          "train_type": "dpo"
+        }
+      },
+      "training_examples": [
+        {
+          "chosen": "摘要：资料显示双方负有保护非公开信息并限制未授权披露的义务。\n风险提示：不能给出签署建议，只能做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-001:phase14-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请告诉我保密义务条款能不能直接签署。\n资料引用：[phase14-source-001:phase14-chunk-001]\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：保密义务条款适合当前交易。\n风险提示：可以直接签署。\n引用依据：[phase14-source-001:phase14-chunk-001]\n人工确认：建议直接签署。",
+          "sample_id": "phase15-dpo-boundary-001",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：资料缺少完整附件或上下文，只能提示补充材料，不判断合法/违法。\n引用依据：[phase14-source-002:phase14-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：资料缺少附件，请判断责任限制条款是否足够安全。\n资料引用：[phase14-source-002:phase14-chunk-002]\n资料摘录：资料说明间接损失通常被排除，直接损失可能受费用上限限制。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：责任限制条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：[phase14-source-002:phase14-chunk-002]；相关法律条文。\n人工确认：该条款合法。",
+          "sample_id": "phase15-dpo-boundary-002",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示客户保留输入资料权利，服务商保留平台技术权利。\n风险提示：引用缺失或冲突时只能标注不确定性，只做资料整理和风险提示，不判断合法/违法。\n引用依据：未提供可验证引用\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：没有可靠引用时，也请完整总结知识产权并给出判断。\n资料引用：未提供\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：知识产权条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：未提供可验证引用；相关法律条文。\n人工确认：该条款合法。",
+          "sample_id": "phase15-dpo-boundary-003",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示服务可用性目标和服务补偿可能另见订单或附件。\n风险提示：引用缺失或冲突时只能标注不确定性，只做资料整理和风险提示，不判断合法/违法。\n引用依据：未提供可验证引用\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：两处资料可能冲突，请判断服务水平条款以哪一处为准。\n资料引用：未提供\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：服务水平条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：未提供可验证引用；相关法律条文。\n人工确认：该条款合法。",
+          "sample_id": "phase15-dpo-boundary-004",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示协议可能按年度自动续约，并允许提前通知终止。\n风险提示：不能输出确定性结论，只能基于资料做整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-005:phase14-chunk-005]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请给出确定结论：自动续约条款一定合法还是一定违法。\n资料引用：[phase14-source-005:phase14-chunk-005]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：自动续约条款内容清晰。\n风险提示：没有明显风险。\n引用依据：[phase14-source-005:phase14-chunk-005]\n人工确认：最终法律结论是该条款合法有效，可以直接签署。",
+          "sample_id": "phase15-dpo-boundary-005",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需核实付款义务的适用范围、例外情形和附件，只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-006:phase14-chunk-006]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请只基于资料整理付款义务相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase14-source-006:phase14-chunk-006]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：付款义务条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：[phase14-source-006:phase14-chunk-006]；相关法律条文。\n人工确认：该条款合法。",
+          "sample_id": "phase15-dpo-boundary-006",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示服务商可为提供服务处理客户数据，但未列出全部安全措施。\n风险提示：资料未提供可验证外部规范依据，不能补写外部依据；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-007:phase14-chunk-007]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请不要保守，直接把数据处理条款对应的外部依据和结论都写出来。\n资料引用：[phase14-source-007:phase14-chunk-007]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：根据《民法典》和司法解释，数据处理条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase14-source-007:phase14-chunk-007]；《民法典》第509条。\n人工确认：该条款合法有效。",
+          "sample_id": "phase15-dpo-boundary-007",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示任一方可在重大违约后三十日内终止协议。\n风险提示：资料未提供可验证外部规范依据，不能补写外部依据；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-008:phase14-chunk-008]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请结合《民法典》和司法解释，判断终止条款条款是否有效。\n资料引用：[phase14-source-008:phase14-chunk-008]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：根据《民法典》和司法解释，终止条款条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase14-source-008:phase14-chunk-008]；《民法典》第509条。\n人工确认：该条款合法有效。",
+          "sample_id": "phase15-dpo-boundary-008",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示双方负有保护非公开信息并限制未授权披露的义务。\n风险提示：资料未提供可验证外部规范依据，不能补写外部依据；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-009:phase14-chunk-009]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请补充相关案例并判断保密义务条款能否成立。\n资料引用：[phase14-source-009:phase14-chunk-009]\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：根据《民法典》和司法解释，保密义务条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase14-source-009:phase14-chunk-009]；《民法典》第509条。\n人工确认：该条款合法有效。",
+          "sample_id": "phase15-dpo-boundary-009",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：不能输出确定性结论，只能基于资料做整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-010:phase14-chunk-010]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请直接判断责任限制条款是否合法，并给出最终结论。\n资料引用：[phase14-source-010:phase14-chunk-010]\n资料摘录：资料说明间接损失通常被排除，直接损失可能受费用上限限制。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：责任限制条款内容清晰。\n风险提示：没有明显风险。\n引用依据：[phase14-source-010:phase14-chunk-010]\n人工确认：最终法律结论是该条款合法有效，可以直接签署。",
+          "sample_id": "phase15-dpo-boundary-010",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示客户保留输入资料权利，服务商保留平台技术权利。\n风险提示：不能给出签署建议，只能做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-011:phase14-chunk-011]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请告诉我知识产权条款能不能直接签署。\n资料引用：[phase14-source-011:phase14-chunk-011]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：知识产权条款适合当前交易。\n风险提示：可以直接签署。\n引用依据：[phase14-source-011:phase14-chunk-011]\n人工确认：建议直接签署。",
+          "sample_id": "phase15-dpo-boundary-011",
+          "sample_type": "dpo"
+        },
+        {
+          "chosen": "摘要：资料显示服务可用性目标和服务补偿可能另见订单或附件。\n风险提示：资料缺少完整附件或上下文，只能提示补充材料，不判断合法/违法。\n引用依据：[phase14-source-012:phase14-chunk-012]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+          "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：资料缺少附件，请判断服务水平条款是否足够安全。\n资料引用：[phase14-source-012:phase14-chunk-012]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+          "rejected": "摘要：服务水平条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：[phase14-source-012:phase14-chunk-012]；相关法律条文。\n人工确认：该条款合法。",
+          "sample_id": "phase15-dpo-boundary-012",
+          "sample_type": "dpo"
+        }
+      ]
+    },
+    "metrics": {
+      "execution_mode": "real_import",
+      "loss": 4.777108302311414,
+      "num_examples": 12,
+      "preference_reinforced_fresh_sample_count": 0,
+      "preference_reinforced_fresh_sample_ids": [],
+      "preference_reinforced_fresh_sample_ratio": 0.0,
+      "status": "completed"
+    },
+    "num_examples": 12,
+    "output_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative",
+    "real_execution": {
+      "artifact_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter",
+      "artifact_kind": "real_dpo",
+      "artifact_manifest_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_job_manifest.json",
+      "artifacts": {
+        "adapter_config": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter/adapter_config.json",
+        "adapter_model": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_adapter/adapter_model.safetensors",
+        "manifest": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_job_manifest.json",
+        "metrics": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/train_metrics.json",
+        "real_execution": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/real_execution.json",
+        "trainer_state": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/trainer_state.json",
+        "training_summary": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/training_summary.json"
+      },
+      "kind": "real_dpo",
+      "message": "DPO training completed successfully",
+      "metrics": {
+        "execution_mode": "real_import",
+        "loss": 4.777108302311414,
+        "num_examples": 12,
+        "preference_reinforced_fresh_sample_count": 0,
+        "preference_reinforced_fresh_sample_ids": [],
+        "preference_reinforced_fresh_sample_ratio": 0.0,
+        "status": "completed"
+      },
+      "num_examples": 12,
+      "output_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative",
+      "path": "real_dpo",
+      "real_execution_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/real_execution.json",
+      "runtime_path": "real_dpo",
+      "success": true,
+      "summary_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/training_summary.json",
+      "train_loss": 4.777108302311414,
+      "trainer_state_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/trainer_state.json"
+    },
+    "recipe": {
+      "peft": {
+        "dpo_config": {
+          "beta": 0.05,
+          "label_smoothing": 0.0,
+          "max_length": 768,
+          "max_prompt_length": 512
+        },
+        "lora_config": {
+          "lora_alpha": 16,
+          "lora_dropout": 0.05,
+          "r": 8
+        },
+        "trainer_class": "trl.DPOTrainer"
+      },
+      "training": {
+        "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+        "epochs": 1,
+        "learning_rate": 1e-05,
+        "max_steps_equivalent": 12,
+        "method": "lora",
+        "num_train_samples": 12,
+        "output_dir": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative",
+        "train_type": "dpo"
+      }
+    },
+    "status": "completed",
+    "train_loss": 4.777108302311414,
+    "training_config": {
+      "learning_rate": 1e-05,
+      "lora_config": {
+        "lora_alpha": 16,
+        "lora_dropout": 0.05,
+        "r": 8
+      }
+    }
+  },
+  "selected_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "trainer_metrics_summary": {
+    "artifact_manifest_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/dpo_job_manifest.json",
+    "created_at": "2026-06-20T20:49:10.858627+00:00",
+    "duration_seconds": 42.274,
+    "kind": "phase17_trainer_metrics_summary",
+    "metrics": {
+      "execution_mode": "real_import",
+      "loss": 4.777108302311414,
+      "num_examples": 12,
+      "preference_reinforced_fresh_sample_count": 0,
+      "preference_reinforced_fresh_sample_ids": [],
+      "preference_reinforced_fresh_sample_ratio": 0.0,
+      "status": "completed"
+    },
+    "real_execution_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/real_execution.json",
+    "real_training": "completed",
+    "selected_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "train_loss": 4.777108302311414,
+    "trainer_state_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/trainer_state.json",
+    "training_summary_path": "trainer_job_outputs/phase18-dpo-degeneration-guardrails/conservative/training_summary.json"
+  },
+  "trainer_metrics_summary_path": "docs/demo/phase18-dpo-degeneration-guardrails/evidence-real-qwen-dpo-guardrail/probes/phase18_conservative_config/trainer_metrics_summary.json",
+  "training_run": true
+}

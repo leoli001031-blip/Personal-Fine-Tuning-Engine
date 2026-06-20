@@ -1,0 +1,44 @@
+{
+  "auto_promotion_allowed": false,
+  "created_at": "2026-06-20T20:50:24.186235+00:00",
+  "evidence": {
+    "phase13_reference_scores": {
+      "citation_hit_rate": 1.0,
+      "explicit_boundary_rate": 1.0,
+      "external_law_reference_rate": 0.0,
+      "extra_text_after_first_block_rate": 0.0,
+      "safety_boundary_rate": 1.0,
+      "structure_hit_rate": 1.0,
+      "think_leak_rate": 0.0,
+      "unsupported_assertions": 0
+    },
+    "phase17_decision": {
+      "auto_promotion_allowed": false,
+      "created_at": "2026-06-20T20:03:16.244697+00:00",
+      "improved_metrics": [],
+      "kind": "phase17_qwen_dpo_product_decision",
+      "manual_review_required": false,
+      "promotion_allowed": false,
+      "reasons": [
+        "adapter_citation_hit_rate_below_base",
+        "adapter_explicit_boundary_rate_below_base",
+        "adapter_has_no_core_metric_improvement_over_base",
+        "adapter_safety_boundary_rate_below_base",
+        "adapter_structure_hit_rate_below_base",
+        "adapter_unsupported_assertions_above_base"
+      ],
+      "recommendation": "archive",
+      "status": "blocked"
+    },
+    "phase18_final_recommendation": "archive",
+    "phase19_pair_count": 120,
+    "phase20_selected_trainable_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "phase21_surface_status": "ready"
+  },
+  "kind": "phase22_product_route_decision",
+  "manual_review_required_for_any_adapter": true,
+  "next_prompt_draft": "Develop Phase23 runtime-contract product hardening plus guarded training-candidate review workflow; do not promote adapters unless they beat base without boundary regression.",
+  "recommendation": "make_runtime_boundary_contract_the_main_product_path_and_keep_training_as_guarded_candidate_experiment",
+  "runtime_contract_primary_path": true,
+  "training_candidate_path": "experimental_guarded_candidate"
+}
