@@ -1,0 +1,58 @@
+{
+  "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b/adapters",
+  "command": "/Users/lichenhao/Desktop/PFE/.venv/bin/python /Users/lichenhao/Desktop/PFE/tools/phase13_boundary_contract_probe.py --training-worker --mid-model-id mlx-community/Qwen3-8B-4bit --worker-train-data /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b/phase13_train_rows.jsonl --worker-result /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b/phase13_worker_result.json --training-output-dir /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b --training-steps 12 --train-max-seq-length 768",
+  "created_at": "2026-06-20T06:15:24.186163+00:00",
+  "duration_seconds": 15.747,
+  "format_report": {
+    "chat_template_applied_count": 80,
+    "chat_template_error_count": 0,
+    "chat_template_errors": [],
+    "selected_count": 80
+  },
+  "kind": "phase14_mid_model_training_attempt",
+  "model_id": "mlx-community/Qwen3-8B-4bit",
+  "phase14_training_strategy": "hard_negative_sft_chosen_only",
+  "real_training": "completed",
+  "result": {
+    "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b/adapters",
+    "config": {
+      "batch_size": 1,
+      "gradient_checkpointing": true,
+      "learning_rate": 5e-05,
+      "logging_steps": 1,
+      "lora_alpha": 16,
+      "lora_dropout": 0.0,
+      "lora_r": 8,
+      "max_seq_length": 768,
+      "num_epochs": 12,
+      "quantization_bits": 4,
+      "save_steps": 12,
+      "target_modules": [
+        "q_proj",
+        "v_proj"
+      ],
+      "warmup_steps": 0
+    },
+    "error": null,
+    "final_loss": 0.0,
+    "loss_history": [
+      0.0
+    ],
+    "metadata": {
+      "base_model": "mlx-community/Qwen3-8B-4bit",
+      "data_file": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b/train_data.jsonl",
+      "dataset_format": "prompt_completion_output_only_loss",
+      "device": "Device(gpu, 0)",
+      "output_only_loss_masking": true
+    },
+    "num_samples": 80,
+    "num_steps": 12,
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b",
+    "success": true
+  },
+  "train_sample_count": 80,
+  "training_output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase14-hard-negative-qwen3-8b",
+  "training_run": true,
+  "training_steps": 12,
+  "worker_returncode": 0
+}
