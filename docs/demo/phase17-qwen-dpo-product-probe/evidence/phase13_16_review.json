@@ -1,0 +1,355 @@
+{
+  "conclusions": [
+    "27B boundary-first base remains the product reference ceiling.",
+    "27B training is not retried in Phase17.",
+    "Phase15 provides true chosen/rejected DPO preference pairs.",
+    "Phase16 proves real DPO runtime execution; Phase17 tests product benefit."
+  ],
+  "created_at": "2026-06-20T20:05:17.492176+00:00",
+  "kind": "phase17_prior_phase_review",
+  "phase13_reference_ceiling": {
+    "model_id": "mlx-community/Qwen3.6-27B-4bit",
+    "scores": {
+      "citation_hit_rate": 1.0,
+      "explicit_boundary_rate": 1.0,
+      "external_law_reference_rate": 0.0,
+      "extra_text_after_first_block_rate": 0.0,
+      "safety_boundary_rate": 1.0,
+      "structure_hit_rate": 1.0,
+      "think_leak_rate": 0.0,
+      "unsupported_assertions": 0
+    },
+    "source_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase13-boundary-contract-runtime-and-trainable-probe/evidence-real-qwen36-27b-base/baseline_b_qwen36_boundary_base.json",
+    "status": "completed"
+  },
+  "phase13_trainable_mid_model": {
+    "decision": null,
+    "kind": "phase13_three_way_comparison_summary",
+    "model_selection": {
+      "checked": [
+        {
+          "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit",
+          "cache_present": true,
+          "model_id": "mlx-community/Qwen3-8B-4bit",
+          "preflight": {
+            "allow_remote_download": true,
+            "backend": "mlx",
+            "base_model_source": "Qwen/Qwen3.6-27B",
+            "blocked_by": [],
+            "dependencies": {
+              "mlx": true,
+              "mlx_lm": true
+            },
+            "disk": {
+              "cache_root": "/Users/lichenhao/.cache/huggingface",
+              "free_gb": 1020.13,
+              "min_required_gb": 10.0
+            },
+            "kind": "phase6_qwen36_mlx_preflight",
+            "model_id": "mlx-community/Qwen3-8B-4bit",
+            "model_path": "",
+            "model_status": "remote_hub_model",
+            "ready_for_real_training": true,
+            "recommended_training": {
+              "backend": "mlx",
+              "batch_size": 1,
+              "epochs": 1,
+              "grad_accumulation": 8,
+              "lora_rank": 8,
+              "seq_length": 2048,
+              "train_type": "sft"
+            },
+            "require_local_model": false,
+            "status": "ready",
+            "system": {
+              "machine": "arm64",
+              "memory_gb": 128.0,
+              "processor": "arm",
+              "python": "3.11.15",
+              "system": "Darwin"
+            },
+            "warnings": []
+          },
+          "snapshot_count": 1
+        }
+      ],
+      "created_at": "2026-06-20T04:51:46.190543+00:00",
+      "selected": "mlx-community/Qwen3-8B-4bit",
+      "status": "selected"
+    }
+  },
+  "phase14_hard_negative": {
+    "decision": null,
+    "kind": "phase14_hard_negative_boundary_training_summary",
+    "model_selection": {
+      "checked": [
+        {
+          "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit",
+          "cache_present": true,
+          "model_id": "mlx-community/Qwen3-8B-4bit",
+          "preflight": {
+            "allow_remote_download": true,
+            "backend": "mlx",
+            "base_model_source": "Qwen/Qwen3.6-27B",
+            "blocked_by": [],
+            "dependencies": {
+              "mlx": true,
+              "mlx_lm": true
+            },
+            "disk": {
+              "cache_root": "/Users/lichenhao/.cache/huggingface",
+              "free_gb": 1021.92,
+              "min_required_gb": 10.0
+            },
+            "kind": "phase6_qwen36_mlx_preflight",
+            "model_id": "mlx-community/Qwen3-8B-4bit",
+            "model_path": "",
+            "model_status": "remote_hub_model",
+            "ready_for_real_training": true,
+            "recommended_training": {
+              "backend": "mlx",
+              "batch_size": 1,
+              "epochs": 1,
+              "grad_accumulation": 8,
+              "lora_rank": 8,
+              "seq_length": 2048,
+              "train_type": "sft"
+            },
+            "require_local_model": false,
+            "status": "ready",
+            "system": {
+              "machine": "arm64",
+              "memory_gb": 128.0,
+              "processor": "arm",
+              "python": "3.11.15",
+              "system": "Darwin"
+            },
+            "warnings": []
+          },
+          "snapshot_count": 1
+        }
+      ],
+      "created_at": "2026-06-20T06:20:45.829222+00:00",
+      "selected": "mlx-community/Qwen3-8B-4bit",
+      "status": "selected"
+    }
+  },
+  "phase15_true_preference_dpo": {
+    "decision": {
+      "auto_promotion_allowed": false,
+      "created_at": "2026-06-20T13:12:41.559781+00:00",
+      "kind": "phase15_adapter_decision",
+      "manual_review_required": false,
+      "promotion_allowed": false,
+      "reasons": [
+        "dpo_runtime_dependencies_not_ready",
+        "real_dpo_training_not_completed"
+      ],
+      "recommendation": "archive",
+      "status": "blocked"
+    },
+    "dpo_preflight_ready_at_that_time": false,
+    "kind": "phase15_true_preference_boundary_training_summary",
+    "training_attempt": {
+      "blocked_reason": "dpo_runtime_dependencies_not_ready",
+      "created_at": "2026-06-20T13:12:41.558955+00:00",
+      "kind": "phase15_real_dpo_training_attempt",
+      "missing_modules": [
+        "trl",
+        "datasets"
+      ],
+      "preflight": {
+        "created_at": "2026-06-20T13:12:41.555539+00:00",
+        "kind": "phase15_dpo_dependency_preflight",
+        "missing_modules": [
+          "trl",
+          "datasets"
+        ],
+        "module_availability": {
+          "accelerate": true,
+          "datasets": false,
+          "peft": true,
+          "torch": true,
+          "transformers": true,
+          "trl": false
+        },
+        "ready": false,
+        "strict_probe": {},
+        "strict_probe_error": "backend dpo is missing required imports or attributes: modules=['trl'], attrs=[]",
+        "strict_probe_ready": false
+      },
+      "real_training": "blocked",
+      "training_run": false
+    }
+  },
+  "phase16_dpo_runtime": {
+    "decision": {
+      "auto_promotion_allowed": false,
+      "created_at": "2026-06-20T19:29:03.178533+00:00",
+      "kind": "phase16_dpo_runtime_decision",
+      "manual_review_required": true,
+      "promotion_allowed": false,
+      "reasons": [
+        "tiny_model_runtime_proof_passed",
+        "not_a_product_adapter",
+        "qwen_boundary_eval_required"
+      ],
+      "recommendation": "proceed_to_qwen_dpo_probe_after_manual_review",
+      "status": "runtime_proof_passed"
+    },
+    "dpo_preflight_ready": true,
+    "kind": "phase16_dpo_runtime_proof_summary",
+    "training_attempt": {
+      "artifact_validation": {
+        "adapter_config_exists": true,
+        "adapter_model_exists": true,
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter",
+        "artifact_dir_exists": true,
+        "created_at": "2026-06-20T19:29:03.176867+00:00",
+        "kind": "phase16_dpo_artifact_validation",
+        "valid": true
+      },
+      "created_at": "2026-06-20T19:29:03.176873+00:00",
+      "kind": "phase16_real_dpo_runtime_proof",
+      "proof_scope": "runtime_executor_only_not_product_adapter",
+      "real_training": "completed",
+      "result": {
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter",
+        "artifacts": {
+          "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter/adapter_config.json",
+          "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter/adapter_model.safetensors",
+          "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_job_manifest.json",
+          "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/train_metrics.json",
+          "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/real_execution.json",
+          "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/trainer_state.json",
+          "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/training_summary.json"
+        },
+        "backend": "dpo",
+        "base_adapter_path": null,
+        "base_model": "hf-internal-testing/tiny-random-gpt2",
+        "dpo_config": {
+          "beta": 0.1,
+          "label_smoothing": 0.0,
+          "max_length": 128,
+          "max_prompt_length": 96
+        },
+        "dry_run": false,
+        "execution_mode": "real_import",
+        "job_spec": {
+          "backend": "dpo",
+          "dry_run": false,
+          "execution_backend": "dpo",
+          "execution_executor": "dpo",
+          "executor_mode": "real_import",
+          "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+          "phase16": {
+            "proof_scope": "runtime_executor_only_not_product_adapter",
+            "source_phase": "phase15"
+          },
+          "recipe": {
+            "peft": {
+              "dpo_config": {
+                "beta": 0.1,
+                "label_smoothing": 0.0,
+                "max_length": 128,
+                "max_prompt_length": 96
+              },
+              "trainer_class": "trl.DPOTrainer"
+            },
+            "training": {
+              "base_model": "hf-internal-testing/tiny-random-gpt2",
+              "epochs": 1,
+              "method": "lora",
+              "num_train_samples": 2,
+              "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+              "train_type": "dpo"
+            }
+          },
+          "training_examples": [
+            {
+              "chosen": "摘要：资料显示双方负有保护非公开信息并限制未授权披露的义务。\n风险提示：不能给出签署建议，只能做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase14-source-001:phase14-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+              "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：请告诉我保密义务条款能不能直接签署。\n资料引用：[phase14-source-001:phase14-chunk-001]\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+              "rejected": "摘要：保密义务条款适合当前交易。\n风险提示：可以直接签署。\n引用依据：[phase14-source-001:phase14-chunk-001]\n人工确认：建议直接签署。",
+              "sample_id": "phase15-dpo-boundary-001",
+              "sample_type": "dpo"
+            },
+            {
+              "chosen": "摘要：资料显示间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：资料缺少完整附件或上下文，只能提示补充材料，不判断合法/违法。\n引用依据：[phase14-source-002:phase14-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+              "instruction": "你是合同资料整理助手。只基于给定资料回答，不补写资料中没有的结论。\n阶段：边界优先，只验证资料整理、安全边界和引用稳定性。\n必须严格输出四行，行首分别是：摘要：、风险提示：、引用依据：、人工确认：。\n禁止编号、禁止Markdown、禁止在四行后继续输出。\n禁止输出最终法律结论，禁止建议直接签署。\n\n任务：资料缺少附件，请判断责任限制条款是否足够安全。\n资料引用：[phase14-source-002:phase14-chunk-002]\n资料摘录：资料说明间接损失通常被排除，直接损失可能受费用上限限制。\n\n禁止输出<think>、思考过程、分析过程、模板说明或额外解释。\n只输出四行答案正文，从“摘要：”开始，到“人工确认：”结束，第四行后立即停止。\n引用依据行只能使用资料引用中给出的 [source_id:chunk_id]，不得引用未给出的法律、法规、司法解释、案例或条文。\n风险提示行必须说明只能做资料整理和风险提示，不判断合法/违法。\n人工确认行必须包含“不输出法律结论”和“不能支持最终法律结论”。\n\n### 标准答案\n",
+              "rejected": "摘要：责任限制条款可以直接采信。\n风险提示：资料虽不完整，但可以补充推断结论。\n引用依据：[phase14-source-002:phase14-chunk-002]；相关法律条文。\n人工确认：该条款合法。",
+              "sample_id": "phase15-dpo-boundary-002",
+              "sample_type": "dpo"
+            }
+          ]
+        },
+        "metrics": {
+          "execution_mode": "real_import",
+          "loss": 0.6931471824645996,
+          "num_examples": 2,
+          "preference_reinforced_fresh_sample_count": 0,
+          "preference_reinforced_fresh_sample_ids": [],
+          "preference_reinforced_fresh_sample_ratio": 0.0,
+          "status": "completed"
+        },
+        "num_examples": 2,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+        "real_execution": {
+          "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter",
+          "artifact_kind": "real_dpo",
+          "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_job_manifest.json",
+          "artifacts": {
+            "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter/adapter_config.json",
+            "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_adapter/adapter_model.safetensors",
+            "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/dpo_job_manifest.json",
+            "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/train_metrics.json",
+            "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/real_execution.json",
+            "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/trainer_state.json",
+            "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/training_summary.json"
+          },
+          "kind": "real_dpo",
+          "message": "DPO training completed successfully",
+          "metrics": {
+            "execution_mode": "real_import",
+            "loss": 0.6931471824645996,
+            "num_examples": 2,
+            "preference_reinforced_fresh_sample_count": 0,
+            "preference_reinforced_fresh_sample_ids": [],
+            "preference_reinforced_fresh_sample_ratio": 0.0,
+            "status": "completed"
+          },
+          "num_examples": 2,
+          "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+          "path": "real_dpo",
+          "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/real_execution.json",
+          "runtime_path": "real_dpo",
+          "success": true,
+          "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/training_summary.json",
+          "train_loss": 0.6931471824645996,
+          "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny/trainer_state.json"
+        },
+        "recipe": {
+          "peft": {
+            "dpo_config": {
+              "beta": 0.1,
+              "label_smoothing": 0.0,
+              "max_length": 128,
+              "max_prompt_length": 96
+            },
+            "trainer_class": "trl.DPOTrainer"
+          },
+          "training": {
+            "base_model": "hf-internal-testing/tiny-random-gpt2",
+            "epochs": 1,
+            "method": "lora",
+            "num_train_samples": 2,
+            "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase16-dpo-runtime-proof-tiny",
+            "train_type": "dpo"
+          }
+        },
+        "status": "completed",
+        "train_loss": 0.6931471824645996
+      },
+      "training_run": true
+    }
+  }
+}
