@@ -48,8 +48,18 @@ def _holdout_rows(count: int = 30) -> list[dict]:
     ]
 
 
-def test_phase17_select_qwen_model_respects_download_policy(tmp_path: Path) -> None:
+def test_phase17_select_qwen_model_respects_download_policy(tmp_path: Path, monkeypatch) -> None:
     phase17 = _load_phase17_module()
+    monkeypatch.setattr(phase17, "_module_available", lambda _name: True)
+    monkeypatch.setattr(
+        phase17,
+        "_system_profile",
+        lambda: {
+            "created_at": "2026-06-20T00:00:00Z",
+            "memory_gb": 128.0,
+            "disk_free_gb": 256.0,
+        },
+    )
 
     blocked = phase17.select_qwen_model(
         requested_model="Qwen/Qwen2.5-0.5B-Instruct",
