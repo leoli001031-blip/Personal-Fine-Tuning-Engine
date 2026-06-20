@@ -2432,6 +2432,7 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
     label_smoothing = dpo_config.get("label_smoothing", 0.0)
     max_length = dpo_config.get("max_length", 2048)
     max_prompt_length = dpo_config.get("max_prompt_length", 1024)
+    lora_config = dict(peft_config.get("lora_config") or {})
 
     # Extract training examples
     training_examples = list(job_spec.get("training_examples") or [])
@@ -2458,6 +2459,10 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
                 "label_smoothing": label_smoothing,
                 "max_length": max_length,
                 "max_prompt_length": max_prompt_length,
+            },
+            "training_config": {
+                "learning_rate": training.get("learning_rate", 5e-5),
+                "lora_config": lora_config,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2490,6 +2495,10 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
                 "label_smoothing": label_smoothing,
                 "max_length": max_length,
                 "max_prompt_length": max_prompt_length,
+            },
+            "training_config": {
+                "learning_rate": training.get("learning_rate", 5e-5),
+                "lora_config": lora_config,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2573,12 +2582,20 @@ def _run_real_dpo_training(
     else:
         target_modules = ["q_proj", "v_proj"]
 
+    recipe = dict(job_spec.get("recipe") or {})
+    training_recipe = dict(recipe.get("training") or {})
+    peft_recipe = dict(recipe.get("peft") or {})
+    lora_recipe = dict(peft_recipe.get("lora_config") or {})
+    lora_r = int(lora_recipe.get("r", 16))
+    lora_alpha = int(lora_recipe.get("lora_alpha", 32))
+    lora_dropout = float(lora_recipe.get("lora_dropout", 0.05))
+
     # Apply LoRA configuration for DPO training
     lora_config = LoraConfig(
-        r=16,
-        lora_alpha=32,
+        r=lora_r,
+        lora_alpha=lora_alpha,
         target_modules=target_modules,
-        lora_dropout=0.05,
+        lora_dropout=lora_dropout,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
     )
@@ -2606,9 +2623,8 @@ def _run_real_dpo_training(
     train_dataset = Dataset.from_dict(dpo_data)
 
     # Setup training arguments
-    recipe = dict(job_spec.get("recipe") or {})
-    training_recipe = dict(recipe.get("training") or {})
     epochs = training_recipe.get("epochs", 3)
+    learning_rate = float(training_recipe.get("learning_rate", 5e-5))
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -2624,7 +2640,7 @@ def _run_real_dpo_training(
             num_train_epochs=epochs,
             per_device_train_batch_size=1,
             gradient_accumulation_steps=1,
-            learning_rate=5e-5,
+            learning_rate=learning_rate,
             max_grad_norm=0.3,
             warmup_steps=0,
             lr_scheduler_type="cosine",
@@ -2645,7 +2661,7 @@ def _run_real_dpo_training(
             num_train_epochs=epochs,
             per_device_train_batch_size=1,
             gradient_accumulation_steps=4,
-            learning_rate=5e-5,
+            learning_rate=learning_rate,
             max_grad_norm=0.3,
             warmup_ratio=0.03,
             lr_scheduler_type="cosine",
@@ -2716,6 +2732,14 @@ def _run_real_dpo_training(
             "label_smoothing": label_smoothing,
             "max_length": max_length,
             "max_prompt_length": max_prompt_length,
+        },
+        "training_config": {
+            "learning_rate": learning_rate,
+            "lora_config": {
+                "r": lora_r,
+                "lora_alpha": lora_alpha,
+                "lora_dropout": lora_dropout,
+            },
         },
         "base_model": base_model_name,
         "base_adapter_path": base_adapter_path,

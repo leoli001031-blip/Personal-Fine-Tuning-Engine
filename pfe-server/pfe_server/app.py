@@ -4399,6 +4399,55 @@ async def handle_phase6_summary(
         return _json_response(_error_payload("phase6 unavailable", "phase6_unavailable", str(exc)), status_code=500)
 
 
+async def handle_phase21_training_candidate_workbench(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase21-training-candidate-workbench"
+        / "evidence"
+        / "api_smoke_payload.json"
+    )
+    payload: dict[str, Any]
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase21_training_candidate_workbench",
+                "status": "blocked",
+                "reason": "phase21_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase21_training_candidate_workbench",
+            "status": "blocked",
+            "reason": "phase21_evidence_not_generated",
+            "candidate_plan": {
+                "preference_signal_count": 0,
+                "trainable_candidate_count": 0,
+                "holdout_isolation_status": "unknown",
+                "selected_model": None,
+                "training_method": None,
+                "sanity_gate_result": "unknown",
+                "degeneration_report_summary": {},
+                "full_eval_summary": {},
+                "final_decision": {"recommendation": "archive"},
+                "auto_promotion_allowed": False,
+            },
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
 async def handle_phase6_preflight(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -5773,6 +5822,8 @@ class _LiteASGIApp:
             return await handle_phase6_trial(envelope, self.services)
         if envelope.path == "/pfe/phase6/trial/eval" and envelope.method == "POST":
             return await handle_phase6_eval(envelope, self.services)
+        if envelope.path == "/pfe/phase21/training-candidate-workbench" and envelope.method == "GET":
+            return await handle_phase21_training_candidate_workbench(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -6049,6 +6100,10 @@ def create_app(
         @app.post("/pfe/phase6/trial/eval")
         async def pfe_phase6_trial_eval(request: Request) -> Any:
             return await handle_phase6_eval(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase21/training-candidate-workbench")
+        async def pfe_phase21_training_candidate_workbench(request: Request) -> Any:
+            return await handle_phase21_training_candidate_workbench(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:

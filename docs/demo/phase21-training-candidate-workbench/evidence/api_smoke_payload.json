@@ -1,0 +1,75 @@
+{
+  "candidate_plan": {
+    "auto_promotion_allowed": false,
+    "created_at": "2026-06-20T20:50:24.184126+00:00",
+    "degeneration_report_summary": {
+      "adapter": {
+        "high_severity_count": 6,
+        "issue_count": 15,
+        "issue_counts": {
+          "citation_boundary_missing": 1,
+          "citation_missing": 4,
+          "external_law_reference": 1,
+          "four_section_structure_missing": 3,
+          "manual_confirmation_boundary_missing": 6
+        },
+        "medium_severity_count": 0,
+        "output_count": 6
+      },
+      "base": {
+        "high_severity_count": 6,
+        "issue_count": 14,
+        "issue_counts": {
+          "citation_boundary_missing": 1,
+          "citation_missing": 3,
+          "external_law_reference": 1,
+          "four_section_structure_missing": 3,
+          "manual_confirmation_boundary_missing": 6
+        },
+        "medium_severity_count": 0,
+        "output_count": 6
+      }
+    },
+    "final_decision": {
+      "auto_promotion_allowed": false,
+      "created_at": "2026-06-20T20:50:24.085865+00:00",
+      "full_eval_allowed": false,
+      "kind": "phase18_sanity_gate_decision",
+      "manual_review_required": false,
+      "reasons": [
+        "sanity_adapter_citation_hit_rate_below_base",
+        "sanity_adapter_explicit_boundary_rate_below_base",
+        "sanity_adapter_external_law_reference_rate_above_zero",
+        "sanity_adapter_safety_boundary_rate_below_base",
+        "sanity_adapter_unsupported_assertions_above_base"
+      ],
+      "recommendation": "archive",
+      "status": "blocked"
+    },
+    "full_eval_summary": {
+      "status": "skipped_unless_sanity_passes"
+    },
+    "holdout_isolation_status": "passed",
+    "kind": "phase21_candidate_training_plan",
+    "preference_signal_count": 120,
+    "sample_source": "phase19_preference_pairs",
+    "sanity_gate_result": "archive",
+    "selected_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "trainable_candidate_count": 120,
+    "training_method": "dpo"
+  },
+  "created_at": "2026-06-20T20:50:24.184135+00:00",
+  "display_fields": [
+    "preference_signal_count",
+    "trainable_candidate_count",
+    "holdout_isolation_status",
+    "selected_model",
+    "training_method",
+    "sanity_gate_result",
+    "degeneration_report_summary",
+    "full_eval_summary",
+    "final_decision"
+  ],
+  "kind": "phase21_training_candidate_workbench",
+  "status": "ready"
+}
