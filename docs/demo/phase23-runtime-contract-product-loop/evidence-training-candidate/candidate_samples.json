@@ -1,0 +1,102 @@
+{
+  "created_at": "2026-06-20T21:29:21.689505+00:00",
+  "excluded": [
+    {
+      "reason": "accept_not_enough_for_training",
+      "signal_id": "phase23-signal-accept-001"
+    },
+    {
+      "reason": "requires_positive_pair",
+      "signal_id": "phase23-signal-reject-001"
+    },
+    {
+      "reason": "preferences update profile first and require reinforcement before training",
+      "signal_id": "phase23-signal-preference-001"
+    },
+    {
+      "reason": "safety_block",
+      "signal_id": "phase23-signal-safety-001"
+    },
+    {
+      "reason": "external_law_inducement",
+      "signal_id": "phase23-signal-external-law-001"
+    },
+    {
+      "reason": "detected_high_risk_pii",
+      "signal_id": "phase23-signal-pii-001"
+    },
+    {
+      "reason": "edit_missing_corrected_output",
+      "signal_id": "phase23-signal-edit-missing-output-001"
+    }
+  ],
+  "excluded_count": 7,
+  "kind": "phase23_training_candidate_samples",
+  "sample_count": 2,
+  "samples": [
+    {
+      "input": "任务：请整理服务水平条款并标出人工确认项。\n资料引用：[phase23-signal-source-002:phase23-signal-chunk-002]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n只基于给定资料回答，不输出法律结论。",
+      "instruction": "只基于给定合同资料输出摘要、风险提示、引用依据、人工确认四段式。",
+      "metadata": {
+        "chunk_id": "phase23-signal-chunk-002",
+        "expected_citation": "[phase23-signal-source-002:phase23-signal-chunk-002]",
+        "not_holdout": true,
+        "phase": "phase23",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "response_contract": "contract_boundary_summary",
+        "source_id": "phase23-signal-source-002"
+      },
+      "output": "摘要：资料显示该条款存在需要整理的合同信息。\n风险提示：服务补偿、目标口径和附件位置都需核对；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase23-signal-source-002:phase23-signal-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "persona_id": "ops-analyst",
+      "sample_id": "phase23-sample-phase23-signal-edit-001",
+      "sample_type": "sft",
+      "scenario_id": "contract-risk-summary",
+      "source_signal_id": "phase23-signal-edit-001"
+    },
+    {
+      "input": "任务：请整理终止条款和风险提示。\n资料引用：[phase23-signal-source-003:phase23-signal-chunk-003]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "instruction": "只基于给定合同资料输出摘要、风险提示、引用依据、人工确认四段式。",
+      "metadata": {
+        "chunk_id": "phase23-signal-chunk-003",
+        "expected_citation": "[phase23-signal-source-003:phase23-signal-chunk-003]",
+        "not_holdout": true,
+        "phase": "phase23",
+        "phase23_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "reason": "high-information correction/edit preserves the runtime contract and source citation",
+          "requires_human_review": false,
+          "rule_hits": [
+            "contract_safe_correction"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "response_contract": "contract_boundary_summary",
+        "source_id": "phase23-signal-source-003"
+      },
+      "output": "摘要：资料显示该条款存在需要整理的合同信息。\n风险提示：终止触发条件、补救期和通知方式需核对；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase23-signal-source-003:phase23-signal-chunk-003]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "persona_id": "ops-analyst",
+      "sample_id": "phase23-sample-phase23-signal-correction-001",
+      "sample_type": "sft",
+      "scenario_id": "contract-risk-summary",
+      "source_signal_id": "phase23-signal-correction-001"
+    }
+  ]
+}

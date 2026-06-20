@@ -79,6 +79,10 @@ from pfe_core.inference.contracts import (
     build_boundary_contract_fallback,
     resolve_response_contract,
 )
+from pfe_core.phase23_runtime_contract_loop import (
+    build_runtime_contract_response as build_phase23_runtime_contract_response,
+    signal_record_from_contract_feedback as phase23_signal_record_from_contract_feedback,
+)
 
 # ChatCollector integration - import from pfe_core if available
 def _try_import_chat_collector() -> tuple[bool, Any, Any, Any]:
@@ -4448,6 +4452,101 @@ async def handle_phase21_training_candidate_workbench(
     return _json_response(payload, status_code=200)
 
 
+async def handle_phase23_runtime_contract_loop(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase23-runtime-contract-product-loop"
+        / "evidence"
+        / "api_smoke_payload.json"
+    )
+    if envelope.method == "GET":
+        if payload_path.exists():
+            try:
+                payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+            except Exception as exc:
+                payload = {
+                    "kind": "phase23_runtime_contract_product_loop",
+                    "status": "blocked",
+                    "reason": "phase23_payload_read_failed",
+                    "error": str(exc),
+                }
+        else:
+            payload = {
+                "kind": "phase23_runtime_contract_product_loop",
+                "status": "blocked",
+                "reason": "phase23_evidence_not_generated",
+                "runtime_contract": {"decision": {"recommendation": "needs_evidence"}},
+                "training_candidate_plan": {
+                    "source_signal_count": 0,
+                    "trainable_candidate_count": 0,
+                    "excluded_signal_count": 0,
+                    "recommended_action": "archive",
+                    "auto_promotion_allowed": False,
+                },
+                "auto_promotion_allowed": False,
+            }
+        payload["workspace"] = services.workspace
+        payload["source_path"] = str(payload_path)
+        return _json_response(payload, status_code=200)
+
+    body = _load_request_json(envelope.body)
+    raw_messages = body.get("messages")
+    messages = [
+        dict(message)
+        for message in raw_messages
+        if isinstance(message, Mapping)
+    ] if isinstance(raw_messages, list) else []
+    if not messages:
+        prompt = str(body.get("prompt") or body.get("user_input") or "")
+        messages = [{"role": "user", "content": prompt}]
+    metadata = _coerce_json_mapping(body.get("metadata"))
+    mode = str(body.get("mode") or metadata.get("response_contract") or "contract_boundary_summary")
+    runtime_response = build_phase23_runtime_contract_response(
+        messages=messages,
+        metadata={**metadata, "response_contract": mode},
+        mode=mode,
+    )
+    feedback = _coerce_json_mapping(body.get("feedback"))
+    signal_payload: dict[str, Any] | None = None
+    persisted_signal: dict[str, Any] | None = None
+    if feedback:
+        signal_payload = phase23_signal_record_from_contract_feedback(
+            action=str(feedback.get("action") or "accept"),
+            runtime_response=runtime_response,
+            edited_text=str(feedback.get("edited_text") or ""),
+            user_feedback=str(feedback.get("user_feedback") or feedback.get("comment") or ""),
+            confidence=float(feedback.get("confidence", 0.85) or 0.85),
+            session_id=str(body.get("session_id") or feedback.get("session_id") or ""),
+            request_id=str(body.get("request_id") or feedback.get("request_id") or ""),
+            signal_id=str(feedback.get("signal_id") or "") or None,
+            metadata=_coerce_json_mapping(feedback.get("metadata")),
+        )
+        try:
+            from pfe_core.phase3_signal_loop import SignalInboxItem
+
+            persisted_signal = _phase3_store(services).add_signal(SignalInboxItem.from_dict(signal_payload))
+        except Exception as exc:
+            persisted_signal = {"recorded": False, "error": str(exc)}
+    response = {
+        "kind": "phase23_runtime_contract_product_loop_response",
+        "status": "completed",
+        "runtime_contract": runtime_response,
+        "signal": signal_payload,
+        "persisted_signal": persisted_signal,
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
 async def handle_phase6_preflight(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -5824,6 +5923,8 @@ class _LiteASGIApp:
             return await handle_phase6_eval(envelope, self.services)
         if envelope.path == "/pfe/phase21/training-candidate-workbench" and envelope.method == "GET":
             return await handle_phase21_training_candidate_workbench(envelope, self.services)
+        if envelope.path == "/pfe/phase23/runtime-contract-loop" and envelope.method in {"GET", "POST"}:
+            return await handle_phase23_runtime_contract_loop(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -6104,6 +6205,14 @@ def create_app(
         @app.get("/pfe/phase21/training-candidate-workbench")
         async def pfe_phase21_training_candidate_workbench(request: Request) -> Any:
             return await handle_phase21_training_candidate_workbench(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase23/runtime-contract-loop")
+        async def pfe_phase23_runtime_contract_loop(request: Request) -> Any:
+            return await handle_phase23_runtime_contract_loop(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase23/runtime-contract-loop")
+        async def pfe_phase23_runtime_contract_loop_post(request: Request) -> Any:
+            return await handle_phase23_runtime_contract_loop(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:
