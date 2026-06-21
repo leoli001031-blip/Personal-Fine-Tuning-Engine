@@ -86,6 +86,9 @@ from pfe_core.phase23_runtime_contract_loop import (
 from pfe_core.phase25_actual_user_feedback_loop import (
     build_phase25_actual_feedback_signal,
 )
+from pfe_core.phase26_actual_feedback_collection_probe import (
+    build_phase26_feedback_batch,
+)
 
 # ChatCollector integration - import from pfe_core if available
 def _try_import_chat_collector() -> tuple[bool, Any, Any, Any]:
@@ -4705,6 +4708,118 @@ async def handle_phase25_actual_feedback_readiness(
     return _json_response(payload, status_code=200)
 
 
+async def handle_phase26_feedback_collection_pack(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase26-actual-feedback-collection-training-probe"
+        / "evidence-feedback"
+        / "api_collection_pack_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase26_feedback_collection_pack_surface",
+                "status": "blocked",
+                "reason": "phase26_collection_pack_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase26_feedback_collection_pack_surface",
+            "status": "blocked",
+            "reason": "phase26_evidence_not_generated",
+            "collection_pack": {"collection_count": 0, "items": []},
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase26_actual_feedback_batch(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    raw_items = body.get("items") or body.get("payloads") or []
+    items = [dict(item) for item in raw_items if isinstance(item, Mapping)] if isinstance(raw_items, list) else []
+    batch = build_phase26_feedback_batch(items)
+    persisted: list[dict[str, Any]] = []
+    for signal in batch.get("accepted_signals") or []:
+        if not isinstance(signal, Mapping):
+            continue
+        try:
+            from pfe_core.phase3_signal_loop import SignalInboxItem
+
+            persisted.append(_phase3_store(services).add_signal(SignalInboxItem.from_dict(signal)))
+        except Exception as exc:
+            persisted.append({"recorded": False, "error": str(exc), "signal_id": signal.get("signal_id")})
+    response = {
+        "kind": "phase26_actual_feedback_batch_response",
+        "status": "accepted_pending_review" if batch.get("accepted_pending_review_count") else "blocked",
+        "batch": batch,
+        "persisted_signals": persisted,
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    status_code = 200 if batch.get("accepted_pending_review_count") else 422
+    return _json_response(response, status_code=status_code)
+
+
+async def handle_phase26_training_probe_readiness(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase26-actual-feedback-collection-training-probe"
+        / "evidence"
+        / "api_training_probe_readiness_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase26_training_probe_readiness_surface",
+                "status": "blocked",
+                "reason": "phase26_training_probe_readiness_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase26_training_probe_readiness_surface",
+            "status": "blocked",
+            "reason": "phase26_evidence_not_generated",
+            "comparison_summary": {
+                "final_recommendation": "collect_and_review_actual_user_feedback",
+                "auto_promotion_allowed": False,
+            },
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
 async def handle_phase6_preflight(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -6091,6 +6206,12 @@ class _LiteASGIApp:
             return await handle_phase25_actual_feedback(envelope, self.services)
         if envelope.path == "/pfe/phase25/actual-feedback-readiness" and envelope.method == "GET":
             return await handle_phase25_actual_feedback_readiness(envelope, self.services)
+        if envelope.path == "/pfe/phase26/feedback-collection-pack" and envelope.method == "GET":
+            return await handle_phase26_feedback_collection_pack(envelope, self.services)
+        if envelope.path == "/pfe/phase26/actual-feedback-batch" and envelope.method == "POST":
+            return await handle_phase26_actual_feedback_batch(envelope, self.services)
+        if envelope.path == "/pfe/phase26/training-probe-readiness" and envelope.method == "GET":
+            return await handle_phase26_training_probe_readiness(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -6395,6 +6516,18 @@ def create_app(
         @app.get("/pfe/phase25/actual-feedback-readiness")
         async def pfe_phase25_actual_feedback_readiness(request: Request) -> Any:
             return await handle_phase25_actual_feedback_readiness(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase26/feedback-collection-pack")
+        async def pfe_phase26_feedback_collection_pack(request: Request) -> Any:
+            return await handle_phase26_feedback_collection_pack(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase26/actual-feedback-batch")
+        async def pfe_phase26_actual_feedback_batch(request: Request) -> Any:
+            return await handle_phase26_actual_feedback_batch(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase26/training-probe-readiness")
+        async def pfe_phase26_training_probe_readiness(request: Request) -> Any:
+            return await handle_phase26_training_probe_readiness(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:
