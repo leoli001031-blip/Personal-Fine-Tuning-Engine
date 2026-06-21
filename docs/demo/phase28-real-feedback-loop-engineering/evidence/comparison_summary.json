@@ -1,0 +1,105 @@
+{
+  "accepted_pending_review_count": 0,
+  "actual_feedback_count": 0,
+  "approved_actual_candidate_count": 0,
+  "auto_promotion_allowed": false,
+  "created_at": "2026-06-21T02:18:31.860519+00:00",
+  "final_recommendation": "collect_more_actual_feedback",
+  "kind": "phase28_comparison_summary",
+  "loop_state": {
+    "actual_feedback_count": 0,
+    "allowed_states": [
+      "archive",
+      "build_candidates",
+      "eval_ready",
+      "ingest",
+      "observe",
+      "promote_after_manual_review",
+      "review",
+      "train_blocked",
+      "train_ready",
+      "validate"
+    ],
+    "approved_actual_candidate_count": 0,
+    "auto_action_allowed": false,
+    "auto_promotion_allowed": false,
+    "blockers": [
+      "insufficient_approved_actual_user_feedback",
+      "insufficient_sft_candidate_samples",
+      "insufficient_dpo_candidate_pairs"
+    ],
+    "created_at": "2026-06-21T02:18:31.860343+00:00",
+    "current_state": "observe",
+    "evidence_path": "docs/demo/phase28-real-feedback-loop-engineering/loop_state.json",
+    "kind": "phase28_loop_state",
+    "next_action": "collect_attested_actual_feedback",
+    "pending_review_count": 0,
+    "required_human_action": "fill_phase28_feedback_batch_from_real_user_interactions",
+    "training_attempt_status": "blocked"
+  },
+  "phase27_simulation_review": {
+    "conclusion": "simulation proves workflow shape only and must remain excluded from Phase28 actual feedback",
+    "created_at": "2026-06-21T02:18:31.860513+00:00",
+    "guardrail_counts": {
+      "blocked_count": 1,
+      "non_training_count": 1,
+      "quarantined_count": 1
+    },
+    "kind": "phase28_phase27_simulation_review",
+    "not_valid_for_production_training": true,
+    "phase27_simulated_readiness_status": "ready_for_real_training_probe",
+    "phase27_simulated_training_attempt_status": "ready_to_launch",
+    "simulation_dir": "docs/demo/phase27-actual-feedback-review-training-loop/simulation",
+    "simulation_only": true,
+    "simulation_rows_allowed_for_training": false,
+    "status": "reviewed"
+  },
+  "status": "completed",
+  "task_count": 36,
+  "training_attempt": {
+    "adapter_artifact_created": false,
+    "auto_promotion_allowed": false,
+    "created_at": "2026-06-21T02:18:31.860315+00:00",
+    "kind": "phase28_training_attempt",
+    "optional_real_probe_requires_explicit_operator_action": true,
+    "real_training_executed": false,
+    "reason": "insufficient_approved_actual_user_feedback;insufficient_sft_candidate_samples;insufficient_dpo_candidate_pairs",
+    "status": "blocked"
+  },
+  "training_readiness": {
+    "approved_actual_candidate_count": 0,
+    "auto_promotion_allowed": false,
+    "blockers": [
+      "insufficient_approved_actual_user_feedback",
+      "insufficient_sft_candidate_samples",
+      "insufficient_dpo_candidate_pairs"
+    ],
+    "candidate_manifest": {
+      "created_at": "2026-06-21T02:18:31.856682+00:00",
+      "dpo_pair_count": 0,
+      "eligible_signal_count": 0,
+      "excluded_signal_count": 0,
+      "holdout_isolation_required": true,
+      "kind": "phase24_candidate_manifest",
+      "product_value_training_allowed_count": 0,
+      "sample_source_policy": "reviewed_lab_signals_can_generate_candidate_specs_but_not_product_value_training",
+      "sft_sample_count": 0
+    },
+    "created_at": "2026-06-21T02:18:31.860278+00:00",
+    "kind": "phase25_training_readiness_report",
+    "minimum_approved_actual_candidates": 12,
+    "review_state_counts": {},
+    "runtime_recommendation": "primary_product_path",
+    "selected_model": {
+      "exists": true,
+      "looks_oversized_for_local_training": false,
+      "name": "models--Qwen--Qwen3-4B",
+      "non_generative": false,
+      "path": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-4B",
+      "qwen": true,
+      "selection_note": "local inventory hint only; Phase28 does not auto-train",
+      "trainable": true
+    },
+    "status": "collect_actual_feedback"
+  }
+}
