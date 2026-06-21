@@ -1,0 +1,32 @@
+{
+  "adapter_artifact_created": false,
+  "auto_promotion_allowed": false,
+  "created_at": "2026-06-21T02:18:31.578605+00:00",
+  "job_specs": {
+    "auto_promotion_allowed": false,
+    "created_at": "2026-06-21T02:18:31.578584+00:00",
+    "jobs": [
+      {
+        "dataset": "actual_feedback_sft_candidates.jsonl",
+        "job_id": "phase25-sft-actual-feedback-12-step",
+        "method": "sft",
+        "model": "/simulation/qwen3-4b",
+        "status": "ready",
+        "steps": 12
+      },
+      {
+        "dataset": "actual_feedback_dpo_pairs.jsonl",
+        "job_id": "phase25-dpo-actual-feedback-12-step",
+        "method": "dpo",
+        "model": "/simulation/qwen3-4b",
+        "status": "ready",
+        "steps": 12
+      }
+    ],
+    "kind": "phase25_training_job_specs",
+    "status": "ready"
+  },
+  "kind": "phase27_training_attempt",
+  "reason": "approved actual feedback threshold met; launch requires explicit operator action",
+  "status": "ready_to_launch"
+}
