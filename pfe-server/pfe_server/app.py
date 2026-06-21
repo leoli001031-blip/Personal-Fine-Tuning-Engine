@@ -89,6 +89,17 @@ from pfe_core.phase25_actual_user_feedback_loop import (
 from pfe_core.phase26_actual_feedback_collection_probe import (
     build_phase26_feedback_batch,
 )
+from pfe_core.phase27_actual_feedback_review_training_loop import (
+    append_phase27_import_batch,
+    apply_phase27_review_decision,
+    build_phase27_collection_pack,
+    build_phase27_import_batch,
+    build_phase27_readiness,
+    load_phase27_state,
+    phase27_payloads_from_csv,
+    phase27_payloads_from_jsonl,
+    phase27_store_path,
+)
 
 # ChatCollector integration - import from pfe_core if available
 def _try_import_chat_collector() -> tuple[bool, Any, Any, Any]:
@@ -1303,6 +1314,50 @@ def _phase3_store(services: ServiceBundle) -> Any:
     from pfe_core.phase3_signal_loop import Phase3SignalLoopStore
 
     return Phase3SignalLoopStore(home=_resolve_pfe_home(), workspace=services.workspace)
+
+
+def _phase27_store_file(services: ServiceBundle) -> Path:
+    return phase27_store_path(_resolve_pfe_home(), services.workspace)
+
+
+def _phase27_local_model_inventory() -> list[dict[str, Any]]:
+    roots = [
+        Path.home() / ".cache" / "huggingface" / "hub",
+        Path.home() / ".cache" / "modelscope" / "hub",
+        Path.home() / ".lmstudio" / "models",
+        _repo_root() / "models",
+        _repo_root() / "local_models",
+    ]
+    candidates: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in list(root.glob("*"))[:300]:
+            lower = str(path).lower()
+            if "qwen" not in lower:
+                continue
+            key = str(path.resolve())
+            if key in seen:
+                continue
+            seen.add(key)
+            non_generative = any(token in lower for token in ("embedding", "reranker", "vl", "tts", "audio", "omni"))
+            oversized = "27b" in lower or "32b" in lower or "72b" in lower
+            quantized = "4bit" in lower or "4-bit" in lower or "awq" in lower or "gguf" in lower
+            trainable_size_hint = any(token in lower for token in ("0.6b", "1.5b", "1.7b", "3b", "4b", "7b", "8b", "14b"))
+            candidates.append(
+                {
+                    "name": path.name,
+                    "path": str(path),
+                    "exists": path.exists(),
+                    "qwen": True,
+                    "non_generative": non_generative,
+                    "looks_quantized": quantized,
+                    "looks_oversized_for_local_training": oversized,
+                    "trainable": bool(trainable_size_hint and not non_generative and not oversized and not lower.endswith(".gguf")),
+                }
+            )
+    return candidates
 
 
 def _phase4_store(services: ServiceBundle) -> Any:
@@ -4820,6 +4875,163 @@ async def handle_phase26_training_probe_readiness(
     return _json_response(payload, status_code=200)
 
 
+async def handle_phase27_collection_pack(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase27-actual-feedback-review-training-loop"
+        / "evidence-collection"
+        / "api_collection_pack_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase27_collection_pack_surface",
+                "status": "blocked",
+                "reason": "phase27_collection_pack_payload_read_failed",
+                "error": str(exc),
+                "auto_promotion_allowed": False,
+            }
+    else:
+        payload = {
+            "kind": "phase27_collection_pack_surface",
+            "status": "ready",
+            "collection_pack": build_phase27_collection_pack(),
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+def _phase27_payloads_from_body(body: Mapping[str, Any]) -> list[dict[str, Any]]:
+    raw_items = body.get("items") or body.get("payloads")
+    if isinstance(raw_items, list):
+        return [dict(item) for item in raw_items if isinstance(item, Mapping)]
+    jsonl = body.get("jsonl") or body.get("jsonl_text")
+    if isinstance(jsonl, str):
+        return phase27_payloads_from_jsonl(jsonl)
+    csv_text = body.get("csv") or body.get("csv_text")
+    if isinstance(csv_text, str):
+        return phase27_payloads_from_csv(csv_text)
+    return []
+
+
+async def handle_phase27_actual_feedback_batch(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    items = _phase27_payloads_from_body(body)
+    batch = build_phase27_import_batch(items)
+    state = append_phase27_import_batch(_phase27_store_file(services), batch)
+    response = {
+        "kind": "phase27_actual_feedback_batch_response",
+        "status": "accepted_pending_review" if batch.get("accepted_pending_review_count") else "blocked",
+        "batch": batch,
+        "persisted_signal_count": len(state.get("signals") or []),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    status_code = 200 if batch.get("accepted_pending_review_count") else 422
+    return _json_response(response, status_code=status_code)
+
+
+async def handle_phase27_review_queue(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    state = load_phase27_state(_phase27_store_file(services))
+    readiness = build_phase27_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+    response = {
+        "kind": "phase27_review_queue_surface",
+        "status": "ready",
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase27_review_decisions(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    result = apply_phase27_review_decision(_phase27_store_file(services), body)
+    state = load_phase27_state(_phase27_store_file(services))
+    readiness = build_phase27_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+    response = {
+        "kind": "phase27_review_decision_response",
+        "result": result,
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200 if result.get("status") == "completed" else 422)
+
+
+async def handle_phase27_training_readiness(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    state = load_phase27_state(_phase27_store_file(services))
+    readiness = build_phase27_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+    response = {
+        "kind": "phase27_training_readiness_surface",
+        "status": _coerce_json_mapping(readiness.get("training_readiness")).get("status"),
+        "actual_feedback_count": readiness.get("actual_feedback_count", 0),
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "training_job_specs": readiness.get("training_job_specs"),
+        "candidate_manifest": _coerce_json_mapping(readiness.get("candidate_artifacts")).get("candidate_manifest") or {},
+        "holdout_integrity_check": readiness.get("holdout_integrity_check"),
+        "model_selection": readiness.get("model_selection"),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
 async def handle_phase6_preflight(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -6212,6 +6424,16 @@ class _LiteASGIApp:
             return await handle_phase26_actual_feedback_batch(envelope, self.services)
         if envelope.path == "/pfe/phase26/training-probe-readiness" and envelope.method == "GET":
             return await handle_phase26_training_probe_readiness(envelope, self.services)
+        if envelope.path == "/pfe/phase27/collection-pack" and envelope.method == "GET":
+            return await handle_phase27_collection_pack(envelope, self.services)
+        if envelope.path == "/pfe/phase27/actual-feedback-batch" and envelope.method == "POST":
+            return await handle_phase27_actual_feedback_batch(envelope, self.services)
+        if envelope.path == "/pfe/phase27/review-queue" and envelope.method == "GET":
+            return await handle_phase27_review_queue(envelope, self.services)
+        if envelope.path == "/pfe/phase27/review-decisions" and envelope.method == "POST":
+            return await handle_phase27_review_decisions(envelope, self.services)
+        if envelope.path == "/pfe/phase27/training-readiness" and envelope.method == "GET":
+            return await handle_phase27_training_readiness(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -6528,6 +6750,26 @@ def create_app(
         @app.get("/pfe/phase26/training-probe-readiness")
         async def pfe_phase26_training_probe_readiness(request: Request) -> Any:
             return await handle_phase26_training_probe_readiness(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase27/collection-pack")
+        async def pfe_phase27_collection_pack(request: Request) -> Any:
+            return await handle_phase27_collection_pack(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase27/actual-feedback-batch")
+        async def pfe_phase27_actual_feedback_batch(request: Request) -> Any:
+            return await handle_phase27_actual_feedback_batch(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase27/review-queue")
+        async def pfe_phase27_review_queue(request: Request) -> Any:
+            return await handle_phase27_review_queue(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase27/review-decisions")
+        async def pfe_phase27_review_decisions(request: Request) -> Any:
+            return await handle_phase27_review_decisions(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase27/training-readiness")
+        async def pfe_phase27_training_readiness(request: Request) -> Any:
+            return await handle_phase27_training_readiness(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:
