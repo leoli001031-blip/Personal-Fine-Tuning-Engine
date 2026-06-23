@@ -2433,6 +2433,7 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
     max_length = dpo_config.get("max_length", 2048)
     max_prompt_length = dpo_config.get("max_prompt_length", 1024)
     lora_config = dict(peft_config.get("lora_config") or {})
+    use_cpu = bool(training.get("use_cpu") or job_spec.get("use_cpu"))
 
     # Extract training examples
     training_examples = list(job_spec.get("training_examples") or [])
@@ -2463,6 +2464,7 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             "training_config": {
                 "learning_rate": training.get("learning_rate", 5e-5),
                 "lora_config": lora_config,
+                "use_cpu": use_cpu,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2499,6 +2501,7 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             "training_config": {
                 "learning_rate": training.get("learning_rate", 5e-5),
                 "lora_config": lora_config,
+                "use_cpu": use_cpu,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2540,9 +2543,14 @@ def _run_real_dpo_training(
     if not training_examples:
         raise TrainingError("DPO training requires at least one training example")
 
+    recipe = dict(job_spec.get("recipe") or {})
+    training_recipe = dict(recipe.get("training") or {})
+    peft_recipe = dict(recipe.get("peft") or {})
+    use_cpu = bool(training_recipe.get("use_cpu") or job_spec.get("use_cpu") or not torch.cuda.is_available())
+
     # Determine device and dtype
-    device_map = "auto" if torch.cuda.is_available() else {"": "cpu"}
-    torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    device_map = "auto" if torch.cuda.is_available() and not use_cpu else {"": "cpu"}
+    torch_dtype = torch.float16 if torch.cuda.is_available() and not use_cpu else torch.float32
 
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
@@ -2582,9 +2590,6 @@ def _run_real_dpo_training(
     else:
         target_modules = ["q_proj", "v_proj"]
 
-    recipe = dict(job_spec.get("recipe") or {})
-    training_recipe = dict(recipe.get("training") or {})
-    peft_recipe = dict(recipe.get("peft") or {})
     lora_recipe = dict(peft_recipe.get("lora_config") or {})
     lora_r = int(lora_recipe.get("r", 16))
     lora_alpha = int(lora_recipe.get("lora_alpha", 32))
@@ -2646,7 +2651,9 @@ def _run_real_dpo_training(
             lr_scheduler_type="cosine",
             logging_steps=1,
             save_strategy="no",
-            fp16=torch.cuda.is_available(),
+            bf16=False,
+            fp16=torch.cuda.is_available() and not use_cpu,
+            use_cpu=use_cpu,
             remove_unused_columns=False,
             dataloader_pin_memory=False,
             run_name="pfe-dpo-training",
@@ -2667,7 +2674,9 @@ def _run_real_dpo_training(
             lr_scheduler_type="cosine",
             logging_steps=10,
             save_strategy="epoch",
-            fp16=torch.cuda.is_available(),
+            bf16=False,
+            fp16=torch.cuda.is_available() and not use_cpu,
+            use_cpu=use_cpu,
             remove_unused_columns=False,
             dataloader_pin_memory=False,
             run_name="pfe-dpo-training",

@@ -1,0 +1,85 @@
+{
+  "created_at": "2026-06-23T02:49:34.266196+00:00",
+  "kind": "phase17_dpo_preflight",
+  "missing_modules": [],
+  "module_availability": {
+    "accelerate": true,
+    "datasets": true,
+    "peft": true,
+    "torch": true,
+    "transformers": true,
+    "trl": true
+  },
+  "ready": true,
+  "strict_probe": {
+    "backend": "dpo",
+    "execution_executor": "dpo",
+    "executor_mode": "real_import",
+    "fallback_from": null,
+    "import_attempts": [
+      {
+        "available": true,
+        "module": "torch"
+      },
+      {
+        "available": true,
+        "module": "transformers"
+      },
+      {
+        "available": true,
+        "module": "peft"
+      },
+      {
+        "available": true,
+        "module": "trl"
+      },
+      {
+        "available": true,
+        "module": "accelerate"
+      }
+    ],
+    "imported_modules": [
+      "torch",
+      "transformers",
+      "peft",
+      "trl",
+      "accelerate"
+    ],
+    "missing_attrs": [],
+    "missing_modules": [],
+    "ready": true,
+    "reasons": [
+      "dpo importable with required executor attributes"
+    ],
+    "required_attrs": {
+      "accelerate": [
+        "Accelerator"
+      ],
+      "peft": [
+        "LoraConfig",
+        "get_peft_model",
+        "PeftModel"
+      ],
+      "torch": [
+        "nn"
+      ],
+      "transformers": [
+        "AutoModelForCausalLM",
+        "AutoTokenizer",
+        "TrainingArguments"
+      ],
+      "trl": [
+        "DPOTrainer"
+      ]
+    },
+    "required_modules": [
+      "torch",
+      "transformers",
+      "peft",
+      "trl",
+      "accelerate"
+    ]
+  },
+  "strict_probe_error": null,
+  "strict_probe_ready": true
+}

@@ -1,0 +1,47 @@
+{
+  "created_at": "2026-06-23T02:49:33.802696+00:00",
+  "decision": {
+    "auto_promotion_allowed": false,
+    "kind": "phase29_adapter_decision",
+    "promotion_allowed": false,
+    "reasons": [
+      "training_not_completed"
+    ],
+    "recommendation": "archive",
+    "status": "blocked"
+  },
+  "kind": "phase29_eval_report",
+  "real_model_calls": false,
+  "skip_reason": "training_not_completed",
+  "training_attempt": {
+    "adapter_artifact_created": false,
+    "adapter_path": null,
+    "adapter_validation": {
+      "adapter_path": "",
+      "created_at": "2026-06-23T02:49:33.802606+00:00",
+      "exists": false,
+      "files": [],
+      "kind": "phase29_adapter_validation"
+    },
+    "command": "/Users/lichenhao/Desktop/PFE/.venv/bin/python /Users/lichenhao/Desktop/PFE/tools/phase13_boundary_contract_probe.py --training-worker --mid-model-id mlx-community/Qwen3-8B-4bit --worker-train-data /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase29-feedback-driven-sft-12step/phase13_train_rows.jsonl --worker-result /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase29-feedback-driven-sft-12step/phase13_worker_result.json --training-output-dir /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase29-feedback-driven-sft-12step --training-steps 12 --train-max-seq-length 768",
+    "created_at": "2026-06-23T02:49:33.801874+00:00",
+    "duration_seconds": 0.181,
+    "error_type": "training_worker_failed",
+    "format_report": {
+      "chat_template_applied_count": 40,
+      "chat_template_error_count": 0,
+      "chat_template_errors": [],
+      "selected_count": 40
+    },
+    "kind": "phase13_mid_model_training_attempt",
+    "model_id": "mlx-community/Qwen3-8B-4bit",
+    "real_training": "failed",
+    "stderr_tail": "           ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/lichenhao/Desktop/PFE/tools/phase13_boundary_contract_probe.py\", line 520, in _training_worker\n    result = MLXTrainerBackend(config=config).train(args.mid_model_id, train_rows, args.training_output_dir, config=config)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/lichenhao/Desktop/PFE/pfe-core/pfe_core/trainer/mlx_backend.py\", line 332, in train\n    from mlx_lm import load\n  File \"/Users/lichenhao/Desktop/PFE/.venv/lib/python3.11/site-packages/mlx_lm/__init__.py\", line 9, in <module>\n    from .convert import convert\n  File \"/Users/lichenhao/Desktop/PFE/.venv/lib/python3.11/site-packages/mlx_lm/convert.py\", line 8, in <module>\n    import mlx.nn as nn\n  File \"/Users/lichenhao/Desktop/PFE/.venv/lib/python3.11/site-packages/mlx/nn/__init__.py\", line 4, in <module>\n    from mlx.nn.layers import *\n  File \"/Users/lichenhao/Desktop/PFE/.venv/lib/python3.11/site-packages/mlx/nn/layers/__init__.py\", line 3, in <module>\n    from mlx.nn.layers.activations import (\n  File \"/Users/lichenhao/Desktop/PFE/.venv/lib/python3.11/site-packages/mlx/nn/layers/activations.py\", line 19, in <module>\n    @partial(mx.compile, shapeless=True)\n     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: [metal::load_device] No Metal device available. This typically occurs in headless, sandboxed, or virtualized macOS sessions where the GPU is not accessible.\nException ignored in atexit callback: <nanobind.nb_func object at 0x10bda3ab0>\nRuntimeError: [metal::load_device] No Metal device available. This typically occurs in headless, sandboxed, or virtualized macOS sessions where the GPU is not accessible.",
+    "stdout_tail": "",
+    "train_sample_count": 40,
+    "training_output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase29-feedback-driven-sft-12step",
+    "training_run": true,
+    "training_steps_requested": 12,
+    "worker_returncode": 1
+  }
+}

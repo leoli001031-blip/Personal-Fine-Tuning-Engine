@@ -57,6 +57,23 @@ class TestDPOExecutorFunction:
         assert result["num_examples"] == 1
         assert result["dpo_config"]["beta"] == 0.1
 
+    def test_execute_dpo_training_dry_run_keeps_cpu_flag(self):
+        from pfe_core.trainer.executors import execute_dpo_training
+
+        job_spec = {
+            "recipe": {
+                "training": {"base_model": "gpt2", "epochs": 1, "use_cpu": True},
+                "peft": {"dpo_config": {"beta": 0.1, "label_smoothing": 0.0}},
+            },
+            "training_examples": [
+                {"instruction": "Test", "chosen": "Good", "rejected": "Bad"}
+            ],
+        }
+
+        result = execute_dpo_training(job_spec=job_spec, dry_run=True)
+
+        assert result["training_config"]["use_cpu"] is True
+
 
 class TestDPOTrainerExecutor:
     """Test DPOTrainerExecutor class."""
