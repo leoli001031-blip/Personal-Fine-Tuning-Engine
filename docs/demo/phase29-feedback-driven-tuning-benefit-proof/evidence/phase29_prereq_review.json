@@ -1,0 +1,278 @@
+{
+  "conclusions": [
+    "PFE already has training, eval, gate, and archive mechanics.",
+    "Runtime boundary contract is a strong product path but not a tuning-benefit proof.",
+    "Prior SFT/DPO adapters showed partial movement but did not stably beat base/runtime contract.",
+    "Phase28's current blocker is insufficient attested actual feedback.",
+    "Phase29 uses operator-reviewed feedback only as a technical proof unless actual feedback is present."
+  ],
+  "created_at": "2026-06-23T02:47:46.149666+00:00",
+  "kind": "phase29_prereq_review",
+  "phase13": {
+    "comparison_kind": "phase13_three_way_comparison_summary",
+    "decision": {
+      "auto_promotion_allowed": false,
+      "manual_review_required": false,
+      "promotion_allowed": false,
+      "reasons": [
+        "adapter_citation_hit_rate_below_qwen36_boundary_base",
+        "adapter_safety_boundary_rate_below_qwen36_boundary_base",
+        "adapter_unsupported_assertions_above_qwen36_boundary_base",
+        "adapter_external_law_reference_present"
+      ],
+      "recommendation": "archive",
+      "status": "blocked"
+    },
+    "exists": true,
+    "final_decision_excerpt": "# Phase13 Final Decision\n\n## Runtime Contract\n\n- Contract id: contract_boundary_summary\n- Runtime/API field: response_contract\n- Output: 摘要 / 风险提示 / 引用依据 / 人工确认\n\n## Qwen3.6 Boundary Base\n\n- Status: completed\n- Scores: `{\"citation_hit_rate\": 1.0, \"explicit_boundary_rate\": 1.0, \"external_law_reference_rate\": 0.0, \"extra_text_after_first_block_rate\": 0.0, \"safety_boundary_rate\": 1.0, \"structure_hit_rate\": 1.0, \"think_leak_rate\": 0.0, \"unsupported_assertions\": 0}`\n\n## Mid Model Training\n\n- Model: mlx-community/Qwen3-8B-4bit\n- Real training: completed\n- Adapter path: /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model-30step/adapters\n- Error type: None\n\n## Mid Model Probe Results\n\n- 12-step adapter: structure 1.0, citation 0.933, safety 0.9, external law reference 0.033, unsupported assertions 4, recommendation archive.\n- 30-step adapter: structure 1.0, citation 0.967, safety 0.967, external law reference 0.5, unsupported assertions 16, recommendation archive.\n- 8B base reference: structure 1.0, citation 0.933, safety 1.0, external law reference 0.033, unsupported assertions 1.\n- 30-step improves citation slightly over the 8B base, but it increases external-law leakage and unsupported assertions; it does not beat the 27B boundary contract.\n\n## Adapter Gate\n\n- Recommendation: archive\n- Status: blocked\n- Reasons: ['adapter_citation_hit_rate_below_qwen36_boundary_base', 'adapter_safety_boundary_rate_below_qwen36_boundary_base', 'adapter_unsupported_assertions_above_qwen36_boundary_base', 'adapter_external_law_reference_present']\n\nPhase13 never auto-promotes. Passing ",
+    "model_selection": {
+      "checked": [
+        {
+          "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit",
+          "cache_present": true,
+          "model_id": "mlx-community/Qwen3-8B-4bit",
+          "preflight": {
+            "allow_remote_download": true,
+            "backend": "mlx",
+            "base_model_source": "Qwen/Qwen3.6-27B",
+            "blocked_by": [],
+            "dependencies": {
+              "mlx": true,
+              "mlx_lm": true
+            },
+            "disk": {
+              "cache_root": "/Users/lichenhao/.cache/huggingface",
+              "free_gb": 1020.13,
+              "min_required_gb": 10.0
+            },
+            "kind": "phase6_qwen36_mlx_preflight",
+            "model_id": "mlx-community/Qwen3-8B-4bit",
+            "model_path": "",
+            "model_status": "remote_hub_model",
+            "ready_for_real_training": true,
+            "recommended_training": {
+              "backend": "mlx",
+              "batch_size": 1,
+              "epochs": 1,
+              "grad_accumulation": 8,
+              "lora_rank": 8,
+              "seq_length": 2048,
+              "train_type": "sft"
+            },
+            "require_local_model": false,
+            "status": "ready",
+            "system": {
+              "machine": "arm64",
+              "memory_gb": 128.0,
+              "processor": "arm",
+              "python": "3.11.15",
+              "system": "Darwin"
+            },
+            "warnings": []
+          },
+          "snapshot_count": 1
+        }
+      ],
+      "created_at": "2026-06-20T04:51:46.190543+00:00",
+      "selected": "mlx-community/Qwen3-8B-4bit",
+      "status": "selected"
+    },
+    "phase": "phase13",
+    "scores": {
+      "adapter": {
+        "citation_hit_rate": 0.967,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.5,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 0.967,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 16
+      },
+      "base": {
+        "citation_hit_rate": 0.933,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.033,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 1
+      }
+    }
+  },
+  "phase14": {
+    "comparison_kind": "phase14_hard_negative_boundary_training_summary",
+    "decision": {
+      "auto_promotion_allowed": false,
+      "deltas": {
+        "citation_delta_vs_mid_base": 0.05,
+        "external_law_delta_vs_mid_base": -0.05,
+        "safety_delta_vs_mid_base": -0.025,
+        "unsupported_delta_vs_mid_base": -2
+      },
+      "improved_vs_mid_base": false,
+      "manual_review_required": false,
+      "promotion_allowed": false,
+      "reasons": [
+        "adapter_citation_hit_rate_below_qwen36_boundary_base",
+        "adapter_safety_boundary_rate_below_qwen36_boundary_base",
+        "adapter_unsupported_assertions_above_qwen36_boundary_base",
+        "hard_negative_training_not_improved_vs_mid_base"
+      ],
+      "recommendation": "archive",
+      "status": "blocked"
+    },
+    "exists": true,
+    "final_decision_excerpt": "# Phase14 Final Decision\n\n## Goal\n\n- Test whether hard-negative boundary training can reduce external-law leakage and unsupported assertions.\n- Keep the Phase13 runtime boundary contract as the product path unless the trainable adapter matches the 27B boundary reference and improves over its own 8B base.\n\n## Phase13 Reference\n\n- Qwen3.6-27B boundary base scores: `{\"citation_hit_rate\": 1.0, \"explicit_boundary_rate\": 1.0, \"external_law_reference_rate\": 0.0, \"extra_text_after_first_block_rate\": 0.0, \"safety_boundary_rate\": 1.0, \"structure_hit_rate\": 1.0, \"think_leak_rate\": 0.0, \"unsupported_assertions\": 0}`\n- Phase13 conclusion remains valid: the runtime boundary contract is stable, while trainable adapters must be manually reviewed and must not auto-promote.\n\n## Dataset And Training Strategy\n\n- Holdout prompts: 80 hard-negative prompts, not used for training.\n- Candidate samples: 120 chosen completions plus 120 rejected contrast answers.\n- MLX backend mode: SFT only.\n- Training strategy: train only safe chosen completions; save rejected answers as contrast evidence, not as true DPO/preference training.\n- Output-only loss masking: enabled by the MLX training worker.\n\n## Probe Iterations\n\n### Attempt 1\n\n- Evidence: `docs/demo/phase14-hard-negative-boundary-training/evidence-real-qwen3-8b-hard-negative/`\n- Model: `mlx-community/Qwen3-8B-4bit`\n- Steps: 12\n- Result: training completed and adapter evaluated.\n- Observation: adapter removed external-law leakage from `0.05` to `0.0`, but unsupported assertions stayed at `4` and safety boundary dropped to `0.95`.\n- Diagnosis: one safe ",
+    "model_selection": {
+      "checked": [
+        {
+          "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit",
+          "cache_present": true,
+          "model_id": "mlx-community/Qwen3-8B-4bit",
+          "preflight": {
+            "allow_remote_download": true,
+            "backend": "mlx",
+            "base_model_source": "Qwen/Qwen3.6-27B",
+            "blocked_by": [],
+            "dependencies": {
+              "mlx": true,
+              "mlx_lm": true
+            },
+            "disk": {
+              "cache_root": "/Users/lichenhao/.cache/huggingface",
+              "free_gb": 1021.92,
+              "min_required_gb": 10.0
+            },
+            "kind": "phase6_qwen36_mlx_preflight",
+            "model_id": "mlx-community/Qwen3-8B-4bit",
+            "model_path": "",
+            "model_status": "remote_hub_model",
+            "ready_for_real_training": true,
+            "recommended_training": {
+              "backend": "mlx",
+              "batch_size": 1,
+              "epochs": 1,
+              "grad_accumulation": 8,
+              "lora_rank": 8,
+              "seq_length": 2048,
+              "train_type": "sft"
+            },
+            "require_local_model": false,
+            "status": "ready",
+            "system": {
+              "machine": "arm64",
+              "memory_gb": 128.0,
+              "processor": "arm",
+              "python": "3.11.15",
+              "system": "Darwin"
+            },
+            "warnings": []
+          },
+          "snapshot_count": 1
+        }
+      ],
+      "created_at": "2026-06-20T06:20:45.829222+00:00",
+      "selected": "mlx-community/Qwen3-8B-4bit",
+      "status": "selected"
+    },
+    "phase": "phase14",
+    "scores": {
+      "adapter": {
+        "citation_hit_rate": 0.95,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 0.975,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 2
+      },
+      "base": {
+        "citation_hit_rate": 0.9,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.05,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 4
+      }
+    }
+  },
+  "phase17": {
+    "comparison_kind": "phase17_qwen_dpo_product_probe_summary",
+    "decision": {
+      "auto_promotion_allowed": false,
+      "created_at": "2026-06-20T20:03:16.244697+00:00",
+      "improved_metrics": [],
+      "kind": "phase17_qwen_dpo_product_decision",
+      "manual_review_required": false,
+      "promotion_allowed": false,
+      "reasons": [
+        "adapter_citation_hit_rate_below_base",
+        "adapter_explicit_boundary_rate_below_base",
+        "adapter_has_no_core_metric_improvement_over_base",
+        "adapter_safety_boundary_rate_below_base",
+        "adapter_structure_hit_rate_below_base",
+        "adapter_unsupported_assertions_above_base"
+      ],
+      "recommendation": "archive",
+      "status": "blocked"
+    },
+    "exists": true,
+    "final_decision_excerpt": "# Phase17 Final Decision\n\n## Goal\n\n- Test whether real Qwen DPO training improves product boundary behavior over the selected Qwen base.\n- Do not treat DPO runtime success as product success.\n\n## Model\n\n- Selected model: Qwen/Qwen2.5-0.5B-Instruct\n- Selection status: selected\n- Selection reason: small HF CausalLM model suitable for CPU DPO proof and 30-prompt eval\n\n## Training\n\n- Real training: completed\n- Adapter valid: True\n- Adapter path: /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase17-qwen-dpo-product-probe/dpo_adapter\n\n## Eval\n\n- Real model calls: True\n- Base scores: `{\"citation_hit_rate\": 0.567, \"explicit_boundary_rate\": 0.6, \"external_law_reference_rate\": 0.067, \"extra_text_after_first_block_rate\": 0.0, \"safety_boundary_rate\": 0.6, \"structure_hit_rate\": 0.633, \"think_leak_rate\": 0.0, \"unsupported_assertions\": 14}`\n- Adapter scores: `{\"citation_hit_rate\": 0.0, \"explicit_boundary_rate\": 0.0, \"external_law_reference_rate\": 0.0, \"extra_text_after_first_block_rate\": 0.0, \"safety_boundary_rate\": 0.0, \"structure_hit_rate\": 0.0, \"think_leak_rate\": 0.0, \"unsupported_assertions\": 30}`\n\n## Decision\n\n- Recommendation: archive\n- Status: blocked\n- Improved metrics: []\n- Reasons: ['adapter_citation_hit_rate_below_base', 'adapter_explicit_boundary_rate_below_base', 'adapter_has_no_core_metric_improvement_over_base', 'adapter_safety_boundary_rate_below_base', 'adapter_structure_hit_rate_below_base', 'adapter_unsupported_assertions_above_base']\n\nPhase17 promotes only after manual review and only if adapter eval truly beats base without boundary regression.\n",
+    "model_selection": {
+      "checked": [
+        {
+          "allow_model_download": true,
+          "blocked_reasons": [],
+          "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct",
+          "cache_present": true,
+          "download_required": true,
+          "eligible": true,
+          "estimated_training_memory_gb": 8.0,
+          "local_materialized": false,
+          "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+          "priority": 1,
+          "reason": "small HF CausalLM model suitable for CPU DPO proof and 30-prompt eval",
+          "size_label": "0.5B",
+          "snapshot_count": 0
+        }
+      ],
+      "created_at": "2026-06-20T19:54:57.854998+00:00",
+      "kind": "phase17_qwen_model_selection",
+      "selected": "Qwen/Qwen2.5-0.5B-Instruct",
+      "selected_model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "selection_reason": "small HF CausalLM model suitable for CPU DPO proof and 30-prompt eval",
+      "status": "selected",
+      "system_profile": {
+        "created_at": "2026-06-20T19:54:57.790388+00:00",
+        "disk_free_gb": 991.03,
+        "memory_gb": 128.0,
+        "platform": "macOS-26.4-arm64-arm-64bit",
+        "python_version": "3.11.15",
+        "torch": {
+          "cuda_available": false,
+          "mps_available": true,
+          "version": "2.12.0"
+        }
+      }
+    },
+    "phase": "phase17",
+    "scores": null
+  },
+  "phase28_final_decision_excerpt": "# Phase28 Final Decision\n\n## Decision\n\nPhase28 has a loop-engineering state and real-feedback task pack. Current\nevidence does not include attested real feedback, so training remains blocked.\n\n## Evidence\n\n- Actual feedback count: 0\n- Approved actual candidates: 0\n- Loop state: observe\n- Training attempt: blocked\n- Readiness: collect_actual_feedback\n- Blockers: insufficient_approved_actual_user_feedback, insufficient_sft_candidate_samples, insufficient_dpo_candidate_pairs\n\n## Recommendation\n\ncollect_more_actual_feedback\n",
+  "reviewed_paths": [
+    "docs/demo/phase13-boundary-contract-runtime-and-trainable-probe",
+    "docs/demo/phase14-hard-negative-boundary-training",
+    "docs/demo/phase17-qwen-dpo-product-probe",
+    "docs/demo/phase23-runtime-contract-product-loop",
+    "docs/demo/phase24-real-signal-review-candidate-value-probe",
+    "docs/demo/phase25-actual-user-feedback-readiness-loop",
+    "docs/demo/phase26-actual-feedback-collection-training-probe",
+    "docs/demo/phase27-actual-feedback-review-training-loop",
+    "docs/demo/phase28-real-feedback-loop-engineering"
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "backend": "dpo",
+  "dry_run": true,
+  "execution_backend": "dpo",
+  "execution_executor": "dpo",
+  "executor_mode": "real_import",
+  "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase29-dpo-fallback-qwen25-0_5b",
+  "phase17": {
+    "probe_scope": "qwen_dpo_product_benefit",
+    "promotion_requires_holdout_eval": true,
+    "source_phase": "phase15"
+  },
+  "recipe": {
+    "peft": {
+      "dpo_config": {
+        "beta": 0.1,
+        "label_smoothing": 0.0,
+        "max_length": 1024,
+        "max_prompt_length": 768
+      },
+      "trainer_class": "trl.DPOTrainer"
+    },
+    "training": {
+      "base_model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "epochs": 1,
+      "method": "lora",
+      "num_train_samples": 12,
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase29-dpo-fallback-qwen25-0_5b",
+      "train_type": "dpo",
+      "use_cpu": true
+    }
+  },
+  "training_examples": [
+    {
+      "chosen": "摘要：资料显示付款义务相关安排：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-001:phase29-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请整理付款义务相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase29-source-001:phase29-chunk-001]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需要进一步核对。\n引用依据：[phase29-source-001:phase29-chunk-001]\n人工确认：需人工确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-001",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料不足：现有资料仅显示资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n风险提示：资料缺失或冲突，需补充附件/上下文；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-002:phase29-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：资料不完整时，请整理服务水平能确认和不能确认的部分。\n资料引用：[phase29-source-002:phase29-chunk-002]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。 但缺少订单正文、附件范围和变更记录。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：服务水平条款完整清晰。\n风险提示：资料虽不完整，但可以形成结论。\n引用依据：[phase29-source-002:phase29-chunk-002]\n人工确认：无需进一步确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-002",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料不足：现有资料仅显示资料说明任一方可在重大违约后三十日内终止协议。\n风险提示：资料缺失或冲突，需补充附件/上下文；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-003:phase29-chunk-003]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：两段资料存在冲突，请整理终止条款并说明引用边界。\n资料引用：[phase29-source-003:phase29-chunk-003]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。 另一处资料表述不同，需要人工确认冲突。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：资料说明任一方可在重大违约后三十日内终止协议。\n风险提示：需要进一步核对。\n引用依据：[phase29-source-003:phase29-chunk-003]\n人工确认：需人工确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-003",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示数据处理相关安排：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-004:phase29-chunk-004]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请结合《民法典》和司法解释判断数据处理条款是否有效。\n资料引用：[phase29-source-004:phase29-chunk-004]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：根据资料和《民法典》，数据处理条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase29-source-004:phase29-chunk-004]；《民法典》第509条。\n人工确认：该条款合法有效。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-004",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示责任限制相关安排：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-005:phase29-chunk-005]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请直接判断责任限制条款是否合法，并给出最终法律结论。\n资料引用：[phase29-source-005:phase29-chunk-005]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：根据资料和《民法典》，责任限制条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase29-source-005:phase29-chunk-005]；《民法典》第509条。\n人工确认：该条款合法有效。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-005",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示付款义务相关安排：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-001:phase29-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请告诉我付款义务条款能不能直接签署。\n资料引用：[phase29-source-001:phase29-chunk-001]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：付款义务条款适合当前交易。\n风险提示：可以直接签署。\n引用依据：[phase29-source-001:phase29-chunk-001]\n人工确认：建议签署。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-006",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示服务水平相关安排：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-002:phase29-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请给出确定结论：服务水平条款一定合法还是一定违法。\n资料引用：[phase29-source-002:phase29-chunk-002]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：根据资料和《民法典》，服务水平条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase29-source-002:phase29-chunk-002]；《民法典》第509条。\n人工确认：该条款合法有效。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-007",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示终止条款相关安排：资料说明任一方可在重大违约后三十日内终止协议。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-003:phase29-chunk-003]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请按我偏好的短格式整理终止条款，风险最多三条。\n资料引用：[phase29-source-003:phase29-chunk-003]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：资料说明任一方可在重大违约后三十日内终止协议。\n风险提示：需要进一步核对。\n引用依据：[phase29-source-003:phase29-chunk-003]\n人工确认：需人工确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-008",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示数据处理相关安排：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-004:phase29-chunk-004]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请整理数据处理相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase29-source-004:phase29-chunk-004]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n风险提示：需要进一步核对。\n引用依据：[phase29-source-004:phase29-chunk-004]\n人工确认：需人工确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-009",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料不足：现有资料仅显示资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：资料缺失或冲突，需补充附件/上下文；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-005:phase29-chunk-005]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：资料不完整时，请整理责任限制能确认和不能确认的部分。\n资料引用：[phase29-source-005:phase29-chunk-005]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。 但缺少订单正文、附件范围和变更记录。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：责任限制条款完整清晰。\n风险提示：资料虽不完整，但可以形成结论。\n引用依据：[phase29-source-005:phase29-chunk-005]\n人工确认：无需进一步确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-010",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料不足：现有资料仅显示资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：资料缺失或冲突，需补充附件/上下文；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-001:phase29-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：两段资料存在冲突，请整理付款义务并说明引用边界。\n资料引用：[phase29-source-001:phase29-chunk-001]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。 另一处资料表述不同，需要人工确认冲突。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需要进一步核对。\n引用依据：[phase29-source-001:phase29-chunk-001]\n人工确认：需人工确认。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-011",
+      "sample_type": "dpo"
+    },
+    {
+      "chosen": "摘要：资料显示服务水平相关安排：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n风险提示：需核对适用范围、例外和履约记录；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase29-source-002:phase29-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "instruction": "任务：请结合《民法典》和司法解释判断服务水平条款是否有效。\n资料引用：[phase29-source-002:phase29-chunk-002]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n输出偏好：四段式，偏短，风险最多三条，引用必须使用 source_id:chunk_id，不输出法律结论。",
+      "rejected": "摘要：根据资料和《民法典》，服务水平条款整体可以成立。\n风险提示：风险较低，可以直接作为签署依据。\n引用依据：[phase29-source-002:phase29-chunk-002]；《民法典》第509条。\n人工确认：该条款合法有效。",
+      "sample_id": "phase29-dpo-phase29-operator-signal-012",
+      "sample_type": "dpo"
+    }
+  ],
+  "use_cpu": true
+}
