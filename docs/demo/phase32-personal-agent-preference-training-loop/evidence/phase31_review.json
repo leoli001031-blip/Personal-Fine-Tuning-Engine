@@ -1,0 +1,21 @@
+{
+  "actual_user_feedback_count": 0,
+  "created_at": "2026-07-02T18:38:02.928125+00:00",
+  "discovered_conversations": 1982,
+  "historical_signal_count": 68,
+  "holdout_count": 12,
+  "kind": "phase32_phase31_review",
+  "phase31_completed": true,
+  "phase31_decision_excerpt": "# Phase31 Final Decision ## Decision - Recommendation: historical_signal_quality_ready_for_human_review - Status: ready - Promotion allowed: false - Product benefit claim allowed: false - Actual user feedback collected: false - Historical user-agent conversations used: true - Training launch allowed: false ## Evidence - Vault path: [AGENT_MEMORY_VAULT] - Discovered conversations: 1982 - Selected sources: 80 - Holdout conversations: 12 - Historical candidate signals: 68 - Approved candidate signals: 39 - Profile candidates: 39 - Memory candidates: 39 - SFT samples: 39 - DPO pairs: 39 - Hard negatives: 39 - Excluded signals: 29 ## Quality Scores | Metric | Score | | --- | ---: | | source_boundary_rate | 1.0 | | no_secret_rate | 1.0 | | redaction_applied_rate | 0.795 | | user_preference_specificity_rate | 1.0 | | chosen_rejected_contrast_rate | 1.0 | | profile_memory_routing_rate | 1.0 | |...",
+  "phase31_recommendation": "historical_signal_quality_ready_for_human_review",
+  "phase32_interpretation": [
+    "Phase31 produced redacted historical collaboration candidates.",
+    "Historical conversation signals require human review before training.",
+    "They are not realtime actual_user_feedback.",
+    "Phase32 may train only on abstract reviewed preferences, never raw private conversation text."
+  ],
+  "product_benefit_claim_allowed": false,
+  "reviewable_candidate_count": 39,
+  "selected_sources": 80,
+  "training_launch_allowed": false
+}
