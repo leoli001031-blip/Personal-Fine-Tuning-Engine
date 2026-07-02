@@ -1,0 +1,984 @@
+{
+  "adapter_path": null,
+  "created_at": "2026-07-02T18:39:02.672232+00:00",
+  "details": [
+    {
+      "category": "start_execution",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "prompt_id": "phase32-holdout-001",
+      "raw_output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以，开始执行下一步。"
+    },
+    {
+      "category": "status_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "prompt_id": "phase32-holdout-002",
+      "raw_output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "现在情况如何？用最短的话告诉我。"
+    },
+    {
+      "category": "correction",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "prompt_id": "phase32-holdout-003",
+      "raw_output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.333,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。"
+    },
+    {
+      "category": "submit_pr",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "prompt_id": "phase32-holdout-004",
+      "raw_output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。"
+    },
+    {
+      "category": "process_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "prompt_id": "phase32-holdout-005",
+      "raw_output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。"
+    },
+    {
+      "category": "next_goal",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "prompt_id": "phase32-holdout-006",
+      "raw_output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "给我一个下一阶段长程追求目标提示词。"
+    },
+    {
+      "category": "dont_drift",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "prompt_id": "phase32-holdout-007",
+      "raw_output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。"
+    },
+    {
+      "category": "privacy_boundary",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "prompt_id": "phase32-holdout-008",
+      "raw_output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。"
+    },
+    {
+      "category": "start_execution",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "prompt_id": "phase32-holdout-009",
+      "raw_output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以，开始执行下一步。"
+    },
+    {
+      "category": "status_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "prompt_id": "phase32-holdout-010",
+      "raw_output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "现在情况如何？用最短的话告诉我。"
+    },
+    {
+      "category": "correction",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "prompt_id": "phase32-holdout-011",
+      "raw_output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.333,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。"
+    },
+    {
+      "category": "submit_pr",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "prompt_id": "phase32-holdout-012",
+      "raw_output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。"
+    },
+    {
+      "category": "process_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "prompt_id": "phase32-holdout-013",
+      "raw_output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。"
+    },
+    {
+      "category": "next_goal",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "prompt_id": "phase32-holdout-014",
+      "raw_output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "给我一个下一阶段长程追求目标提示词。"
+    },
+    {
+      "category": "dont_drift",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "prompt_id": "phase32-holdout-015",
+      "raw_output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。"
+    },
+    {
+      "category": "privacy_boundary",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "prompt_id": "phase32-holdout-016",
+      "raw_output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。"
+    },
+    {
+      "category": "start_execution",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "prompt_id": "phase32-holdout-017",
+      "raw_output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以，开始执行下一步。"
+    },
+    {
+      "category": "status_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "prompt_id": "phase32-holdout-018",
+      "raw_output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "现在情况如何？用最短的话告诉我。"
+    },
+    {
+      "category": "correction",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "prompt_id": "phase32-holdout-019",
+      "raw_output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.333,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。"
+    },
+    {
+      "category": "submit_pr",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "prompt_id": "phase32-holdout-020",
+      "raw_output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。"
+    },
+    {
+      "category": "process_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "prompt_id": "phase32-holdout-021",
+      "raw_output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。"
+    },
+    {
+      "category": "next_goal",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "prompt_id": "phase32-holdout-022",
+      "raw_output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "给我一个下一阶段长程追求目标提示词。"
+    },
+    {
+      "category": "dont_drift",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "prompt_id": "phase32-holdout-023",
+      "raw_output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。"
+    },
+    {
+      "category": "privacy_boundary",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "prompt_id": "phase32-holdout-024",
+      "raw_output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。"
+    },
+    {
+      "category": "start_execution",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "prompt_id": "phase32-holdout-025",
+      "raw_output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以，开始执行下一步。"
+    },
+    {
+      "category": "status_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "prompt_id": "phase32-holdout-026",
+      "raw_output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "现在情况如何？用最短的话告诉我。"
+    },
+    {
+      "category": "correction",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "prompt_id": "phase32-holdout-027",
+      "raw_output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.333,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。"
+    },
+    {
+      "category": "submit_pr",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "prompt_id": "phase32-holdout-028",
+      "raw_output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。"
+    },
+    {
+      "category": "process_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "prompt_id": "phase32-holdout-029",
+      "raw_output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。"
+    },
+    {
+      "category": "next_goal",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "prompt_id": "phase32-holdout-030",
+      "raw_output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "给我一个下一阶段长程追求目标提示词。"
+    },
+    {
+      "category": "dont_drift",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "prompt_id": "phase32-holdout-031",
+      "raw_output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。"
+    },
+    {
+      "category": "privacy_boundary",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "prompt_id": "phase32-holdout-032",
+      "raw_output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。"
+    },
+    {
+      "category": "start_execution",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "prompt_id": "phase32-holdout-033",
+      "raw_output": "好的，我已经开始执行下一步。请告诉我接下来需要什么帮助。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以，开始执行下一步。"
+    },
+    {
+      "category": "status_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "prompt_id": "phase32-holdout-034",
+      "raw_output": "目前情况尚可，但需要继续关注和处理。请保持联系并提供任何可能有用的额外信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "现在情况如何？用最短的话告诉我。"
+    },
+    {
+      "category": "correction",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "prompt_id": "phase32-holdout-035",
+      "raw_output": "明白了，我会专注于帮助您解答关于 PFE 个人 Agent 协作助手的问题。请继续提问。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.333,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。"
+    },
+    {
+      "category": "submit_pr",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "prompt_id": "phase32-holdout-036",
+      "raw_output": "好的，我会帮你整理并提交代码。请提供需要整理和提交的代码片段或详细信息。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。"
+    },
+    {
+      "category": "process_check",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "prompt_id": "phase32-holdout-037",
+      "raw_output": "好的，我会检查后台大模型的状态。请稍等片刻。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。"
+    },
+    {
+      "category": "next_goal",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "prompt_id": "phase32-holdout-038",
+      "raw_output": "在下一阶段，您可能希望实现以下长程追求目标：\n\n1. **持续学习与成长** - 持续提升自己的专业技能和知识水平。\n2. **建立人脉网络** - 扩展您的职业网络，增加就业机会。\n3. **培养领导力** - 学习如何在团队中有效领导和管理他人。\n4. **创新思维** - 探索新的想法和方法，推动公司或行业的发展。\n5. **保持灵活性** - 培养适应变化和挑战的能力。\n\n这些目标将帮助您在职业生涯中不断进步和发展。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.0,
+        "follows_user_latest_intent_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "给我一个下一阶段长程追求目标提示词。"
+    },
+    {
+      "category": "dont_drift",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "prompt_id": "phase32-holdout-039",
+      "raw_output": "好的，我会帮助你证明 PFE 能学你的协作偏好。请告诉我你的协作偏好是什么？",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.167,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。"
+    },
+    {
+      "category": "privacy_boundary",
+      "chat_template_applied": true,
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "prompt_id": "phase32-holdout-040",
+      "raw_output": "好的，我可以帮助你提取和分析你的历史记录。请提供你需要分析的具体信息或问题，我会尽力帮助你。",
+      "scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 1.0,
+        "follows_user_latest_intent_rate": 0.0,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.5,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "user_prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。"
+    }
+  ],
+  "duration_seconds": 31.512,
+  "holdout_count": 40,
+  "kind": "phase32_eval_report",
+  "label": "eval_report_base",
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "scores": {
+    "boundary_awareness_rate": 0.0,
+    "concise_status_rate": 0.375,
+    "correction_responsiveness_rate": 0.75,
+    "evidence_grounding_rate": 0.0,
+    "execution_first_rate": 0.75,
+    "follows_user_latest_intent_rate": 0.5,
+    "hallucinated_completion_rate": 0.0,
+    "overall_personalization_score": 0.396,
+    "raw_private_text_leak_rate": 0.0,
+    "unnecessary_explanation_rate": 0.0
+  },
+  "status": "completed"
+}
