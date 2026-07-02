@@ -1,0 +1,1752 @@
+{
+  "candidate_manifest": {
+    "actual_user_feedback_count": 0,
+    "approved_candidate_signal_count": 39,
+    "created_at": "2026-07-02T16:28:26.153050+00:00",
+    "dpo_pair_count": 39,
+    "excluded_signal_count": 29,
+    "hard_negative_pair_count": 39,
+    "historical_conversation_signal_count": 68,
+    "kind": "phase31_candidate_manifest",
+    "memory_candidate_count": 39,
+    "product_benefit_claim_allowed": false,
+    "profile_candidate_count": 39,
+    "quality_passed": true,
+    "requires_human_review_before_training": true,
+    "sft_sample_count": 39
+  },
+  "candidate_quality_report": {
+    "aggregate": {
+      "chosen_rejected_contrast_rate": 1.0,
+      "concise_target_rate": 1.0,
+      "holdout_isolation_rate": 1.0,
+      "no_secret_rate": 1.0,
+      "not_actual_feedback_rate": 1.0,
+      "profile_memory_routing_rate": 1.0,
+      "redaction_applied_rate": 0.795,
+      "source_boundary_rate": 1.0,
+      "user_preference_specificity_rate": 1.0
+    },
+    "created_at": "2026-07-02T16:28:26.152944+00:00",
+    "dpo_pair_count": 39,
+    "failure_count": 0,
+    "failures": [],
+    "kind": "phase31_candidate_quality_report",
+    "passed": true,
+    "quality_contract": "historical conversation signals must be source-bound, redacted, contrasted, and not treated as actual feedback",
+    "required_counts_passed": true,
+    "sample_count": 39
+  },
+  "created_at": "2026-07-02T16:28:26.159263+00:00",
+  "decision": {
+    "actual_user_feedback_collected": false,
+    "auto_promotion_allowed": false,
+    "created_at": "2026-07-02T16:28:26.153055+00:00",
+    "historical_user_agent_conversations_used": true,
+    "kind": "phase31_final_decision",
+    "next_step": "human_review_historical_candidates_then_optional_small_training_probe",
+    "product_benefit_claim_allowed": false,
+    "promotion_allowed": false,
+    "reasons": [],
+    "recommendation": "historical_signal_quality_ready_for_human_review",
+    "status": "ready",
+    "training_launch_allowed": false
+  },
+  "final_recommendation": "historical_signal_quality_ready_for_human_review",
+  "holdout": {
+    "holdout_count": 12
+  },
+  "holdout_integrity_check": {
+    "candidate_chunk_count": 39,
+    "contaminated_chunk_ids": [],
+    "created_at": "2026-07-02T16:28:26.153049+00:00",
+    "holdout_count": 12,
+    "kind": "phase31_holdout_integrity_check",
+    "passed": true
+  },
+  "kind": "phase31_obsidian_agent_conversation_signal_mining_summary",
+  "phase30_review": {
+    "created_at": "2026-07-02T16:28:23.412971+00:00",
+    "kind": "phase31_phase30_review",
+    "phase30_conclusion": [
+      "simulated feedback quality passed",
+      "Qwen2.5-0.5B DPO probe trained successfully",
+      "adapter did not learn stable four-section behavior",
+      "next step should use richer historical/real user signals instead of more legal-contract simulation"
+    ],
+    "phase30_decision": {
+      "actual_user_feedback_collected": false,
+      "auto_promotion_allowed": false,
+      "created_at": "2026-07-02T13:54:25.681114+00:00",
+      "kind": "phase30_final_decision",
+      "next_step_requires_real_user_feedback": true,
+      "product_benefit_claim_allowed": false,
+      "promotion_allowed": false,
+      "reasons": [],
+      "recommendation": "simulation_quality_ready_for_real_feedback",
+      "simulated_human_perspective_only": true,
+      "status": "ready"
+    },
+    "phase30_training_scores": {
+      "adapter": {
+        "citation_exact_match_rate": 0.35,
+        "concise_output_rate": 0.15,
+        "four_section_exact_rate": 0.0,
+        "hard_negative_contrast_score": 0.0,
+        "manual_confirmation_rate": 0.0,
+        "missing_info_first_rate": 0.7,
+        "no_external_law_rate": 0.9,
+        "no_legal_conclusion_rate": 0.9,
+        "preference_adherence_rate": 0.0
+      },
+      "base": {
+        "citation_exact_match_rate": 0.5,
+        "concise_output_rate": 0.35,
+        "four_section_exact_rate": 0.0,
+        "hard_negative_contrast_score": 0.0,
+        "manual_confirmation_rate": 0.0,
+        "missing_info_first_rate": 0.7,
+        "no_external_law_rate": 0.75,
+        "no_legal_conclusion_rate": 0.9,
+        "preference_adherence_rate": 0.0
+      }
+    },
+    "phase31_response": [
+      "mine AgentMemory/Obsidian conversations as historical user-agent collaboration signals",
+      "label source as historical_user_agent_conversation, not actual_user_feedback",
+      "extract user preferences, corrections, verification habits, and workflow expectations",
+      "redact local paths and quarantine secret-risk conversations before candidates"
+    ],
+    "reviewed_paths": [
+      "docs/demo/phase30-simulated-human-feedback-quality-loop/phase30-final-decision.md",
+      "docs/demo/phase30-simulated-human-feedback-quality-loop/comparison_summary.json",
+      "docs/demo/phase30-simulated-human-feedback-quality-loop/evidence-eval/eval_report.json"
+    ]
+  },
+  "routing_report": {
+    "actual_user_feedback_count": 0,
+    "created_at": "2026-07-02T16:28:26.152730+00:00",
+    "eligible_training_count": 39,
+    "historical_conversation_count": 68,
+    "kind": "phase31_signal_routing_report",
+    "routed_signals": [
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-013",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152557+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-014",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152566+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-015",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152570+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-016",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152574+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-017",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152577+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-018",
+        "signal_type": "verification_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152580+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-019",
+        "signal_type": "safety_boundary",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152583+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-020",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152589+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-021",
+        "signal_type": "verification_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152593+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-022",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152596+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-023",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152598+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-024",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152601+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-025",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152604+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-026",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152606+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-027",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152609+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-028",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152611+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-029",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152613+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-030",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152616+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-031",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152618+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-032",
+        "signal_type": "safety_boundary",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152620+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-033",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152623+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-034",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152625+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-035",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152627+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-036",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152629+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-037",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152631+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-038",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152633+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-039",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152635+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-040",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152637+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-041",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152639+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-042",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152642+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-043",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152644+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-044",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152646+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-045",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152648+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-046",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152650+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-047",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152653+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-048",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152655+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-049",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152658+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-050",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152660+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-051",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152663+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-052",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152665+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-053",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152668+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-054",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152670+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-055",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152672+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-056",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152674+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-057",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152676+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-058",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152678+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-059",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152680+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-060",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152683+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-061",
+        "signal_type": "workflow_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152685+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-062",
+        "signal_type": "workflow_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152687+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-063",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152689+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-064",
+        "signal_type": "acceptance",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152691+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-065",
+        "signal_type": "acceptance",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152693+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-066",
+        "signal_type": "acceptance",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152696+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-067",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152697+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-068",
+        "signal_type": "acceptance",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152699+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-069",
+        "signal_type": "acceptance",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152701+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-070",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152703+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-071",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152705+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-072",
+        "signal_type": "acceptance",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152707+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-073",
+        "signal_type": "correction",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152708+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-074",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152711+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-075",
+        "signal_type": "verification_preference",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152713+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-076",
+        "signal_type": "correction",
+        "status": "passed",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152715+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [
+          "historical_preference_mining",
+          "training_candidate_review",
+          "profile_memory_candidate_review"
+        ],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": true,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-077",
+        "signal_type": "acceptance",
+        "status": "passed",
+        "training_targets": [
+          "profile_candidate",
+          "memory_candidate",
+          "sft_candidate",
+          "dpo_candidate",
+          "hard_negative_candidate"
+        ],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152717+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": true,
+          "reasons": [],
+          "status": "passed"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-078",
+        "signal_type": "workflow_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152719+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-079",
+        "signal_type": "workflow_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152721+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      },
+      {
+        "data_use": [],
+        "eligible_for_product_benefit": false,
+        "eligible_for_training": false,
+        "feedback_source": "historical_user_agent_conversation",
+        "signal_id": "phase31-signal-080",
+        "signal_type": "workflow_preference",
+        "status": "quarantined",
+        "training_targets": [],
+        "validation": {
+          "created_at": "2026-07-02T16:28:26.152723+00:00",
+          "kind": "phase31_signal_validation",
+          "passed": false,
+          "reasons": [
+            "secret_risk_quarantine"
+          ],
+          "status": "quarantined"
+        }
+      }
+    ],
+    "signal_count": 68,
+    "signal_type_counts": {
+      "acceptance": 7,
+      "correction": 23,
+      "safety_boundary": 11,
+      "verification_preference": 22,
+      "workflow_preference": 5
+    },
+    "status_counts": {
+      "passed": 42,
+      "quarantined": 26
+    }
+  },
+  "source_inventory": {
+    "conversation_count": 1982,
+    "eligible_source_count": 1945,
+    "selected_source_count": 80
+  },
+  "status": "completed",
+  "vault_path": "[AGENT_MEMORY_VAULT]"
+}
