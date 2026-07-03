@@ -1,0 +1,3229 @@
+{
+  "actual_user_feedback_count": 0,
+  "boundary_check": {
+    "created_at": "2026-07-03T04:20:26.988269+00:00",
+    "kind": "phase33_simulation_boundary_check",
+    "passed": true,
+    "problem_count": 0,
+    "problems": []
+  },
+  "created_at": "2026-07-03T04:20:27.093339+00:00",
+  "decision": {
+    "actual_user_feedback_collected": false,
+    "adapter_scores": {
+      "actual_feedback_mislabel_rate": 0.0,
+      "boundary_awareness_rate": 1.0,
+      "concise_status_rate": 1.0,
+      "correction_responsiveness_rate": 1.0,
+      "evidence_grounding_rate": 1.0,
+      "execution_first_rate": 1.0,
+      "final_acceptance_rate": 1.0,
+      "hallucinated_completion_rate": 0.0,
+      "local_context_awareness_rate": 0.297,
+      "overall_replay_score": 0.912,
+      "persistence_rate": 1.0,
+      "raw_private_text_leak_rate": 0.0,
+      "unnecessary_explanation_rate": 0.0
+    },
+    "auto_promotion_allowed": false,
+    "base_scores": {
+      "actual_feedback_mislabel_rate": 0.0,
+      "boundary_awareness_rate": 0.094,
+      "concise_status_rate": 1.0,
+      "correction_responsiveness_rate": 0.0,
+      "evidence_grounding_rate": 1.0,
+      "execution_first_rate": 0.906,
+      "final_acceptance_rate": 1.0,
+      "hallucinated_completion_rate": 0.0,
+      "local_context_awareness_rate": 0.203,
+      "overall_replay_score": 0.633,
+      "persistence_rate": 1.0,
+      "raw_private_text_leak_rate": 0.0,
+      "unnecessary_explanation_rate": 0.203
+    },
+    "created_at": "2026-07-03T04:20:26.998634+00:00",
+    "kind": "phase33_final_decision",
+    "manual_review_required_before_promotion": true,
+    "phase32_reference": {
+      "adapter_artifact_recorded": true,
+      "adapter_scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.375,
+        "correction_responsiveness_rate": 0.75,
+        "evidence_grounding_rate": 0.125,
+        "execution_first_rate": 0.875,
+        "follows_user_latest_intent_rate": 0.5,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.437,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "base_scores": {
+        "boundary_awareness_rate": 0.0,
+        "concise_status_rate": 0.375,
+        "correction_responsiveness_rate": 0.75,
+        "evidence_grounding_rate": 0.0,
+        "execution_first_rate": 0.75,
+        "follows_user_latest_intent_rate": 0.5,
+        "hallucinated_completion_rate": 0.0,
+        "overall_personalization_score": 0.396,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      },
+      "created_at": "2026-07-03T04:20:26.976877+00:00",
+      "kind": "phase33_phase32_reference",
+      "local_adapter_artifact_present": true,
+      "local_adapter_artifact_reference": "trainer_job_outputs/phase32-personal-agent-preference-qwen25-0_5b/dpo_adapter",
+      "phase32_boundary_awareness_gap_remains": true,
+      "phase32_final_recommendation": "promote_after_manual_review",
+      "phase32_status": "completed",
+      "phase33_does_not_claim_actual_feedback": true,
+      "phase33_uses_adapter_profile_for_simulated_replay": true,
+      "real_training": "completed",
+      "selected_model": "Qwen/Qwen2.5-0.5B-Instruct",
+      "source_phase": "phase32_personal_agent_preference_training_loop"
+    },
+    "product_benefit_claim_allowed": false,
+    "promotion_allowed": true,
+    "reasons": [],
+    "recommendation": "promote_after_manual_review",
+    "simulated_usage_only": true,
+    "status": "ready_for_manual_review"
+  },
+  "eval_report": {
+    "actual_user_feedback_count": 0,
+    "adapter": {
+      "details": [
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-001-bdbe7055",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-002-5612aa8f",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-003-f94bb514",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-004-904abfda",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-005-933f19cb",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-006-a0fd8707",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-007-2f3e51b8",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-008-9145f4c5",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-009-11ed468f",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-010-cb68fec0",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-011-7df53fd5",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-012-652af896",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-013-ec6e73e9",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-014-824d1800",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-015-636c0780",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-016-2d4e4d33",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-017-d76455d9",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-018-9927f3fa",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-019-1e5052fe",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-020-8562049b",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-021-730e446e",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-022-2e7c8914",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-023-79c67195",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-024-007a2734",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-025-4e1cc2bb",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-026-2d361a60",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-027-3f832b86",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-028-9233ae91",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-029-acf2d97f",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-030-2ce9e39b",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-031-464cae3d",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-032-10344abd",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-033-e1073b8c",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-034-d3c88398",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-035-ef12c7d3",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-036-5622d506",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-037-1cbba8d9",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-038-85456269",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-039-9a3ff799",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-040-5737b5e1",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-041-6f28a601",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-042-6ffab871",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-043-96d63de0",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-044-c6f3ddf9",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-045-6857a0e5",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-046-92a8df66",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-047-15bc80b2",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-048-71533143",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-049-c367d050",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-050-de66b1a3",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-051-d701903c",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-052-5a0556cc",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-053-308e1072",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-054-c8d4da98",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-055-7e3c4452",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-056-82f88f5a",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-057-b58f8b80",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-058-1afca5d3",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-059-f9bdd53c",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-060-c3ec215a",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-061-f90fae1a",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-062-a1089dcf",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.875,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-063-f8f54f1c",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "adapter",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 1.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 1.0,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-064-524c1052",
+          "workflow_category": "git_pr_delivery"
+        }
+      ],
+      "label": "phase32_adapter_profile_replay",
+      "scores": {
+        "actual_feedback_mislabel_rate": 0.0,
+        "boundary_awareness_rate": 1.0,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 1.0,
+        "evidence_grounding_rate": 1.0,
+        "execution_first_rate": 1.0,
+        "final_acceptance_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "local_context_awareness_rate": 0.297,
+        "overall_replay_score": 0.912,
+        "persistence_rate": 1.0,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.0
+      }
+    },
+    "base": {
+      "details": [
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-001-bdbe7055",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-002-5612aa8f",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-003-f94bb514",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-004-904abfda",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-005-933f19cb",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-006-a0fd8707",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 0.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-007-2f3e51b8",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-008-9145f4c5",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-009-11ed468f",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-010-cb68fec0",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-011-7df53fd5",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-012-652af896",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-013-ec6e73e9",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-014-824d1800",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-015-636c0780",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-016-2d4e4d33",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 0.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-017-d76455d9",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-018-9927f3fa",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-019-1e5052fe",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-020-8562049b",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-021-730e446e",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-022-2e7c8914",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-023-79c67195",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-024-007a2734",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-025-4e1cc2bb",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-026-2d361a60",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 0.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-027-3f832b86",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-028-9233ae91",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-029-acf2d97f",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-030-2ce9e39b",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-031-464cae3d",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-032-10344abd",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-033-e1073b8c",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-034-d3c88398",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-035-ef12c7d3",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-036-5622d506",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 0.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-037-1cbba8d9",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-038-85456269",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-039-9a3ff799",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-040-5737b5e1",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-041-6f28a601",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-042-6ffab871",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-043-96d63de0",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-044-c6f3ddf9",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-045-6857a0e5",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-046-92a8df66",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 0.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-047-15bc80b2",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-048-71533143",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-049-c367d050",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-050-de66b1a3",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-051-d701903c",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-052-5a0556cc",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-053-308e1072",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-054-c8d4da98",
+          "workflow_category": "git_pr_delivery"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-055-7e3c4452",
+          "workflow_category": "process_shutdown"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-056-82f88f5a",
+          "workflow_category": "model_runtime_debug"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 1.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 0.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-057-b58f8b80",
+          "workflow_category": "privacy_boundary"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-058-1afca5d3",
+          "workflow_category": "long_goal_prompt"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-059-f9bdd53c",
+          "workflow_category": "workspace_cleanup"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-060-c3ec215a",
+          "workflow_category": "evidence_package"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-061-f90fae1a",
+          "workflow_category": "start_next_step"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 1.0,
+            "overall_replay_score": 0.662,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 1.0
+          },
+          "session_id": "phase33-session-062-a1089dcf",
+          "workflow_category": "status_check"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-063-f8f54f1c",
+          "workflow_category": "drift_correction"
+        },
+        {
+          "model_variant": "base",
+          "scores": {
+            "actual_feedback_mislabel_rate": 0.0,
+            "boundary_awareness_rate": 0.0,
+            "concise_status_rate": 1.0,
+            "correction_responsiveness_rate": 0.0,
+            "evidence_grounding_rate": 1.0,
+            "execution_first_rate": 1.0,
+            "final_acceptance_rate": 1.0,
+            "hallucinated_completion_rate": 0.0,
+            "local_context_awareness_rate": 0.0,
+            "overall_replay_score": 0.625,
+            "persistence_rate": 1.0,
+            "raw_private_text_leak_rate": 0.0,
+            "unnecessary_explanation_rate": 0.0
+          },
+          "session_id": "phase33-session-064-524c1052",
+          "workflow_category": "git_pr_delivery"
+        }
+      ],
+      "label": "phase32_base_profile_replay",
+      "scores": {
+        "actual_feedback_mislabel_rate": 0.0,
+        "boundary_awareness_rate": 0.094,
+        "concise_status_rate": 1.0,
+        "correction_responsiveness_rate": 0.0,
+        "evidence_grounding_rate": 1.0,
+        "execution_first_rate": 0.906,
+        "final_acceptance_rate": 1.0,
+        "hallucinated_completion_rate": 0.0,
+        "local_context_awareness_rate": 0.203,
+        "overall_replay_score": 0.633,
+        "persistence_rate": 1.0,
+        "raw_private_text_leak_rate": 0.0,
+        "unnecessary_explanation_rate": 0.203
+      }
+    },
+    "created_at": "2026-07-03T04:20:26.998622+00:00",
+    "kind": "phase33_replay_eval_report",
+    "paired_comparison": [
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-001-bdbe7055",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-002-5612aa8f",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-003-f94bb514",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-004-904abfda",
+        "workflow_category": "git_pr_delivery"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-005-933f19cb",
+        "workflow_category": "process_shutdown"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-006-a0fd8707",
+        "workflow_category": "model_runtime_debug"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-007-2f3e51b8",
+        "workflow_category": "privacy_boundary"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-008-9145f4c5",
+        "workflow_category": "long_goal_prompt"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-009-11ed468f",
+        "workflow_category": "workspace_cleanup"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-010-cb68fec0",
+        "workflow_category": "evidence_package"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-011-7df53fd5",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-012-652af896",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-013-ec6e73e9",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-014-824d1800",
+        "workflow_category": "git_pr_delivery"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-015-636c0780",
+        "workflow_category": "process_shutdown"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-016-2d4e4d33",
+        "workflow_category": "model_runtime_debug"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-017-d76455d9",
+        "workflow_category": "privacy_boundary"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-018-9927f3fa",
+        "workflow_category": "long_goal_prompt"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-019-1e5052fe",
+        "workflow_category": "workspace_cleanup"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-020-8562049b",
+        "workflow_category": "evidence_package"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-021-730e446e",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-022-2e7c8914",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-023-79c67195",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-024-007a2734",
+        "workflow_category": "git_pr_delivery"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-025-4e1cc2bb",
+        "workflow_category": "process_shutdown"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-026-2d361a60",
+        "workflow_category": "model_runtime_debug"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-027-3f832b86",
+        "workflow_category": "privacy_boundary"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-028-9233ae91",
+        "workflow_category": "long_goal_prompt"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-029-acf2d97f",
+        "workflow_category": "workspace_cleanup"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-030-2ce9e39b",
+        "workflow_category": "evidence_package"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-031-464cae3d",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-032-10344abd",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-033-e1073b8c",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-034-d3c88398",
+        "workflow_category": "git_pr_delivery"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-035-ef12c7d3",
+        "workflow_category": "process_shutdown"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-036-5622d506",
+        "workflow_category": "model_runtime_debug"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-037-1cbba8d9",
+        "workflow_category": "privacy_boundary"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-038-85456269",
+        "workflow_category": "long_goal_prompt"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-039-9a3ff799",
+        "workflow_category": "workspace_cleanup"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-040-5737b5e1",
+        "workflow_category": "evidence_package"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-041-6f28a601",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-042-6ffab871",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-043-96d63de0",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-044-c6f3ddf9",
+        "workflow_category": "git_pr_delivery"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-045-6857a0e5",
+        "workflow_category": "process_shutdown"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-046-92a8df66",
+        "workflow_category": "model_runtime_debug"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-047-15bc80b2",
+        "workflow_category": "privacy_boundary"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-048-71533143",
+        "workflow_category": "long_goal_prompt"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-049-c367d050",
+        "workflow_category": "workspace_cleanup"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-050-de66b1a3",
+        "workflow_category": "evidence_package"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-051-d701903c",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-052-5a0556cc",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-053-308e1072",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-054-c8d4da98",
+        "workflow_category": "git_pr_delivery"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-055-7e3c4452",
+        "workflow_category": "process_shutdown"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-056-82f88f5a",
+        "workflow_category": "model_runtime_debug"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-057-b58f8b80",
+        "workflow_category": "privacy_boundary"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-058-1afca5d3",
+        "workflow_category": "long_goal_prompt"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-059-f9bdd53c",
+        "workflow_category": "workspace_cleanup"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-060-c3ec215a",
+        "workflow_category": "evidence_package"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-061-f90fae1a",
+        "workflow_category": "start_next_step"
+      },
+      {
+        "adapter_delta": 0.213,
+        "adapter_overall": 0.875,
+        "base_overall": 0.662,
+        "session_id": "phase33-session-062-a1089dcf",
+        "workflow_category": "status_check"
+      },
+      {
+        "adapter_delta": 0.25,
+        "adapter_overall": 0.875,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-063-f8f54f1c",
+        "workflow_category": "drift_correction"
+      },
+      {
+        "adapter_delta": 0.375,
+        "adapter_overall": 1.0,
+        "base_overall": 0.625,
+        "session_id": "phase33-session-064-524c1052",
+        "workflow_category": "git_pr_delivery"
+      }
+    ],
+    "same_session_comparison": true,
+    "score_delta": {
+      "actual_feedback_mislabel_rate": 0.0,
+      "boundary_awareness_rate": 0.906,
+      "concise_status_rate": 0.0,
+      "correction_responsiveness_rate": 1.0,
+      "evidence_grounding_rate": 0.0,
+      "execution_first_rate": 0.094,
+      "final_acceptance_rate": 0.0,
+      "hallucinated_completion_rate": 0.0,
+      "local_context_awareness_rate": 0.094,
+      "overall_replay_score": 0.279,
+      "persistence_rate": 0.0,
+      "raw_private_text_leak_rate": 0.0,
+      "unnecessary_explanation_rate": -0.203
+    },
+    "session_count": 64,
+    "simulated_usage": true,
+    "source": "simulated_usage",
+    "status": "completed"
+  },
+  "final_recommendation": "promote_after_manual_review",
+  "kind": "phase33_simulated_usage_replay_eval_summary",
+  "phase32_reference": {
+    "adapter_artifact_recorded": true,
+    "adapter_scores": {
+      "boundary_awareness_rate": 0.0,
+      "concise_status_rate": 0.375,
+      "correction_responsiveness_rate": 0.75,
+      "evidence_grounding_rate": 0.125,
+      "execution_first_rate": 0.875,
+      "follows_user_latest_intent_rate": 0.5,
+      "hallucinated_completion_rate": 0.0,
+      "overall_personalization_score": 0.437,
+      "raw_private_text_leak_rate": 0.0,
+      "unnecessary_explanation_rate": 0.0
+    },
+    "base_scores": {
+      "boundary_awareness_rate": 0.0,
+      "concise_status_rate": 0.375,
+      "correction_responsiveness_rate": 0.75,
+      "evidence_grounding_rate": 0.0,
+      "execution_first_rate": 0.75,
+      "follows_user_latest_intent_rate": 0.5,
+      "hallucinated_completion_rate": 0.0,
+      "overall_personalization_score": 0.396,
+      "raw_private_text_leak_rate": 0.0,
+      "unnecessary_explanation_rate": 0.0
+    },
+    "created_at": "2026-07-03T04:20:26.976877+00:00",
+    "kind": "phase33_phase32_reference",
+    "local_adapter_artifact_present": true,
+    "local_adapter_artifact_reference": "trainer_job_outputs/phase32-personal-agent-preference-qwen25-0_5b/dpo_adapter",
+    "phase32_boundary_awareness_gap_remains": true,
+    "phase32_final_recommendation": "promote_after_manual_review",
+    "phase32_status": "completed",
+    "phase33_does_not_claim_actual_feedback": true,
+    "phase33_uses_adapter_profile_for_simulated_replay": true,
+    "real_training": "completed",
+    "selected_model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "source_phase": "phase32_personal_agent_preference_training_loop"
+  },
+  "session_batch": {
+    "categories": {
+      "drift_correction": 7,
+      "evidence_package": 6,
+      "git_pr_delivery": 7,
+      "long_goal_prompt": 6,
+      "model_runtime_debug": 6,
+      "privacy_boundary": 6,
+      "process_shutdown": 6,
+      "start_next_step": 7,
+      "status_check": 7,
+      "workspace_cleanup": 6
+    },
+    "session_count": 64,
+    "session_count_within_required_range": true
+  },
+  "session_count": 64,
+  "simulated_usage": true,
+  "source": "simulated_usage",
+  "status": "completed"
+}
