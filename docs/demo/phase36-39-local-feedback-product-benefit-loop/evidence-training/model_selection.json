@@ -1,0 +1,73 @@
+{
+  "candidate_models": [
+    {
+      "has_config": true,
+      "is_27b": false,
+      "is_quantized": false,
+      "is_qwen": true,
+      "name": "Qwen2.5-0.5B-Instruct",
+      "path": "[LOCAL_PATH]",
+      "quantization": "none",
+      "rank_score": 120,
+      "safetensor_count": 1,
+      "trainable": true,
+      "trainable_candidate": true
+    },
+    {
+      "has_config": true,
+      "is_27b": false,
+      "is_quantized": false,
+      "is_qwen": true,
+      "name": "Qwen3-4B",
+      "path": "[LOCAL_PATH]",
+      "quantization": "none",
+      "rank_score": 110,
+      "safetensor_count": 3,
+      "trainable": true,
+      "trainable_candidate": true
+    },
+    {
+      "has_config": true,
+      "is_27b": false,
+      "is_quantized": true,
+      "is_qwen": true,
+      "name": "Qwen2.5-0.5B-Instruct-4bit",
+      "path": "[LOCAL_PATH]",
+      "quantization": "4bit",
+      "rank_score": 30,
+      "safetensor_count": 1,
+      "trainable": true,
+      "trainable_candidate": false
+    },
+    {
+      "has_config": true,
+      "is_27b": true,
+      "is_quantized": false,
+      "is_qwen": true,
+      "name": "Qwen3.6-27B",
+      "path": "[LOCAL_PATH]",
+      "quantization": "none",
+      "rank_score": 0,
+      "safetensor_count": 15,
+      "trainable": true,
+      "trainable_candidate": false
+    }
+  ],
+  "created_at": "2026-07-06T13:17:12.773107+00:00",
+  "dependency_summary": {
+    "created_at": "2026-07-06T13:17:12.773087+00:00",
+    "kind": "phase38_dependency_summary",
+    "modules": {
+      "accelerate": true,
+      "peft": true,
+      "torch": true,
+      "transformers": true
+    }
+  },
+  "kind": "phase38_model_selection",
+  "not_27b_training": true,
+  "selected_model": "[LOCAL_PATH]",
+  "selected_model_name": "Qwen2.5-0.5B-Instruct",
+  "selection_reason": "small_trainable_qwen_local_model",
+  "status": "selected"
+}

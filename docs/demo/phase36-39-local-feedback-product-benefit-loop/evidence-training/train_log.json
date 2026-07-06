@@ -1,0 +1,362 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "adapter_path": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_model",
+  "adapter_validation": {
+    "artifact_dir": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_model",
+    "artifact_kind": "real_local_peft",
+    "kind": "phase38_adapter_validation",
+    "runtime_path": "real_local",
+    "train_loss": 10.611393928527832,
+    "valid": true
+  },
+  "auto_promotion_allowed": false,
+  "blocked_reason": null,
+  "created_at": "2026-07-06T13:17:14.646205+00:00",
+  "execution_result": {
+    "backend": "peft",
+    "dry_run": false,
+    "execution_mode": "real_local",
+    "import_probe": {},
+    "job_spec": {
+      "backend": "peft",
+      "base_model": "[LOCAL_PATH]",
+      "base_model_path": "[LOCAL_PATH]",
+      "local_model_path": "[LOCAL_PATH]",
+      "local_only": true,
+      "output_dir": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop",
+      "real_local": true,
+      "recipe": {
+        "training": {
+          "base_model": "[LOCAL_PATH]",
+          "base_model_path": "[LOCAL_PATH]",
+          "epochs": 1,
+          "local_model_path": "[LOCAL_PATH]",
+          "local_only": true,
+          "max_steps": 12,
+          "num_train_samples": 12,
+          "output_dir": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop"
+        }
+      },
+      "training_examples": [
+        {
+          "chosen": "当前目标：现在情况如何？先给短状态。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "现在情况如何？先给短状态。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-0e1a063133b0",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-001-f8858e1d"
+        },
+        {
+          "chosen": "当前目标：继续执行下一步，别只给规划。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "继续执行下一步，别只给规划。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-79a8012fc971",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-002-62dd1a13"
+        },
+        {
+          "chosen": "当前目标：这个方向跑偏了，回到 PFE 是否真的能学我的偏好。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "这个方向跑偏了，回到 PFE 是否真的能学我的偏好。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-651ef0d8b6cc",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-003-6b36d8dc"
+        },
+        {
+          "chosen": "当前目标：整理工作区并提交，不能提交就说清楚原因。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "整理工作区并提交，不能提交就说清楚原因。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-292995450633",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-004-d95cefb8"
+        },
+        {
+          "chosen": "当前目标：检查后台模型进程，不要猜。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "检查后台模型进程，不要猜。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-d146c4bf1e3f",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-005-94a33855"
+        },
+        {
+          "chosen": "当前目标：给我下一阶段追求目标提示词，要能执行。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "给我下一阶段追求目标提示词，要能执行。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-b504588bdbf7",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-006-ad4584b6"
+        },
+        {
+          "chosen": "当前目标：不要碰 videos 和本地 Hermes 配置。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "不要碰 videos 和本地 Hermes 配置。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-bded84735341",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-007-39e8dbbd"
+        },
+        {
+          "chosen": "当前目标：用 evidence 证明 adapter 是否真的有用。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "用 evidence 证明 adapter 是否真的有用。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-b75074ac295d",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-008-5e403929"
+        },
+        {
+          "chosen": "当前目标：现在情况如何？先给短状态。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "现在情况如何？先给短状态。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-c7b6166838ec",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-009-6ad78e28"
+        },
+        {
+          "chosen": "当前目标：继续执行下一步，别只给规划。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "继续执行下一步，别只给规划。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-79a8012fc971",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-010-62dd1a13"
+        },
+        {
+          "chosen": "当前目标：这个方向跑偏了，回到 PFE 是否真的能学我的偏好。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "这个方向跑偏了，回到 PFE 是否真的能学我的偏好。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-f08ce5bd2b32",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-011-e9651cc0"
+        },
+        {
+          "chosen": "当前目标：整理工作区并提交，不能提交就说清楚原因。\n执行方式：先核对真实工作区、进程、文件或测试证据，再给短状态。\n边界：不假装提交、PR、关停或训练已经完成；缺证据就标记 blocked。\n下一步：输出可复查路径、命令结果、计数或 decision，并继续推进到验证。",
+          "instruction": "整理工作区并提交，不能提交就说清楚原因。",
+          "metadata": {
+            "actual_product_benefit_claim_allowed": false,
+            "feedback_source": "simulated_usage",
+            "interaction_id": "phase35-interaction-efa0a3a4bd3e",
+            "lane": "simulated_lab_candidate_lane",
+            "not_actual_user_feedback": true,
+            "phase": "phase36-39",
+            "raw_private_text_committed": false,
+            "simulated_usage": true
+          },
+          "sample_id": "phase37-simulated_lab_candidate_lane-dpo-012-901afac6"
+        }
+      ]
+    },
+    "readiness_summary": {
+      "available": true,
+      "backend": "peft",
+      "real_import": {
+        "available": true,
+        "blocked_by": [],
+        "blocking_reasons": [],
+        "dependency_ready": true,
+        "execution_executor": null,
+        "executor_mode": null,
+        "executor_ready": true,
+        "import_ready": true,
+        "missing_attrs": [],
+        "missing_modules": [],
+        "reason": "real peft import runtime available",
+        "required_modules": [
+          "torch",
+          "transformers",
+          "peft",
+          "accelerate"
+        ],
+        "runtime_ready": true
+      },
+      "real_local": {
+        "available": true,
+        "blocked_by": [],
+        "blocking_reasons": [],
+        "config_path": null,
+        "dependency_ready": true,
+        "load_mode": "from_pretrained",
+        "local_only": true,
+        "missing_modules": [],
+        "reason": "local transformers runtime available",
+        "required_modules": [
+          "torch",
+          "transformers"
+        ],
+        "runtime_ready": true,
+        "source_kind": "path",
+        "source_path": "[LOCAL_PATH]",
+        "source_ready": true
+      },
+      "reason": "real_import and real_local peft execution paths are ready",
+      "selected_execution_mode": "real_import"
+    },
+    "real_execution": {
+      "artifact_dir": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_model",
+      "artifact_kind": "real_local_peft",
+      "artifact_manifest_path": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_job_manifest.json",
+      "artifacts": {
+        "adapter_config": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_model/adapter_config.json",
+        "adapter_model": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_model/real_local_model.safetensors",
+        "manifest": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_job_manifest.json",
+        "metrics": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/train_metrics.json",
+        "real_execution": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_execution.json",
+        "trainer_state": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/trainer_state.json",
+        "training_summary": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/training_summary.json"
+      },
+      "blocked_by": [],
+      "blocking_reasons": [],
+      "config_path": null,
+      "dependency_ready": true,
+      "executor_ready": true,
+      "forward_error": null,
+      "kind": "real_local_peft",
+      "load_mode": "from_pretrained",
+      "message": "real local training completed",
+      "metrics": {
+        "execution_mode": "real_local",
+        "loss": 10.611393928527832,
+        "num_examples": 12,
+        "preference_reinforced_fresh_sample_count": 0,
+        "preference_reinforced_fresh_sample_ids": [],
+        "preference_reinforced_fresh_sample_ratio": 0.0,
+        "status": "completed"
+      },
+      "num_examples": 12,
+      "output_dir": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_local_model",
+      "path": "real_local",
+      "real_execution_path": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/real_execution.json",
+      "runtime_path": "real_local",
+      "source_kind": "path",
+      "source_path": "[LOCAL_PATH]",
+      "source_ready": true,
+      "success": true,
+      "summary_path": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/training_summary.json",
+      "train_loss": 10.611393928527832,
+      "trainer_state_path": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop/trainer_state.json"
+    },
+    "recipe": {
+      "training": {
+        "base_model": "[LOCAL_PATH]",
+        "base_model_path": "[LOCAL_PATH]",
+        "epochs": 1,
+        "local_model_path": "[LOCAL_PATH]",
+        "local_only": true,
+        "max_steps": 12,
+        "num_train_samples": 12,
+        "output_dir": "trainer_job_outputs/phase36-39-local-feedback-product-benefit-loop"
+      }
+    },
+    "status": "completed"
+  },
+  "kind": "phase38_training_attempt",
+  "real_training": "completed",
+  "status": "completed",
+  "training_manifest": {
+    "actual_product_benefit_claim_allowed": false,
+    "auto_promotion_allowed": false,
+    "auto_training_allowed": false,
+    "candidate_manifest": {
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback_count": 0,
+      "auto_promotion_allowed": false,
+      "auto_training_allowed": false,
+      "blocked_reason": null,
+      "created_at": "2026-07-06T13:17:12.769788+00:00",
+      "dpo_pair_count": 24,
+      "excluded_count": 0,
+      "holdout_integrity_passed": true,
+      "kind": "phase37_candidate_manifest",
+      "lane": "simulated_lab_candidate_lane",
+      "quality_passed": true,
+      "sft_sample_count": 24,
+      "simulated_lab_sample_count": 24,
+      "source_record_count": 24,
+      "status": "ready"
+    },
+    "created_at": "2026-07-06T13:17:12.773250+00:00",
+    "kind": "phase38_training_manifest",
+    "lane": "simulated_lab_candidate_lane",
+    "model_selection_status": "selected",
+    "not_27b_training": true,
+    "selected_model": "[LOCAL_PATH]",
+    "selected_sample_count": 24,
+    "step_equivalent_count": 12,
+    "training_strategy": "simulated_lab_peft_probe"
+  },
+  "training_run": true
+}
