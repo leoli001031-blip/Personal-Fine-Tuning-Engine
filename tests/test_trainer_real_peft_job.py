@@ -248,6 +248,13 @@ class TrainerRealPeftJobTests(unittest.TestCase):
                 trainer_executor_module._run_real_import_peft_training(job_spec)
 
     def test_run_real_local_peft_training_keeps_artifact_dir_adapter_only(self) -> None:
+        missing = [
+            name
+            for name in ("torch", "transformers", "peft", "accelerate", "safetensors")
+            if importlib.util.find_spec(name) is None
+        ]
+        if missing:
+            self.skipTest(f"real PEFT test dependencies unavailable: {', '.join(missing)}")
         transformers = importlib.import_module("transformers")
         local_model_dir = Path(self.tempdir.name) / "local-model"
         local_model_dir.mkdir(parents=True, exist_ok=True)
