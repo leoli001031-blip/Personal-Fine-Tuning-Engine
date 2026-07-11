@@ -1,0 +1,122 @@
+{
+  "artifact_validation": {
+    "format": "safetensors",
+    "lora_tensor_count": 336,
+    "parameter_count": 8798208,
+    "path": "/Users/lichenhao/.pfe/adapters/user_default/20260617-006/adapter_model.safetensors",
+    "reason": null,
+    "size_bytes": 35237104,
+    "tensor_count": 336,
+    "valid": true
+  },
+  "holdout": {
+    "count": 20,
+    "passed": false
+  },
+  "holdout_count": 20,
+  "kind": "phase42_adapter_generic_holdout_report",
+  "leakage_hits": [
+    {
+      "holdout_id": "generic-01",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-02",
+      "term": "深蓝闭环"
+    },
+    {
+      "holdout_id": "generic-03",
+      "term": "深蓝闭环"
+    },
+    {
+      "holdout_id": "generic-04",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-05",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-06",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-07",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-08",
+      "term": "深蓝闭环"
+    },
+    {
+      "holdout_id": "generic-09",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-10",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-11",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-12",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-13",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-14",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-15",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-16",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-17",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-18",
+      "term": "未量化零点五b"
+    },
+    {
+      "holdout_id": "generic-19",
+      "term": "深蓝闭环"
+    },
+    {
+      "holdout_id": "generic-20",
+      "term": "深蓝闭环"
+    }
+  ],
+  "passed": false,
+  "reasons": [
+    "training_leakage_detected",
+    "response_unique_ratio_below_threshold",
+    "response_duplicate_rate_above_threshold",
+    "task_relevance_rate_below_threshold"
+  ],
+  "scores": {
+    "exact_duplicate_rate": 0.75,
+    "nonempty_rate": 1.0,
+    "response_unique_ratio": 0.25,
+    "task_relevance_rate": 0.0
+  },
+  "thresholds": {
+    "maximum_duplicate_rate": 0.15,
+    "minimum_holdout_count": 20,
+    "minimum_task_relevance_rate": 0.4,
+    "minimum_unique_ratio": 0.7,
+    "required_nonempty_rate": 1.0
+  },
+  "training_leakage_detected": true,
+  "version": "20260617-006"
+}

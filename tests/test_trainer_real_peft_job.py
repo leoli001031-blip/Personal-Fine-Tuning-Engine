@@ -63,13 +63,13 @@ class TrainerRealPeftJobTests(unittest.TestCase):
 
         artifact_dir = Path(bundle["artifact_dir"])
         self.assertTrue(artifact_dir.exists())
-        self.assertTrue((artifact_dir / "adapter_model.safetensors").exists())
+        self.assertTrue((artifact_dir / "adapter_metadata.json").exists())
         self.assertTrue((artifact_dir / "adapter_config.json").exists())
         self.assertTrue((Path(bundle["trainer_state_path"])).exists())
         self.assertTrue((Path(bundle["summary_path"])).exists())
         self.assertTrue((Path(bundle["real_execution_path"])).exists())
         self.assertTrue((Path(bundle["artifact_manifest_path"])).exists())
-        self.assertIn("adapter_model", bundle["artifacts"])
+        self.assertIn("adapter_metadata", bundle["artifacts"])
         self.assertEqual(bundle["metrics"]["num_examples"], 1)
         self.assertEqual(bundle["metrics"]["loss"], 0.125)
         self.assertEqual(bundle["metrics"]["preference_reinforced_fresh_sample_count"], 1)
@@ -119,6 +119,7 @@ class TrainerRealPeftJobTests(unittest.TestCase):
             train_loss=0.25,
             execution_mode="real_import",
             run_status="completed",
+            model_filename="adapter_model.safetensors",
             preserve_existing_adapter_files=True,
         )
 
@@ -247,28 +248,20 @@ class TrainerRealPeftJobTests(unittest.TestCase):
                 trainer_executor_module._run_real_import_peft_training(job_spec)
 
     def test_run_real_local_peft_training_keeps_artifact_dir_adapter_only(self) -> None:
+        transformers = importlib.import_module("transformers")
         local_model_dir = Path(self.tempdir.name) / "local-model"
         local_model_dir.mkdir(parents=True, exist_ok=True)
-        (local_model_dir / "config.json").write_text(
-            json.dumps(
-                {
-                    "architectures": ["GPT2LMHeadModel"],
-                    "model_type": "gpt2",
-                    "vocab_size": 32,
-                    "n_positions": 32,
-                    "n_ctx": 32,
-                    "n_embd": 16,
-                    "n_layer": 1,
-                    "n_head": 1,
-                    "bos_token_id": 1,
-                    "eos_token_id": 2,
-                },
-                ensure_ascii=False,
-                indent=2,
-                sort_keys=True,
-            ),
-            encoding="utf-8",
+        config = transformers.GPT2Config(
+            vocab_size=32,
+            n_positions=32,
+            n_ctx=32,
+            n_embd=16,
+            n_layer=1,
+            n_head=1,
+            bos_token_id=1,
+            eos_token_id=2,
         )
+        transformers.GPT2LMHeadModel(config).save_pretrained(local_model_dir, safe_serialization=True)
         job_spec = {
             "backend": "peft",
             "execution_backend": "peft",
@@ -279,8 +272,9 @@ class TrainerRealPeftJobTests(unittest.TestCase):
             "recipe": {
                 "training": {
                     "method": "qlora",
-                    "base_model_config_path": str(local_model_dir),
+                    "base_model_path": str(local_model_dir),
                     "local_only": True,
+                    "max_steps": 2,
                 }
             },
             "audit": {"import_probe": {"ready": True, "missing_modules": []}},
@@ -299,11 +293,14 @@ class TrainerRealPeftJobTests(unittest.TestCase):
 
         artifact_dir = Path(result["real_execution"]["artifact_dir"])
         self.assertTrue((artifact_dir / "adapter_config.json").exists())
-        self.assertTrue((artifact_dir / "real_local_model.safetensors").exists())
+        self.assertTrue((artifact_dir / "adapter_model.safetensors").exists())
         self.assertFalse(any(artifact_dir.glob("model-*.safetensors")))
         self.assertFalse((artifact_dir / "config.json").exists())
         self.assertEqual(result["status"], "completed")
         self.assertEqual(result["real_execution"]["kind"], "real_local_peft")
+        self.assertEqual(result["real_execution"]["steps"], 2)
+        self.assertTrue(result["real_execution"]["parameters_updated"])
+        self.assertTrue(result["real_execution"]["adapter_validation"]["valid"])
 
 if __name__ == "__main__":
     unittest.main()

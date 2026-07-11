@@ -6399,9 +6399,12 @@ class PipelineService:
         )
         content = engine.generate(messages, temperature=temperature, max_tokens=max_tokens, metadata=metadata or {})
         inference_status = engine.status()
+        generation = dict(inference_status.get("generation") or {})
+        token_budget = dict(generation.get("token_budget") or {})
         prompt_text = "\n".join(str(message.get("content") or "") for message in messages)
-        prompt_tokens = max(0, len(prompt_text.strip()) // 4)
-        completion_tokens = max(0, len(content.strip()) // 4)
+        prompt_tokens = int(token_budget.get("prompt_tokens") or max(0, len(prompt_text.strip()) // 4))
+        completion_tokens = int(token_budget.get("completion_tokens") or max(0, len(content.strip()) // 4))
+        finish_reason = str(generation.get("finish_reason") or "stop")
         return {
             "id": f"chatcmpl-{uuid4().hex[:12]}",
             "object": "chat.completion",
@@ -6414,7 +6417,7 @@ class PipelineService:
                 {
                     "index": 0,
                     "message": {"role": "assistant", "content": content},
-                    "finish_reason": "stop",
+                    "finish_reason": finish_reason,
                 }
             ],
             "usage": {
@@ -6424,6 +6427,7 @@ class PipelineService:
             },
             "metadata": {
                 "inference": inference_status,
+                "token_budget": token_budget,
             },
         }
 
@@ -6680,6 +6684,26 @@ class PipelineService:
         row_by_version = {str(row.get("version")): row for row in rows}
         latest_row = row_by_version.get(str(latest_version)) if latest_version is not None else None
         recent_row = rows[0] if rows else None
+        latest_serving_gate: dict[str, Any] = {}
+        if latest_row is not None and latest_version is not None:
+            try:
+                latest_serving_gate = store.serving_quality_gate(latest_version)
+            except Exception as exc:
+                latest_serving_gate = {
+                    "passed": False,
+                    "reasons": [f"serving_quality_check_failed:{exc.__class__.__name__}"],
+                }
+        serving_adapter_ready = bool(latest_row is not None and latest_serving_gate.get("passed") is True)
+        blocked_row = next(
+            (
+                row
+                for row in rows
+                if isinstance(row.get("metadata"), Mapping)
+                and isinstance((row.get("metadata") or {}).get("serving_quality"), Mapping)
+                and (row.get("metadata") or {}).get("serving_quality", {}).get("passed") is False
+            ),
+            None,
+        )
         lifecycle_counts: dict[str, int] = {}
         for row in rows:
             state = str(row.get("state") or "unknown")
@@ -6710,10 +6734,26 @@ class PipelineService:
             "archived_versions": [row["version"] for row in rows if row.get("state") == "archived"],
         }
         snapshot["serve"] = {
-            "adapter_resolution_state": "latest_promoted" if latest_row is not None else "no_promoted_latest",
-            "using_promoted_adapter": latest_row is not None,
-            "target_adapter_version": latest_version if latest_row is not None else None,
-            "fallback_reason": None if latest_row is not None else "no_promoted_latest",
+            "adapter_resolution_state": (
+                "latest_promoted"
+                if serving_adapter_ready
+                else "adapter_blocked"
+                if latest_row is not None or blocked_row is not None
+                else "base_ready"
+            ),
+            "using_promoted_adapter": serving_adapter_ready,
+            "target_adapter_version": latest_version if serving_adapter_ready else None,
+            "blocked_adapter_version": (
+                latest_version if latest_row is not None and not serving_adapter_ready else blocked_row.get("version") if blocked_row else None
+            ),
+            "fallback_reason": (
+                None
+                if serving_adapter_ready
+                else "adapter_serving_quality_gate_failed"
+                if latest_row is not None or blocked_row is not None
+                else "no_qualified_promoted_adapter"
+            ),
+            "serving_quality_gate": latest_serving_gate,
         }
         trainer_runtime = trainer_runtime_summary()
         latest_training_result = getattr(self.trainer, "last_run_result", None)

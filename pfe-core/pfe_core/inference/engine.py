@@ -34,6 +34,30 @@ class InferenceConfig:
     device: str = "auto"
 
 
+def _positive_env_int(name: str, default: int) -> int:
+    try:
+        value = int(str(os.environ.get(name, default)).strip())
+    except (TypeError, ValueError):
+        return default
+    return max(1, value)
+
+
+def _declared_context_tokens(model: object, tokenizer: object) -> int:
+    model_config = getattr(model, "config", None)
+    candidates = [
+        getattr(model_config, "max_position_embeddings", None),
+        getattr(model_config, "n_positions", None),
+        getattr(model_config, "n_ctx", None),
+        getattr(tokenizer, "model_max_length", None),
+    ]
+    valid = [
+        int(value)
+        for value in candidates
+        if isinstance(value, (int, float)) and 0 < int(value) <= 1_000_000
+    ]
+    return min(valid) if valid else 8192
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
@@ -422,7 +446,7 @@ class InferenceEngine:
             "-p",
             prompt_text,
             "-n",
-            str(max(1, min(max_tokens, 128))),
+            str(max(1, min(max_tokens, _positive_env_int("PFE_MAX_OUTPUT_TOKENS", 512)))),
             "--temp",
             str(max(0.0, temperature)),
             "-s",
@@ -459,7 +483,8 @@ class InferenceEngine:
         }
         adapter_gguf_path = str(adapter_resolution.get("path")) if adapter_resolution.get("available") else None
         prompt_text = self._build_prompt_text(messages)
-        temperature = float(kwargs.get("temperature") or 0.7)
+        temperature_value = kwargs.get("temperature")
+        temperature = 0.7 if temperature_value is None else float(temperature_value)
         max_tokens = int(kwargs.get("max_tokens") or kwargs.get("max_new_tokens") or self.config.max_new_tokens)
         command = self._llama_cpp_command(
             runtime_binary=str(runtime_resolution["path"]),
@@ -693,7 +718,39 @@ class InferenceEngine:
             except Exception:
                 prompt_text = self._build_prompt_text(messages)
 
-        encoded = tokenizer(prompt_text, return_tensors="pt")
+        requested_max_tokens = int(
+            kwargs.get("max_tokens")
+            or kwargs.get("max_new_tokens")
+            or _positive_env_int("PFE_DEFAULT_MAX_OUTPUT_TOKENS", self.config.max_new_tokens)
+        )
+        output_cap = _positive_env_int("PFE_MAX_OUTPUT_TOKENS", 512)
+        declared_context = _declared_context_tokens(model, tokenizer)
+        configured_context = _positive_env_int("PFE_MAX_CONTEXT_TOKENS", 8192)
+        effective_context = max(8, min(declared_context, configured_context))
+        effective_max_new_tokens = max(1, min(requested_max_tokens, output_cap, effective_context - 1))
+        max_input_tokens = max(1, effective_context - effective_max_new_tokens)
+        untruncated = tokenizer(prompt_text, return_tensors="pt")
+        original_input_ids = untruncated["input_ids"]
+        original_input_tokens = int(original_input_ids.shape[-1]) if hasattr(original_input_ids, "shape") else 0
+        if original_input_tokens > max_input_tokens:
+            previous_truncation_side = getattr(tokenizer, "truncation_side", None)
+            try:
+                tokenizer.truncation_side = "left"
+            except Exception:
+                previous_truncation_side = None
+            encoded = tokenizer(
+                prompt_text,
+                return_tensors="pt",
+                truncation=True,
+                max_length=max_input_tokens,
+            )
+            if previous_truncation_side is not None:
+                try:
+                    tokenizer.truncation_side = previous_truncation_side
+                except Exception:
+                    pass
+        else:
+            encoded = untruncated
         if hasattr(encoded, "to"):
             encoded = encoded.to(device)
         elif isinstance(encoded, dict):
@@ -704,10 +761,9 @@ class InferenceEngine:
         input_ids = encoded["input_ids"]
         input_length = int(input_ids.shape[-1]) if hasattr(input_ids, "shape") else 0
         temperature = float(kwargs.get("temperature") or 0.7)
-        max_new_tokens = int(kwargs.get("max_tokens") or kwargs.get("max_new_tokens") or self.config.max_new_tokens)
         pad_token_id = getattr(tokenizer, "pad_token_id", None) or getattr(tokenizer, "eos_token_id", None)
         generation_kwargs = {
-            "max_new_tokens": max(1, min(max_new_tokens, 128)),
+            "max_new_tokens": effective_max_new_tokens,
             "do_sample": temperature > 0,
             "temperature": max(0.1, temperature) if temperature > 0 else 1.0,
             "pad_token_id": pad_token_id,
@@ -715,6 +771,7 @@ class InferenceEngine:
         with torch.no_grad():
             output_ids = model.generate(**encoded, **generation_kwargs)
         generated_ids = output_ids[0][input_length:] if input_length else output_ids[0]
+        generated_token_count = int(generated_ids.shape[-1]) if hasattr(generated_ids, "shape") else len(generated_ids)
         raw_text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
         text = _strip_thinking_output(raw_text) or raw_text
         if not text:
@@ -730,6 +787,20 @@ class InferenceEngine:
             "adapter_reason": bundle.get("adapter_reason"),
             "raw_text": raw_text,
             "thinking_stripped": text != raw_text,
+            "finish_reason": "length" if generated_token_count >= effective_max_new_tokens else "stop",
+            "token_budget": {
+                "accounting": "tokenizer",
+                "declared_context_tokens": declared_context,
+                "configured_context_tokens": configured_context,
+                "effective_context_tokens": effective_context,
+                "original_prompt_tokens": original_input_tokens,
+                "prompt_tokens": input_length,
+                "input_truncated": original_input_tokens > input_length,
+                "requested_max_tokens": requested_max_tokens,
+                "configured_max_output_tokens": output_cap,
+                "effective_max_new_tokens": effective_max_new_tokens,
+                "completion_tokens": generated_token_count,
+            },
         }
 
     def generate(self, messages: list[dict], **kwargs) -> str:

@@ -1,0 +1,100 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "adapter_action": "archived",
+  "adapter_artifact_retained": true,
+  "adapter_holdout": {
+    "passed": false,
+    "scores": {
+      "exact_duplicate_rate": 0.75,
+      "nonempty_rate": 1.0,
+      "response_unique_ratio": 0.25,
+      "task_relevance_rate": 0.0
+    },
+    "training_leakage_detected": true
+  },
+  "adapter_version": "20260617-006",
+  "auto_promotion_allowed": false,
+  "base_holdout": {
+    "passed": true,
+    "scores": {
+      "exact_duplicate_rate": 0.0,
+      "nonempty_rate": 1.0,
+      "response_unique_ratio": 1.0,
+      "task_relevance_rate": 0.9
+    }
+  },
+  "context_budget": {
+    "accounting": "tokenizer",
+    "completion_tokens": 8,
+    "configured_context_tokens": 4096,
+    "configured_max_output_tokens": 64,
+    "declared_context_tokens": 32768,
+    "effective_context_tokens": 4096,
+    "effective_max_new_tokens": 8,
+    "input_truncated": true,
+    "original_prompt_tokens": 4427,
+    "prompt_tokens": 4088,
+    "requested_max_tokens": 8
+  },
+  "full_validation_gate_passed": true,
+  "hermes_openai_sdk_streaming_passed": true,
+  "kind": "phase42_comparison_summary",
+  "phase41_current_quality": {
+    "candidate_count": 24,
+    "chosen_unique_ratio": 0.0417,
+    "exact_duplicate_count": 15,
+    "exact_duplicate_rate": 0.625,
+    "kind": "pfe_preference_candidate_quality",
+    "low_information_count": 0,
+    "passed": false,
+    "prompt_unique_ratio": 0.375,
+    "reasons": [
+      "chosen_unique_ratio_below_threshold",
+      "rejected_unique_ratio_below_threshold",
+      "prompt_unique_ratio_below_threshold",
+      "exact_duplicate_rate_above_threshold"
+    ],
+    "rejected_unique_ratio": 0.0417,
+    "thresholds": {
+      "max_exact_duplicate_rate": 0.15,
+      "min_unique_ratio": 0.7
+    }
+  },
+  "phase41_v2_quality": {
+    "candidate_count": 24,
+    "chosen_unique_ratio": 1.0,
+    "exact_duplicate_count": 0,
+    "exact_duplicate_rate": 0.0,
+    "kind": "pfe_preference_candidate_quality",
+    "low_information_count": 0,
+    "passed": true,
+    "prompt_unique_ratio": 1.0,
+    "reasons": [],
+    "rejected_unique_ratio": 1.0,
+    "thresholds": {
+      "max_exact_duplicate_rate": 0.15,
+      "min_unique_ratio": 0.7
+    }
+  },
+  "real_training": {
+    "adapter_validation": {
+      "format": "safetensors",
+      "lora_tensor_count": 336,
+      "parameter_count": 8798208,
+      "parameters_updated": true,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase42-real-local-qwen25-0_5b-12step/peft_lora/adapter_model.safetensors",
+      "reason": null,
+      "sha256": "c0778e0153c36fb9470b1d3d47c361b02ec233700d98692822beacbfba718d6e",
+      "size_bytes": 35237104,
+      "steps": 12,
+      "tensor_count": 336,
+      "valid": true
+    },
+    "completed": true,
+    "final_loss": 3.907105,
+    "initial_loss": 4.672706,
+    "parameters_updated": true,
+    "steps": 12
+  },
+  "security_tests_passed": true
+}

@@ -1,0 +1,20 @@
+{
+  "action": "archived",
+  "artifact_retained": true,
+  "decision_applied": true,
+  "latest_after": null,
+  "message": "Archived 20260617-006 after failed serving quality gate; adapter files were retained.",
+  "pfe_next_after": {
+    "command": [
+      "/Users/lichenhao/Desktop/PFE/.venv/bin/pfe",
+      "next",
+      "--workspace",
+      "user_default"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "PFE next\nworkspace: user_default\nhome: /Users/lichenhao/.pfe\nstate: base_ready\nnext: serve the base model while no qualified adapter is available\nwhy: no adapter has passed the serving quality gate\nobserved: signal_count=12 | train_samples=10 | queued=0 | awaiting_confirmation=0 | completed=0 | candidate_version=20260617-006 | auto_train_state=disabled | auto_train_reason=trigger_disabled\ncommands:\n  pfe serve --port 8921 --workspace user_default --live\n"
+  },
+  "report_passed": false,
+  "version": "20260617-006"
+}

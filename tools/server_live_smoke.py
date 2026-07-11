@@ -180,6 +180,64 @@ def _request_text(url: str, *, timeout: float = 5.0) -> dict[str, object]:
         return {"status": int(response.status), "body": payload}
 
 
+def _request_sse(url: str, *, body: dict[str, object], timeout: float = 5.0) -> dict[str, object]:
+    request = Request(
+        url,
+        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+        headers={"accept": "text/event-stream", "content-type": "application/json"},
+        method="POST",
+    )
+    events: list[dict[str, object]] = []
+    done = False
+    with urlopen(request, timeout=timeout) as response:
+        content_type = str(response.headers.get("content-type") or "")
+        for raw_line in response:
+            line = raw_line.decode("utf-8", errors="replace").strip()
+            if not line.startswith("data: "):
+                continue
+            data = line[6:]
+            if data == "[DONE]":
+                done = True
+                break
+            payload = json.loads(data)
+            if isinstance(payload, dict):
+                events.append(payload)
+        return {
+            "status": int(response.status),
+            "content_type": content_type,
+            "events": events,
+            "done": done,
+        }
+
+
+def _request_openai_sdk_stream(base_url: str, *, timeout: float = 5.0) -> dict[str, object]:
+    from openai import OpenAI
+
+    client = OpenAI(base_url=f"{base_url}/v1", api_key="pfe-local-smoke", timeout=timeout)
+    content_parts: list[str] = []
+    finish_reason = None
+    chunk_count = 0
+    stream = client.chat.completions.create(
+        model="local",
+        messages=[{"role": "user", "content": "Give me one SDK-streamed next step."}],
+        stream=True,
+    )
+    for chunk in stream:
+        chunk_count += 1
+        if not chunk.choices:
+            continue
+        delta = chunk.choices[0].delta
+        if delta.content:
+            content_parts.append(delta.content)
+        if chunk.choices[0].finish_reason:
+            finish_reason = chunk.choices[0].finish_reason
+    return {
+        "chunk_count": chunk_count,
+        "content": "".join(content_parts),
+        "finish_reason": finish_reason,
+    }
+
+
 def _start_server(args: argparse.Namespace, workdir: Path, port: int) -> subprocess.Popen[str]:
     env = os.environ.copy()
     env.pop("PFE_HOME", None)
@@ -282,6 +340,30 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         if chat["status"] != 200 or not isinstance(chat_body, dict) or not chat_body.get("choices"):
             raise AssertionError(f"chat completion response was not ready: {chat}")
 
+        stream = _request_sse(
+            f"{base_url}/v1/chat/completions",
+            body={
+                "model": "local",
+                "messages": [{"role": "user", "content": "Give me one streamed next step."}],
+                "stream": True,
+            },
+            timeout=args.request_timeout,
+        )
+        events = stream.get("events") or []
+        if stream["status"] != 200 or "text/event-stream" not in str(stream["content_type"]):
+            raise AssertionError(f"streaming response was not SSE: {stream}")
+        if not stream["done"] or not isinstance(events, list) or len(events) < 2:
+            raise AssertionError(f"streaming response did not terminate with [DONE]: {stream}")
+        choices = [choice for event in events for choice in event.get("choices", []) if isinstance(choice, dict)]
+        if not any((choice.get("delta") or {}).get("role") == "assistant" for choice in choices):
+            raise AssertionError(f"streaming response did not emit an assistant role chunk: {stream}")
+        if not any(choice.get("finish_reason") in {"stop", "length"} for choice in choices):
+            raise AssertionError(f"streaming response did not emit a finish reason: {stream}")
+
+        sdk_stream = _request_openai_sdk_stream(base_url, timeout=args.request_timeout)
+        if not sdk_stream["content"] or sdk_stream["finish_reason"] not in {"stop", "length"}:
+            raise AssertionError(f"OpenAI SDK could not consume the PFE stream: {sdk_stream}")
+
     finally:
         stdout, stderr = _stop_server(process)
 
@@ -296,6 +378,9 @@ def _run_smoke(args: argparse.Namespace, workdir: Path) -> dict[str, str]:
         **setup,
         "base_url": base_url,
         "port": str(port),
+        "sdk_stream_chunk_count": str(sdk_stream["chunk_count"]),
+        "sdk_stream_finish_reason": str(sdk_stream["finish_reason"]),
+        "sdk_stream_content": str(sdk_stream["content"]),
     }
 
 
@@ -304,7 +389,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Build an isolated mock-local adapter, launch pfe serve --live on loopback, "
-            "and verify healthz, status, dashboard, dashboard metrics, and chat completions over HTTP."
+            "and verify healthz, status, dashboard, dashboard metrics, JSON chat, and OpenAI SSE over HTTP."
         )
     )
     parser.add_argument("--repo-root", type=Path, default=repo_root)
@@ -339,6 +424,9 @@ def main() -> int:
         print(f"version:   {summary['version']}")
         print(f"base_url:  {summary['base_url']}")
         print(f"manifest:  {summary['manifest_path']}")
+        print(f"sdk_chunks: {summary['sdk_stream_chunk_count']}")
+        print(f"sdk_finish: {summary['sdk_stream_finish_reason']}")
+        print(f"sdk_content: {summary['sdk_stream_content']}")
         return 0
     finally:
         if tempdir is not None and not args.keep_workdir:

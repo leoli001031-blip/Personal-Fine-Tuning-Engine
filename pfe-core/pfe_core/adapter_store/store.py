@@ -10,6 +10,10 @@ from typing import Any
 
 from .lifecycle import AdapterArtifactFormat, can_promote_from
 from .manifest import AdapterManifest
+from .quality import (
+    SERVING_QUALITY_REPORT_FILENAME,
+    evaluate_serving_quality_gate,
+)
 from ..errors import AdapterError
 from ..storage import adapter_rows, ensure_runtime_dirs, upsert_adapter_row, utcnow_iso, write_json
 
@@ -160,6 +164,47 @@ class AdapterStore:
         target = os.readlink(latest_link)
         return Path(target).name
 
+    def serving_quality_gate(self, version: str = "latest") -> dict[str, Any]:
+        resolved = self._resolve_relative(version)
+        manifest = self._read_manifest(resolved)
+        return evaluate_serving_quality_gate(
+            version_dir=self._version_path(resolved),
+            manifest=manifest,
+        )
+
+    def attach_serving_quality_report(self, version: str, report: dict[str, Any]) -> dict[str, Any]:
+        resolved = self._resolve_relative(version)
+        manifest = self._read_manifest(resolved)
+        write_json(self._version_path(resolved) / SERVING_QUALITY_REPORT_FILENAME, report)
+        gate = evaluate_serving_quality_gate(
+            version_dir=self._version_path(resolved),
+            manifest=manifest,
+            report=report,
+        )
+        metadata = dict(manifest.get("metadata") or {})
+        metadata["serving_quality"] = {
+            "passed": gate["passed"],
+            "reasons": list(gate["reasons"]),
+            "report_path": gate["report_path"],
+        }
+        manifest["metadata"] = metadata
+        self._write_manifest(resolved, manifest)
+        self._update_row(
+            resolved,
+            base_model=manifest["base_model"],
+            state=manifest["state"],
+            artifact_format=manifest["artifact_format"],
+            adapter_dir=str(self._version_path(resolved)),
+            training_config={"training_backend": manifest.get("training_backend", "mock_local")},
+            created_at=manifest["created_at"],
+            num_samples=manifest.get("num_samples", 0),
+            eval_report=self._load_promotion_eval_report(resolved, manifest),
+            metrics=manifest.get("training_metrics"),
+            artifact_name=manifest.get("artifact_name", "adapter_model.safetensors"),
+            metadata=metadata,
+        )
+        return gate
+
     def create_training_version(
         self,
         *,
@@ -276,6 +321,11 @@ class AdapterStore:
         path = self._version_path(resolved)
         if not path.exists():
             raise AdapterError(f"adapter version not found: {resolved}")
+        if version == "latest":
+            gate = self.serving_quality_gate(resolved)
+            if not gate["passed"]:
+                reasons = ", ".join(gate["reasons"])
+                raise AdapterError(f"latest adapter {resolved} is blocked from serving: {reasons}")
         return str(path)
 
     def list_version_records(self, limit: int = 20) -> list[dict[str, Any]]:
@@ -388,6 +438,45 @@ class AdapterStore:
             metadata=manifest.get("metadata", {}),
         )
         return f"Archived {resolved}."
+
+    def archive_failed_serving_quality(self, version: str, report: dict[str, Any]) -> str:
+        """Archive a failed latest adapter without deleting its evidence."""
+
+        resolved = self._resolve_relative(version)
+        gate = self.attach_serving_quality_report(resolved, report)
+        if gate["passed"]:
+            raise AdapterError(f"cannot quality-archive version {resolved}; serving quality gate passed")
+        manifest = self._read_manifest(resolved)
+        current = self.current_latest_version()
+        if current == resolved:
+            latest_link = self._latest_path()
+            if latest_link.exists() or latest_link.is_symlink():
+                latest_link.unlink()
+        manifest["state"] = "archived"
+        manifest["archived_at"] = utcnow_iso()
+        metadata = dict(manifest.get("metadata") or {})
+        metadata["serving_quality_archive"] = {
+            "reason": "failed_serving_quality_gate",
+            "reasons": list(gate["reasons"]),
+            "report_path": gate["report_path"],
+        }
+        manifest["metadata"] = metadata
+        self._write_manifest(resolved, manifest)
+        self._update_row(
+            resolved,
+            base_model=manifest["base_model"],
+            state="archived",
+            artifact_format=manifest["artifact_format"],
+            adapter_dir=str(self._version_path(resolved)),
+            training_config={"training_backend": manifest.get("training_backend", "mock_local")},
+            created_at=manifest["created_at"],
+            num_samples=manifest.get("num_samples", 0),
+            eval_report=self._load_promotion_eval_report(resolved, manifest),
+            metrics=manifest.get("training_metrics"),
+            artifact_name=manifest.get("artifact_name", "adapter_model.safetensors"),
+            metadata=metadata,
+        )
+        return f"Archived {resolved} after failed serving quality gate; adapter files were retained."
 
     def rollback(self, version: str, workspace: str | None = None) -> str:
         if workspace and workspace != self.workspace:

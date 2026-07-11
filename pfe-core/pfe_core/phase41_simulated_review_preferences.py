@@ -8,6 +8,7 @@ import json
 import re
 from typing import Any, Iterable, Mapping
 
+from pfe_core.candidate_quality import assess_preference_candidate_quality
 from pfe_core.phase32_personal_agent_preference import contains_raw_private_text
 from pfe_core.phase40_user_acceptance_simulation import (
     PHASE40_FEEDBACK_SOURCE,
@@ -191,6 +192,29 @@ def build_phase41_candidate_manifest(
         review_items=review_items,
         manual_review_summary=review_summary,
     )
+    item_by_scenario = {str(item.get("scenario_id")): item for item in review_items}
+    enriched_pairs: list[dict[str, Any]] = []
+    for pair in manifest.get("selected_preference_pairs") or []:
+        enriched = dict(pair)
+        item = _dict(item_by_scenario.get(str(pair.get("scenario_id"))))
+        payload = _dict(item.get("review_payload"))
+        instruction_parts = [
+            str(payload.get("user_goal") or "").strip(),
+            str(payload.get("user_correction") or "").strip(),
+            str(payload.get("continuation_request") or "").strip(),
+        ]
+        enriched["instruction"] = "\n".join(part for part in instruction_parts if part)
+        enriched_pairs.append(enriched)
+    quality = assess_preference_candidate_quality(enriched_pairs)
+    quality_passed = quality["passed"] is True
+    manifest["selected_preference_pairs"] = enriched_pairs
+    manifest["evaluated_preference_pair_count"] = len(enriched_pairs)
+    manifest["candidate_quality"] = quality
+    if not quality_passed and manifest.get("training_candidate_status") == "ready":
+        manifest["status"] = "blocked"
+        manifest["training_candidate_status"] = "blocked"
+        manifest["blocked_reason"] = "candidate_quality_gate_failed"
+        manifest["selected_preference_pair_count"] = 0
     manifest.update(
         {
             "kind": "phase41_preference_candidate_manifest",
@@ -315,8 +339,16 @@ def phase41_final_decision(
         and candidate_manifest.get("training_candidate_status") == "ready"
         and reviewed_count >= PHASE41_MIN_REVIEWED_PREFERENCES
     )
+    candidate_quality = _dict(candidate_manifest.get("candidate_quality"))
     if not boundary_check.get("passed"):
         recommendation = "fix_phase41_boundary_violations"
+        status = "blocked"
+    elif (
+        reviewed_count >= PHASE41_MIN_REVIEWED_PREFERENCES
+        and candidate_quality
+        and candidate_quality.get("passed") is not True
+    ):
+        recommendation = "regenerate_diverse_simulated_preferences"
         status = "blocked"
     elif ready:
         recommendation = "ready_for_small_model_training_probe_from_simulated_preferences"
@@ -333,6 +365,7 @@ def phase41_final_decision(
         "manual_reviewed_preference_count": reviewed_count,
         "required_manual_reviewed_preferences": PHASE41_MIN_REVIEWED_PREFERENCES,
         "training_candidate_status": candidate_manifest.get("training_candidate_status"),
+        "candidate_quality": candidate_quality,
         "selected_preference_pair_count": candidate_manifest.get("selected_preference_pair_count"),
         "chosen_model_counts_for_audit_only": decision_audit.get("chosen_model_counts"),
         "rejected_model_counts_for_audit_only": decision_audit.get("rejected_model_counts"),
