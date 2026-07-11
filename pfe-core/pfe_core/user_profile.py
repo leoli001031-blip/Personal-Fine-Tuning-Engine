@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+from .security.identifiers import safe_user_storage_id
 from .storage import resolve_home
 
 
@@ -347,7 +348,7 @@ class UserProfileStore:
         self._cache: dict[str, UserProfile] = {}
 
     def _profile_path(self, user_id: str) -> Path:
-        return self.profiles_dir / f"{user_id}_profile.json"
+        return self.profiles_dir / f"{safe_user_storage_id(user_id)}_profile.json"
 
     def get_profile(self, user_id: str) -> UserProfile:
         """Get or create user profile."""

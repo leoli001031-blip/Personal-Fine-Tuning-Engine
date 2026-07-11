@@ -13,11 +13,14 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
+import hashlib
 import json
+import math
 import os
 import signal
 import subprocess
 import sys
+import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -1279,8 +1282,9 @@ def _materialize_toy_peft_job_artifacts(
     runtime_path: str = "toy_local",
     artifact_kind: str = "toy_local_peft",
     manifest_name: str = "peft_job_manifest.json",
-    model_filename: str = "adapter_model.safetensors",
+    model_filename: str = "adapter_metadata.json",
     preserve_existing_adapter_files: bool = False,
+    training_details: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     artifact_dir = output_dir / artifact_subdir
@@ -1301,12 +1305,14 @@ def _materialize_toy_peft_job_artifacts(
         "lora_dropout": 0.05,
         "bias": "none",
     }
+    details = dict(training_details or {})
     train_metrics = {
         "loss": train_loss,
         "num_examples": len(training_examples),
         "execution_mode": execution_mode,
         "status": run_status,
         **preference_summary,
+        **details,
     }
     artifact_payload = {
         "backend": "peft",
@@ -1334,8 +1340,8 @@ def _materialize_toy_peft_job_artifacts(
         json.dumps(
             {
                 "status": run_status,
-                "global_step": max(len(training_examples), 1),
-                "log_history": [{"loss": train_loss, "step": 1}] if train_loss is not None else [],
+                "global_step": int(details.get("steps") or max(len(training_examples), 1)),
+                "log_history": details.get("loss_history") or ([{"loss": train_loss, "step": 1}] if train_loss is not None else []),
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -1357,6 +1363,7 @@ def _materialize_toy_peft_job_artifacts(
                 "adapter_config_path": str(adapter_config_path),
                 "trainer_state_path": str(trainer_state_path),
                 **preference_summary,
+                **details,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -1377,6 +1384,7 @@ def _materialize_toy_peft_job_artifacts(
                 "train_loss": train_loss,
                 "num_examples": len(training_examples),
                 **preference_summary,
+                **details,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -1418,10 +1426,11 @@ def _materialize_toy_peft_job_artifacts(
         + "\n",
         encoding="utf-8",
     )
+    artifact_key = "adapter_model" if adapter_model_path.suffix in {".safetensors", ".gguf"} else "adapter_metadata"
     return {
         "artifact_dir": str(artifact_dir),
         "artifacts": {
-            "adapter_model": str(adapter_model_path),
+            artifact_key: str(adapter_model_path),
             "adapter_config": str(adapter_config_path),
             "trainer_state": str(trainer_state_path),
             "training_summary": str(summary_path),
@@ -1453,9 +1462,43 @@ def _save_real_peft_adapter(model: Any, artifact_dir: Path) -> dict[str, Any]:
     adapter_config_path = artifact_dir / "adapter_config.json"
     if not adapter_model_path.exists() or not adapter_config_path.exists():
         raise TrainingError("real peft adapter save failed: adapter files were not materialized")
+    from ..adapter_store.quality import validate_adapter_artifact
+
+    validation = validate_adapter_artifact(
+        artifact_dir,
+        {"artifact_name": adapter_model_path.name, "artifact_format": "peft_lora"},
+    )
+    if validation.get("valid") is not True:
+        raise TrainingError(
+            "real peft adapter validation failed: "
+            f"{validation.get('reason') or 'unknown validation error'}"
+        )
     return {
         "adapter_model": str(adapter_model_path),
         "adapter_config": str(adapter_config_path),
+        "adapter_validation": validation,
+    }
+
+
+def _trainable_parameter_fingerprint(model: Any) -> dict[str, Any]:
+    digest = hashlib.sha256()
+    parameter_count = 0
+    tensor_count = 0
+    squared_norm = 0.0
+    for name, parameter in model.named_parameters():
+        if not getattr(parameter, "requires_grad", False):
+            continue
+        tensor = parameter.detach().float().cpu().contiguous()
+        digest.update(name.encode("utf-8"))
+        digest.update(tensor.numpy().tobytes())
+        parameter_count += int(tensor.numel())
+        tensor_count += 1
+        squared_norm += float(tensor.square().sum().item())
+    return {
+        "sha256": digest.hexdigest(),
+        "parameter_count": parameter_count,
+        "tensor_count": tensor_count,
+        "l2_norm": round(math.sqrt(max(squared_norm, 0.0)), 8),
     }
 
 
@@ -1594,12 +1637,24 @@ def _run_toy_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
+def _run_real_import_peft_training(
+    job_spec: Mapping[str, Any],
+    *,
+    execution_mode: str = "real_import",
+) -> dict[str, Any]:
     local_source = _resolve_real_local_model_source(job_spec)
     torch = importlib.import_module("torch")
     transformers = importlib.import_module("transformers")
     peft = importlib.import_module("peft")
     accelerate = importlib.import_module("accelerate")
+    recipe = dict(job_spec.get("recipe") or {})
+    training_recipe = dict(recipe.get("training") or {})
+    seed = int(training_recipe.get("seed") or 42)
+    set_seed = getattr(transformers, "set_seed", None)
+    if callable(set_seed):
+        set_seed(seed)
+    elif callable(getattr(torch, "manual_seed", None)):
+        torch.manual_seed(seed)
 
     auto_model_cls = getattr(transformers, "AutoModelForCausalLM", None)
     get_peft_model = getattr(peft, "get_peft_model", None)
@@ -1655,19 +1710,26 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
     train_loss: float | None = None
     forward_error: str | None = None
     accelerator = accelerator_cls()
-    optimizer = torch.optim.AdamW([param for param in model.parameters() if getattr(param, "requires_grad", False)], lr=1e-3)
+    learning_rate = float(training_recipe.get("learning_rate") or 1e-3)
+    trainable_parameters = [param for param in model.parameters() if getattr(param, "requires_grad", False)]
+    if not trainable_parameters:
+        raise TrainingError("real peft training has no trainable LoRA parameters")
+    optimizer = torch.optim.AdamW(trainable_parameters, lr=learning_rate)
     try:
         model, optimizer = accelerator.prepare(model, optimizer)
     except Exception:
         pass
+    fingerprint_before = _trainable_parameter_fingerprint(model)
     losses: list[float] = []
-    recipe = dict(job_spec.get("recipe") or {})
-    training_recipe = dict(recipe.get("training") or {})
     epochs = max(1, int(training_recipe.get("epochs") or 1))
+    requested_steps = training_recipe.get("max_steps")
+    max_steps = max(1, int(requested_steps or (epochs * len(encoded_rows))))
+    started_at = time.perf_counter()
     try:
         model.train()
         device = getattr(accelerator, "device", None)
-        for _epoch in range(epochs):
+        while len(losses) < max_steps:
+            steps_before_cycle = len(losses)
             for batch in encoded_rows:
                 input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
                 attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
@@ -1689,7 +1751,14 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
                 else:
                     loss.backward()
                 optimizer.step()
-                losses.append(float(loss.detach().cpu().item()))
+                loss_value = float(loss.detach().cpu().item())
+                if not math.isfinite(loss_value):
+                    raise TrainingError("real peft training produced a non-finite loss")
+                losses.append(loss_value)
+                if len(losses) >= max_steps:
+                    break
+            if len(losses) == steps_before_cycle:
+                break
         if losses:
             train_loss = round(float(sum(losses) / len(losses)), 6)
     except Exception as exc:
@@ -1698,6 +1767,12 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
     if train_loss is None:
         reason = forward_error or "model forward pass did not return a loss"
         raise TrainingError(f"real import peft training failed: {reason}")
+
+    duration_seconds = round(time.perf_counter() - started_at, 4)
+    fingerprint_after = _trainable_parameter_fingerprint(model)
+    parameters_updated = fingerprint_before["sha256"] != fingerprint_after["sha256"]
+    if not parameters_updated:
+        raise TrainingError("real peft training completed steps but trainable parameters did not change")
 
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     artifact_dir = output_dir / "peft_lora"
@@ -1709,41 +1784,68 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
         except Exception:
             save_model = model
     saved_artifacts = _save_real_peft_adapter(save_model, artifact_dir)
+    adapter_validation = dict(saved_artifacts.pop("adapter_validation"))
+    loss_history = [
+        {"step": index, "loss": round(value, 6)}
+        for index, value in enumerate(losses, start=1)
+    ]
+    training_details = {
+        "steps": len(losses),
+        "max_steps": max_steps,
+        "learning_rate": learning_rate,
+        "seed": seed,
+        "duration_seconds": duration_seconds,
+        "initial_loss": loss_history[0]["loss"],
+        "final_loss": loss_history[-1]["loss"],
+        "loss_history": loss_history,
+        "trainable_parameter_count": fingerprint_after["parameter_count"],
+        "trainable_tensor_count": fingerprint_after["tensor_count"],
+        "parameter_fingerprint_before": fingerprint_before,
+        "parameter_fingerprint_after": fingerprint_after,
+        "parameters_updated": parameters_updated,
+        "adapter_validation": adapter_validation,
+    }
+    is_local_mode = execution_mode == "real_local"
+    artifact_kind = "real_local_peft" if is_local_mode else "real_peft"
     artifact_bundle = _materialize_toy_peft_job_artifacts(
         output_dir=output_dir,
         job_spec=job_spec,
         training_examples=training_examples,
         train_loss=train_loss,
-        execution_mode="real_import",
+        execution_mode=execution_mode,
         run_status="completed",
         artifact_subdir="peft_lora",
-        runtime_path="real_import",
-        artifact_kind="real_peft",
-        manifest_name="real_peft_job_manifest.json",
+        runtime_path=execution_mode,
+        artifact_kind=artifact_kind,
+        manifest_name="real_local_job_manifest.json" if is_local_mode else "real_peft_job_manifest.json",
+        model_filename="adapter_model.safetensors",
         preserve_existing_adapter_files=True,
+        training_details=training_details,
     )
     return {
         "backend": "peft",
         "dry_run": False,
-        "execution_mode": "real_import",
+        "execution_mode": execution_mode,
         "job_spec": dict(job_spec),
         "recipe": recipe,
         "status": "completed",
         "import_probe": dict(job_spec.get("audit", {}).get("import_probe") or {}),
         "real_execution": {
-            "kind": "real_peft",
-            "path": "real_import",
+            "kind": artifact_kind,
+            "path": execution_mode,
+            "execution_mode": execution_mode,
             "num_examples": len(training_examples),
             "train_loss": train_loss,
             "output_dir": artifact_bundle["artifact_dir"],
             "artifact_dir": artifact_bundle["artifact_dir"],
             "artifacts": {**dict(artifact_bundle["artifacts"]), **saved_artifacts},
+            "adapter_validation": adapter_validation,
             "metrics": dict(artifact_bundle["metrics"]),
             "artifact_manifest_path": artifact_bundle["artifact_manifest_path"],
             "summary_path": artifact_bundle["summary_path"],
             "real_execution_path": artifact_bundle["real_execution_path"],
             "trainer_state_path": artifact_bundle["trainer_state_path"],
-            "runtime_path": artifact_bundle["runtime_path"],
+            "runtime_path": execution_mode,
             "artifact_kind": artifact_bundle["artifact_kind"],
             "source_kind": source_kind,
             "source_path": source_path,
@@ -1753,6 +1855,18 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
             "max_length": max_length,
             "epochs": epochs,
             "steps": len(losses),
+            "max_steps": max_steps,
+            "learning_rate": learning_rate,
+            "seed": seed,
+            "duration_seconds": duration_seconds,
+            "initial_loss": loss_history[0]["loss"],
+            "final_loss": loss_history[-1]["loss"],
+            "loss_history": loss_history,
+            "trainable_parameter_count": fingerprint_after["parameter_count"],
+            "trainable_tensor_count": fingerprint_after["tensor_count"],
+            "parameter_fingerprint_before": fingerprint_before,
+            "parameter_fingerprint_after": fingerprint_after,
+            "parameters_updated": parameters_updated,
             "dependency_ready": True,
             "source_ready": bool(source_path or config_path),
             "executor_ready": True,
@@ -1760,200 +1874,23 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
             "blocking_reasons": [],
             "accelerator": {"class": "Accelerator", "used": True},
             "success": True,
-            "message": "real peft execution completed",
+            "message": f"{artifact_kind} execution completed with optimizer updates",
             "forward_error": forward_error,
         },
     }
 
 
 def _run_real_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
-    local_source = _resolve_real_local_model_source(job_spec)
-    runtime_probe = _probe_real_local_runtime(local_source)
-    if not local_source.get("available"):
-        raise TrainingError("real local training requires a local model/config source")
+    """Run the same real PEFT optimizer path under the local-runtime label."""
 
-    training_examples = list(job_spec.get("training_examples") or [])
-    if not training_examples:
-        raise TrainingError("real local training requires at least one serialized training example")
-
-    if not runtime_probe["dependency_ready"]:
-        output_dir = _resolve_toy_peft_output_dir(job_spec)
-        token_total = sum(
-            len(str(item.get("instruction") or "")) + len(str(item.get("chosen") or ""))
-            for item in training_examples
+    runtime_probe = _probe_real_peft_runtime()
+    if not runtime_probe.get("available"):
+        missing = ", ".join(runtime_probe.get("missing_modules") or []) or "unknown dependencies"
+        raise TrainingError(
+            "real local peft training requires torch, transformers, peft, and accelerate; "
+            f"missing={missing}"
         )
-        train_loss = round(float((token_total + len(training_examples) + 48) / max(len(training_examples), 1)), 6)
-        artifact_bundle = _materialize_toy_peft_job_artifacts(
-            output_dir=output_dir,
-            job_spec=job_spec,
-            training_examples=training_examples,
-            train_loss=train_loss,
-            execution_mode="real_local",
-            run_status="completed",
-            artifact_subdir="real_local_model",
-            runtime_path="real_local",
-            artifact_kind="real_local_peft",
-            manifest_name="real_local_job_manifest.json",
-            model_filename="real_local_model.safetensors",
-        )
-        return {
-            "backend": "peft",
-            "dry_run": False,
-            "execution_mode": "real_local",
-            "job_spec": dict(job_spec),
-            "recipe": dict(job_spec.get("recipe") or {}),
-            "status": "completed",
-            "import_probe": dict(job_spec.get("audit", {}).get("import_probe") or {}),
-            "real_execution": {
-                "kind": "real_local_peft",
-                "path": "real_local",
-                "num_examples": len(training_examples),
-                "train_loss": train_loss,
-                "output_dir": artifact_bundle["artifact_dir"],
-                "artifact_dir": artifact_bundle["artifact_dir"],
-                "artifacts": dict(artifact_bundle["artifacts"]),
-                "metrics": dict(artifact_bundle["metrics"]),
-                "artifact_manifest_path": artifact_bundle["artifact_manifest_path"],
-                "summary_path": artifact_bundle["summary_path"],
-                "real_execution_path": artifact_bundle["real_execution_path"],
-                "trainer_state_path": artifact_bundle["trainer_state_path"],
-                "runtime_path": artifact_bundle["runtime_path"],
-                "artifact_kind": artifact_bundle["artifact_kind"],
-                "source_kind": local_source["source_kind"],
-                "source_path": local_source["source_path"],
-                "config_path": local_source["config_path"],
-                "load_mode": local_source["load_mode"],
-                "dependency_ready": False,
-                "source_ready": True,
-                "executor_ready": True,
-                "blocked_by": list(runtime_probe.get("blocked_by") or []),
-                "blocking_reasons": list(runtime_probe.get("blocking_reasons") or []),
-                "success": True,
-                "message": "real local artifact materialization completed; torch/transformers runtime unavailable",
-            },
-        }
-
-    torch = importlib.import_module("torch")
-    transformers = importlib.import_module("transformers")
-
-    auto_config_cls = getattr(transformers, "AutoConfig", None)
-    auto_model_cls = getattr(transformers, "AutoModelForCausalLM", None)
-    if None in (auto_config_cls, auto_model_cls):
-        raise TrainingError("transformers runtime is missing AutoConfig or AutoModelForCausalLM for local training")
-
-    source_path = local_source.get("source_path")
-    config_path = local_source.get("config_path")
-    model = None
-    load_mode = str(local_source.get("load_mode") or "unavailable")
-    load_kwargs = _build_local_model_load_kwargs(local_only=bool(local_source.get("local_only", True)))
-    if source_path is not None:
-        try:
-            model = auto_model_cls.from_pretrained(source_path, **load_kwargs)
-            load_mode = "from_pretrained"
-        except Exception:
-            model = None
-
-    if model is None:
-        config_candidate = config_path or source_path
-        if config_candidate is None:
-            raise TrainingError("real local training requires a local model directory or config path")
-        config = auto_config_cls.from_pretrained(config_candidate, local_files_only=True)
-        model = auto_model_cls.from_config(config)
-        load_mode = "from_config"
-
-    vocab_size = int(getattr(model.config, "vocab_size", 128) or 128)
-    max_length = _resolve_model_sequence_length(model.config)
-    encoded_rows: list[dict[str, Any]] = []
-    for item in training_examples:
-        instruction = str(item.get("instruction") or "")
-        chosen = str(item.get("chosen") or "")
-        text = (instruction + "\n" + chosen).strip()
-        token_ids = _encode_training_text(text, max_length=max_length, vocab_size=max(vocab_size, 16))
-        padded = token_ids + [0] * (max_length - len(token_ids))
-        attention = [1] * len(token_ids) + [0] * (max_length - len(token_ids))
-        encoded_rows.append(
-            {
-                "input_ids": padded,
-                "attention_mask": attention,
-                "labels": list(padded),
-            }
-        )
-
-    recipe = dict(job_spec.get("recipe") or {})
-    output_dir = _resolve_toy_peft_output_dir(job_spec)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    train_loss: float | None = None
-    forward_error: str | None = None
-    try:
-        batch = encoded_rows[0]
-        input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
-        attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
-        labels = torch.tensor(batch["labels"], dtype=torch.long).unsqueeze(0)
-        model.eval()
-        with torch.no_grad():
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-        loss = getattr(outputs, "loss", None)
-        if loss is not None:
-            train_loss = float(loss.detach().cpu().item())
-    except Exception as exc:
-        forward_error = f"{exc.__class__.__name__}: {exc}"
-
-    if train_loss is None:
-        reason = forward_error or "model forward pass did not return a loss"
-        raise TrainingError(f"real local peft training failed: {reason}")
-
-    artifact_bundle = _materialize_toy_peft_job_artifacts(
-        output_dir=output_dir,
-        job_spec=job_spec,
-        training_examples=training_examples,
-        train_loss=train_loss,
-        execution_mode="real_local",
-        run_status="completed",
-        artifact_subdir="real_local_model",
-        runtime_path="real_local",
-        artifact_kind="real_local_peft",
-        manifest_name="real_local_job_manifest.json",
-        model_filename="real_local_model.safetensors",
-    )
-    return {
-        "backend": "peft",
-        "dry_run": False,
-        "execution_mode": "real_local",
-        "job_spec": dict(job_spec),
-        "recipe": recipe,
-        "status": "completed",
-        "import_probe": dict(job_spec.get("audit", {}).get("import_probe") or {}),
-        "real_execution": {
-            "kind": "real_local_peft",
-            "path": "real_local",
-            "num_examples": len(training_examples),
-            "train_loss": train_loss,
-            "output_dir": artifact_bundle["artifact_dir"],
-            "artifact_dir": artifact_bundle["artifact_dir"],
-            "artifacts": dict(artifact_bundle["artifacts"]),
-            "metrics": dict(artifact_bundle["metrics"]),
-            "artifact_manifest_path": artifact_bundle["artifact_manifest_path"],
-            "summary_path": artifact_bundle["summary_path"],
-            "real_execution_path": artifact_bundle["real_execution_path"],
-            "trainer_state_path": artifact_bundle["trainer_state_path"],
-            "runtime_path": artifact_bundle["runtime_path"],
-            "artifact_kind": artifact_bundle["artifact_kind"],
-            "source_kind": local_source["source_kind"],
-            "source_path": local_source["source_path"],
-            "config_path": local_source["config_path"],
-            "load_mode": load_mode,
-            "dependency_ready": runtime_probe["available"],
-            "source_ready": bool(local_source.get("available")),
-            "executor_ready": True,
-            "blocked_by": [],
-            "blocking_reasons": [],
-            "success": True,
-            "message": "real local training completed",
-            "forward_error": forward_error,
-        },
-    }
-
-
+    return _run_real_import_peft_training(job_spec, execution_mode="real_local")
 def execute_peft_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -> dict[str, Any]:
     recipe = dict(job_spec.get("recipe") or {})
     import_probe = dict(job_spec.get("audit", {}).get("import_probe") or {})
@@ -2726,6 +2663,7 @@ def _run_real_dpo_training(
         runtime_path="real_dpo",
         artifact_kind="real_dpo",
         manifest_name="dpo_job_manifest.json",
+        model_filename="adapter_model.safetensors",
         preserve_existing_adapter_files=True,
     )
 

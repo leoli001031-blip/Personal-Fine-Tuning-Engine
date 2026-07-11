@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from .data_policy import extract_user_data_candidates, route_user_datum
+from .security.identifiers import safe_user_storage_id
 from .storage import resolve_home
 
 
@@ -152,7 +153,7 @@ class UserMemoryStore:
         self._processed_message_keys: set[str] = set()
 
     def _profile_path(self, user_id: str) -> Path:
-        return self.profiles_dir / f"{user_id}.json"
+        return self.profiles_dir / f"{safe_user_storage_id(user_id)}.json"
 
     def get_profile(self, user_id: str) -> UserProfile:
         """Get or create user profile."""

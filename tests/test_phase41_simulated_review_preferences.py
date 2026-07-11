@@ -63,7 +63,7 @@ def test_phase41_simulated_reviewer_generates_blinded_preference_decisions() -> 
     assert review_items[0]["review_payload"]["kind"] == "phase40_blind_eval_pair"
 
 
-def test_phase41_candidate_becomes_ready_but_stays_simulated_only() -> None:
+def test_phase41_duplicate_candidate_is_blocked_and_stays_simulated_only() -> None:
     review_items, review_decisions, blind_key = _phase41_review_bundle()
     review_summary = build_phase41_review_summary(
         review_items=review_items,
@@ -79,8 +79,10 @@ def test_phase41_candidate_becomes_ready_but_stays_simulated_only() -> None:
     )
 
     assert review_summary["manual_reviewed_preference_count"] >= PHASE40_MIN_REVIEWED_PREFERENCES
-    assert candidate["training_candidate_status"] == "ready"
-    assert candidate["selected_preference_pair_count"] >= PHASE40_MIN_REVIEWED_PREFERENCES
+    assert candidate["training_candidate_status"] == "blocked"
+    assert candidate["blocked_reason"] == "candidate_quality_gate_failed"
+    assert candidate["evaluated_preference_pair_count"] >= PHASE40_MIN_REVIEWED_PREFERENCES
+    assert candidate["candidate_quality"]["passed"] is False
     assert candidate["preference_source"] == "simulated_user_review_preference"
     assert candidate["actual_user_feedback_count"] == 0
     assert candidate["actual_product_benefit_claim_allowed"] is False
@@ -115,7 +117,7 @@ def test_phase41_boundary_blocks_actual_feedback_or_product_claim() -> None:
     assert "actual_product_claim_allowed" in reasons
 
 
-def test_phase41_final_decision_ready_for_manual_training_probe_only() -> None:
+def test_phase41_final_decision_requires_diverse_preferences_before_training() -> None:
     review_items, review_decisions, blind_key = _phase41_review_bundle()
     review_summary = build_phase41_review_summary(
         review_items=review_items,
@@ -150,9 +152,9 @@ def test_phase41_final_decision_ready_for_manual_training_probe_only() -> None:
     )
 
     assert boundary["passed"] is True
-    assert decision["recommendation"] == "ready_for_small_model_training_probe_from_simulated_preferences"
+    assert decision["recommendation"] == "regenerate_diverse_simulated_preferences"
     assert decision["evidence_type"] == PHASE41_EVIDENCE_TYPE
-    assert decision["manual_training_probe_allowed"] is True
+    assert decision["manual_training_probe_allowed"] is False
     assert decision["actual_product_benefit_claim_allowed"] is False
     assert decision["auto_training_allowed"] is False
     assert decision["auto_promotion_allowed"] is False

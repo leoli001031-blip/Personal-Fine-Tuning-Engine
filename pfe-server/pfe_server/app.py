@@ -8,7 +8,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Mapping, Optional, Protocol, Union
+from typing import Any, AsyncIterator, Awaitable, Callable, Mapping, Optional, Protocol, Union
 from uuid import uuid4
 
 from .auth import AccessContext, ServerSecurityConfig, authorize_request, normalize_headers
@@ -262,7 +262,7 @@ def _remove_pending_interaction(session_id: str, request_id: str) -> None:
 try:  # FastAPI is optional in the current workspace snapshot.
     from fastapi import FastAPI, Request, Response
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import HTMLResponse, JSONResponse
+    from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
     FASTAPI_AVAILABLE = True
 except ImportError:  # pragma: no cover - exercised in the current environment.
@@ -271,6 +271,7 @@ except ImportError:  # pragma: no cover - exercised in the current environment.
     Response = Any  # type: ignore[assignment]
     HTMLResponse = None  # type: ignore[assignment]
     JSONResponse = None  # type: ignore[assignment]
+    StreamingResponse = None  # type: ignore[assignment]
     CORSMiddleware = None  # type: ignore[assignment]
     FASTAPI_AVAILABLE = False
 
@@ -3162,6 +3163,111 @@ async def _envelope_from_asgi_scope(scope: Mapping[str, Any], receive: Callable[
     )
 
 
+def _sse_data(payload: Mapping[str, Any] | str) -> bytes:
+    if isinstance(payload, str):
+        return f"data: {payload}\n\n".encode("utf-8")
+    return ("data: " + json.dumps(dict(payload), ensure_ascii=False, separators=(",", ":")) + "\n\n").encode("utf-8")
+
+
+async def _chat_completion_sse_events(
+    *,
+    request: ChatCompletionRequest,
+    services: ServiceBundle,
+) -> AsyncIterator[bytes]:
+    """Emit protocol-correct OpenAI SSE around the current buffered backend."""
+
+    stream_id = f"chatcmpl-{uuid4().hex[:12]}"
+    created = int(time.time())
+    session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
+    request_id = request.request_id or f"req-{uuid4().hex[:8]}"
+    base_chunk = {
+        "id": stream_id,
+        "object": "chat.completion.chunk",
+        "created": created,
+        "model": request.model,
+    }
+    yield _sse_data(
+        {
+            **base_chunk,
+            "choices": [{"index": 0, "delta": {"role": "assistant"}, "finish_reason": None}],
+            "pfe": {"streaming_mode": "buffered_backend", "incremental_backend": False},
+        }
+    )
+
+    response_start_time = time.time()
+    task = asyncio.create_task(services.inference.generate_chat_completion(request))
+    try:
+        while not task.done():
+            done, _pending = await asyncio.wait({task}, timeout=2.0)
+            if not done:
+                yield b": keep-alive\n\n"
+        response = task.result()
+    except asyncio.CancelledError:
+        task.cancel()
+        raise
+    except Exception as exc:
+        yield _sse_data(
+            {
+                "error": {
+                    "message": str(exc),
+                    "type": "upstream_error",
+                    "code": exc.__class__.__name__,
+                }
+            }
+        )
+        yield _sse_data("[DONE]")
+        return
+
+    content = ""
+    finish_reason = "stop"
+    if response.choices:
+        content = response.choices[0].message.content or ""
+        finish_reason = response.choices[0].finish_reason or "stop"
+    chunk_size = max(1, int(str(os.environ.get("PFE_SSE_CHUNK_CHARS", "24")).strip() or "24"))
+    for index in range(0, len(content), chunk_size):
+        yield _sse_data(
+            {
+                **base_chunk,
+                "choices": [
+                    {
+                        "index": 0,
+                        "delta": {"content": content[index : index + chunk_size]},
+                        "finish_reason": None,
+                    }
+                ],
+            }
+        )
+
+    user_message = ""
+    for message in reversed(request.messages):
+        if message.role == "user" and message.content:
+            user_message = message.content
+            break
+    _store_pending_interaction(
+        session_id=session_id,
+        request_id=request_id,
+        user_message=user_message,
+        assistant_message=content,
+        adapter_version=request.adapter_version,
+        timestamp=response_start_time,
+    )
+    yield _sse_data(
+        {
+            **base_chunk,
+            "choices": [{"index": 0, "delta": {}, "finish_reason": finish_reason}],
+            "usage": response.usage.model_dump(mode="json"),
+            "pfe": {
+                "streaming_mode": "buffered_backend",
+                "incremental_backend": False,
+                "session_id": session_id,
+                "request_id": request_id,
+                "response_time_seconds": round(time.time() - response_start_time, 3),
+            },
+        }
+    )
+    yield _sse_data("[DONE]")
+
+
 async def handle_chat_completions(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -3175,6 +3281,18 @@ async def handle_chat_completions(
         return _json_response(
             _error_payload("invalid chat completion request", "invalid_request", str(exc)),
             status_code=422,
+        )
+
+    if request.stream:
+        if StreamingResponse is None:
+            return _json_response(
+                _error_payload("streaming requires the FastAPI runtime", "streaming_unavailable"),
+                status_code=501,
+            )
+        return StreamingResponse(
+            _chat_completion_sse_events(request=request, services=services),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )
 
     # Extract user message for signal collection
@@ -6401,7 +6519,9 @@ async def handle_adapters(envelope: RequestEnvelope, services: ServiceBundle) ->
 
 async def handle_dashboard_metrics(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get complete dashboard metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -6412,7 +6532,9 @@ async def handle_dashboard_metrics(envelope: RequestEnvelope, services: ServiceB
 
 async def handle_dashboard_training(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get training metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -6423,7 +6545,9 @@ async def handle_dashboard_training(envelope: RequestEnvelope, services: Service
 
 async def handle_dashboard_signals(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get signal quality metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -6434,7 +6558,9 @@ async def handle_dashboard_signals(envelope: RequestEnvelope, services: ServiceB
 
 async def handle_dashboard_adapters(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get adapter comparison data."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -6445,7 +6571,9 @@ async def handle_dashboard_adapters(envelope: RequestEnvelope, services: Service
 
 async def handle_dashboard_health(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get system health metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
