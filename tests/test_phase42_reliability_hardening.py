@@ -5,8 +5,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-import torch
-from safetensors.torch import save_file
+import pytest
 
 from pfe_core.adapter_store.store import AdapterStore
 from pfe_core.candidate_quality import assess_preference_candidate_quality
@@ -51,6 +50,8 @@ def _quality_report(*, passed: bool) -> dict[str, object]:
 
 
 def _promoted_adapter(tmp_path: Path) -> tuple[AdapterStore, str]:
+    torch = pytest.importorskip("torch")
+    save_file = pytest.importorskip("safetensors.torch").save_file
     store = AdapterStore(home=tmp_path, workspace="phase42")
     created = store.create_training_version(base_model="tiny", training_config={"backend": "peft"})
     version = created["version"]
@@ -260,6 +261,8 @@ def test_openai_stream_cancels_upstream_when_client_disconnects() -> None:
 
 
 def test_real_inference_uses_tokenizer_budget_without_128_token_clamp(monkeypatch) -> None:
+    torch = pytest.importorskip("torch")
+
     class _Tokenizer:
         pad_token_id = 0
         eos_token_id = 2
