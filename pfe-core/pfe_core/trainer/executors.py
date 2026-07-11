@@ -1502,6 +1502,21 @@ def _trainable_parameter_fingerprint(model: Any) -> dict[str, Any]:
     }
 
 
+def _find_non_finite_trainer_metrics(log_history: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    problems: list[dict[str, Any]] = []
+    for log_index, item in enumerate(log_history):
+        for key, value in item.items():
+            if key in {"epoch", "step", "num_tokens"}:
+                continue
+            try:
+                numeric = float(value)
+            except (TypeError, ValueError):
+                continue
+            if not math.isfinite(numeric):
+                problems.append({"log_index": log_index, "metric": key, "value": str(value)})
+    return problems
+
+
 def _run_toy_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
     local_source = _resolve_real_local_model_source(job_spec)
     runtime_probe = _probe_real_local_runtime(local_source)
@@ -1696,7 +1711,8 @@ def _run_real_import_peft_training(
     model = get_peft_model(model, lora_config)
 
     vocab_size = int(getattr(model.config, "vocab_size", 128) or 128)
-    max_length = _resolve_training_sequence_length(model.config)
+    requested_max_length = int(training_recipe.get("max_length") or 192)
+    max_length = _resolve_training_sequence_length(model.config, default=requested_max_length)
     tokenizer = _load_training_tokenizer(transformers, str(source_path), local_only=local_only)
     encoded_rows = _encode_sft_examples(
         tokenizer=tokenizer,
@@ -1873,6 +1889,7 @@ def _run_real_import_peft_training(
             "blocked_by": [],
             "blocking_reasons": [],
             "accelerator": {"class": "Accelerator", "used": True},
+            "device": str(device) if device is not None else "unknown",
             "success": True,
             "message": f"{artifact_kind} execution completed with optimizer updates",
             "forward_error": forward_error,
@@ -2483,11 +2500,13 @@ def _run_real_dpo_training(
     recipe = dict(job_spec.get("recipe") or {})
     training_recipe = dict(recipe.get("training") or {})
     peft_recipe = dict(recipe.get("peft") or {})
-    use_cpu = bool(training_recipe.get("use_cpu") or job_spec.get("use_cpu") or not torch.cuda.is_available())
+    mps_available = bool(getattr(torch.backends, "mps", None) and torch.backends.mps.is_available())
+    accelerator_available = bool(torch.cuda.is_available() or mps_available)
+    use_cpu = bool(training_recipe.get("use_cpu") or job_spec.get("use_cpu") or not accelerator_available)
 
     # Determine device and dtype
     device_map = "auto" if torch.cuda.is_available() and not use_cpu else {"": "cpu"}
-    torch_dtype = torch.float16 if torch.cuda.is_available() and not use_cpu else torch.float32
+    torch_dtype = torch.float16 if accelerator_available and not use_cpu else torch.float32
 
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
@@ -2542,6 +2561,7 @@ def _run_real_dpo_training(
         task_type=TaskType.CAUSAL_LM,
     )
     model = get_peft_model(model, lora_config)
+    fingerprint_before = _trainable_parameter_fingerprint(model)
 
     # Prepare DPO dataset
     dpo_data = {
@@ -2566,6 +2586,7 @@ def _run_real_dpo_training(
 
     # Setup training arguments
     epochs = training_recipe.get("epochs", 3)
+    max_steps = max(1, int(training_recipe.get("max_steps") or (int(epochs) * len(dpo_data["prompt"]))))
     learning_rate = float(training_recipe.get("learning_rate", 5e-5))
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -2580,6 +2601,7 @@ def _run_real_dpo_training(
         training_args = DPOConfig(
             output_dir=str(output_dir),
             num_train_epochs=epochs,
+            max_steps=max_steps,
             per_device_train_batch_size=1,
             gradient_accumulation_steps=1,
             learning_rate=learning_rate,
@@ -2603,6 +2625,7 @@ def _run_real_dpo_training(
         training_args = TrainingArguments(
             output_dir=str(output_dir),
             num_train_epochs=epochs,
+            max_steps=max_steps,
             per_device_train_batch_size=1,
             gradient_accumulation_steps=4,
             learning_rate=learning_rate,
@@ -2644,8 +2667,27 @@ def _run_real_dpo_training(
     trainer = DPOTrainer(**dpo_kwargs)
 
     # Train
+    started_at = time.perf_counter()
     train_result = trainer.train()
+    duration_seconds = round(time.perf_counter() - started_at, 4)
     train_loss = getattr(train_result, "training_loss", None)
+    fingerprint_after = _trainable_parameter_fingerprint(model)
+    parameters_updated = fingerprint_before["sha256"] != fingerprint_after["sha256"]
+    if not parameters_updated:
+        raise TrainingError("real DPO training completed but trainable parameters did not change")
+    completed_steps = int(getattr(getattr(trainer, "state", None), "global_step", 0) or 0)
+    trainer_log_history = [
+        dict(item)
+        for item in (getattr(getattr(trainer, "state", None), "log_history", None) or [])
+        if isinstance(item, Mapping)
+    ]
+    non_finite_metrics = _find_non_finite_trainer_metrics(trainer_log_history)
+    if non_finite_metrics:
+        first = non_finite_metrics[0]
+        raise TrainingError(
+            "real DPO training produced non-finite trainer metrics; "
+            f"first={first['metric']}:{first['value']} at log_index={first['log_index']}"
+        )
 
     # Save adapter
     artifact_dir = output_dir / "dpo_adapter"
@@ -2665,6 +2707,15 @@ def _run_real_dpo_training(
         manifest_name="dpo_job_manifest.json",
         model_filename="adapter_model.safetensors",
         preserve_existing_adapter_files=True,
+        training_details={
+            "steps": completed_steps,
+            "max_steps": max_steps,
+            "duration_seconds": duration_seconds,
+            "loss_history": trainer_log_history,
+            "parameter_fingerprint_before": fingerprint_before,
+            "parameter_fingerprint_after": fingerprint_after,
+            "parameters_updated": parameters_updated,
+        },
     )
 
     return {
@@ -2682,6 +2733,9 @@ def _run_real_dpo_training(
         },
         "training_config": {
             "learning_rate": learning_rate,
+            "max_steps": max_steps,
+            "completed_steps": completed_steps,
+            "device": "cpu" if use_cpu else ("cuda" if torch.cuda.is_available() else "mps"),
             "lora_config": {
                 "r": lora_r,
                 "lora_alpha": lora_alpha,
@@ -2711,6 +2765,14 @@ def _run_real_dpo_training(
             "trainer_state_path": artifact_bundle["trainer_state_path"],
             "runtime_path": artifact_bundle["runtime_path"],
             "artifact_kind": artifact_bundle["artifact_kind"],
+            "duration_seconds": duration_seconds,
+            "max_steps": max_steps,
+            "steps": completed_steps,
+            "device": "cpu" if use_cpu else ("cuda" if torch.cuda.is_available() else "mps"),
+            "parameter_fingerprint_before": fingerprint_before,
+            "parameter_fingerprint_after": fingerprint_after,
+            "parameters_updated": parameters_updated,
+            "loss_history": trainer_log_history,
             "success": True,
             "message": "DPO training completed successfully",
         },

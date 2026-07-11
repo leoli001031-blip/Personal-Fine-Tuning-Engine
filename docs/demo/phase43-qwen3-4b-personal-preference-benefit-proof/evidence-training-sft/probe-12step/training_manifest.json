@@ -1,0 +1,254 @@
+{
+  "audit": {
+    "import_probe": {
+      "missing_modules": [],
+      "ready": true
+    }
+  },
+  "backend": "peft",
+  "dry_run": false,
+  "execution_backend": "peft",
+  "execution_executor": "peft",
+  "executor_mode": "real_local",
+  "phase43": {
+    "actual_user_feedback": false,
+    "auto_promotion_allowed": false,
+    "completion_only_loss_required": true,
+    "simulated_usage": true,
+    "target_model": "Qwen3-4B"
+  },
+  "ready": true,
+  "recipe": {
+    "training": {
+      "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "base_model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "epochs": 1,
+      "learning_rate": 5e-05,
+      "local_only": true,
+      "max_length": 384,
+      "max_steps": 12,
+      "method": "lora",
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase43-qwen3-4b-sft-12step",
+      "seed": 43,
+      "train_type": "sft_completion_only"
+    }
+  },
+  "training_examples": [
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“太抽象了，我要当前证据和能不能继续开发的判断。”为边界。我要先核对 git status、目标分支、相关 diff 与当前分支和未提交改动，确认没有混入排除项后才执行“补充 PR、测试和证据目录状态。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：现在软件开发状态如何？\n用户纠正：太抽象了，我要当前证据和能不能继续开发的判断。\n继续要求：补充 PR、测试和证据目录状态。\n本轮核验重点：当前分支和未提交改动",
+      "rejected": null,
+      "sample_id": "phase43-sft-001",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“别只讲思路，先检查工作区再动手。”为边界。我要先核对 git status、目标分支、相关 diff 与最近提交与目标分支，确认没有混入排除项后才执行“继续到能提交、能验证，或者明确 blocked。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：可以，开始执行下一步。\n用户纠正：别只讲思路，先检查工作区再动手。\n继续要求：继续到能提交、能验证，或者明确 blocked。\n本轮核验重点：最近提交与目标分支",
+      "rejected": null,
+      "sample_id": "phase43-sft-002",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“不要再扩展无关场景，证明训练是否有效。”为边界。我要先核对 git status、目标分支、相关 diff 与Draft PR 状态，确认没有混入排除项后才执行“继续做 base、runtime、adapter 的同场对比。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：你跑偏了，回到 PFE 是否真的能学我的偏好。\n用户纠正：不要再扩展无关场景，证明训练是否有效。\n继续要求：继续做 base、runtime、adapter 的同场对比。\n本轮核验重点：Draft PR 状态",
+      "rejected": null,
+      "sample_id": "phase43-sft-003",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“不要把 videos 或私密配置混进去。”为边界。我要先核对 git status、目标分支、相关 diff 与Fast beta gate，确认没有混入排除项后才执行“最后告诉我 commit、PR 和 Fast beta gate。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：整理工作区并提交。\n用户纠正：不要把 videos 或私密配置混进去。\n继续要求：最后告诉我 commit、PR 和 Fast beta gate。\n本轮核验重点：Fast beta gate",
+      "rejected": null,
+      "sample_id": "phase43-sft-004",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先查真实 PID、监听端口和启动命令，再判断“后台模型或训练进程还在跑吗？”。当前没有这些输出，所以状态只能记为未验证；按你的纠正，我不会猜测。下一步核对focused tests 结果，然后确认没有训练残留，必要时说明哪些服务还在。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：后台模型或训练进程还在跑吗？\n用户纠正：不要猜，先看 PID 和命令。\n继续要求：确认没有训练残留，必要时说明哪些服务还在。\n本轮核验重点：focused tests 结果",
+      "rejected": null,
+      "sample_id": "phase43-sft-005",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“要有验证、证据和失败处理，别只是口号。”为边界。我要先核对 git status、目标分支、相关 diff 与完整 smoke 结果，确认没有混入排除项后才执行“补上目录、测试、gate 和 PR 要求。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：给我下一阶段追求目标提示词。\n用户纠正：要有验证、证据和失败处理，别只是口号。\n继续要求：补上目录、测试、gate 和 PR 要求。\n本轮核验重点：完整 smoke 结果",
+      "rejected": null,
+      "sample_id": "phase43-sft-006",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先用同一份独立 holdout 核对evidence 文件路径，再比较 base、runtime contract 与 adapter 的原始输出。只要没有真实训练产物和盲测分数，就不能说微调有效；接下来把素材目标改成 feedback、candidate、eval。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：这轮不要口播稿，也不要展示素材。\n用户纠正：别回到素材包，继续训练闭环。\n继续要求：把素材目标改成 feedback、candidate、eval。\n本轮核验重点：evidence 文件路径",
+      "rejected": null,
+      "sample_id": "phase43-sft-007",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先查真实 PID、监听端口和启动命令，再判断“怎么证明训练真的有效？”。当前没有这些输出，所以状态只能记为未验证；按你的纠正，我不会猜测。下一步核对后台 PID 与端口，然后继续输出 blind eval 和 comparison_summary。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：怎么证明训练真的有效？\n用户纠正：别只说训通了，要看同场对比和评分。\n继续要求：继续输出 blind eval 和 comparison_summary。\n本轮核验重点：后台 PID 与端口",
+      "rejected": null,
+      "sample_id": "phase43-sft-008",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "我会先按来源检查训练产物是否可解析，分别标记 actual、simulated 和 blocked，并执行“继续做 structured evidence scan。”。模拟记录只能证明实验室流程，不能当作真实用户收益；私密正文只保留脱敏字段、hash 或计数。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：区分 simulated evidence 和 actual evidence。\n用户纠正：必须标清楚哪些不能进 actual lane。\n继续要求：继续做 structured evidence scan。\n本轮核验重点：训练产物是否可解析",
+      "rejected": null,
+      "sample_id": "phase43-sft-009",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“太抽象了，我要当前证据和能不能继续开发的判断。”为边界。我要先核对 git status、目标分支、相关 diff 与参数是否真实更新，确认没有混入排除项后才执行“补充 PR、测试和证据目录状态。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：现在软件开发状态如何？\n用户纠正：太抽象了，我要当前证据和能不能继续开发的判断。\n继续要求：补充 PR、测试和证据目录状态。\n本轮核验重点：参数是否真实更新",
+      "rejected": null,
+      "sample_id": "phase43-sft-010",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“别只讲思路，先检查工作区再动手。”为边界。我要先核对 git status、目标分支、相关 diff 与base 与 adapter 同场输出，确认没有混入排除项后才执行“继续到能提交、能验证，或者明确 blocked。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：可以，开始执行下一步。\n用户纠正：别只讲思路，先检查工作区再动手。\n继续要求：继续到能提交、能验证，或者明确 blocked。\n本轮核验重点：base 与 adapter 同场输出",
+      "rejected": null,
+      "sample_id": "phase43-sft-011",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先用同一份独立 holdout 核对holdout 隔离，再比较 base、runtime contract 与 adapter 的原始输出。只要没有真实训练产物和盲测分数，就不能说微调有效；接下来继续做 base、runtime、adapter 的同场对比。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：你跑偏了，回到 PFE 是否真的能学我的偏好。\n用户纠正：不要再扩展无关场景，证明训练是否有效。\n继续要求：继续做 base、runtime、adapter 的同场对比。\n本轮核验重点：holdout 隔离",
+      "rejected": null,
+      "sample_id": "phase43-sft-012",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“不要把 videos 或私密配置混进去。”为边界。我要先核对 git status、目标分支、相关 diff 与simulated 与 actual 标签，确认没有混入排除项后才执行“最后告诉我 commit、PR 和 Fast beta gate。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：整理工作区并提交。\n用户纠正：不要把 videos 或私密配置混进去。\n继续要求：最后告诉我 commit、PR 和 Fast beta gate。\n本轮核验重点：simulated 与 actual 标签",
+      "rejected": null,
+      "sample_id": "phase43-sft-013",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先查真实 PID、监听端口和启动命令，再判断“后台模型或训练进程还在跑吗？”。当前没有这些输出，所以状态只能记为未验证；按你的纠正，我不会猜测。下一步核对私密原文排除，然后确认没有训练残留，必要时说明哪些服务还在。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：后台模型或训练进程还在跑吗？\n用户纠正：不要猜，先看 PID 和命令。\n继续要求：确认没有训练残留，必要时说明哪些服务还在。\n本轮核验重点：私密原文排除",
+      "rejected": null,
+      "sample_id": "phase43-sft-014",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“要有验证、证据和失败处理，别只是口号。”为边界。我要先核对 git status、目标分支、相关 diff 与失败原因持久化，确认没有混入排除项后才执行“补上目录、测试、gate 和 PR 要求。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：给我下一阶段追求目标提示词。\n用户纠正：要有验证、证据和失败处理，别只是口号。\n继续要求：补上目录、测试、gate 和 PR 要求。\n本轮核验重点：失败原因持久化",
+      "rejected": null,
+      "sample_id": "phase43-sft-015",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“别回到素材包，继续训练闭环。”为边界。我要先核对 git status、目标分支、相关 diff 与自动 promote 禁止，确认没有混入排除项后才执行“把素材目标改成 feedback、candidate、eval。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：这轮不要口播稿，也不要展示素材。\n用户纠正：别回到素材包，继续训练闭环。\n继续要求：把素材目标改成 feedback、candidate、eval。\n本轮核验重点：自动 promote 禁止",
+      "rejected": null,
+      "sample_id": "phase43-sft-016",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先用同一份独立 holdout 核对用户最新意图，再比较 base、runtime contract 与 adapter 的原始输出。只要没有真实训练产物和盲测分数，就不能说微调有效；接下来继续输出 blind eval 和 comparison_summary。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：怎么证明训练真的有效？\n用户纠正：别只说训通了，要看同场对比和评分。\n继续要求：继续输出 blind eval 和 comparison_summary。\n本轮核验重点：用户最新意图",
+      "rejected": null,
+      "sample_id": "phase43-sft-017",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "我会先按来源检查纠正后的执行方向，分别标记 actual、simulated 和 blocked，并执行“继续做 structured evidence scan。”。模拟记录只能证明实验室流程，不能当作真实用户收益；私密正文只保留脱敏字段、hash 或计数。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：区分 simulated evidence 和 actual evidence。\n用户纠正：必须标清楚哪些不能进 actual lane。\n继续要求：继续做 structured evidence scan。\n本轮核验重点：纠正后的执行方向",
+      "rejected": null,
+      "sample_id": "phase43-sft-018",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“太抽象了，我要当前证据和能不能继续开发的判断。”为边界。我要先核对 git status、目标分支、相关 diff 与下一条可执行命令，确认没有混入排除项后才执行“补充 PR、测试和证据目录状态。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：现在软件开发状态如何？\n用户纠正：太抽象了，我要当前证据和能不能继续开发的判断。\n继续要求：补充 PR、测试和证据目录状态。\n本轮核验重点：下一条可执行命令",
+      "rejected": null,
+      "sample_id": "phase43-sft-019",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“别只讲思路，先检查工作区再动手。”为边界。我要先核对 git status、目标分支、相关 diff 与完成标准，确认没有混入排除项后才执行“继续到能提交、能验证，或者明确 blocked。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：可以，开始执行下一步。\n用户纠正：别只讲思路，先检查工作区再动手。\n继续要求：继续到能提交、能验证，或者明确 blocked。\n本轮核验重点：完成标准",
+      "rejected": null,
+      "sample_id": "phase43-sft-020",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先用同一份独立 holdout 核对模型上下文预算，再比较 base、runtime contract 与 adapter 的原始输出。只要没有真实训练产物和盲测分数，就不能说微调有效；接下来继续做 base、runtime、adapter 的同场对比。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：你跑偏了，回到 PFE 是否真的能学我的偏好。\n用户纠正：不要再扩展无关场景，证明训练是否有效。\n继续要求：继续做 base、runtime、adapter 的同场对比。\n本轮核验重点：模型上下文预算",
+      "rejected": null,
+      "sample_id": "phase43-sft-021",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“不要把 videos 或私密配置混进去。”为边界。我要先核对 git status、目标分支、相关 diff 与SSE 结束事件，确认没有混入排除项后才执行“最后告诉我 commit、PR 和 Fast beta gate。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：整理工作区并提交。\n用户纠正：不要把 videos 或私密配置混进去。\n继续要求：最后告诉我 commit、PR 和 Fast beta gate。\n本轮核验重点：SSE 结束事件",
+      "rejected": null,
+      "sample_id": "phase43-sft-022",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先查真实 PID、监听端口和启动命令，再判断“后台模型或训练进程还在跑吗？”。当前没有这些输出，所以状态只能记为未验证；按你的纠正，我不会猜测。下一步核对adapter 生命周期，然后确认没有训练残留，必要时说明哪些服务还在。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：后台模型或训练进程还在跑吗？\n用户纠正：不要猜，先看 PID 和命令。\n继续要求：确认没有训练残留，必要时说明哪些服务还在。\n本轮核验重点：adapter 生命周期",
+      "rejected": null,
+      "sample_id": "phase43-sft-023",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "收到，先以“要有验证、证据和失败处理，别只是口号。”为边界。我要先核对 git status、目标分支、相关 diff 与人工复核边界，确认没有混入排除项后才执行“补上目录、测试、gate 和 PR 要求。”。没有 commit、PR 或 gate 的真实输出前，不会宣称完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "用户目标：给我下一阶段追求目标提示词。\n用户纠正：要有验证、证据和失败处理，别只是口号。\n继续要求：补上目录、测试、gate 和 PR 要求。\n本轮核验重点：人工复核边界",
+      "rejected": null,
+      "sample_id": "phase43-sft-024",
+      "sample_type": "sft"
+    }
+  ]
+}

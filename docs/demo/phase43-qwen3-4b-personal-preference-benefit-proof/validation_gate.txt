@@ -1,0 +1,24 @@
+PFE Phase43 validation gate
+
+py_compile: passed
+phase43 focused tests: 10 passed
+phase42 regression + phase43 combined: 23 passed
+test-unit: 1214 passed, 30 deselected
+test-surface: 162 passed
+test-e2e-mock: 13 passed, 22 deselected
+smoke-beta: passed
+  - first-run smoke passed
+  - real-local readiness smoke passed
+  - Studio model path smoke passed
+  - server live/OpenAI SDK streaming smoke passed
+  - dashboard console live smoke passed
+git diff --check: passed
+
+Real Phase43 execution:
+- Qwen3-4B SFT 1-step: completed with parameter update and valid safetensors
+- Qwen3-4B SFT 12-step: completed; selected candidate
+- Qwen3-4B SFT 30-step: completed; not selected because sanity quality regressed
+- Qwen3-4B DPO 12-step: executed but failed non-finite-metric gate
+- holdout: 40 sessions x 3 arms x 3 generations = 360 real Qwen3-4B calls
+- independent blind judge: 80/80 real Gemma4:31b calls, 0 failures
+- final decision: archive
