@@ -17,6 +17,7 @@ import hashlib
 import json
 import math
 import os
+import random
 import signal
 import subprocess
 import sys
@@ -1517,6 +1518,43 @@ def _find_non_finite_trainer_metrics(log_history: list[Mapping[str, Any]]) -> li
     return problems
 
 
+def _build_seeded_stratified_training_order(
+    training_examples: list[Mapping[str, Any]],
+    *,
+    seed: int,
+    cycle: int = 0,
+) -> list[int]:
+    """Return a deterministic round-robin order across preference dimensions."""
+
+    groups: dict[str, list[int]] = {}
+    for index, sample in enumerate(training_examples):
+        category = str(
+            sample.get("taxonomy_dimension")
+            or sample.get("category")
+            or sample.get("training_dimension")
+            or "uncategorized"
+        )
+        groups.setdefault(category, []).append(index)
+    randomizer = random.Random(int(seed) + (int(cycle) * 1009))
+    category_order = sorted(groups)
+    randomizer.shuffle(category_order)
+    for category in category_order:
+        randomizer.shuffle(groups[category])
+    result: list[int] = []
+    position = 0
+    while True:
+        added = False
+        for category in category_order:
+            indices = groups[category]
+            if position < len(indices):
+                result.append(indices[position])
+                added = True
+        if not added:
+            break
+        position += 1
+    return result
+
+
 def _run_toy_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
     local_source = _resolve_real_local_model_source(job_spec)
     runtime_probe = _probe_real_local_runtime(local_source)
@@ -1737,6 +1775,10 @@ def _run_real_import_peft_training(
         pass
     fingerprint_before = _trainable_parameter_fingerprint(model)
     losses: list[float] = []
+    sample_exposure_counts: dict[str, int] = {}
+    category_exposure_counts: dict[str, int] = {}
+    sampling_strategy = str(training_recipe.get("sampling_strategy") or "sequential")
+    exposure_accounting_enabled = len(encoded_rows) == len(training_examples)
     epochs = max(1, int(training_recipe.get("epochs") or 1))
     requested_steps = training_recipe.get("max_steps")
     max_steps = max(1, int(requested_steps or (epochs * len(encoded_rows))))
@@ -1744,9 +1786,24 @@ def _run_real_import_peft_training(
     try:
         model.train()
         device = getattr(accelerator, "device", None)
+        cycle = 0
+        if sampling_strategy == "seeded_stratified" and not exposure_accounting_enabled:
+            raise TrainingError(
+                "seeded stratified training requires one encoded row per training example for exposure accounting"
+            )
         while len(losses) < max_steps:
             steps_before_cycle = len(losses)
-            for batch in encoded_rows:
+            if sampling_strategy == "seeded_stratified":
+                order = _build_seeded_stratified_training_order(
+                    training_examples,
+                    seed=seed,
+                    cycle=cycle,
+                )
+            else:
+                order = list(range(len(encoded_rows)))
+            for sample_index in order:
+                batch = encoded_rows[sample_index]
+                sample = training_examples[sample_index] if exposure_accounting_enabled else {}
                 input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
                 attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
                 labels = torch.tensor(batch["labels"], dtype=torch.long).unsqueeze(0)
@@ -1771,10 +1828,21 @@ def _run_real_import_peft_training(
                 if not math.isfinite(loss_value):
                     raise TrainingError("real peft training produced a non-finite loss")
                 losses.append(loss_value)
+                if exposure_accounting_enabled:
+                    sample_id = str(sample.get("sample_id") or f"sample-{sample_index:04d}")
+                    category = str(
+                        sample.get("taxonomy_dimension")
+                        or sample.get("category")
+                        or sample.get("training_dimension")
+                        or "uncategorized"
+                    )
+                    sample_exposure_counts[sample_id] = sample_exposure_counts.get(sample_id, 0) + 1
+                    category_exposure_counts[category] = category_exposure_counts.get(category, 0) + 1
                 if len(losses) >= max_steps:
                     break
             if len(losses) == steps_before_cycle:
                 break
+            cycle += 1
         if losses:
             train_loss = round(float(sum(losses) / len(losses)), 6)
     except Exception as exc:
@@ -1819,6 +1887,12 @@ def _run_real_import_peft_training(
         "parameter_fingerprint_before": fingerprint_before,
         "parameter_fingerprint_after": fingerprint_after,
         "parameters_updated": parameters_updated,
+        "sampling_strategy": sampling_strategy,
+        "exposure_accounting_enabled": exposure_accounting_enabled,
+        "sample_exposure_counts": dict(sorted(sample_exposure_counts.items())),
+        "category_exposure_counts": dict(sorted(category_exposure_counts.items())),
+        "unique_samples_exposed": len(sample_exposure_counts),
+        "unique_categories_exposed": len(category_exposure_counts),
         "adapter_validation": adapter_validation,
     }
     is_local_mode = execution_mode == "real_local"
@@ -1883,6 +1957,12 @@ def _run_real_import_peft_training(
             "parameter_fingerprint_before": fingerprint_before,
             "parameter_fingerprint_after": fingerprint_after,
             "parameters_updated": parameters_updated,
+            "sampling_strategy": sampling_strategy,
+            "exposure_accounting_enabled": exposure_accounting_enabled,
+            "sample_exposure_counts": dict(sorted(sample_exposure_counts.items())),
+            "category_exposure_counts": dict(sorted(category_exposure_counts.items())),
+            "unique_samples_exposed": len(sample_exposure_counts),
+            "unique_categories_exposed": len(category_exposure_counts),
             "dependency_ready": True,
             "source_ready": bool(source_path or config_path),
             "executor_ready": True,

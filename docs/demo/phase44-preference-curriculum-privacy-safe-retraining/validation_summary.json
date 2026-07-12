@@ -1,0 +1,27 @@
+{
+  "commands": {
+    "focused": ".venv/bin/pytest -q tests/test_phase44_preference_curriculum.py tests/test_phase43_personal_preference_benefit.py",
+    "full": "make test-unit test-surface test-e2e-mock smoke-beta",
+    "py_compile": ".venv/bin/python -m py_compile pfe-core/pfe_core/phase44_preference_curriculum.py pfe-core/pfe_core/trainer/executors.py tools/phase44_prepare.py tools/phase44_qwen3_4b_sft_probe.py tools/phase44_qwen3_4b_generate.py tools/phase44_blind_eval.py tools/phase44_finalize_evidence.py tests/test_phase44_preference_curriculum.py"
+  },
+  "focused": {
+    "passed": 24,
+    "status": "passed"
+  },
+  "full": {
+    "e2e_mock_deselected": 22,
+    "e2e_mock_passed": 13,
+    "exit_code": 0,
+    "smoke_beta_status": "passed",
+    "status": "passed",
+    "surface_passed": 162,
+    "unit_deselected": 30,
+    "unit_passed": 1228
+  },
+  "git_diff_check": "passed",
+  "kind": "phase44_validation_summary",
+  "phase43_regression": "passed",
+  "py_compile": "passed",
+  "scorer_freeze_hash_check": "passed",
+  "videos_untouched": true
+}

@@ -1,0 +1,92 @@
+{
+  "aborted_preflight_excluded": true,
+  "actual_product_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "blind": {
+    "comparison_counts": {
+      "sft_vs_base": 60,
+      "sft_vs_soft_runtime": 60,
+      "soft_runtime_vs_base": 60
+    },
+    "expected_pair_count": 180,
+    "kind": "phase44_blind_integrity_check",
+    "pair_count": 180,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "required_comparisons": [
+      "soft_runtime_vs_base",
+      "sft_vs_base",
+      "sft_vs_soft_runtime"
+    ],
+    "scorer_frozen": true,
+    "scorer_source_sha256": "0fd85934d4799a118316bd8d11abf6b7004ba7663f18f84dd85371d977c75f7f"
+  },
+  "calibration": {
+    "case_count": 42,
+    "precision": 1.0,
+    "recall": 1.0,
+    "status": "passed"
+  },
+  "created_at": "2026-07-12T09:38:10.216248+00:00",
+  "independent_judge_completed_pair_count": 180,
+  "kind": "phase44_evidence_integrity",
+  "passed": true,
+  "phase43_canonical": {
+    "frozen_file_count": 81,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "passed": true
+  },
+  "scorer_freeze": {
+    "calibration_case_manifest_sha256": "6335ce6b76f1a7932b0904b5a61424b7389ab35ec2cd5c08435cd8c4eaa6bf60",
+    "calibration_status": "passed",
+    "frozen_at": "2026-07-12T08:20:26.930423+00:00",
+    "frozen_before_phase44_model_calls": true,
+    "kind": "phase44_scorer_freeze",
+    "minimum_precision": 0.9,
+    "minimum_recall": 0.9,
+    "scorer_changes_after_freeze_allowed": false,
+    "source_path": "/Users/lichenhao/Desktop/PFE/pfe-core/pfe_core/phase44_preference_curriculum.py",
+    "source_sha256": "0fd85934d4799a118316bd8d11abf6b7004ba7663f18f84dd85371d977c75f7f"
+  },
+  "training_candidate_eligible_for_evaluation": true,
+  "transcripts": [
+    {
+      "actual_model_call_count": 180,
+      "all_completed": true,
+      "hardcoded_response_count": 0,
+      "passed": true,
+      "row_count": 60,
+      "unique_session_id_count": 60,
+      "variant": "base"
+    },
+    {
+      "actual_model_call_count": 180,
+      "all_completed": true,
+      "hardcoded_response_count": 0,
+      "passed": true,
+      "row_count": 60,
+      "unique_session_id_count": 60,
+      "variant": "runtime_v1"
+    },
+    {
+      "actual_model_call_count": 180,
+      "all_completed": true,
+      "hardcoded_response_count": 0,
+      "passed": true,
+      "row_count": 60,
+      "unique_session_id_count": 60,
+      "variant": "soft_runtime"
+    },
+    {
+      "actual_model_call_count": 180,
+      "all_completed": true,
+      "hardcoded_response_count": 0,
+      "passed": true,
+      "row_count": 60,
+      "unique_session_id_count": 60,
+      "variant": "sft"
+    }
+  ]
+}
