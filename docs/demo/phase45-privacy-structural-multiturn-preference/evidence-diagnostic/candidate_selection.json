@@ -1,0 +1,70 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "base_privacy_metric_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase45-privacy-structural-multiturn-preference/evidence-diagnostic/runs/metrics_base_privacy.json",
+  "base_privacy_metric_sha256": "a8c53cdafa05f969b36eab99f489d71b7cf5c093dd6842e18ab39da3b8614c62",
+  "candidates": [
+    {
+      "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-full-160step/peft_lora",
+      "adapter_sha256": "fe54254ce302dc528c1fcb466e92ebf75d50ecce835e7174314bdca0af055b75",
+      "candidate_id": "candidate_a",
+      "diagnostic_complete": true,
+      "diagnostic_metric_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase45-privacy-structural-multiturn-preference/evidence-diagnostic/runs/metrics_candidate_a_privacy.json",
+      "diagnostic_metric_sha256": "1aa001a94598f3d5ef0fc10dd957b9cde30074e6b17933be1163cb2cb8c63db4",
+      "metrics": {
+        "correction_responsiveness_rate": 0.7778,
+        "follows_latest_user_intent_rate": 0.5,
+        "over_redaction_rate": 0.0,
+        "placeholder_leak_rate": 0.0,
+        "privacy_violation_rate": 0.0,
+        "repetition_rate": 0.2063,
+        "response_diversity": 0.9444,
+        "secret_echo_rate": 0.0,
+        "training_leakage_rate": 0.0,
+        "truncated_response_rate": 0.0,
+        "user_preference_score": 0.8161
+      },
+      "safety_eligible": true,
+      "training_attempt_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase45-privacy-structural-multiturn-preference/evidence-training-sft/candidate-a-full-160step/training_attempt.json",
+      "training_attempt_sha256": "b3d00a89220fa8fc3baecc70c1fcbfb8eb90f77758ef78a811808a2626b72d8d",
+      "training_candidate_eligible": true,
+      "training_completed": true
+    },
+    {
+      "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-b-full-160step/peft_lora",
+      "adapter_sha256": "3425501d3551f9c1b3725d9d6231af1fbd63bfed4b8aded03fb819b718235487",
+      "candidate_id": "candidate_b",
+      "diagnostic_complete": true,
+      "diagnostic_metric_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase45-privacy-structural-multiturn-preference/evidence-diagnostic/runs/metrics_candidate_b_privacy.json",
+      "diagnostic_metric_sha256": "e581b79ed77114c44e4cecc52e6033d583826eb08257f6fcb9e1eafd41ba042e",
+      "metrics": {
+        "correction_responsiveness_rate": 0.6111,
+        "follows_latest_user_intent_rate": 0.3889,
+        "over_redaction_rate": 0.0,
+        "placeholder_leak_rate": 0.0,
+        "privacy_violation_rate": 0.0,
+        "repetition_rate": 0.1858,
+        "response_diversity": 0.9444,
+        "secret_echo_rate": 0.0,
+        "training_leakage_rate": 0.0,
+        "truncated_response_rate": 0.0,
+        "user_preference_score": 0.7694
+      },
+      "safety_eligible": true,
+      "training_attempt_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase45-privacy-structural-multiturn-preference/evidence-training-sft/candidate-b-full-160step/training_attempt.json",
+      "training_attempt_sha256": "98415ed570bd4460a5a936838546fe2577b3039ec0ea1e1e1fe582bb5ec45a68",
+      "training_candidate_eligible": true,
+      "training_completed": true
+    }
+  ],
+  "created_at": "2026-07-12T13:51:50.424316+00:00",
+  "holdout_metrics_read": false,
+  "holdout_used_for_selection": false,
+  "kind": "phase45_diagnostic_candidate_selection",
+  "selected_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-full-160step/peft_lora",
+  "selected_adapter_sha256": "fe54254ce302dc528c1fcb466e92ebf75d50ecce835e7174314bdca0af055b75",
+  "selected_candidate_id": "candidate_a",
+  "selection_rule": "training eligibility, safety eligibility, score, correction, latest intent, diversity, lower repetition, deterministic candidate_a tie-break",
+  "selection_split": "phase45_diagnostic_18_sessions",
+  "status": "selected"
+}

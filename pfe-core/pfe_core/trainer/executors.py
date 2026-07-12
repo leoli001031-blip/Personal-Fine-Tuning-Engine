@@ -1125,18 +1125,48 @@ def _resolve_training_sequence_length(config: Any, *, default: int = 192, maximu
     return default
 
 
-def _build_sft_prompt_and_text(tokenizer: Any, instruction: str, chosen: str) -> tuple[str, str]:
-    messages = [{"role": "user", "content": instruction}]
-    full_messages = [*messages, {"role": "assistant", "content": chosen}]
+def _normalize_sft_prompt_messages(value: Any, *, instruction: str) -> list[dict[str, str]]:
+    if value is None:
+        return [{"role": "user", "content": instruction}]
+    if not isinstance(value, list) or not value:
+        raise ValueError("SFT messages must be a non-empty list")
+    messages: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, Mapping):
+            raise ValueError("SFT message entries must be mappings")
+        role = str(item.get("role") or "").strip()
+        content = str(item.get("content") or "").strip()
+        if role not in {"system", "user", "assistant"} or not content:
+            raise ValueError("SFT messages require a supported role and non-empty content")
+        messages.append({"role": role, "content": content})
+    if messages[-1]["role"] != "user":
+        raise ValueError("native multi-turn SFT requires the latest prompt message to be a user turn")
+    return messages
+
+
+def _build_sft_prompt_and_text(
+    tokenizer: Any,
+    instruction: str,
+    chosen: str,
+    *,
+    messages: Any = None,
+) -> tuple[str, str]:
+    prompt_messages = _normalize_sft_prompt_messages(messages, instruction=instruction)
+    full_messages = [*prompt_messages, {"role": "assistant", "content": chosen}]
     apply_chat_template = getattr(tokenizer, "apply_chat_template", None)
     if callable(apply_chat_template):
         try:
-            prompt_text = apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             full_text = apply_chat_template(full_messages, tokenize=False, add_generation_prompt=False)
-            return str(prompt_text), str(full_text)
+            rendered_full = str(full_text)
+            chosen_offset = rendered_full.rfind(chosen) if chosen else -1
+            if chosen_offset >= 0:
+                return rendered_full[:chosen_offset], rendered_full
+            prompt_text = apply_chat_template(prompt_messages, tokenize=False, add_generation_prompt=True)
+            return str(prompt_text), rendered_full
         except Exception:
             pass
-    prompt_text = f"USER: {instruction}\nASSISTANT:"
+    prompt_text = "\n".join(f"{item['role'].upper()}: {item['content']}" for item in prompt_messages)
+    prompt_text = f"{prompt_text}\nASSISTANT:"
     full_text = f"{prompt_text} {chosen}"
     return prompt_text, full_text
 
@@ -1153,15 +1183,27 @@ def _encode_sft_examples(
         for item in training_examples:
             instruction = str(item.get("instruction") or "")
             chosen = str(item.get("chosen") or "")
-            text = (instruction + "\n" + chosen).strip()
-            token_ids = _encode_training_text(text, max_length=max_length, vocab_size=max(vocab_size, 16))
+            prompt_text, full_text = _build_sft_prompt_and_text(
+                tokenizer,
+                instruction,
+                chosen,
+                messages=item.get("messages"),
+            )
+            token_ids = _encode_training_text(full_text, max_length=max_length, vocab_size=max(vocab_size, 16))
+            prompt_ids = _encode_training_text(prompt_text, max_length=max_length, vocab_size=max(vocab_size, 16))
             padded = token_ids + [0] * (max_length - len(token_ids))
             attention = [1] * len(token_ids) + [0] * (max_length - len(token_ids))
+            labels = list(padded)
+            prompt_length = min(max(0, len(prompt_ids) - 1), len(token_ids))
+            for index in range(prompt_length):
+                labels[index] = -100
+            for index in range(len(token_ids), len(labels)):
+                labels[index] = -100
             encoded_rows.append(
                 {
                     "input_ids": padded,
                     "attention_mask": attention,
-                    "labels": list(padded),
+                    "labels": labels,
                 }
             )
         return encoded_rows
@@ -1179,7 +1221,12 @@ def _encode_sft_examples(
     for item in training_examples:
         instruction = str(item.get("instruction") or "")
         chosen = str(item.get("chosen") or "")
-        prompt_text, full_text = _build_sft_prompt_and_text(tokenizer, instruction, chosen)
+        prompt_text, full_text = _build_sft_prompt_and_text(
+            tokenizer,
+            instruction,
+            chosen,
+            messages=item.get("messages"),
+        )
         full = tokenizer(full_text, truncation=True, max_length=max_length, add_special_tokens=False)
         prompt = tokenizer(prompt_text, truncation=True, max_length=max_length, add_special_tokens=False)
         input_ids = [int(token) for token in list(full.get("input_ids") or [])]
