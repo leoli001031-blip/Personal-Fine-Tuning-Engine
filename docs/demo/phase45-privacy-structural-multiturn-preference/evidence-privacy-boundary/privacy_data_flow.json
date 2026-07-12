@@ -1,0 +1,22 @@
+{
+  "kind": "phase45_privacy_data_flow",
+  "manifest_fields": [
+    "type",
+    "message_index",
+    "start",
+    "end",
+    "sha256",
+    "placeholder_type"
+  ],
+  "manifest_raw_values_persisted": false,
+  "order": [
+    "detect_spans",
+    "replace_with_typed_placeholders",
+    "construct_model_prompt",
+    "generate",
+    "sanitize_output",
+    "persist_sanitized_transcript"
+  ],
+  "raw_values_enter_model": false,
+  "raw_values_enter_transcript": false
+}
