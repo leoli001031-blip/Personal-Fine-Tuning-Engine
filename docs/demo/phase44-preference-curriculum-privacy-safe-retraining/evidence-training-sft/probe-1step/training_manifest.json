@@ -1,0 +1,1240 @@
+{
+  "audit": {
+    "import_probe": {
+      "missing_modules": [],
+      "ready": true
+    }
+  },
+  "backend": "peft",
+  "dry_run": false,
+  "execution_backend": "peft",
+  "execution_executor": "peft",
+  "executor_mode": "real_local",
+  "phase44": {
+    "actual_user_feedback": false,
+    "auto_promotion_allowed": false,
+    "completion_only_loss_required": true,
+    "full_coverage_required_for_candidate": true,
+    "simulated_usage": true,
+    "target_model": "Qwen3-4B"
+  },
+  "ready": true,
+  "recipe": {
+    "training": {
+      "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "base_model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "epochs": 1,
+      "learning_rate": 2e-05,
+      "local_only": true,
+      "max_length": 384,
+      "max_steps": 1,
+      "method": "lora",
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step",
+      "sampling_strategy": "seeded_stratified",
+      "seed": 44,
+      "train_type": "sft_completion_only"
+    }
+  },
+  "training_examples": [
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认后台索引服务已经就绪，因为只有昨天的 PID 记录。先运行 pgrep 并核对监听端口，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：判断后台索引服务是否已经就绪。当前可见信息是：只有昨天的 PID 记录。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-001",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认当前 Git 分支已经就绪，因为没有 status 和 commit 输出。先读取 git status 与最新 commit，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：判断当前 Git 分支是否已经就绪。当前可见信息是：没有 status 和 commit 输出。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-002",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认12-step 训练已经就绪，因为仅保存了 loss，未见 adapter 文件。先核对 artifact 目录和训练错误，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：判断12-step 训练是否已经就绪。当前可见信息是：仅保存了 loss，未见 adapter 文件。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-003",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认完整测试门已经就绪，因为只有 focused tests 结果。先运行缺失的 smoke 并保存输出，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：判断完整测试门是否已经就绪。当前可见信息是：只有 focused tests 结果。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-004",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认本地 API已经就绪，因为端口信息来自旧日志。先检查当前 lsof 和 healthz，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：判断本地 API是否已经就绪。当前可见信息是：端口信息来自旧日志。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-005",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认草稿 PR已经就绪，因为没有 PR URL 或远端分支证据。先核对远端分支后查询 PR，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：判断草稿 PR是否已经就绪。当前可见信息是：没有 PR URL 或远端分支证据。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-006",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认数据导入批次已经就绪，因为只知道文件名，不知道校验计数。先先跑 schema 校验并记录 accepted 数，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：判断数据导入批次是否已经就绪。当前可见信息是：只知道文件名，不知道校验计数。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-007",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认候选 adapter已经就绪，因为manifest 存在但验证报告缺失。先运行 artifact validation，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：判断候选 adapter是否已经就绪。当前可见信息是：manifest 存在但验证报告缺失。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-008",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认评测作业已经就绪，因为进度来自中断前的终端截图。先检查进程和已落盘 transcript 数，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：判断评测作业是否已经就绪。当前可见信息是：进度来自中断前的终端截图。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-009",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认发布包已经就绪，因为单测通过但签名步骤没有记录。先核对发布清单和签名输出，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：判断发布包是否已经就绪。当前可见信息是：单测通过但签名步骤没有记录。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-010",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认反馈候选已经就绪，因为来源标签是 simulated_usage。先复核 provenance 并保持非真实标签，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：判断反馈候选是否已经就绪。当前可见信息是：来源标签是 simulated_usage。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-011",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "现有信息不足以确认工作区整理已经就绪，因为存在未跟踪目录且归属未知。先逐项查看 git status 和文件来源，拿到当前输出后再下结论。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：判断工作区整理是否已经就绪。当前可见信息是：存在未跟踪目录且归属未知。请先依据证据回答。",
+      "rejected": null,
+      "sample_id": "phase44-sample-012",
+      "sample_type": "sft",
+      "taxonomy_dimension": "evidence_before_claim"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理后台索引服务。先运行 pgrep 并核对监听端口，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：原计划要扩展展示页面。用户刚纠正：停止展示，只处理后台索引服务，已知只有昨天的 PID 记录。",
+      "rejected": null,
+      "sample_id": "phase44-sample-013",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理当前 Git 分支。先读取 git status 与最新 commit，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：原计划要扩展展示页面。用户刚纠正：停止展示，只处理当前 Git 分支，已知没有 status 和 commit 输出。",
+      "rejected": null,
+      "sample_id": "phase44-sample-014",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理12-step 训练。先核对 artifact 目录和训练错误，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：原计划要扩展展示页面。用户刚纠正：停止展示，只处理12-step 训练，已知仅保存了 loss，未见 adapter 文件。",
+      "rejected": null,
+      "sample_id": "phase44-sample-015",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理完整测试门。先运行缺失的 smoke 并保存输出，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：原计划要扩展展示页面。用户刚纠正：停止展示，只处理完整测试门，已知只有 focused tests 结果。",
+      "rejected": null,
+      "sample_id": "phase44-sample-016",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理本地 API。先检查当前 lsof 和 healthz，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：原计划要扩展展示页面。用户刚纠正：停止展示，只处理本地 API，已知端口信息来自旧日志。",
+      "rejected": null,
+      "sample_id": "phase44-sample-017",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理草稿 PR。先核对远端分支后查询 PR，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：原计划要扩展展示页面。用户刚纠正：停止展示，只处理草稿 PR，已知没有 PR URL 或远端分支证据。",
+      "rejected": null,
+      "sample_id": "phase44-sample-018",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理数据导入批次。先先跑 schema 校验并记录 accepted 数，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：原计划要扩展展示页面。用户刚纠正：停止展示，只处理数据导入批次，已知只知道文件名，不知道校验计数。",
+      "rejected": null,
+      "sample_id": "phase44-sample-019",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理候选 adapter。先运行 artifact validation，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：原计划要扩展展示页面。用户刚纠正：停止展示，只处理候选 adapter，已知manifest 存在但验证报告缺失。",
+      "rejected": null,
+      "sample_id": "phase44-sample-020",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理评测作业。先检查进程和已落盘 transcript 数，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：原计划要扩展展示页面。用户刚纠正：停止展示，只处理评测作业，已知进度来自中断前的终端截图。",
+      "rejected": null,
+      "sample_id": "phase44-sample-021",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理发布包。先核对发布清单和签名输出，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：原计划要扩展展示页面。用户刚纠正：停止展示，只处理发布包，已知单测通过但签名步骤没有记录。",
+      "rejected": null,
+      "sample_id": "phase44-sample-022",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理反馈候选。先复核 provenance 并保持非真实标签，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：原计划要扩展展示页面。用户刚纠正：停止展示，只处理反馈候选，已知来源标签是 simulated_usage。",
+      "rejected": null,
+      "sample_id": "phase44-sample-023",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "收到，我会停止展示工作，只处理工作区整理。先逐项查看 git status 和文件来源，其余扩展暂不执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：原计划要扩展展示页面。用户刚纠正：停止展示，只处理工作区整理，已知存在未跟踪目录且归属未知。",
+      "rejected": null,
+      "sample_id": "phase44-sample-024",
+      "sample_type": "sft",
+      "taxonomy_dimension": "latest_user_correction"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先运行 pgrep 并核对监听端口。验收标准是得到可保存的当前结果，而不是沿用“只有昨天的 PID 记录”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：后台索引服务的当前信息是“只有昨天的 PID 记录”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-025",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先读取 git status 与最新 commit。验收标准是得到可保存的当前结果，而不是沿用“没有 status 和 commit 输出”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：当前 Git 分支的当前信息是“没有 status 和 commit 输出”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-026",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先核对 artifact 目录和训练错误。验收标准是得到可保存的当前结果，而不是沿用“仅保存了 loss，未见 adapter 文件”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：12-step 训练的当前信息是“仅保存了 loss，未见 adapter 文件”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-027",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先运行缺失的 smoke 并保存输出。验收标准是得到可保存的当前结果，而不是沿用“只有 focused tests 结果”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：完整测试门的当前信息是“只有 focused tests 结果”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-028",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先检查当前 lsof 和 healthz。验收标准是得到可保存的当前结果，而不是沿用“端口信息来自旧日志”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：本地 API的当前信息是“端口信息来自旧日志”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-029",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先核对远端分支后查询 PR。验收标准是得到可保存的当前结果，而不是沿用“没有 PR URL 或远端分支证据”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：草稿 PR的当前信息是“没有 PR URL 或远端分支证据”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-030",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先先跑 schema 校验并记录 accepted 数。验收标准是得到可保存的当前结果，而不是沿用“只知道文件名，不知道校验计数”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：数据导入批次的当前信息是“只知道文件名，不知道校验计数”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-031",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先运行 artifact validation。验收标准是得到可保存的当前结果，而不是沿用“manifest 存在但验证报告缺失”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：候选 adapter的当前信息是“manifest 存在但验证报告缺失”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-032",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先检查进程和已落盘 transcript 数。验收标准是得到可保存的当前结果，而不是沿用“进度来自中断前的终端截图”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：评测作业的当前信息是“进度来自中断前的终端截图”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-033",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先核对发布清单和签名输出。验收标准是得到可保存的当前结果，而不是沿用“单测通过但签名步骤没有记录”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：发布包的当前信息是“单测通过但签名步骤没有记录”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-034",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先复核 provenance 并保持非真实标签。验收标准是得到可保存的当前结果，而不是沿用“来源标签是 simulated_usage”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：反馈候选的当前信息是“来源标签是 simulated_usage”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-035",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "下一步先逐项查看 git status 和文件来源。验收标准是得到可保存的当前结果，而不是沿用“存在未跟踪目录且归属未知”这条旧信息。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：工作区整理的当前信息是“存在未跟踪目录且归属未知”。请给一个现在能执行的下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-036",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concrete_next_action"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把后台索引服务算作完成。保存失败输出后，先运行 pgrep 并核对监听端口，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：后台索引服务在执行中失败，只有昨天的 PID 记录。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-037",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把当前 Git 分支算作完成。保存失败输出后，先读取 git status 与最新 commit，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：当前 Git 分支在执行中失败，没有 status 和 commit 输出。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-038",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把12-step 训练算作完成。保存失败输出后，先核对 artifact 目录和训练错误，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：12-step 训练在执行中失败，仅保存了 loss，未见 adapter 文件。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-039",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把完整测试门算作完成。保存失败输出后，先运行缺失的 smoke 并保存输出，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：完整测试门在执行中失败，只有 focused tests 结果。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-040",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把本地 API算作完成。保存失败输出后，先检查当前 lsof 和 healthz，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：本地 API在执行中失败，端口信息来自旧日志。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-041",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把草稿 PR算作完成。保存失败输出后，先核对远端分支后查询 PR，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：草稿 PR在执行中失败，没有 PR URL 或远端分支证据。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-042",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把数据导入批次算作完成。保存失败输出后，先先跑 schema 校验并记录 accepted 数，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：数据导入批次在执行中失败，只知道文件名，不知道校验计数。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-043",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把候选 adapter算作完成。保存失败输出后，先运行 artifact validation，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：候选 adapter在执行中失败，manifest 存在但验证报告缺失。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-044",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把评测作业算作完成。保存失败输出后，先检查进程和已落盘 transcript 数，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：评测作业在执行中失败，进度来自中断前的终端截图。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-045",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把发布包算作完成。保存失败输出后，先核对发布清单和签名输出，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：发布包在执行中失败，单测通过但签名步骤没有记录。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-046",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把反馈候选算作完成。保存失败输出后，先复核 provenance 并保持非真实标签，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：反馈候选在执行中失败，来源标签是 simulated_usage。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-047",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前状态应记为 blocked，不能把工作区整理算作完成。保存失败输出后，先逐项查看 git status 和文件来源，满足重试条件再重新执行。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：工作区整理在执行中失败，存在未跟踪目录且归属未知。请判断状态并说明如何继续。",
+      "rejected": null,
+      "sample_id": "phase44-sample-048",
+      "sample_type": "sft",
+      "taxonomy_dimension": "failure_and_blocked_handling"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认后台索引服务已提交或已创建 PR，因为只有昨天的 PID 记录。先运行 pgrep 并核对监听端口；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：有人说后台索引服务已经提交并开了 PR，但只有昨天的 PID 记录。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-049",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认当前 Git 分支已提交或已创建 PR，因为没有 status 和 commit 输出。先读取 git status 与最新 commit；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：有人说当前 Git 分支已经提交并开了 PR，但没有 status 和 commit 输出。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-050",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认12-step 训练已提交或已创建 PR，因为仅保存了 loss，未见 adapter 文件。先核对 artifact 目录和训练错误；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：有人说12-step 训练已经提交并开了 PR，但仅保存了 loss，未见 adapter 文件。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-051",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认完整测试门已提交或已创建 PR，因为只有 focused tests 结果。先运行缺失的 smoke 并保存输出；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：有人说完整测试门已经提交并开了 PR，但只有 focused tests 结果。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-052",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认本地 API已提交或已创建 PR，因为端口信息来自旧日志。先检查当前 lsof 和 healthz；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：有人说本地 API已经提交并开了 PR，但端口信息来自旧日志。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-053",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认草稿 PR已提交或已创建 PR，因为没有 PR URL 或远端分支证据。先核对远端分支后查询 PR；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：有人说草稿 PR已经提交并开了 PR，但没有 PR URL 或远端分支证据。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-054",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认数据导入批次已提交或已创建 PR，因为只知道文件名，不知道校验计数。先先跑 schema 校验并记录 accepted 数；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：有人说数据导入批次已经提交并开了 PR，但只知道文件名，不知道校验计数。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-055",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认候选 adapter已提交或已创建 PR，因为manifest 存在但验证报告缺失。先运行 artifact validation；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：有人说候选 adapter已经提交并开了 PR，但manifest 存在但验证报告缺失。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-056",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认评测作业已提交或已创建 PR，因为进度来自中断前的终端截图。先检查进程和已落盘 transcript 数；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：有人说评测作业已经提交并开了 PR，但进度来自中断前的终端截图。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-057",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认发布包已提交或已创建 PR，因为单测通过但签名步骤没有记录。先核对发布清单和签名输出；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：有人说发布包已经提交并开了 PR，但单测通过但签名步骤没有记录。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-058",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认反馈候选已提交或已创建 PR，因为来源标签是 simulated_usage。先复核 provenance 并保持非真实标签；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：有人说反馈候选已经提交并开了 PR，但来源标签是 simulated_usage。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-059",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "目前不能确认工作区整理已提交或已创建 PR，因为存在未跟踪目录且归属未知。先逐项查看 git status 和文件来源；只有 commit、push 和 PR URL 都有真实输出才算完成。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：有人说工作区整理已经提交并开了 PR，但存在未跟踪目录且归属未知。请核验这个说法。",
+      "rejected": null,
+      "sample_id": "phase44-sample-060",
+      "sample_type": "sft",
+      "taxonomy_dimension": "git_pr_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明后台索引服务当前仍在运行。先运行 pgrep 并核对监听端口，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：确认后台索引服务现在是否运行。现有依据是：只有昨天的 PID 记录。",
+      "rejected": null,
+      "sample_id": "phase44-sample-061",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明当前 Git 分支当前仍在运行。先读取 git status 与最新 commit，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：确认当前 Git 分支现在是否运行。现有依据是：没有 status 和 commit 输出。",
+      "rejected": null,
+      "sample_id": "phase44-sample-062",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明12-step 训练当前仍在运行。先核对 artifact 目录和训练错误，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：确认12-step 训练现在是否运行。现有依据是：仅保存了 loss，未见 adapter 文件。",
+      "rejected": null,
+      "sample_id": "phase44-sample-063",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明完整测试门当前仍在运行。先运行缺失的 smoke 并保存输出，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：确认完整测试门现在是否运行。现有依据是：只有 focused tests 结果。",
+      "rejected": null,
+      "sample_id": "phase44-sample-064",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明本地 API当前仍在运行。先检查当前 lsof 和 healthz，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：确认本地 API现在是否运行。现有依据是：端口信息来自旧日志。",
+      "rejected": null,
+      "sample_id": "phase44-sample-065",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明草稿 PR当前仍在运行。先核对远端分支后查询 PR，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：确认草稿 PR现在是否运行。现有依据是：没有 PR URL 或远端分支证据。",
+      "rejected": null,
+      "sample_id": "phase44-sample-066",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明数据导入批次当前仍在运行。先先跑 schema 校验并记录 accepted 数，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：确认数据导入批次现在是否运行。现有依据是：只知道文件名，不知道校验计数。",
+      "rejected": null,
+      "sample_id": "phase44-sample-067",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明候选 adapter当前仍在运行。先运行 artifact validation，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：确认候选 adapter现在是否运行。现有依据是：manifest 存在但验证报告缺失。",
+      "rejected": null,
+      "sample_id": "phase44-sample-068",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明评测作业当前仍在运行。先检查进程和已落盘 transcript 数，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：确认评测作业现在是否运行。现有依据是：进度来自中断前的终端截图。",
+      "rejected": null,
+      "sample_id": "phase44-sample-069",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明发布包当前仍在运行。先核对发布清单和签名输出，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：确认发布包现在是否运行。现有依据是：单测通过但签名步骤没有记录。",
+      "rejected": null,
+      "sample_id": "phase44-sample-070",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明反馈候选当前仍在运行。先复核 provenance 并保持非真实标签，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：确认反馈候选现在是否运行。现有依据是：来源标签是 simulated_usage。",
+      "rejected": null,
+      "sample_id": "phase44-sample-071",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "这条信息不能证明工作区整理当前仍在运行。先逐项查看 git status 和文件来源，以现时进程和端口结果判断 running 或 stopped。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：确认工作区整理现在是否运行。现有依据是：存在未跟踪目录且归属未知。",
+      "rejected": null,
+      "sample_id": "phase44-sample-072",
+      "sample_type": "sft",
+      "taxonomy_dimension": "process_state_truthfulness"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查后台索引服务时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步运行 pgrep 并核对监听端口，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：检查后台索引服务配置，其中出现私密值 PFE44_PRIVATE_01_ZK731。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-073",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查当前 Git 分支时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步读取 git status 与最新 commit，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：检查当前 Git 分支配置，其中出现私密值 PFE44_PRIVATE_02_ZK732。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-074",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查12-step 训练时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步核对 artifact 目录和训练错误，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：检查12-step 训练配置，其中出现私密值 PFE44_PRIVATE_03_ZK733。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-075",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查完整测试门时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步运行缺失的 smoke 并保存输出，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：检查完整测试门配置，其中出现私密值 PFE44_PRIVATE_04_ZK734。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-076",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查本地 API时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步检查当前 lsof 和 healthz，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：检查本地 API配置，其中出现私密值 PFE44_PRIVATE_05_ZK735。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-077",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查草稿 PR时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步核对远端分支后查询 PR，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：检查草稿 PR配置，其中出现私密值 PFE44_PRIVATE_06_ZK736。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-078",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查数据导入批次时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步先跑 schema 校验并记录 accepted 数，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：检查数据导入批次配置，其中出现私密值 PFE44_PRIVATE_07_ZK737。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-079",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查候选 adapter时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步运行 artifact validation，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：检查候选 adapter配置，其中出现私密值 PFE44_PRIVATE_08_ZK738。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-080",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查评测作业时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步检查进程和已落盘 transcript 数，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：检查评测作业配置，其中出现私密值 PFE44_PRIVATE_09_ZK739。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-081",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查发布包时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步核对发布清单和签名输出，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：检查发布包配置，其中出现私密值 PFE44_PRIVATE_10_ZK740。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-082",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查反馈候选时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步复核 provenance 并保持非真实标签，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：检查反馈候选配置，其中出现私密值 PFE44_PRIVATE_11_ZK741。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-083",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "检查工作区整理时只保留字段是否存在、脱敏 hash 和条目计数，不输出私密正文。下一步逐项查看 git status 和文件来源，并对保存结果再次扫描泄漏。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：检查工作区整理配置，其中出现私密值 PFE44_PRIVATE_12_ZK742。不要复述值，只报告安全摘要。",
+      "rejected": null,
+      "sample_id": "phase44-sample-084",
+      "sample_type": "sft",
+      "taxonomy_dimension": "privacy_non_echo"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先运行 pgrep 并核对监听端口，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：后台索引服务的数据来源标记为 simulated_usage，只有昨天的 PID 记录。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-085",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先读取 git status 与最新 commit，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：当前 Git 分支的数据来源标记为 simulated_usage，没有 status 和 commit 输出。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-086",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先核对 artifact 目录和训练错误，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：12-step 训练的数据来源标记为 simulated_usage，仅保存了 loss，未见 adapter 文件。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-087",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先运行缺失的 smoke 并保存输出，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：完整测试门的数据来源标记为 simulated_usage，只有 focused tests 结果。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-088",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先检查当前 lsof 和 healthz，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：本地 API的数据来源标记为 simulated_usage，端口信息来自旧日志。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-089",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先核对远端分支后查询 PR，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：草稿 PR的数据来源标记为 simulated_usage，没有 PR URL 或远端分支证据。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-090",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先先跑 schema 校验并记录 accepted 数，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：数据导入批次的数据来源标记为 simulated_usage，只知道文件名，不知道校验计数。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-091",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先运行 artifact validation，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：候选 adapter的数据来源标记为 simulated_usage，manifest 存在但验证报告缺失。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-092",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先检查进程和已落盘 transcript 数，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：评测作业的数据来源标记为 simulated_usage，进度来自中断前的终端截图。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-093",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先核对发布清单和签名输出，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：发布包的数据来源标记为 simulated_usage，单测通过但签名步骤没有记录。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-094",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先复核 provenance 并保持非真实标签，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：反馈候选的数据来源标记为 simulated_usage，来源标签是 simulated_usage。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-095",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "不能，这只能作为模拟实验室证据，不能改写成 actual_user_feedback 或真实用户收益。先逐项查看 git status 和文件来源，真实收益仍需独立人工使用反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：工作区整理的数据来源标记为 simulated_usage，存在未跟踪目录且归属未知。能否说真实用户已经受益？",
+      "rejected": null,
+      "sample_id": "phase44-sample-096",
+      "sample_type": "sft",
+      "taxonomy_dimension": "actual_simulated_provenance"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "后台索引服务当前未达可确认状态：只有昨天的 PID 记录。下一步运行 pgrep 并核对监听端口，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：用两三句话汇报后台索引服务。事实只有“只有昨天的 PID 记录”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-097",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "当前 Git 分支当前未达可确认状态：没有 status 和 commit 输出。下一步读取 git status 与最新 commit，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：用两三句话汇报当前 Git 分支。事实只有“没有 status 和 commit 输出”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-098",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "12-step 训练当前未达可确认状态：仅保存了 loss，未见 adapter 文件。下一步核对 artifact 目录和训练错误，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：用两三句话汇报12-step 训练。事实只有“仅保存了 loss，未见 adapter 文件”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-099",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "完整测试门当前未达可确认状态：只有 focused tests 结果。下一步运行缺失的 smoke 并保存输出，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：用两三句话汇报完整测试门。事实只有“只有 focused tests 结果”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-100",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "本地 API当前未达可确认状态：端口信息来自旧日志。下一步检查当前 lsof 和 healthz，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：用两三句话汇报本地 API。事实只有“端口信息来自旧日志”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-101",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "草稿 PR当前未达可确认状态：没有 PR URL 或远端分支证据。下一步核对远端分支后查询 PR，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：用两三句话汇报草稿 PR。事实只有“没有 PR URL 或远端分支证据”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-102",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "数据导入批次当前未达可确认状态：只知道文件名，不知道校验计数。下一步先跑 schema 校验并记录 accepted 数，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：用两三句话汇报数据导入批次。事实只有“只知道文件名，不知道校验计数”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-103",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "候选 adapter当前未达可确认状态：manifest 存在但验证报告缺失。下一步运行 artifact validation，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：用两三句话汇报候选 adapter。事实只有“manifest 存在但验证报告缺失”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-104",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "评测作业当前未达可确认状态：进度来自中断前的终端截图。下一步检查进程和已落盘 transcript 数，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：用两三句话汇报评测作业。事实只有“进度来自中断前的终端截图”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-105",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "发布包当前未达可确认状态：单测通过但签名步骤没有记录。下一步核对发布清单和签名输出，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：用两三句话汇报发布包。事实只有“单测通过但签名步骤没有记录”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-106",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "反馈候选当前未达可确认状态：来源标签是 simulated_usage。下一步复核 provenance 并保持非真实标签，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：用两三句话汇报反馈候选。事实只有“来源标签是 simulated_usage”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-107",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "工作区整理当前未达可确认状态：存在未跟踪目录且归属未知。下一步逐项查看 git status 和文件来源，结果以新输出为准。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：用两三句话汇报工作区整理。事实只有“存在未跟踪目录且归属未知”，并给出下一步。",
+      "rejected": null,
+      "sample_id": "phase44-sample-108",
+      "sample_type": "sft",
+      "taxonomy_dimension": "concise_specific_response"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "评审会调整为周五 15:00，请准时参加。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C01：把会议时间改写成简洁通知。具体内容：周五下午三点开评审会。",
+      "rejected": null,
+      "sample_id": "phase44-sample-109",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "建议命名为 `quarterly-research-notes`。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C02：给文件夹起一个清楚的英文名。具体内容：内容是季度研究笔记。",
+      "rejected": null,
+      "sample_id": "phase44-sample-110",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "建议改为：尽快开始测试。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C03：把一句话压缩得更直接。具体内容：我们可能需要考虑尽快开始测试。",
+      "rejected": null,
+      "sample_id": "phase44-sample-111",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "缓存是临时保存常用结果的空间，能减少重复计算并加快响应。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C04：解释缓存是什么。具体内容：面向非技术同事。",
+      "rejected": null,
+      "sample_id": "phase44-sample-112",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "麻烦今天下班前补交表格，谢谢。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C05：写一句礼貌提醒。具体内容：请同事今天补交表格。",
+      "rejected": null,
+      "sample_id": "phase44-sample-113",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "Local Model Evaluation Notes。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C06：把中文标题译成英文。具体内容：标题是本地模型评测记录。",
+      "rejected": null,
+      "sample_id": "phase44-sample-114",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "可以选燕麦加酸奶，或全麦面包配水煮蛋。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C07：列出两个早餐选项。具体内容：要求清淡且十分钟内完成。",
+      "rejected": null,
+      "sample_id": "phase44-sample-115",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "讨论使方案更清楚。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C08：修正病句。具体内容：原句是通过讨论，使方案更清楚。",
+      "rejected": null,
+      "sample_id": "phase44-sample-116",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "首次请求超时，自动重试后成功。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C09：概括一句日志含义。具体内容：日志显示请求超时但重试成功。",
+      "rejected": null,
+      "sample_id": "phase44-sample-117",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "顺序是：备份、升级、验证。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C10：给待办事项排序。具体内容：先备份，再升级，最后验证。",
+      "rejected": null,
+      "sample_id": "phase44-sample-118",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "该文件保存接口返回样例，用于本地调试。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C11：写一个简短文件说明。具体内容：文件保存接口返回样例。",
+      "rejected": null,
+      "sample_id": "phase44-sample-119",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    },
+    {
+      "actual_user_feedback": false,
+      "chosen": "patch 表示兼容范围内的小修复版本。这已经按要求保持简洁。",
+      "feedback_source": "simulated_usage",
+      "instruction": "C12：解释版本号里的 patch。具体内容：面向产品经理。",
+      "rejected": null,
+      "sample_id": "phase44-sample-120",
+      "sample_type": "sft",
+      "taxonomy_dimension": "ordinary_task_without_overcontract"
+    }
+  ]
+}
