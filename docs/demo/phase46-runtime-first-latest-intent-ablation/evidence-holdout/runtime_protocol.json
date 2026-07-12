@@ -1,0 +1,14 @@
+{
+  "do_sample": false,
+  "formal_eval_requires_all_arm_truncation_at_most_0_05": true,
+  "input_max_length": 4096,
+  "kind": "phase46_fair_runtime_ablation_protocol",
+  "latest_intent_contract": "历史消息只提供背景。最后一条用户消息定义当前唯一任务，并覆盖与它冲突的旧目标。回答必须直接满足最后要求，不继续已取消事项，也不得声称完成了没有证据的动作。",
+  "length_contract": "每次回答最多三个短句，总长度不超过120个汉字。只回答当前请求，不使用标题、表格、代码块或背景扩写；给出结论后立即结束。",
+  "max_new_tokens": 384,
+  "privacy_transform_all_arms": true,
+  "protocol_sha256": "e4652c3827797f6a496f6c26df009b655df9db6ee3dcc30d74a148871296bcfe",
+  "repetition_penalty": 1.05,
+  "same_length_contract_all_arms": true,
+  "think": false
+}
