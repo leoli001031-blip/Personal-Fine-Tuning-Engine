@@ -1,0 +1,139 @@
+{
+  "category_metrics": {
+    "adapter_privacy": {
+      "actual_simulated_provenance": {
+        "correction": 0.0,
+        "count": 3,
+        "latest_intent": 0.0,
+        "repetition": 0.0108,
+        "score": 0.67
+      },
+      "concise_specific_response": {
+        "correction": 1.0,
+        "count": 3,
+        "latest_intent": 1.0,
+        "repetition": 0.3178,
+        "score": 0.8333
+      },
+      "evidence_before_claim": {
+        "correction": 0.8333,
+        "count": 6,
+        "latest_intent": 0.1667,
+        "repetition": 0.0278,
+        "score": 0.685
+      },
+      "failure_and_blocked_handling": {
+        "correction": 0.3333,
+        "count": 6,
+        "latest_intent": 0.1667,
+        "repetition": 0.277,
+        "score": 0.7317
+      },
+      "git_process_truthfulness": {
+        "correction": 0.3333,
+        "count": 6,
+        "latest_intent": 0.0,
+        "repetition": 0.1519,
+        "score": 0.73
+      },
+      "latest_user_correction": {
+        "correction": 1.0,
+        "count": 16,
+        "latest_intent": 1.0,
+        "repetition": 0.1462,
+        "score": 1.0
+      },
+      "ordinary_task_without_overcontract": {
+        "correction": 0.5625,
+        "count": 16,
+        "latest_intent": 0.5625,
+        "repetition": 0.3948,
+        "score": 0.7744
+      },
+      "privacy_non_echo": {
+        "correction": 1.0,
+        "count": 16,
+        "latest_intent": 1.0,
+        "repetition": 0.1432,
+        "score": 0.8775
+      },
+      "secret_like_non_private": {
+        "correction": 1.0,
+        "count": 8,
+        "latest_intent": 1.0,
+        "repetition": 0.256,
+        "score": 0.9775
+      }
+    },
+    "base_privacy": {
+      "actual_simulated_provenance": {
+        "correction": 1.0,
+        "count": 3,
+        "latest_intent": 0.0,
+        "repetition": 0.0382,
+        "score": 0.71
+      },
+      "concise_specific_response": {
+        "correction": 1.0,
+        "count": 3,
+        "latest_intent": 1.0,
+        "repetition": 0.3235,
+        "score": 0.68
+      },
+      "evidence_before_claim": {
+        "correction": 1.0,
+        "count": 6,
+        "latest_intent": 0.1667,
+        "repetition": 0.0755,
+        "score": 0.7583
+      },
+      "failure_and_blocked_handling": {
+        "correction": 0.5,
+        "count": 6,
+        "latest_intent": 0.5,
+        "repetition": 0.084,
+        "score": 0.835
+      },
+      "git_process_truthfulness": {
+        "correction": 0.1667,
+        "count": 6,
+        "latest_intent": 0.0,
+        "repetition": 0.1363,
+        "score": 0.7
+      },
+      "latest_user_correction": {
+        "correction": 1.0,
+        "count": 16,
+        "latest_intent": 1.0,
+        "repetition": 0.1541,
+        "score": 1.0
+      },
+      "ordinary_task_without_overcontract": {
+        "correction": 0.6875,
+        "count": 16,
+        "latest_intent": 0.6875,
+        "repetition": 0.32,
+        "score": 0.8431
+      },
+      "privacy_non_echo": {
+        "correction": 1.0,
+        "count": 16,
+        "latest_intent": 1.0,
+        "repetition": 0.2054,
+        "score": 0.8862
+      },
+      "secret_like_non_private": {
+        "correction": 1.0,
+        "count": 8,
+        "latest_intent": 1.0,
+        "repetition": 0.2118,
+        "score": 1.0
+      }
+    }
+  },
+  "evidence_basis": "Phase45 frozen 80-session real Qwen A/B/C/D outputs",
+  "finding": "The explicit latest_goal category was already perfect. Regression concentrated in ordinary tasks, failure handling, Git/process truthfulness, evidence status, and provenance where the latest request must override a category-specific old goal.",
+  "kind": "phase46_phase45_failure_analysis",
+  "new_training_justified": false,
+  "phase46_hypothesis": "A privacy-safe runtime envelope that marks the last user turn as the only current intent may improve cross-category correction without another adapter; if it does, training remains blocked until actual manual review of heterogeneous candidates."
+}

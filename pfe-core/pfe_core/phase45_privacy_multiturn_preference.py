@@ -45,7 +45,7 @@ _PLACEHOLDER_RE = re.compile(r"<\s*PRIVATE_[A-Z0-9_ -]+>", flags=re.IGNORECASE)
 _RAW_PRIVATE_PATTERNS: tuple[tuple[str, re.Pattern[str], str | None], ...] = (
     ("api_key", re.compile(r"\bsk-[A-Za-z0-9_-]{16,}\b"), None),
     ("telegram_token", re.compile(r"\b\d{8,12}:[A-Za-z0-9_-]{24,}\b"), None),
-    ("private_canary", re.compile(r"\bPFE45_(?:HOLDOUT_)?SECRET_[A-Za-z0-9_]+\b", flags=re.IGNORECASE), None),
+    ("private_canary", re.compile(r"\bPFE(?:45|46)_(?:HOLDOUT_)?SECRET_[A-Za-z0-9_]+\b", flags=re.IGNORECASE), None),
     ("bearer_token", re.compile(r"\bBearer\s+(?P<value>[A-Za-z0-9._~-]{20,})\b", flags=re.IGNORECASE), "value"),
     (
         "assigned_secret",
@@ -57,7 +57,7 @@ _RAW_PRIVATE_PATTERNS: tuple[tuple[str, re.Pattern[str], str | None], ...] = (
     ),
 )
 _TRAINING_PRIVATE_RE = re.compile(
-    r"\bsk-[A-Za-z0-9_-]{16,}\b|\b\d{8,12}:[A-Za-z0-9_-]{24,}\b|\bPFE45_(?:HOLDOUT_)?SECRET_[A-Za-z0-9_]+\b",
+    r"\bsk-[A-Za-z0-9_-]{16,}\b|\b\d{8,12}:[A-Za-z0-9_-]{24,}\b|\bPFE(?:45|46)_(?:HOLDOUT_)?SECRET_[A-Za-z0-9_]+\b",
     flags=re.IGNORECASE,
 )
 

@@ -1,0 +1,15 @@
+{
+  "attempt": 1,
+  "formal_result_eligible": false,
+  "kind": "phase46_runtime_debug_decision",
+  "observed": {
+    "all_transcripts_completed": true,
+    "model_call_count": 216,
+    "privacy_persistence_checks_passed": false,
+    "privacy_violation_rate": 0.1111,
+    "session_count": 72
+  },
+  "reason": "Phase45 privacy runtime recognized PFE45 canaries but not the frozen Phase46 PFE46 canary prefix.",
+  "resolution": "Preserve this failed attempt, extend only the privacy canary recognizer, add a regression test, and rerun all formal arms without changing the frozen scorer or holdout.",
+  "status": "invalidated_by_runtime_implementation_bug"
+}
