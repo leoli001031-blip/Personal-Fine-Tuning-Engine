@@ -1,0 +1,82 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "deterministic": {
+    "comparisons": {
+      "compact_vs_full_envelope": {
+        "benchmark_wins": 12,
+        "candidate_non_tie_win_rate": 0.52,
+        "candidate_win_rate": 0.2031,
+        "candidate_wins": 13,
+        "pair_count": 64,
+        "ties": 39
+      },
+      "compact_vs_privacy_base": {
+        "benchmark_wins": 5,
+        "candidate_non_tie_win_rate": 0.6875,
+        "candidate_win_rate": 0.1719,
+        "candidate_wins": 11,
+        "pair_count": 64,
+        "ties": 48
+      }
+    },
+    "invalid_result_count": 0,
+    "judge": "deterministic_phase48_frozen_rubric",
+    "kind": "phase48_blind_result_summary",
+    "status": "completed"
+  },
+  "independent": {
+    "actual_model_calls": true,
+    "comparisons": {
+      "compact_vs_full_envelope": {
+        "benchmark_wins": 16,
+        "candidate_non_tie_win_rate": 0.68,
+        "candidate_win_rate": 0.5312,
+        "candidate_wins": 34,
+        "pair_count": 64,
+        "ties": 14
+      },
+      "compact_vs_privacy_base": {
+        "benchmark_wins": 15,
+        "candidate_non_tie_win_rate": 0.5946,
+        "candidate_win_rate": 0.3438,
+        "candidate_wins": 22,
+        "pair_count": 64,
+        "ties": 27
+      }
+    },
+    "completed_pair_count": 128,
+    "created_at": "2026-07-13T06:37:23.469110+00:00",
+    "expected_pair_count": 128,
+    "fabricated_scores": false,
+    "failure_count": 0,
+    "failures": [],
+    "identity_hidden_from_judge": true,
+    "invalid_result_count": 0,
+    "judge": "independent_ollama_blind_judge",
+    "judge_model": "gemma4:31b",
+    "kind": "phase48_blind_result_summary",
+    "status": "completed",
+    "think": false
+  },
+  "integrity": {
+    "comparison_counts": {
+      "compact_vs_full_envelope": 64,
+      "compact_vs_privacy_base": 64
+    },
+    "expected_pair_count": 128,
+    "identity_hidden_from_judge": true,
+    "kind": "phase48_blind_integrity_check",
+    "pair_count": 128,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "scorer_frozen": true,
+    "source_checks": {
+      "phase45_privacy_source": true,
+      "phase46_scorer_source": true,
+      "phase48_runtime_source": true
+    }
+  },
+  "kind": "phase48_blind_eval_report"
+}

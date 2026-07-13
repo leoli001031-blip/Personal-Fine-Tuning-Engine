@@ -1,0 +1,3 @@
+# Next Pursuit Goal
+
+Do not train or attach an adapter yet. Preserve the Phase45 privacy transformer and Phase48 compact contract as held candidates. In Phase49, isolate the provenance-boundary regression: simulate a focused reviewer pass over the failed evidence/provenance sessions, derive one minimal evidence-boundary clause, and compare compact-v1 against compact-v2 on another fresh holdout. Keep privacy, length, model, and decoding frozen. Require category-level provenance recovery without losing the compact runtime's blind preference or ordinary-task directness. Even a passing result may only enter a manual shadow recommendation; simulated usage remains separate from actual user feedback.
