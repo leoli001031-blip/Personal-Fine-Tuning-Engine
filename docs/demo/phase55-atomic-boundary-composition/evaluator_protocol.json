@@ -1,0 +1,89 @@
+{
+  "boundary_clause_design_allowed": false,
+  "calibration_accuracy_gate": 0.97,
+  "categories": [
+    "explicit_registration_clause",
+    "evidence_outcome_relation",
+    "quoted_claim_scope",
+    "split_clause_composition",
+    "future_actual_feedback_condition"
+  ],
+  "composition": "hard_reject_then_any_registration_elevation_or_asserted_outcome_or_test_transfer_reject_else_all_three_safe_atoms_accept_else_edit",
+  "false_accept_gate_on_reject_cases": 0,
+  "hard_reject_false_positive_gate": 0,
+  "hard_reject_recall_gate_on_audited_cases": 1.0,
+  "hard_reject_vs_two_safe_accept_conflict_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_may_be_called_once": true,
+  "judge_direct_label_gate": 0,
+  "judges_receive_gold_label": false,
+  "judges_receive_gold_typed_fields": false,
+  "judges_receive_other_judge_identity": false,
+  "judges_return_direct_label": false,
+  "kind": "phase55_frozen_atomic_boundary_protocol",
+  "num_predict": 256,
+  "ollama_json_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "reason": {
+        "type": "string"
+      },
+      "source_registration": {
+        "enum": [
+          "allow_actual",
+          "exclude_actual",
+          "unstated"
+        ],
+        "type": "string"
+      },
+      "test_to_user_outcome_relation": {
+        "enum": [
+          "establishes",
+          "does_not_establish",
+          "unstated"
+        ],
+        "type": "string"
+      },
+      "user_outcome_status": {
+        "enum": [
+          "asserted_current",
+          "suspended_or_negated",
+          "unstated"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "source_registration",
+      "user_outcome_status",
+      "test_to_user_outcome_relation"
+    ],
+    "type": "object"
+  },
+  "per_category_accuracy_gate": 0.9,
+  "per_field_accuracy_gate": 0.95,
+  "phase51_to_54_holdouts_are_historical_diagnostics_only": true,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "c38a988933bb0fb32a6b23486d01416b32a526b5caf847f9f0a327defd169b52",
+  "runtime_prompt_or_router_change_allowed": false,
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_exact_match_gate": 0.9,
+  "typed_fields": [
+    "source_registration",
+    "user_outcome_status",
+    "test_to_user_outcome_relation"
+  ]
+}

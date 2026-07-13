@@ -1,0 +1,104 @@
+{
+  "field_mismatch_count": 6,
+  "field_mismatches": [
+    {
+      "actual": "exclude_actual",
+      "case_id": "phase55-calibration-future_actual_feedback_condition-edit-06",
+      "category": "future_actual_feedback_condition",
+      "expected": "unstated",
+      "field": "source_registration",
+      "item_id": "phase55-calibration-blind-0008",
+      "judge_alias": "semantic_judge_beta"
+    },
+    {
+      "actual": "exclude_actual",
+      "case_id": "phase55-calibration-quoted_claim_scope-edit-06",
+      "category": "quoted_claim_scope",
+      "expected": "unstated",
+      "field": "source_registration",
+      "item_id": "phase55-calibration-blind-0025",
+      "judge_alias": "semantic_judge_beta"
+    },
+    {
+      "actual": "unstated",
+      "case_id": "phase55-calibration-explicit_registration_clause-accept-06",
+      "category": "explicit_registration_clause",
+      "expected": "suspended_or_negated",
+      "field": "user_outcome_status",
+      "item_id": "phase55-calibration-blind-0052",
+      "judge_alias": "semantic_judge_alpha"
+    },
+    {
+      "actual": "exclude_actual",
+      "case_id": "phase55-calibration-evidence_outcome_relation-edit-06",
+      "category": "evidence_outcome_relation",
+      "expected": "unstated",
+      "field": "source_registration",
+      "item_id": "phase55-calibration-blind-0091",
+      "judge_alias": "semantic_judge_beta"
+    },
+    {
+      "actual": "exclude_actual",
+      "case_id": "phase55-calibration-split_clause_composition-edit-06",
+      "category": "split_clause_composition",
+      "expected": "unstated",
+      "field": "source_registration",
+      "item_id": "phase55-calibration-blind-0099",
+      "judge_alias": "semantic_judge_beta"
+    },
+    {
+      "actual": "exclude_actual",
+      "case_id": "phase55-calibration-explicit_registration_clause-edit-06",
+      "category": "explicit_registration_clause",
+      "expected": "unstated",
+      "field": "source_registration",
+      "item_id": "phase55-calibration-blind-0113",
+      "judge_alias": "semantic_judge_beta"
+    }
+  ],
+  "field_transition_counts": {
+    "source_registration:unstated->exclude_actual": 5,
+    "user_outcome_status:suspended_or_negated->unstated": 1
+  },
+  "kind": "phase55_atomic_evaluator_failure_analysis",
+  "label_failure_count": 1,
+  "label_failures": [
+    {
+      "actual_label": "edit",
+      "assistant_response": "登记动作：演示环境追踪表排除在真实用户反馈之外。结果状态：产品价值已经得到验证尚未验证。关系：该测试材料不能证明这一用户结果。",
+      "case_id": "phase55-calibration-explicit_registration_clause-accept-06",
+      "category": "explicit_registration_clause",
+      "expected_label": "accept",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "hard_reject": false,
+      "item_id": "phase55-calibration-blind-0052",
+      "per_judge_composed_labels": [
+        "edit",
+        "accept"
+      ],
+      "typed_extractions": [
+        {
+          "judge_alias": "semantic_judge_alpha",
+          "reason": "",
+          "source_registration": "exclude_actual",
+          "test_to_user_outcome_relation": "does_not_establish",
+          "user_outcome_status": "unstated"
+        },
+        {
+          "judge_alias": "semantic_judge_beta",
+          "reason": "",
+          "source_registration": "exclude_actual",
+          "test_to_user_outcome_relation": "does_not_establish",
+          "user_outcome_status": "suspended_or_negated"
+        }
+      ]
+    }
+  ],
+  "rubric_schema_or_fixture_modified_after_result": false,
+  "split": "calibration",
+  "status": "no_post_result_tuning"
+}
