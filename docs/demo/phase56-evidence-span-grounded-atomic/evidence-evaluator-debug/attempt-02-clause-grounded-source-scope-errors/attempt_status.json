@@ -1,0 +1,24 @@
+{
+  "attempt_id": "attempt-02-clause-grounded-source-scope-errors",
+  "status": "invalidated_during_calibration",
+  "formal_result_eligible": false,
+  "reason": "effective labels and grounded fields were exact, but Qwen produced five ungrounded source atoms including two dangerous quote-only allow_actual atoms",
+  "calibration_model_call_count": 240,
+  "completed_item_count": 120,
+  "accuracy": 1.0,
+  "typed_exact_match_rate": 1.0,
+  "raw_grounding_validity_rate": 0.9931,
+  "invalid_atom_count": 5,
+  "invalid_dangerous_atom_count": 2,
+  "composer_received_ungrounded_atom_count": 0,
+  "false_accept_count": 0,
+  "holdout_model_call_count": 0,
+  "holdout_opened": false,
+  "post_failure_change_scope": [
+    "make source-registration evidence requirements explicit in the rubric and JSON schema descriptions",
+    "state that proof/support clauses never establish source registration and rejected quote-only registration must be unstated",
+    "deterministically mask only explicitly rejected quote contents before semantic extraction while retaining original text for grounding and audit"
+  ],
+  "actual_user_feedback_count": 0,
+  "not_for_training": true
+}

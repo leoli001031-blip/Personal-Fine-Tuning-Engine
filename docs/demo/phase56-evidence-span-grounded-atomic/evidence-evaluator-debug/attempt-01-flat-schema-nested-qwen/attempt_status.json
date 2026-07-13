@@ -1,0 +1,21 @@
+{
+  "attempt_id": "attempt-01-flat-schema-nested-qwen",
+  "status": "invalidated_during_calibration",
+  "formal_result_eligible": false,
+  "reason": "qwen returned nested atom objects while the frozen attempt-01 schema required six flat fields",
+  "gemma_completed_model_call_count": 120,
+  "gemma_validated_result_count": 120,
+  "qwen_completed_schema_failure_count": 12,
+  "qwen_diagnostic_model_call_count": 1,
+  "interrupted_inflight_request_count": 1,
+  "observed_completed_calibration_model_call_count": 133,
+  "initiated_calibration_model_call_count": 134,
+  "holdout_model_call_count": 0,
+  "holdout_opened": false,
+  "post_failure_change_scope": [
+    "align model JSON schema with nested value/evidence_span atom objects",
+    "validate each evidence span against its full containing clause to block negation truncation"
+  ],
+  "actual_user_feedback_count": 0,
+  "not_for_training": true
+}

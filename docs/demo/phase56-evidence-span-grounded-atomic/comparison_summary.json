@@ -1,0 +1,166 @@
+{
+  "actual_human_review_count": 0,
+  "actual_user_feedback_count": 0,
+  "adapter_created": false,
+  "boundary_clause_design": {
+    "created": false,
+    "status": "not_requested_in_phase56"
+  },
+  "hermes_attached": false,
+  "kind": "phase56_span_evaluator_comparison",
+  "phase55": {
+    "evidence_spans_required": false,
+    "holdout_accuracy": 1.0,
+    "recommendation": "hold_phase55_atomic_boundary_composition",
+    "source_registration_accuracy": 0.9167,
+    "typed_exact_match_rate": 0.8933
+  },
+  "phase56": {
+    "calibration_accuracy": 1.0,
+    "calibration_grounding_validity_rate": 0.9986,
+    "calibration_per_category": {
+      "distractor_nearby_clause": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "future_vs_current_scope": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "multi_sentence_span": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "quoted_dangerous_claim": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "single_clause_span": {
+        "accuracy": 1.0,
+        "count": 24
+      }
+    },
+    "calibration_per_field": {
+      "source_registration": {
+        "accuracy": 1.0,
+        "count": 240
+      },
+      "test_to_user_outcome_relation": {
+        "accuracy": 1.0,
+        "count": 240
+      },
+      "user_outcome_status": {
+        "accuracy": 1.0,
+        "count": 240
+      }
+    },
+    "calibration_real_model_call_count": 240,
+    "calibration_status": "qualified",
+    "calibration_typed_exact_match_rate": 1.0,
+    "final_label_generated_by_deterministic_composer": true,
+    "holdout_accuracy": 1.0,
+    "holdout_composer_received_ungrounded_atom_count": 0,
+    "holdout_expected_span_exact_match_rate_diagnostic": 0.9744,
+    "holdout_false_accept_count": 0,
+    "holdout_grounding_validity_rate": 0.99,
+    "holdout_hard_vs_two_safe_accept_conflict_count": 0,
+    "holdout_invalid_atom_count": 9,
+    "holdout_invalid_dangerous_atom_count": 0,
+    "holdout_judge_direct_label_count": 0,
+    "holdout_per_category": {
+      "distractor_nearby_clause": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "future_vs_current_scope": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "multi_sentence_span": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "quoted_dangerous_claim": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "single_clause_span": {
+        "accuracy": 1.0,
+        "count": 30
+      }
+    },
+    "holdout_per_field": {
+      "source_registration": {
+        "accuracy": 1.0,
+        "count": 300
+      },
+      "test_to_user_outcome_relation": {
+        "accuracy": 0.99,
+        "count": 300
+      },
+      "user_outcome_status": {
+        "accuracy": 1.0,
+        "count": 300
+      }
+    },
+    "holdout_real_model_call_count": 300,
+    "holdout_status": "qualified",
+    "holdout_typed_exact_match_rate": 0.99,
+    "invalidated_calibration_attempts": [
+      {
+        "actual_user_feedback_count": 0,
+        "attempt_id": "attempt-01-flat-schema-nested-qwen",
+        "formal_result_eligible": false,
+        "gemma_completed_model_call_count": 120,
+        "gemma_validated_result_count": 120,
+        "holdout_model_call_count": 0,
+        "holdout_opened": false,
+        "initiated_calibration_model_call_count": 134,
+        "interrupted_inflight_request_count": 1,
+        "not_for_training": true,
+        "observed_completed_calibration_model_call_count": 133,
+        "post_failure_change_scope": [
+          "align model JSON schema with nested value/evidence_span atom objects",
+          "validate each evidence span against its full containing clause to block negation truncation"
+        ],
+        "qwen_completed_schema_failure_count": 12,
+        "qwen_diagnostic_model_call_count": 1,
+        "reason": "qwen returned nested atom objects while the frozen attempt-01 schema required six flat fields",
+        "status": "invalidated_during_calibration"
+      },
+      {
+        "accuracy": 1.0,
+        "actual_user_feedback_count": 0,
+        "attempt_id": "attempt-02-clause-grounded-source-scope-errors",
+        "calibration_model_call_count": 240,
+        "completed_item_count": 120,
+        "composer_received_ungrounded_atom_count": 0,
+        "false_accept_count": 0,
+        "formal_result_eligible": false,
+        "holdout_model_call_count": 0,
+        "holdout_opened": false,
+        "invalid_atom_count": 5,
+        "invalid_dangerous_atom_count": 2,
+        "not_for_training": true,
+        "post_failure_change_scope": [
+          "make source-registration evidence requirements explicit in the rubric and JSON schema descriptions",
+          "state that proof/support clauses never establish source registration and rejected quote-only registration must be unstated",
+          "deterministically mask only explicitly rejected quote contents before semantic extraction while retaining original text for grounding and audit"
+        ],
+        "raw_grounding_validity_rate": 0.9931,
+        "reason": "effective labels and grounded fields were exact, but Qwen produced five ungrounded source atoms including two dangerous quote-only allow_actual atoms",
+        "status": "invalidated_during_calibration",
+        "typed_exact_match_rate": 1.0
+      }
+    ]
+  },
+  "product_default_changed": false,
+  "recommendation": "recommend_phase56_span_evaluator_for_manual_review_only",
+  "router_changed": false,
+  "runtime_prompt_changed": false,
+  "runtime_replay": {
+    "real_model_call_count": 0,
+    "status": "not_requested_in_phase56"
+  },
+  "training_executed": false
+}
