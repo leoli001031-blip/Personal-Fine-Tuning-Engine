@@ -1,0 +1,100 @@
+{
+  "actual_human_review_count": 0,
+  "actual_user_feedback_count": 0,
+  "adapter_loaded": false,
+  "formal_evaluator": {
+    "calibration_accuracy": 1.0,
+    "calibration_real_model_call_count": 72,
+    "calibration_status": "qualified",
+    "holdout_accuracy": 0.9833,
+    "holdout_false_accept_count": 0,
+    "holdout_real_model_call_count": 120,
+    "holdout_status": "qualified",
+    "runtime_generalization_gap_found": true
+  },
+  "invalidated_calibration_attempt_01": {
+    "accuracy": 0.8056,
+    "formal_result_eligible": false,
+    "real_judge_model_call_count": 72,
+    "status": "not_qualified"
+  },
+  "kind": "phase51_dual_evaluator_and_runtime_comparison",
+  "phase50_recommendation": "hold_conditional_provenance_guard_evaluator_unstable",
+  "posthoc_simulated_user_review": {
+    "can_promote": false,
+    "review_count": 24,
+    "veto_count": 5
+  },
+  "product_default_change_allowed": false,
+  "recommendation": "hold_evaluator_runtime_generalization_gap",
+  "runtime": {
+    "legacy_metrics_by_variant": {
+      "base_compact_v1": {
+        "nontrigger_latest_intent_satisfaction_rate": 0.7917,
+        "provenance_boundary_rate": 0.625,
+        "unsupported_product_benefit_claim_rate": 0.0,
+        "user_preference_score": 0.8744
+      },
+      "base_conditional_guard": {
+        "nontrigger_latest_intent_satisfaction_rate": 0.7917,
+        "provenance_boundary_rate": 0.5,
+        "unsupported_product_benefit_claim_rate": 0.0417,
+        "user_preference_score": 0.8554
+      },
+      "base_global_v2": {
+        "nontrigger_latest_intent_satisfaction_rate": 0.7917,
+        "provenance_boundary_rate": 0.5833,
+        "unsupported_product_benefit_claim_rate": 0.0417,
+        "user_preference_score": 0.8656
+      }
+    },
+    "prompt_parity_rate": 1.0,
+    "qwen3_4b_real_model_call_count": 432,
+    "router": {
+      "false_activation_rate": 0.0,
+      "missed_activation_rate": 0.0,
+      "sequence_exact_rate": 1.0
+    },
+    "semantic_by_variant": {
+      "base_compact_v1": {
+        "accept_rate": 0.625,
+        "completed_count": 24,
+        "edit_rate": 0.375,
+        "hard_reject_rate": 0.0,
+        "item_count": 24,
+        "label_counts": {
+          "accept": 15,
+          "edit": 9
+        },
+        "reject_rate": 0.0
+      },
+      "base_conditional_guard": {
+        "accept_rate": 0.7917,
+        "completed_count": 24,
+        "edit_rate": 0.2083,
+        "hard_reject_rate": 0.0,
+        "item_count": 24,
+        "label_counts": {
+          "accept": 19,
+          "edit": 5
+        },
+        "reject_rate": 0.0
+      },
+      "base_global_v2": {
+        "accept_rate": 0.8333,
+        "completed_count": 24,
+        "edit_rate": 0.0833,
+        "hard_reject_rate": 0.0417,
+        "item_count": 24,
+        "label_counts": {
+          "accept": 20,
+          "edit": 2,
+          "reject": 2
+        },
+        "reject_rate": 0.0833
+      }
+    },
+    "semantic_judge_real_model_call_count": 144
+  },
+  "training_executed": false
+}

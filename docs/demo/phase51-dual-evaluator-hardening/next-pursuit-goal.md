@@ -1,0 +1,3 @@
+# Next Pursuit Goal
+
+Build Phase52 adversarial evaluator generalization before changing the Phase50 router or runtime prompts. Add a new calibration set for future eligibility after real verification, negation scope, quoted unsafe claims, hypothetical wording, and source-vs-outcome conjunctions; then freeze a completely new independent holdout and require zero hard-rule overrides against two semantic accepts. Only after that evaluator qualifies should the five conditional `edit` outputs be used to design a minimal boundary-clause revision. Do not train, attach Hermes, or change the product default.
