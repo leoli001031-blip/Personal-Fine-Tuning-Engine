@@ -1,0 +1,97 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "auto_training_allowed": false,
+  "blind": {
+    "comparison_counts": {
+      "compact_vs_full_envelope": 64,
+      "compact_vs_privacy_base": 64
+    },
+    "expected_pair_count": 128,
+    "identity_hidden_from_judge": true,
+    "kind": "phase48_blind_integrity_check",
+    "pair_count": 128,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "scorer_frozen": true,
+    "source_checks": {
+      "phase45_privacy_source": true,
+      "phase46_scorer_source": true,
+      "phase48_runtime_source": true
+    }
+  },
+  "calibration": {
+    "case_count": 8,
+    "precision": 1.0,
+    "recall": 1.0,
+    "status": "passed"
+  },
+  "created_at": "2026-07-13T06:42:25.683210+00:00",
+  "critical_evidence_file_count": 41,
+  "critical_evidence_manifest_sha256": "2962e68bcf3cbef15e9b8a23ebc069fd2869a51cf5b88f22423cd0271589843b",
+  "decision": "hold_compact_runtime",
+  "independent_judge_completed_pair_count": 128,
+  "kind": "phase48_evidence_integrity",
+  "passed": true,
+  "phase46_canonical": {
+    "manifest_matches_snapshot": true,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "passed": true,
+    "phase": "phase46",
+    "recommendation": "hold_runtime_and_revise_eval_or_data"
+  },
+  "phase47_canonical": {
+    "manifest_matches_snapshot": true,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "passed": true,
+    "phase": "phase47",
+    "recommendation": "use_simulated_reviewed_pack_for_fresh_runtime_ablation"
+  },
+  "split_integrity_passed": true,
+  "training_status": "skipped_by_design",
+  "transcripts": [
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase48-compact-intent-runtime-ablation/evidence-real-runtime-ablation/transcripts_base_privacy.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "privacy_base",
+      "sha256": "781c68232fd123cbd7db0571031d0307dd11c2daee6b4a31699cf9be39f2e61f",
+      "unique_session_id_count": 64,
+      "variant": "base_privacy"
+    },
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase48-compact-intent-runtime-ablation/evidence-real-runtime-ablation/transcripts_base_compact_intent.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "compact_system_instruction",
+      "sha256": "f7cd59b07366b828557a5051b7ec548d49932d06487c4d07840b4b044691252c",
+      "unique_session_id_count": 64,
+      "variant": "base_compact_intent"
+    },
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase48-compact-intent-runtime-ablation/evidence-real-runtime-ablation/transcripts_base_full_intent.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "phase46_full_envelope",
+      "sha256": "dd8aa243522b62b2ed4ec33d9ea530ea29c51a3127f370d950a9349f87529270",
+      "unique_session_id_count": 64,
+      "variant": "base_full_intent"
+    }
+  ]
+}
