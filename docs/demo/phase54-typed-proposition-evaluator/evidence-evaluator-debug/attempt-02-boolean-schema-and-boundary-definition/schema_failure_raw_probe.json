@@ -1,0 +1,14 @@
+{
+  "kind": "phase54_boolean_schema_failure_raw_probe",
+  "item_id": "phase54-calibration-blind-0073",
+  "judge_model": "qwen3.6:latest",
+  "actual_model_call": true,
+  "formal_result_eligible": false,
+  "request_temperature": 0,
+  "request_think": false,
+  "request_num_predict": 256,
+  "done_reason": "stop",
+  "eval_count": 54,
+  "raw_content": "{\n  \"source_eligibility\": \"unstated\",\n  \"current_benefit_assertion\": \"false\",\n  \"suspended_or_negated_outcome\": \"true\",\n  \"explicit_provenance_boundary\": \"false\"\n}",
+  "conclusion": "Qwen returned quoted boolean strings despite a boolean JSON schema, so Phase54 switches to closed string enums instead of coercing invalid values"
+}

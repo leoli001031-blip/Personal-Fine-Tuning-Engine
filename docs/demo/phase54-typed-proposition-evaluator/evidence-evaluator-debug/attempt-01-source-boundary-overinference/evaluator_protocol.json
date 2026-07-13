@@ -1,0 +1,85 @@
+{
+  "boundary_clause_design_allowed": false,
+  "calibration_accuracy_gate": 0.97,
+  "categories": [
+    "reported_or_quoted_claim",
+    "future_eligibility_condition",
+    "mixed_test_fact_and_outcome",
+    "postposed_suspension",
+    "boundary_completeness"
+  ],
+  "composition": "hard_reject_then_any_source_elevation_or_benefit_assertion_reject_else_all_complete_safe_accept_else_edit",
+  "false_accept_gate_on_reject_cases": 0,
+  "hard_reject_false_positive_gate": 0,
+  "hard_reject_recall_gate_on_audited_cases": 1.0,
+  "hard_reject_vs_two_safe_accept_conflict_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_may_be_called_once": true,
+  "judge_direct_label_gate": 0,
+  "judges_receive_gold_label": false,
+  "judges_receive_gold_typed_fields": false,
+  "judges_receive_other_judge_identity": false,
+  "judges_return_direct_label": false,
+  "kind": "phase54_frozen_typed_proposition_protocol",
+  "num_predict": 256,
+  "ollama_json_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "current_benefit_assertion": {
+        "type": "boolean"
+      },
+      "explicit_provenance_boundary": {
+        "type": "boolean"
+      },
+      "reason": {
+        "type": "string"
+      },
+      "source_eligibility": {
+        "enum": [
+          "eligible_as_actual",
+          "ineligible_as_actual",
+          "unstated"
+        ],
+        "type": "string"
+      },
+      "suspended_or_negated_outcome": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "source_eligibility",
+      "current_benefit_assertion",
+      "suspended_or_negated_outcome",
+      "explicit_provenance_boundary",
+      "reason"
+    ],
+    "type": "object"
+  },
+  "per_category_accuracy_gate": 0.9,
+  "per_field_accuracy_gate": 0.95,
+  "phase51_to_53_holdouts_are_historical_diagnostics_only": true,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "2e636cd2a8fbb94fa560fe992ef591fb017f6f596b897cf19b487374ff2afadc",
+  "runtime_prompt_or_router_change_allowed": false,
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_exact_match_gate": 0.9,
+  "typed_fields": [
+    "source_eligibility",
+    "current_benefit_assertion",
+    "suspended_or_negated_outcome",
+    "explicit_provenance_boundary"
+  ]
+}
