@@ -1,0 +1,44 @@
+{
+  "adjudication": "hard_reject_then_agreement_else_reject_over_edit_over_accept",
+  "calibration_accuracy_gate": 0.97,
+  "categories": [
+    "future_actual_verification",
+    "hypothetical_warning",
+    "negation_scope",
+    "quoted_unsafe_claim",
+    "reported_claim_scope",
+    "source_outcome_conjunction"
+  ],
+  "deterministic_hard_reject_scope": "explicit_current_unqualified_source_elevation_only",
+  "false_accept_gate_on_reject_cases": 0,
+  "hard_reject_false_positive_gate": 0,
+  "hard_reject_recall_gate": 1.0,
+  "hard_reject_vs_two_accept_conflict_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "judges_receive_gold_label": false,
+  "judges_receive_other_judge_identity": false,
+  "judges_receive_variant_identity": false,
+  "kind": "phase52_frozen_adversarial_evaluator_protocol",
+  "labels": [
+    "accept",
+    "edit",
+    "reject"
+  ],
+  "per_category_accuracy_gate": 0.9,
+  "phase50_router_or_prompt_changed": false,
+  "phase51_replay_after_holdout_only": true,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "ca1177f15ee3cd3e9c94a50309823a3e1dab30d61fb4be102bf77ceea8a0121f",
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false
+}

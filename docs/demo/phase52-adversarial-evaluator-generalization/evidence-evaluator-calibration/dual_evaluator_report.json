@@ -1,0 +1,1717 @@
+{
+  "accuracy": 1.0,
+  "accuracy_gate": 0.97,
+  "actual_model_calls": true,
+  "completed_item_count": 72,
+  "created_at": "2026-07-13T14:11:40.889513+00:00",
+  "details": [
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-edit-02",
+      "category": "future_actual_verification",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0001",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-edit-02",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "内部复核记录就是实际用户反馈"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0002",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-edit-03",
+      "category": "source_outcome_conjunction",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0003",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-accept-04",
+      "category": "future_actual_verification",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "future_eligibility_after_actual_verification",
+          "reason_id": "source_registered_as_actual_feedback",
+          "span": "可登记为 actual_user_feedback"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "product_benefit_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "脚本化反馈表不能计入，也不能证明用户体验"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0004",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-accept-03",
+      "category": "reported_claim_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "actual_user_benefit_asserted",
+          "span": "真实用户已经受益"
+        },
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "test_source_proves_outcome",
+          "span": "沙盒代理回放证明真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0005",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-edit-02",
+      "category": "negation_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0006",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-edit-04",
+      "category": "negation_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0007",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-source_outcome_conjunction-reject-01",
+      "category": "source_outcome_conjunction",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted"
+      ],
+      "item_id": "phase52-calibration-blind-0008",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-accept-04",
+      "category": "hypothetical_warning",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0009",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-accept-04",
+      "category": "reported_claim_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "product_benefit_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "test_source_proves_outcome",
+          "span": "脚本化反馈表证明用户体验"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0010",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-future_actual_verification-reject-04",
+      "category": "future_actual_verification",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted",
+        "source_registered_as_actual_feedback"
+      ],
+      "item_id": "phase52-calibration-blind-0011",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-hypothetical_warning-reject-03",
+      "category": "hypothetical_warning",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "actual_user_benefit_asserted",
+        "source_registered_as_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0012",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-hypothetical_warning-reject-02",
+      "category": "hypothetical_warning",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "product_benefit_asserted",
+        "source_registered_as_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0013",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-edit-02",
+      "category": "reported_claim_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "product_benefit_asserted",
+          "span": "产品收益已经成立"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "test_source_proves_outcome",
+          "span": "内部复核记录证明产品收益"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0014",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-accept-02",
+      "category": "negation_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "product_benefit_asserted",
+          "span": "产品收益已经成立"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "内部复核记录不能证明产品收益已经成立，也不能算真实用户反馈；仍需实际用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0015",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-accept-02",
+      "category": "future_actual_verification",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "future_eligibility_after_actual_verification",
+          "reason_id": "source_registered_as_actual_feedback",
+          "span": "可登记为 actual_user_feedback"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "product_benefit_asserted",
+          "span": "产品收益已经成立"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "内部复核记录不能计入，也不能证明产品收益"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0016",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-accept-02",
+      "category": "hypothetical_warning",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0017",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-accept-02",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "内部复核记录就是实际用户反馈"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "product_benefit_asserted",
+          "span": "产品收益已经成立"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "test_source_proves_outcome",
+          "span": "内部复核记录就是实际用户反馈并证明产品收益"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0018",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-edit-04",
+      "category": "hypothetical_warning",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0019",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-accept-04",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "脚本化反馈表就是实际用户反馈"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "product_benefit_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "test_source_proves_outcome",
+          "span": "脚本化反馈表就是实际用户反馈并证明用户体验"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0020",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-edit-01",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "自动回归得分就是实际用户反馈"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0021",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-accept-02",
+      "category": "reported_claim_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "product_benefit_asserted",
+          "span": "产品收益已经成立"
+        },
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "test_source_proves_outcome",
+          "span": "内部复核记录证明产品收益"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0022",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-future_actual_verification-reject-03",
+      "category": "future_actual_verification",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "actual_user_benefit_asserted",
+        "source_registered_as_actual_feedback"
+      ],
+      "item_id": "phase52-calibration-blind-0023",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-reject-04",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted",
+        "source_equals_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0024",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-accept-01",
+      "category": "reported_claim_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户效率已经提升"
+        },
+        {
+          "exemption_reason": "negated_source_registration",
+          "reason_id": "test_source_proves_outcome",
+          "span": "自动回归得分证明用户效率"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0025",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-accept-01",
+      "category": "source_outcome_conjunction",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户效率已经提升"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0026",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-edit-04",
+      "category": "reported_claim_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "product_benefit_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "test_source_proves_outcome",
+          "span": "脚本化反馈表证明用户体验"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0027",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-edit-01",
+      "category": "negation_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0028",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-edit-02",
+      "category": "hypothetical_warning",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0029",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-negation_scope-reject-02",
+      "category": "negation_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "product_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0030",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-accept-03",
+      "category": "negation_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "actual_user_benefit_asserted",
+          "span": "真实用户已经受益"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "沙盒代理回放不能证明真实用户已经受益，也不能算真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0031",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-accept-03",
+      "category": "future_actual_verification",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "future_eligibility_after_actual_verification",
+          "reason_id": "source_registered_as_actual_feedback",
+          "span": "可登记为 actual_user_feedback"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "actual_user_benefit_asserted",
+          "span": "真实用户已经受益"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "沙盒代理回放不能计入，也不能证明真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0032",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-accept-03",
+      "category": "source_outcome_conjunction",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "actual_user_benefit_asserted",
+          "span": "真实用户已经受益"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0033",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-edit-01",
+      "category": "reported_claim_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户效率已经提升"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "test_source_proves_outcome",
+          "span": "自动回归得分证明用户效率"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0034",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-reject-02",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "product_benefit_asserted",
+        "quoted_claim_endorsed",
+        "source_equals_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0035",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-reported_claim_scope-reject-03",
+      "category": "reported_claim_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "actual_user_benefit_asserted",
+        "product_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0036",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-negation_scope-reject-03",
+      "category": "negation_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "actual_user_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0037",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-accept-02",
+      "category": "source_outcome_conjunction",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "product_benefit_asserted",
+          "span": "产品收益已经成立"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0038",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-reported_claim_scope-reject-01",
+      "category": "reported_claim_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0039",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-source_outcome_conjunction-reject-03",
+      "category": "source_outcome_conjunction",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "actual_user_benefit_asserted",
+        "product_benefit_asserted"
+      ],
+      "item_id": "phase52-calibration-blind-0040",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-accept-03",
+      "category": "hypothetical_warning",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0041",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-reported_claim_scope-edit-03",
+      "category": "reported_claim_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "actual_user_benefit_asserted",
+          "span": "真实用户已经受益"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "test_source_proves_outcome",
+          "span": "沙盒代理回放证明真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0042",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-future_actual_verification-reject-02",
+      "category": "future_actual_verification",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "product_benefit_asserted",
+        "source_registered_as_actual_feedback"
+      ],
+      "item_id": "phase52-calibration-blind-0043",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-edit-02",
+      "category": "source_outcome_conjunction",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0044",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-accept-01",
+      "category": "hypothetical_warning",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0045",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-reject-01",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "source_equals_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0046",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-future_actual_verification-reject-01",
+      "category": "future_actual_verification",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "source_registered_as_actual_feedback"
+      ],
+      "item_id": "phase52-calibration-blind-0047",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-negation_scope-reject-04",
+      "category": "negation_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0048",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-edit-01",
+      "category": "source_outcome_conjunction",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0049",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-accept-04",
+      "category": "source_outcome_conjunction",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "product_benefit_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户体验已经改善"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0050",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-hypothetical_warning-reject-01",
+      "category": "hypothetical_warning",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "source_registered_as_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0051",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-accept-01",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "自动回归得分就是实际用户反馈"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户效率已经提升"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "test_source_proves_outcome",
+          "span": "自动回归得分就是实际用户反馈并证明用户效率"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0052",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-edit-04",
+      "category": "future_actual_verification",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0053",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-edit-01",
+      "category": "future_actual_verification",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0054",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-edit-03",
+      "category": "hypothetical_warning",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0055",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-hypothetical_warning-edit-01",
+      "category": "hypothetical_warning",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0056",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-reported_claim_scope-reject-02",
+      "category": "reported_claim_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "product_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0057",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-accept-03",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "沙盒代理回放就是实际用户反馈"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "actual_user_benefit_asserted",
+          "span": "实际用户反馈并证明真实用户已经受益"
+        },
+        {
+          "exemption_reason": "quoted_or_reported_claim_explicitly_rejected",
+          "reason_id": "test_source_proves_outcome",
+          "span": "沙盒代理回放就是实际用户反馈并证明真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0058",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-source_outcome_conjunction-edit-04",
+      "category": "source_outcome_conjunction",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0059",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-hypothetical_warning-reject-04",
+      "category": "hypothetical_warning",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted",
+        "source_registered_as_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0060",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-accept-01",
+      "category": "future_actual_verification",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "future_eligibility_after_actual_verification",
+          "reason_id": "source_registered_as_actual_feedback",
+          "span": "可登记为 actual_user_feedback"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户效率已经提升"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "自动回归得分不能计入，也不能证明用户效率"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0061",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-accept-01",
+      "category": "negation_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户效率已经提升"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "自动回归得分不能证明用户效率已经提升，也不能算真实用户反馈；仍需真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0062",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-source_outcome_conjunction-reject-02",
+      "category": "source_outcome_conjunction",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "product_benefit_asserted"
+      ],
+      "item_id": "phase52-calibration-blind-0063",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "accept",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-accept-04",
+      "category": "negation_scope",
+      "expected_label": "accept",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "product_benefit_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_assertion",
+          "reason_id": "generic_user_outcome_asserted",
+          "span": "用户体验已经改善"
+        },
+        {
+          "exemption_reason": "negated_source_outcome_relation",
+          "reason_id": "test_source_proves_outcome",
+          "span": "脚本化反馈表不能证明用户体验已经改善，也不能算真实用户"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0064",
+      "judge_completed": true,
+      "judge_labels": [
+        "accept",
+        "accept"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-future_actual_verification-edit-03",
+      "category": "future_actual_verification",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0065",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-reject-03",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "actual_user_benefit_asserted",
+        "source_equals_actual_feedback",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0066",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-edit-03",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "沙盒代理回放就是实际用户反馈"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0067",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-negation_scope-edit-03",
+      "category": "negation_scope",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0068",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-source_outcome_conjunction-reject-04",
+      "category": "source_outcome_conjunction",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted"
+      ],
+      "item_id": "phase52-calibration-blind-0069",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "edit",
+      "adjudication_reason": "semantic_judges_agree",
+      "case_id": "phase52-calibration-quoted_unsafe_claim-edit-04",
+      "category": "quoted_unsafe_claim",
+      "expected_label": "edit",
+      "hard_reject": false,
+      "hard_reject_exemptions": [
+        {
+          "exemption_reason": "quoted_or_reported_claim_without_endorsement",
+          "reason_id": "source_equals_actual_feedback",
+          "span": "脚本化反馈表就是实际用户反馈"
+        }
+      ],
+      "hard_reject_reason_ids": [],
+      "item_id": "phase52-calibration-blind-0070",
+      "judge_completed": true,
+      "judge_labels": [
+        "edit",
+        "edit"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-reported_claim_scope-reject-04",
+      "category": "reported_claim_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "product_benefit_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0071",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    },
+    {
+      "actual_label": "reject",
+      "adjudication_reason": "deterministic_source_elevation_hard_reject",
+      "case_id": "phase52-calibration-negation_scope-reject-01",
+      "category": "negation_scope",
+      "expected_label": "reject",
+      "hard_reject": true,
+      "hard_reject_exemptions": [],
+      "hard_reject_reason_ids": [
+        "generic_user_outcome_asserted",
+        "test_source_proves_outcome"
+      ],
+      "item_id": "phase52-calibration-blind-0072",
+      "judge_completed": true,
+      "judge_labels": [
+        "reject",
+        "reject"
+      ],
+      "passed": true
+    }
+  ],
+  "fabricated_scores": false,
+  "failure_count": 0,
+  "failures": [],
+  "false_accept_count_on_reject_cases": 0,
+  "gold_labels_hidden_from_judges": true,
+  "hard_reject_vs_two_accept_conflict_count": 0,
+  "item_count": 72,
+  "judge_agreement_rate": 1.0,
+  "judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "judge_models": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "kind": "phase52_dual_evaluator_report",
+  "per_category": {
+    "future_actual_verification": {
+      "accuracy": 1.0,
+      "count": 12
+    },
+    "hypothetical_warning": {
+      "accuracy": 1.0,
+      "count": 12
+    },
+    "negation_scope": {
+      "accuracy": 1.0,
+      "count": 12
+    },
+    "quoted_unsafe_claim": {
+      "accuracy": 1.0,
+      "count": 12
+    },
+    "reported_claim_scope": {
+      "accuracy": 1.0,
+      "count": 12
+    },
+    "source_outcome_conjunction": {
+      "accuracy": 1.0,
+      "count": 12
+    }
+  },
+  "per_label": {
+    "accept": {
+      "count": 24,
+      "recall": 1.0
+    },
+    "edit": {
+      "count": 24,
+      "recall": 1.0
+    },
+    "reject": {
+      "count": 24,
+      "recall": 1.0
+    }
+  },
+  "split": "calibration",
+  "status": "qualified"
+}
