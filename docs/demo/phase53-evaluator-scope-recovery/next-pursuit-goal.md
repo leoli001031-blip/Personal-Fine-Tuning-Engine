@@ -1,0 +1,3 @@
+# Next Pursuit Goal
+
+Build Phase54 as a typed proposition-extraction evaluator rather than adding more direct-label prompt examples. Have both semantic judges return structured fields for source eligibility, current benefit assertion, suspended or negated outcome, and explicit provenance boundary; compose accept/edit/reject deterministically from those fields. Use all Phase51-53 holdouts as historical diagnostics only, freeze a completely new calibration and independent holdout, and keep zero false accepts plus zero hard-rule overrides. Do not replay runtime outputs, design a boundary clause, train, attach Hermes, or change the product default.

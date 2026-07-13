@@ -1,0 +1,42 @@
+{
+  "adjudication": "hard_reject_then_agreement_else_reject_over_edit_over_accept",
+  "boundary_clause_design_allowed": false,
+  "calibration_accuracy_gate": 0.97,
+  "categories": [
+    "postposed_negation",
+    "mixed_affirmative_negative_clauses",
+    "punctuation_dependent_scope"
+  ],
+  "false_accept_gate_on_reject_cases": 0,
+  "hard_reject_false_positive_gate": 0,
+  "hard_reject_recall_gate": 1.0,
+  "hard_reject_vs_two_accept_conflict_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_may_be_called_once": true,
+  "judges_receive_gold_label": false,
+  "judges_receive_other_judge_identity": false,
+  "kind": "phase53_frozen_scope_recovery_protocol",
+  "labels": [
+    "accept",
+    "edit",
+    "reject"
+  ],
+  "per_category_accuracy_gate": 0.9,
+  "phase51_runtime_replay_allowed": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "75fd62c828d2174b3b184157ac3465be622cdcf4928cfc78bde0d4f9fa1b0d61",
+  "runtime_prompt_or_router_change_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false
+}
