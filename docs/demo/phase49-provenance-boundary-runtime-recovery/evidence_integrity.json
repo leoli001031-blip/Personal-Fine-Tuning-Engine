@@ -1,0 +1,99 @@
+{
+  "actual_human_review_completed": false,
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "auto_training_allowed": false,
+  "blind": {
+    "comparison_counts": {
+      "compact_v2_vs_compact_v1": 64,
+      "compact_v2_vs_privacy_base": 64
+    },
+    "expected_pair_count": 128,
+    "identity_hidden_from_judge": true,
+    "kind": "phase49_blind_integrity_check",
+    "pair_count": 128,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "scorer_frozen": true,
+    "source_checks": {
+      "phase45_privacy_source": true,
+      "phase46_generic_scorer_source": true,
+      "phase48_compact_v1_source": true,
+      "phase49_source": true
+    }
+  },
+  "calibration": {
+    "case_count": 26,
+    "exact_label_accuracy": 1.0,
+    "status": "passed"
+  },
+  "created_at": "2026-07-13T08:48:28.040542+00:00",
+  "critical_evidence_file_count": 52,
+  "critical_evidence_manifest_sha256": "2861d75b3cda62e1252ee2b585902561df1063123f249b6ae0a7b991fb74a397",
+  "decision": "hold_provenance_compact_v2",
+  "independent_judge_completed_pair_count": 128,
+  "invalidated_scorer_debug_attempt": {
+    "actual_model_call_count": 192,
+    "formal_result_eligible": false,
+    "holdout_sha256": "82e233e06dbf093836072e154c83732054385dfcdae26f234da929849fdac87c",
+    "passed": true,
+    "reason": "The frozen scorer treated valid boundary paraphrases such as no user feedback and no product-benefit claim as edit. The observed holdout is invalidated before scorer repair and will not be reused for formal evaluation.",
+    "status": "invalidated_and_preserved",
+    "transcript_sha256": "151f44432997761fba0e5a9668596930c9d6a42ae74eb97b683935a3018d1d04"
+  },
+  "kind": "phase49_evidence_integrity",
+  "passed": true,
+  "phase48_canonical": {
+    "manifest_matches_snapshot": true,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "passed": true,
+    "recommendation": "hold_compact_runtime"
+  },
+  "simulated_review_count": 24,
+  "split_integrity_passed": true,
+  "training_status": "skipped_by_design",
+  "transcripts": [
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase49-provenance-boundary-runtime-recovery/evidence-real-runtime-ablation/transcripts_base_privacy.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "privacy_base",
+      "sha256": "dbc1da3aa8bbd75cf40819738cc29ac5d33e48f30ee611045ae1e17c0658ba38",
+      "unique_session_id_count": 64,
+      "variant": "base_privacy"
+    },
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase49-provenance-boundary-runtime-recovery/evidence-real-runtime-ablation/transcripts_base_compact_v1.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "compact_v1_latest_intent",
+      "sha256": "53b4a9c7953091deb5b6b1bd5870f0d19e44bf88277daf73d53c76c59fab1dd5",
+      "unique_session_id_count": 64,
+      "variant": "base_compact_v1"
+    },
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase49-provenance-boundary-runtime-recovery/evidence-real-runtime-ablation/transcripts_base_compact_v2.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "compact_v2_evidence_boundary",
+      "sha256": "6001f4f877ec896421924c83bd80b03672d95b956b4fdc01a958d407910db4d8",
+      "unique_session_id_count": 64,
+      "variant": "base_compact_v2"
+    }
+  ]
+}
