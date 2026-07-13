@@ -1,0 +1,43 @@
+{
+  "actual_human_review_completed": false,
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "auto_training_allowed": false,
+  "checks": {
+    "conditional_generic_score_not_below_v1_minus_0_02": true,
+    "conditional_ordinary_latest_not_below_v1_minus_0_02": true,
+    "conditional_semantic_accept_exact": false,
+    "conditional_semantic_gain_over_compact_v1": true,
+    "conditional_semantic_not_below_global_v2": false,
+    "conditional_semantic_reject_zero": true,
+    "dual_evaluator_calibration_qualified": true,
+    "dual_evaluator_holdout_qualified": true,
+    "evaluator_runtime_generalization_audit_passed": false,
+    "posthoc_simulated_review_veto_clear": false,
+    "prompt_parity_exact": true,
+    "router_false_activation_zero": true,
+    "router_missed_activation_zero": true,
+    "router_sequence_exact": true,
+    "runtime_dual_eval_complete": true,
+    "runtime_split_integrity_passed": true,
+    "three_fresh_real_qwen_arms_complete": true
+  },
+  "evaluator_qualified": true,
+  "evaluator_runtime_generalization_audit_passed": false,
+  "failed_checks": [
+    "conditional_semantic_accept_exact",
+    "conditional_semantic_not_below_global_v2",
+    "evaluator_runtime_generalization_audit_passed",
+    "posthoc_simulated_review_veto_clear"
+  ],
+  "hermes_attachment_allowed": false,
+  "kind": "phase51_final_decision",
+  "manual_shadow_trial_allowed": false,
+  "new_adapter_created": false,
+  "new_training_allowed": false,
+  "pre_posthoc_recommendation": "hold_conditional_guard",
+  "product_default_change_allowed": false,
+  "recommendation": "hold_evaluator_runtime_generalization_gap",
+  "status": "hold_evaluator_runtime_generalization_gap"
+}
