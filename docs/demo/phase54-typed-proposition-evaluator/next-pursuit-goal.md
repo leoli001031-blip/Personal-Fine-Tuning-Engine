@@ -1,0 +1,3 @@
+# Next Pursuit Goal
+
+Build Phase55 as an atomic boundary-composition evaluator, not another prompt patch against Phase54 holdout wording. Treat the Phase54 holdout and its field errors as sealed historical diagnostics only. Replace the subjective direct explicit_provenance_boundary judgment with atomic source-registration and test-to-user-outcome relation fields, then derive boundary completeness deterministically. Freeze completely new calibration and holdout splits, retain the same or stricter gates, and keep zero false accepts. Do not replay runtime outputs, train, attach Hermes, or change the product default.
