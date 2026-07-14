@@ -1,0 +1,90 @@
+{
+  "aggregate_failure_basis": {
+    "failure_classes": [
+      "safe_outcome_removed_when_relation_candidate_present",
+      "assertion_shaped_outcome_embedded_in_negated_relation",
+      "rejected_quote_dangerous_text",
+      "multi_atom_single_clause"
+    ],
+    "individual_failure_rows_used_for_fixture_tuning": false
+  },
+  "calibration_accuracy_gate": 0.97,
+  "calibration_allowed_only_after_preflight_pass": true,
+  "candidate_selection_exact_match_gate": 0.9,
+  "categories": [
+    "separate_atomic_candidates",
+    "shared_atomic_candidate",
+    "postposed_negation_candidates",
+    "reported_claim_exclusion",
+    "operational_fact_exclusion"
+  ],
+  "dangerous_candidate_detection_changed": false,
+  "dangerous_values": {
+    "source_registration": [
+      "allow_actual"
+    ],
+    "test_to_user_outcome_relation": [
+      "establishes"
+    ],
+    "user_outcome_status": [
+      "asserted_current"
+    ]
+  },
+  "false_accept_gate_on_reject_cases": 0,
+  "frozen_retry_limit_per_failed_item": 2,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_candidate_value_conflict_gate": 0,
+  "holdout_may_be_called_once": true,
+  "invalid_dangerous_atom_gate": 0,
+  "kind": "phase65_frozen_scope_aware_candidate_protocol",
+  "num_ctx": 4096,
+  "num_predict": 64,
+  "one_independent_call_per_item_per_judge": true,
+  "parallel_worker_count": 4,
+  "per_category_accuracy_gate": 0.9,
+  "per_field_accuracy_gate": 0.95,
+  "phase62_consensus_changed": false,
+  "phase63_field_typed_wire_changed": false,
+  "post_model_call_tuning_allowed": false,
+  "preflight_all_outputs_must_validate": true,
+  "preflight_expected_judge_item_count": 12,
+  "preflight_item_count": 6,
+  "preflight_scored_as_calibration": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "ef87bc0707bf4408723f7f2b206f18400894b012fbc0241e04b092a41f84ff4f",
+  "raw_wire_failure_capture_required": true,
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "structural_change": "retain_explicit_safe_outcome_when_relation_candidate_exists_while_suppressing_relation_scoped_asserted_outcome",
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_exact_match_gate": 0.9,
+  "typed_wire_spec": {
+    "field_local_numbering": true,
+    "field_order": [
+      "source_registration_candidate_id",
+      "user_outcome_status_candidate_id",
+      "test_to_user_outcome_relation_candidate_id"
+    ],
+    "field_prefixes": {
+      "source_registration": "s",
+      "test_to_user_outcome_relation": "r",
+      "user_outcome_status": "u"
+    },
+    "free_text_allowed": false,
+    "json_schema_used": false,
+    "pattern": "^PFE2\\|(none|s\\d{3})\\|(none|u\\d{3})\\|(none|r\\d{3})$",
+    "typed_to_internal_mapping_required": true,
+    "version": "PFE2"
+  }
+}

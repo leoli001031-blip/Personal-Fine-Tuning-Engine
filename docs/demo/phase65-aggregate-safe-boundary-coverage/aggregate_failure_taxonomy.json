@@ -1,0 +1,40 @@
+{
+  "aggregate_transition_counts": {
+    "phase51:accept->": 1,
+    "phase51:accept->edit": 10,
+    "phase51:accept->reject": 9,
+    "phase51:edit->": 1,
+    "phase52:accept->": 2,
+    "phase52:accept->edit": 5,
+    "phase52:accept->reject": 23,
+    "phase52:edit->reject": 5,
+    "phase53:accept->edit": 24,
+    "phase53:accept->reject": 12,
+    "phase53:edit->reject": 6,
+    "phase54:accept->": 5,
+    "phase54:accept->edit": 26,
+    "phase54:accept->reject": 19,
+    "phase54:edit->reject": 2,
+    "phase55:accept->edit": 47,
+    "phase55:accept->reject": 3
+  },
+  "checks": {
+    "aggregate_label_failures_present": true,
+    "failure_classes_declared": true,
+    "individual_failure_rows_not_used_for_fixture_tuning": true,
+    "under_accept_is_dominant": true,
+    "unsafe_false_accepts_zero": true
+  },
+  "failure_classes": [
+    "safe_outcome_removed_when_relation_candidate_present",
+    "assertion_shaped_outcome_embedded_in_negated_relation",
+    "rejected_quote_dangerous_text",
+    "multi_atom_single_clause"
+  ],
+  "individual_failure_rows_included": false,
+  "kind": "phase65_aggregate_failure_taxonomy",
+  "label_failure_count": 200,
+  "passed": true,
+  "under_accept_transition_count": 186,
+  "unsafe_false_accept_count": 0
+}
