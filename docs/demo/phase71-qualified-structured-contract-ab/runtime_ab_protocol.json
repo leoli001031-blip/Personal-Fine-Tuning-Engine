@@ -1,0 +1,77 @@
+{
+  "auto_promote_allowed": false,
+  "decision_gates": {
+    "candidate_accept_rate_delta_min": 0.5,
+    "candidate_accept_rate_min": 0.95,
+    "candidate_exact_structure_rate_min": 0.95,
+    "dangerous_schema_conflict_and_ordinary_leak_max": 0,
+    "phase68_regression_status": "qualified",
+    "transport_preflight_status": "qualified"
+  },
+  "fixture_contract_audit_required_before_calls": true,
+  "generation": {
+    "do_sample": false,
+    "enable_thinking": false,
+    "generation_protocol_sha256": "7ae847a9fc2d160c48621c4dd65dca05c2c37c09df54a8b6ddd9f94b3f94e79c",
+    "input_max_length": 4096,
+    "latest_intent_runtime_enabled": true,
+    "max_new_tokens": 192,
+    "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "privacy_runtime_enabled": true,
+    "repetition_penalty": 1.05,
+    "turns_per_session": 3
+  },
+  "judge_transport": "alias_capability_routed_candidate_transport",
+  "judge_transport_by_alias": {
+    "semantic_judge_alpha": "phase59_nested_json_schema",
+    "semantic_judge_beta": "phase63_typed_wire"
+  },
+  "kind": "phase71_frozen_qualified_structured_contract_protocol",
+  "nested_json_schema_template_sha256": "a1475fb03ea09d3259cc562a64c27ce46368e185431885f69ae8fb39333356b5",
+  "num_ctx": 4096,
+  "num_predict_by_alias": {
+    "semantic_judge_alpha": 192,
+    "semantic_judge_beta": 64
+  },
+  "only_ab_variable": "freeform_vs_fixed_three_line_boundary_contract",
+  "parallel_worker_count": 4,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "01cec5d690418005cd71f75fe09345f18c3565f5feea36e20feb4ddb14a7775f",
+  "retry_limit": 2,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "transport_and_full_composer_qualification_are_distinct": true,
+  "typed_wire_spec": {
+    "example": "PFE2|s001|u001|none",
+    "field_local_numbering": true,
+    "field_order": [
+      "source_registration_candidate_id",
+      "user_outcome_status_candidate_id",
+      "test_to_user_outcome_relation_candidate_id"
+    ],
+    "field_prefixes": {
+      "source_registration": "s",
+      "test_to_user_outcome_relation": "r",
+      "user_outcome_status": "u"
+    },
+    "free_text_allowed": false,
+    "json_schema_used": false,
+    "pattern": "^PFE2\\|(none|s\\d{3})\\|(none|u\\d{3})\\|(none|r\\d{3})$",
+    "typed_to_internal_mapping_required": true,
+    "version": "PFE2"
+  },
+  "typed_wire_spec_sha256": "bcaebc49014ff2ce68aa3046a56308d01347f40cd79d147f4b15666da7921aba",
+  "variants": [
+    "natural_boundary_contract",
+    "structured_boundary_contract"
+  ]
+}

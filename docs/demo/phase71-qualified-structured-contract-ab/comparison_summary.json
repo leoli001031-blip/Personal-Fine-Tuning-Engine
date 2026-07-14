@@ -1,0 +1,164 @@
+{
+  "actual_generation_call_count": 288,
+  "actual_judge_output_counts": {
+    "phase68_regression": 60,
+    "product": 143,
+    "sparse_preflight": 24
+  },
+  "actual_model_output_count_total": 515,
+  "actual_user_feedback_count": 0,
+  "adapter_created": false,
+  "boundary": {
+    "natural_boundary_contract": {
+      "accept_rate": 0.0556,
+      "completed_count": 35,
+      "count": 36,
+      "dangerous_or_reject_count": 6,
+      "exact_three_line_rate": 0.0,
+      "label_counts": {
+        "accept": 2,
+        "edit": 27,
+        "incomplete": 1,
+        "reject": 6
+      },
+      "per_category": {
+        "benefit_release_request": {
+          "accept_rate": 0.0,
+          "count": 6
+        },
+        "causal_transfer_request": {
+          "accept_rate": 0.0,
+          "count": 6
+        },
+        "feedback_registry_request": {
+          "accept_rate": 0.3333,
+          "count": 6
+        },
+        "quoted_claim_repair": {
+          "accept_rate": 0.0,
+          "count": 6
+        },
+        "reversal_after_unsafe_draft": {
+          "accept_rate": 0.0,
+          "count": 6
+        },
+        "split_atom_completion": {
+          "accept_rate": 0.0,
+          "count": 6
+        }
+      }
+    },
+    "structured_boundary_contract": {
+      "accept_rate": 0.6111,
+      "completed_count": 36,
+      "count": 36,
+      "dangerous_or_reject_count": 3,
+      "exact_three_line_rate": 0.0,
+      "label_counts": {
+        "accept": 22,
+        "edit": 11,
+        "reject": 3
+      },
+      "per_category": {
+        "benefit_release_request": {
+          "accept_rate": 0.6667,
+          "count": 6
+        },
+        "causal_transfer_request": {
+          "accept_rate": 1.0,
+          "count": 6
+        },
+        "feedback_registry_request": {
+          "accept_rate": 1.0,
+          "count": 6
+        },
+        "quoted_claim_repair": {
+          "accept_rate": 0.0,
+          "count": 6
+        },
+        "reversal_after_unsafe_draft": {
+          "accept_rate": 1.0,
+          "count": 6
+        },
+        "split_atom_completion": {
+          "accept_rate": 0.0,
+          "count": 6
+        }
+      }
+    }
+  },
+  "candidate_accept_rate_delta": 0.5555,
+  "device": "mps",
+  "experiment_status": "blocked_at_product_eval",
+  "generation_metrics": {
+    "natural_boundary_contract": {
+      "actual_generation_call_count": 144,
+      "actual_model_session_count": 48,
+      "actual_user_feedback_count": 0,
+      "adapter_loaded": false,
+      "completed_count": 48,
+      "created_at": "2026-07-14T17:02:53.223442+00:00",
+      "device": "mps",
+      "failed_count": 0,
+      "kind": "phase70_real_generation_metrics",
+      "mean_latency_seconds": 1.686,
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "privacy_failure_count": 0,
+      "session_count": 48,
+      "think_leak_session_count": 0,
+      "training_executed": false,
+      "truncated_session_count": 0,
+      "variant": "natural_boundary_contract"
+    },
+    "structured_boundary_contract": {
+      "actual_generation_call_count": 144,
+      "actual_model_session_count": 48,
+      "actual_user_feedback_count": 0,
+      "adapter_loaded": false,
+      "completed_count": 48,
+      "created_at": "2026-07-14T17:08:15.964595+00:00",
+      "device": "mps",
+      "failed_count": 0,
+      "kind": "phase70_real_generation_metrics",
+      "mean_latency_seconds": 2.1142,
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "privacy_failure_count": 0,
+      "session_count": 48,
+      "think_leak_session_count": 0,
+      "training_executed": false,
+      "truncated_session_count": 0,
+      "variant": "structured_boundary_contract"
+    }
+  },
+  "hermes_attached": false,
+  "kind": "phase71_structured_boundary_comparison",
+  "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "only_ab_variable": "freeform_vs_fixed_three_line_boundary_contract",
+  "ordinary_controls": {
+    "natural_boundary_contract": {
+      "boundary_leak_count": 0,
+      "count": 12,
+      "pass_rate": 0.0833
+    },
+    "structured_boundary_contract": {
+      "boundary_leak_count": 0,
+      "count": 12,
+      "pass_rate": 0.0833
+    }
+  },
+  "product_default_changed": false,
+  "qualification": {
+    "phase68_regression": {
+      "accuracy": 1.0,
+      "status": "qualified",
+      "typed_exact_match_rate": 1.0
+    },
+    "sparse_preflight": {
+      "accuracy": 1.0,
+      "candidate_selection_exact_match_rate": 1.0,
+      "status": "qualified"
+    }
+  },
+  "recommendation": "hold_phase71_qualified_structured_contract_ab",
+  "training_executed": false
+}
