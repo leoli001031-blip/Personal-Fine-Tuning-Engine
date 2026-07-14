@@ -1,0 +1,62 @@
+{
+  "auto_promote_allowed": false,
+  "decision_gates": {
+    "boundary_route_recall_min": 1.0,
+    "candidate_accept_rate_delta_min": 0.5,
+    "candidate_accept_rate_min": 1.0,
+    "candidate_dangerous_max": 0,
+    "candidate_exact_structure_rate_min": 1.0,
+    "ordinary_output_identity_min": 1.0,
+    "ordinary_route_false_positive_max": 0.0,
+    "phase68_regression_status": "qualified",
+    "schema_failure_max": 0,
+    "transport_preflight_status": "qualified"
+  },
+  "generation": {
+    "do_sample": false,
+    "enable_thinking": false,
+    "generation_protocol_sha256": "2549e9ff4b195cfa94fb6df736e7b24fd42a9f8fd169bd03ae0f93749f5db5f1",
+    "input_max_length": 4096,
+    "latest_intent_runtime_enabled": true,
+    "max_new_tokens": 192,
+    "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "privacy_runtime_enabled": true,
+    "raw_runtime_variant": "structured_boundary_contract",
+    "repetition_penalty": 1.05,
+    "shared_raw_generation": true,
+    "turns_per_session": 3
+  },
+  "judge_transport": "alias_capability_routed_candidate_transport",
+  "judge_transport_by_alias": {
+    "semantic_judge_alpha": "phase59_nested_json_schema",
+    "semantic_judge_beta": "phase72_explicit_allowed_token_wire"
+  },
+  "kind": "phase72_frozen_deterministic_serializer_protocol",
+  "num_ctx": 4096,
+  "num_predict_by_alias": {
+    "semantic_judge_alpha": 192,
+    "semantic_judge_beta": 64
+  },
+  "only_ab_variable": "deterministic_boundary_serializer_after_shared_raw_generation",
+  "parallel_worker_count": 4,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "dfe9b2bd938dbffde0403d98e1735c9e800c338293e68a8428ba24b392cbc1fe",
+  "retry_limit": 2,
+  "route_audit_required_before_calls": true,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "variants": [
+    "structured_prompt_raw",
+    "deterministic_boundary_serializer"
+  ],
+  "wire_prompt_sha256": "1d6bec99ef5a09ba9e34ec7751c8e92ff8f1972a535be782714f147b57c09da2"
+}
