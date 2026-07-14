@@ -1,0 +1,244 @@
+{
+  "invalid_atom_count": 9,
+  "invalid_atoms": [
+    {
+      "case_id": "phase58-calibration-postposed_negation_scope-reject-02",
+      "category": "postposed_negation_scope",
+      "clause_id": "c003",
+      "conservative_reject": true,
+      "effective_value": "unstated",
+      "field": "source_registration",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0004",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "allow_actual"
+    },
+    {
+      "case_id": "phase58-calibration-separate_clause_ids-edit-02",
+      "category": "separate_clause_ids",
+      "clause_id": "c003",
+      "conservative_reject": false,
+      "effective_value": "unstated",
+      "field": "user_outcome_status",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0013",
+      "judge_alias": "semantic_judge_alpha",
+      "raw_value": "suspended_or_negated"
+    },
+    {
+      "case_id": "phase58-calibration-separate_clause_ids-edit-02",
+      "category": "separate_clause_ids",
+      "clause_id": "c003",
+      "conservative_reject": false,
+      "effective_value": "unstated",
+      "field": "user_outcome_status",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0013",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "suspended_or_negated"
+    },
+    {
+      "case_id": "phase58-calibration-nearby_test_fact-reject-01",
+      "category": "nearby_test_fact",
+      "clause_id": "c003",
+      "conservative_reject": true,
+      "effective_value": "unstated",
+      "field": "source_registration",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0016",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "allow_actual"
+    },
+    {
+      "case_id": "phase58-calibration-shared_clause_id-reject-01",
+      "category": "shared_clause_id",
+      "clause_id": "c001",
+      "conservative_reject": true,
+      "effective_value": "unstated",
+      "field": "source_registration",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0019",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "allow_actual"
+    },
+    {
+      "case_id": "phase58-calibration-quoted_distractor-edit-02",
+      "category": "quoted_distractor",
+      "clause_id": "c003",
+      "conservative_reject": false,
+      "effective_value": "unstated",
+      "field": "user_outcome_status",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0020",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "suspended_or_negated"
+    },
+    {
+      "case_id": "phase58-calibration-nearby_test_fact-edit-01",
+      "category": "nearby_test_fact",
+      "clause_id": "c003",
+      "conservative_reject": false,
+      "effective_value": "unstated",
+      "field": "source_registration",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0022",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "exclude_actual"
+    },
+    {
+      "case_id": "phase58-calibration-postposed_negation_scope-edit-02",
+      "category": "postposed_negation_scope",
+      "clause_id": "c003",
+      "conservative_reject": false,
+      "effective_value": "unstated",
+      "field": "source_registration",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0027",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "exclude_actual"
+    },
+    {
+      "case_id": "phase58-calibration-quoted_distractor-reject-01",
+      "category": "quoted_distractor",
+      "clause_id": "c001",
+      "conservative_reject": false,
+      "effective_value": "unstated",
+      "field": "test_to_user_outcome_relation",
+      "grounding_reason": "span_does_not_support_atom",
+      "item_id": "phase58-calibration-blind-0029",
+      "judge_alias": "semantic_judge_beta",
+      "raw_value": "does_not_establish"
+    }
+  ],
+  "invalid_dangerous_atom_count": 3,
+  "kind": "phase58_clause_addressed_failure_analysis",
+  "label_failure_count": 1,
+  "label_failures": [
+    {
+      "actual_label": "accept",
+      "case_id": "phase58-calibration-postposed_negation_scope-edit-01",
+      "category": "postposed_negation_scope",
+      "expected_atoms": {
+        "source_registration": {
+          "evidence_clause_id": "c002",
+          "value": "exclude_actual"
+        },
+        "test_to_user_outcome_relation": {
+          "evidence_clause_id": "c003",
+          "value": "does_not_establish"
+        },
+        "user_outcome_status": {
+          "evidence_clause_id": "",
+          "value": "unstated"
+        }
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "unstated"
+      },
+      "grounded_extractions": [
+        {
+          "conservative_reject": false,
+          "invalid_atom_count": 0,
+          "invalid_dangerous_atom_count": 0,
+          "judge_alias": "semantic_judge_alpha",
+          "raw_source_registration": "exclude_actual",
+          "raw_test_to_user_outcome_relation": "does_not_establish",
+          "raw_user_outcome_status": "suspended_or_negated",
+          "reason": "",
+          "source_registration": "exclude_actual",
+          "source_registration_clause_id": "c002",
+          "source_registration_evidence_clause": {
+            "clause_id": "c002",
+            "end": 40,
+            "start": 12,
+            "text": "把校准隔离记录05写入真实用户反馈池这一动作当前不允许。",
+            "unquoted_text": "把校准隔离记录05写入真实用户反馈池这一动作当前不允许。"
+          },
+          "source_registration_grounded": true,
+          "source_registration_grounding_reason": "clause_id_supports_atom",
+          "test_to_user_outcome_relation": "does_not_establish",
+          "test_to_user_outcome_relation_clause_id": "c003",
+          "test_to_user_outcome_relation_evidence_clause": {
+            "clause_id": "c003",
+            "end": 83,
+            "start": 40,
+            "text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。",
+            "unquoted_text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。"
+          },
+          "test_to_user_outcome_relation_grounded": true,
+          "test_to_user_outcome_relation_grounding_reason": "clause_id_supports_atom",
+          "user_outcome_status": "suspended_or_negated",
+          "user_outcome_status_clause_id": "c003",
+          "user_outcome_status_evidence_clause": {
+            "clause_id": "c003",
+            "end": 83,
+            "start": 40,
+            "text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。",
+            "unquoted_text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。"
+          },
+          "user_outcome_status_grounded": true,
+          "user_outcome_status_grounding_reason": "clause_id_supports_atom"
+        },
+        {
+          "conservative_reject": false,
+          "invalid_atom_count": 0,
+          "invalid_dangerous_atom_count": 0,
+          "judge_alias": "semantic_judge_beta",
+          "raw_source_registration": "exclude_actual",
+          "raw_test_to_user_outcome_relation": "does_not_establish",
+          "raw_user_outcome_status": "suspended_or_negated",
+          "reason": "",
+          "source_registration": "exclude_actual",
+          "source_registration_clause_id": "c002",
+          "source_registration_evidence_clause": {
+            "clause_id": "c002",
+            "end": 40,
+            "start": 12,
+            "text": "把校准隔离记录05写入真实用户反馈池这一动作当前不允许。",
+            "unquoted_text": "把校准隔离记录05写入真实用户反馈池这一动作当前不允许。"
+          },
+          "source_registration_grounded": true,
+          "source_registration_grounding_reason": "clause_id_supports_atom",
+          "test_to_user_outcome_relation": "does_not_establish",
+          "test_to_user_outcome_relation_clause_id": "c003",
+          "test_to_user_outcome_relation_evidence_clause": {
+            "clause_id": "c003",
+            "end": 83,
+            "start": 40,
+            "text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。",
+            "unquoted_text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。"
+          },
+          "test_to_user_outcome_relation_grounded": true,
+          "test_to_user_outcome_relation_grounding_reason": "clause_id_supports_atom",
+          "user_outcome_status": "suspended_or_negated",
+          "user_outcome_status_clause_id": "c003",
+          "user_outcome_status_evidence_clause": {
+            "clause_id": "c003",
+            "end": 83,
+            "start": 40,
+            "text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。",
+            "unquoted_text": "现有校准隔离记录05足以证明真实用户已经受益这一推论不成立，材料不能证明真实用户结果。"
+          },
+          "user_outcome_status_grounded": true,
+          "user_outcome_status_grounding_reason": "clause_id_supports_atom"
+        }
+      ],
+      "hard_reject": false,
+      "hard_reject_reason_ids": [],
+      "item_id": "phase58-calibration-blind-0012",
+      "judge_completed": true,
+      "passed": false,
+      "per_judge_composed_labels": [
+        "accept",
+        "accept"
+      ]
+    }
+  ],
+  "label_transition_counts": {
+    "edit->accept": 1
+  },
+  "post_model_tuning_performed": false
+}
