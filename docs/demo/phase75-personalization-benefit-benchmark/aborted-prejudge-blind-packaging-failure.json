@@ -1,0 +1,15 @@
+{
+  "attempt_status": "aborted_before_independent_judge_calls",
+  "detected_at_stage": "prepare_eval",
+  "failure": "blind public transcript omitted status and actual_model_call, so the frozen deterministic scorer assigned zero to both sides and all 144 pairs tied",
+  "failed_deterministic_summary_sha256": "98c29678adbdc928012d37517ed6969b7694c2815bef98716d511ba0002e06af",
+  "failed_pre_model_call_freeze_sha256": "149d9302085cb7a5ec31f83ab76f9398892dea4ade6cf05d8d88ab13401878d8",
+  "failed_pair_count": 144,
+  "failed_tie_count": 144,
+  "independent_judge_calls_made": 0,
+  "resolution": "include only identity-neutral completion audit fields in blinded transcripts, add a regression assertion that a known better arm produces nonzero wins, then refreeze and rerun all four generation arms",
+  "old_generation_outputs_reused": false,
+  "score_or_gate_relaxed": false,
+  "actual_user_feedback": false,
+  "simulated_usage": true
+}
