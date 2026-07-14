@@ -1,0 +1,47 @@
+{
+  "checks": {
+    "commands_passed": true,
+    "decision_is_truthful": true,
+    "evidence_integrity_passed": true,
+    "evidence_manifest_matches": true,
+    "full_regression_passed": true
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "-m",
+        "py_compile",
+        "/Users/lichenhao/Desktop/PFE/pfe-core/pfe_core/phase76_conditional_persona_runtime.py",
+        "/Users/lichenhao/Desktop/PFE/tools/phase76_conditional_persona_runtime.py"
+      ],
+      "duration_seconds": 0.029,
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/pytest",
+        "-q",
+        "tests/test_phase76_conditional_persona_runtime.py",
+        "tests/test_phase75_personalization_benefit_benchmark.py",
+        "tests/test_phase45_privacy_multiturn_preference.py"
+      ],
+      "duration_seconds": 3.185,
+      "exit_code": 0,
+      "output": "..............................                                           [100%]\n30 passed in 3.02s\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "duration_seconds": 0.013,
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "kind": "phase76_validation_summary",
+  "status": "passed"
+}
