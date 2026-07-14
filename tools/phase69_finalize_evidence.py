@@ -96,6 +96,11 @@ def _manifest() -> dict[str, Any]:
 def _paired_examples(
     transcripts: Mapping[str, list[dict[str, Any]]], sessions: list[dict[str, Any]]
 ) -> str:
+    def markdown_output(transcript: Mapping[str, Any]) -> str:
+        return "\n".join(
+            line.rstrip() for line in final_assistant_text(transcript).splitlines()
+        )
+
     by_variant = {
         variant: {str(row.get("session_id")): row for row in transcripts[variant]}
         for variant in PHASE69_VARIANTS
@@ -124,11 +129,11 @@ def _paired_examples(
                 "",
                 "**A baseline_runtime**",
                 "",
-                final_assistant_text(by_variant["baseline_runtime"][session_id]),
+                markdown_output(by_variant["baseline_runtime"][session_id]),
                 "",
                 "**B candidate_boundary_contract**",
                 "",
-                final_assistant_text(by_variant["candidate_boundary_contract"][session_id]),
+                markdown_output(by_variant["candidate_boundary_contract"][session_id]),
             ]
         )
     return "\n".join(lines)
