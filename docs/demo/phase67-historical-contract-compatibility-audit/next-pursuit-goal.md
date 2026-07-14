@@ -1,0 +1,3 @@
+# Next Pursuit Goal
+
+Build Phase68 as one aligned candidate-scope recovery. Use only aggregate failure classes from sealed Phase55 regression plus entirely new current-contract calibration and holdout. Keep all individual Phase55 rows sealed until the new candidate rule and split are frozen. Preserve the three-atom deterministic composer, the 0.95 aligned-regression gate, zero false accepts, zero schema failures, and zero candidate conflicts. Do not use Phase51-54 labels as current gold. Do not run runtime A/B, train, attach Hermes, change defaults, or auto-promote unless evaluator qualification is independently established first.

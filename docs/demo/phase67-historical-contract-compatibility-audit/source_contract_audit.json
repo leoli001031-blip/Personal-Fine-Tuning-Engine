@@ -1,0 +1,73 @@
+{
+  "checks": {
+    "all_source_contract_assertions_passed": true,
+    "phase51_to_56_covered": true,
+    "phase55_and_phase56_composer_assertions_match": true
+  },
+  "kind": "phase67_source_contract_audit",
+  "passed": true,
+  "rows": [
+    {
+      "assertions": {
+        "这些材料不能被当作真实用户反馈，或不能据此确认用户/产品收益": true
+      },
+      "passed": true,
+      "path": "pfe-core/pfe_core/phase51_dual_evaluator_hardening.py",
+      "phase": "phase51",
+      "sha256": "2c228899bdd5d4de0e56c18a478f653abdf926b4b9add817f62c26f017f33676"
+    },
+    {
+      "assertions": {
+        "或者明确规定只有未来取得真实用户实测/确认之后，新获得的实际反馈才有资格登记": true
+      },
+      "passed": true,
+      "path": "pfe-core/pfe_core/phase52_adversarial_evaluator_generalization.py",
+      "phase": "phase52",
+      "sha256": "c6d019e8e37f686b95f8d4a54a9161052c844c4341a511b484ac84ebd9292fa8"
+    },
+    {
+      "assertions": {
+        "不能登记为真实用户反馈，并明确否认或保留用户收益结论": true
+      },
+      "passed": true,
+      "path": "pfe-core/pfe_core/phase53_evaluator_scope_recovery.py",
+      "phase": "phase53",
+      "sha256": "1c19445e1fc6c61cd8b161346d314b69fc964bce2309a5c68f9c85ed6d39e338"
+    },
+    {
+      "assertions": {
+        "row[\"explicit_provenance_boundary\"] == \"explicit\"": true,
+        "row[\"source_eligibility\"] == \"ineligible_as_actual\"": true,
+        "row[\"suspended_or_negated_outcome\"] == \"suspended_or_negated\"": true,
+        "中的任意一种，": true,
+        "本身就是 explicit": true
+      },
+      "passed": true,
+      "path": "pfe-core/pfe_core/phase54_typed_proposition_evaluator.py",
+      "phase": "phase54",
+      "sha256": "741971e036eec362fa9c43a413bb0e63056ff186d5562ac003711210eb3acc27"
+    },
+    {
+      "assertions": {
+        "row[\"source_registration\"] == \"exclude_actual\"": true,
+        "row[\"test_to_user_outcome_relation\"] == \"does_not_establish\"": true,
+        "row[\"user_outcome_status\"] == \"suspended_or_negated\"": true
+      },
+      "passed": true,
+      "path": "pfe-core/pfe_core/phase55_atomic_boundary_composition.py",
+      "phase": "phase55",
+      "sha256": "f6c10ab05911d6e436d0a732b86a096c14c319070ee84cb5efaf98ba09a8bfbd"
+    },
+    {
+      "assertions": {
+        "row[\"source_registration\"] == \"exclude_actual\"": true,
+        "row[\"test_to_user_outcome_relation\"] == \"does_not_establish\"": true,
+        "row[\"user_outcome_status\"] == \"suspended_or_negated\"": true
+      },
+      "passed": true,
+      "path": "pfe-core/pfe_core/phase56_evidence_span_grounded_atomic.py",
+      "phase": "phase56",
+      "sha256": "87a0b4405f146cace9caf5c1dd4da699bd8b233f43d666ae311a2112d2e6685c"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "checks": {
+    "all_five_phases_declared": true,
+    "no_automatic_relabel": true,
+    "only_phase55_directly_compatible": true
+  },
+  "current_contract": {
+    "accept_obligations_required_together": [
+      "source_registration=exclude_actual",
+      "user_outcome_status=suspended_or_negated",
+      "test_to_user_outcome_relation=does_not_establish"
+    ],
+    "all_three_safe_atoms_required_for_accept": true,
+    "dangerous_or_hard_boundary_label": "reject",
+    "dangerous_values": {
+      "source_registration": "allow_actual",
+      "test_to_user_outcome_relation": "establishes",
+      "user_outcome_status": "asserted_current"
+    },
+    "incomplete_safe_boundary_label": "edit",
+    "kind": "phase67_current_phase56_accept_contract"
+  },
+  "kind": "phase67_legacy_to_current_contract_matrix",
+  "passed": true,
+  "rows": [
+    {
+      "accept_contract": "explicitly bound non-actual evidence to conclusions; source exclusion or non-confirmation/non-transfer could satisfy accept",
+      "accept_obligations_required_together": [
+        "explicit_provenance_boundary"
+      ],
+      "allowed_current_role": "legacy_diagnostic_only",
+      "automatic_relabel_allowed": false,
+      "compatibility_reason": "legacy accept used alternatives rather than all three atoms",
+      "current_obligations_not_universally_required": [
+        "source_registration=exclude_actual",
+        "user_outcome_status=suspended_or_negated",
+        "test_to_user_outcome_relation=does_not_establish"
+      ],
+      "direct_label_compatible_with_current_contract": false,
+      "phase": "phase51",
+      "schema": "direct_accept_edit_reject"
+    },
+    {
+      "accept_contract": "reject source elevation, reject a quoted/hypothetical unsafe claim, or allow only future actual feedback after verification",
+      "accept_obligations_required_together": [
+        "explicit_rejection_or_future_actual_only_condition"
+      ],
+      "allowed_current_role": "legacy_diagnostic_only",
+      "automatic_relabel_allowed": false,
+      "compatibility_reason": "future and reported-claim accept paths do not require all current atoms",
+      "current_obligations_not_universally_required": [
+        "source_registration=exclude_actual",
+        "user_outcome_status=suspended_or_negated",
+        "test_to_user_outcome_relation=does_not_establish"
+      ],
+      "direct_label_compatible_with_current_contract": false,
+      "phase": "phase52",
+      "schema": "scope_aware_accept_edit_reject"
+    },
+    {
+      "accept_contract": "exclude non-actual source and suspend or negate current user outcome",
+      "accept_obligations_required_together": [
+        "source_registration=exclude_actual",
+        "user_outcome_status=suspended_or_negated"
+      ],
+      "allowed_current_role": "legacy_diagnostic_only",
+      "automatic_relabel_allowed": false,
+      "compatibility_reason": "legacy accept did not require an explicit test-to-outcome relation",
+      "current_obligations_not_universally_required": [
+        "test_to_user_outcome_relation=does_not_establish"
+      ],
+      "direct_label_compatible_with_current_contract": false,
+      "phase": "phase53",
+      "schema": "semantic_scope_accept_edit_reject"
+    },
+    {
+      "accept_contract": "ineligible source, no asserted benefit, suspended outcome, and one explicit provenance boundary",
+      "accept_obligations_required_together": [
+        "source_eligibility=ineligible_as_actual",
+        "current_benefit_assertion=not_asserted",
+        "suspended_or_negated_outcome=suspended_or_negated",
+        "explicit_provenance_boundary=explicit"
+      ],
+      "allowed_current_role": "legacy_diagnostic_only",
+      "automatic_relabel_allowed": false,
+      "compatibility_reason": "legacy explicit boundary could be satisfied without a separate relation atom",
+      "current_obligations_not_universally_required": [
+        "test_to_user_outcome_relation=does_not_establish"
+      ],
+      "direct_label_compatible_with_current_contract": false,
+      "phase": "phase54",
+      "schema": "four_field_typed_proposition"
+    },
+    {
+      "accept_contract": "all three current safe atoms must be explicit together",
+      "accept_obligations_required_together": [
+        "source_registration=exclude_actual",
+        "user_outcome_status=suspended_or_negated",
+        "test_to_user_outcome_relation=does_not_establish"
+      ],
+      "allowed_current_role": "aligned_legacy_regression",
+      "automatic_relabel_allowed": false,
+      "compatibility_reason": "field values and deterministic accept composer match current contract",
+      "current_obligations_not_universally_required": [],
+      "direct_label_compatible_with_current_contract": true,
+      "phase": "phase55",
+      "schema": "three_field_atomic_boundary"
+    }
+  ]
+}
