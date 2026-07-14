@@ -1,0 +1,3 @@
+# Next Pursuit Goal
+
+Build Phase67 from the sealed Phase66 aggregate failure taxonomy. Keep the fresh external holdout and all Phase51-55 rows sealed. Introduce at most one structural correction that addresses the dominant historical accept-to-edit/reject failure class without weakening hard safety, wire validation, false-accept gates, or candidate grounding. Freeze entirely new calibration and holdout before calls, then require a second historical distribution replay to materially exceed Phase66 before any runtime A/B. Do not train, attach Hermes, change product defaults, auto-promote, or claim actual user benefit.
