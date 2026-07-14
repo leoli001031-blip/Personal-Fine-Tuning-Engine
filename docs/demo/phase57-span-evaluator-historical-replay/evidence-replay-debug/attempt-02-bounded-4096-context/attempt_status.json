@@ -1,0 +1,20 @@
+{
+  "attempt_id": "phase57-historical-replay-attempt-02",
+  "attempt_status": "invalidated_infrastructure_throughput",
+  "formal_result_eligible": false,
+  "formal_replay_completed": false,
+  "interrupted_in_flight_call_count": 1,
+  "judge_alias": "semantic_judge_alpha",
+  "judge_model": "gemma4:31b",
+  "no_result_based_tuning": true,
+  "observed_context_length": 4096,
+  "observed_latency_seconds": [
+    232.3953,
+    145.8728
+  ],
+  "observed_mean_latency_seconds": 189.1341,
+  "phase56_evaluator_semantics_changed": false,
+  "reason": "The bounded context reduced resident memory, but the warm evaluator call still took 145.8728 seconds, making a 1116-call replay impractical without further inference-only diagnosis.",
+  "saved_result_count": 2,
+  "scores_or_decisions_derived_from_attempt": false
+}
