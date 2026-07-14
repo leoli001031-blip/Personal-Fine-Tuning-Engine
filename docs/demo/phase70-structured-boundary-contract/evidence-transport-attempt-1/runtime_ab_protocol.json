@@ -1,0 +1,48 @@
+{
+  "auto_promote_allowed": false,
+  "decision_gates": {
+    "candidate_accept_rate_delta_min": 0.5,
+    "candidate_accept_rate_min": 0.95,
+    "candidate_exact_structure_rate_min": 0.95,
+    "dangerous_schema_conflict_and_ordinary_leak_max": 0,
+    "phase68_regression_status": "qualified",
+    "transport_preflight_status": "qualified"
+  },
+  "generation": {
+    "do_sample": false,
+    "enable_thinking": false,
+    "generation_protocol_sha256": "7ae847a9fc2d160c48621c4dd65dca05c2c37c09df54a8b6ddd9f94b3f94e79c",
+    "input_max_length": 4096,
+    "latest_intent_runtime_enabled": true,
+    "max_new_tokens": 192,
+    "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "privacy_runtime_enabled": true,
+    "repetition_penalty": 1.05,
+    "turns_per_session": 3
+  },
+  "json_schema_template_sha256": "a1475fb03ea09d3259cc562a64c27ce46368e185431885f69ae8fb39333356b5",
+  "judge_transport": "ollama_json_schema_candidate_ids",
+  "kind": "phase70_frozen_structured_boundary_protocol",
+  "num_ctx": 4096,
+  "num_predict": 192,
+  "only_ab_variable": "freeform_vs_fixed_three_line_boundary_contract",
+  "parallel_worker_count": 4,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "9d84b0581a6eac542821e815807d24e4524d0373eca478ab94f657b09f080db2",
+  "retry_limit": 2,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "variants": [
+    "natural_boundary_contract",
+    "structured_boundary_contract"
+  ]
+}
