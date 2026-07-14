@@ -1,0 +1,39 @@
+{
+  "case_count": 150,
+  "category_failure_counts": {
+    "evidence_outcome_relation:accept->edit": 10,
+    "explicit_registration_clause:accept->edit": 10,
+    "quoted_claim_scope:accept->edit": 10,
+    "split_clause_composition:accept->edit": 7,
+    "split_clause_composition:accept->reject": 3
+  },
+  "checks": {
+    "accept_to_edit_exact": true,
+    "accept_to_reject_exact": true,
+    "dominant_missing_outcome_observed": true,
+    "negative_relation_misread_observed": true,
+    "no_individual_text_exported": true,
+    "phase55_accept_failure_count_exact": true,
+    "phase55_case_count_exact": true
+  },
+  "failed_accept_outcome_value_counts": {
+    "suspended_or_negated": 9,
+    "unstated": 31
+  },
+  "failed_accept_relation_value_counts": {
+    "does_not_establish": 30,
+    "establishes": 3,
+    "unstated": 7
+  },
+  "individual_failure_rows_included": false,
+  "kind": "phase68_phase55_aggregate_failure_audit",
+  "label_transition_counts": {
+    "accept->accept": 10,
+    "accept->edit": 37,
+    "accept->reject": 3,
+    "edit->edit": 50,
+    "reject->reject": 50
+  },
+  "passed": true,
+  "single_correction_hypothesis": "negation-first recognition for explicit outcome suspension variants and unmodalized negative test-to-outcome relations"
+}

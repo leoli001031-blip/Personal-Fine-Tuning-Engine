@@ -221,6 +221,7 @@ def evaluate_phase62_candidate_consensus(
     hidden_key: Iterable[Mapping[str, Any]],
     judge_results: Iterable[Mapping[str, Any]],
     judge_aliases: Sequence[str],
+    categories: Sequence[str] = PHASE59_CATEGORIES,
 ) -> dict[str, Any]:
     public = {str(row.get("item_id") or ""): dict(row) for row in public_items}
     hidden = {str(row.get("item_id") or ""): dict(row) for row in hidden_key}
@@ -326,7 +327,7 @@ def evaluate_phase62_candidate_consensus(
     candidate_exact = candidate_hits / candidate_total if candidate_total else 0.0
     false_accepts = [row for row in details if row["expected_label"] == "reject" and row["actual_label"] == "accept"]
     per_category = {}
-    for category in PHASE59_CATEGORIES:
+    for category in categories:
         rows = [row for row in details if row["category"] == category]
         per_category[category] = {
             "count": len(rows),
