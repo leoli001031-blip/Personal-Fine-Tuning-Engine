@@ -95,7 +95,10 @@ def build_phase59_proposition_candidates(assistant_response: str) -> list[dict[s
         if any(row["field"] == "test_to_user_outcome_relation" for row in clause_candidates):
             clause_candidates = [
                 row for row in clause_candidates
-                if row["field"] != "user_outcome_status"
+                if not (
+                    row["field"] == "user_outcome_status"
+                    and row["value"] == "asserted_current"
+                )
             ]
         for row in clause_candidates:
             candidates.append({"candidate_id": f"p{len(candidates) + 1:03d}", **row})
