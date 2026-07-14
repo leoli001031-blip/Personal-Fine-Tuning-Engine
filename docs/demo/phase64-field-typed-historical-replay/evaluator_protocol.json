@@ -1,0 +1,55 @@
+{
+  "candidate_value_conflict_gate": 0,
+  "false_accept_gate": 0,
+  "frozen_retry_limit_per_failed_item": 2,
+  "hermes_attachment_allowed": false,
+  "historical_phases": [
+    "phase51",
+    "phase52",
+    "phase53",
+    "phase54",
+    "phase55"
+  ],
+  "historical_replay_may_be_called_once": true,
+  "judges_receive_gold_label": false,
+  "judges_receive_historical_phase": false,
+  "judges_receive_other_judge_identity": false,
+  "judges_return_direct_label": false,
+  "kind": "phase64_frozen_phase63_field_typed_historical_replay_protocol",
+  "num_ctx": 4096,
+  "num_predict": 64,
+  "one_independent_call_per_item_per_judge": true,
+  "overall_accuracy_gate": 0.95,
+  "parallel_dispatch_changes_evaluator_semantics": false,
+  "parallel_worker_count": 4,
+  "per_category_accuracy_gate": 0.9,
+  "per_phase_accuracy_gate": 0.95,
+  "phase56_deterministic_composer_unchanged": true,
+  "phase62_risk_asymmetric_consensus_unchanged": true,
+  "phase63_field_typed_wire_unchanged": true,
+  "post_replay_tuning_allowed": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "f2bafd6c6f00ef6b8c45f51f911d97ce35e39388a25e7724e3524d39f82610b0",
+  "replay_item_count": 558,
+  "resume_allowed_only_after_interruption": true,
+  "runtime_prompt_or_router_change_allowed": false,
+  "runtime_replay_allowed": false,
+  "schema_failure_gate": 0,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_wire_spec": {
+    "candidate_ids_are_field_local": true,
+    "envelope": "PFE2|<source sNNN or none>|<outcome uNNN or none>|<relation rNNN or none>",
+    "typed_ids_mapped_to_frozen_internal_candidates": true,
+    "version": "PFE2"
+  }
+}
