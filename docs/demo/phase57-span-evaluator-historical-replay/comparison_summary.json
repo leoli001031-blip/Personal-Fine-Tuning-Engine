@@ -1,0 +1,143 @@
+{
+  "actual_user_feedback_count": 0,
+  "adapter_created": false,
+  "hermes_attached": false,
+  "kind": "phase57_historical_replay_comparison",
+  "phase56": {
+    "holdout_accuracy": 1.0,
+    "holdout_grounding_validity_rate": 0.99,
+    "holdout_typed_exact_match_rate": 0.99,
+    "recommendation": "recommend_phase56_span_evaluator_for_manual_review_only"
+  },
+  "phase57": {
+    "false_accept_count": 0,
+    "grounding_validity_rate": 0.79,
+    "hard_vs_two_safe_accept_conflict_count": 0,
+    "historical_replay_accuracy": 0.6505,
+    "invalid_atom_count": 703,
+    "invalid_dangerous_atom_count": 147,
+    "ollama_endpoint": "http://127.0.0.1:11435",
+    "parallel_worker_count": 4,
+    "per_category": {
+      "phase51:phase51_legacy_boundary": {
+        "accuracy": 0.6667,
+        "count": 60
+      },
+      "phase52:future_actual_verification": {
+        "accuracy": 0.6667,
+        "count": 15
+      },
+      "phase52:hypothetical_warning": {
+        "accuracy": 0.6667,
+        "count": 15
+      },
+      "phase52:negation_scope": {
+        "accuracy": 0.6667,
+        "count": 15
+      },
+      "phase52:quoted_unsafe_claim": {
+        "accuracy": 0.6667,
+        "count": 15
+      },
+      "phase52:reported_claim_scope": {
+        "accuracy": 0.6667,
+        "count": 15
+      },
+      "phase52:source_outcome_conjunction": {
+        "accuracy": 0.6667,
+        "count": 15
+      },
+      "phase53:mixed_affirmative_negative_clauses": {
+        "accuracy": 0.5833,
+        "count": 36
+      },
+      "phase53:postposed_negation": {
+        "accuracy": 0.6111,
+        "count": 36
+      },
+      "phase53:punctuation_dependent_scope": {
+        "accuracy": 0.5556,
+        "count": 36
+      },
+      "phase54:boundary_completeness": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase54:future_eligibility_condition": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase54:mixed_test_fact_and_outcome": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase54:postposed_suspension": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase54:reported_or_quoted_claim": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase55:evidence_outcome_relation": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase55:explicit_registration_clause": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase55:future_actual_feedback_condition": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase55:quoted_claim_scope": {
+        "accuracy": 0.6667,
+        "count": 30
+      },
+      "phase55:split_clause_composition": {
+        "accuracy": 0.6667,
+        "count": 30
+      }
+    },
+    "per_phase": {
+      "phase51": {
+        "accuracy": 0.6667,
+        "count": 60,
+        "false_accept_count": 0
+      },
+      "phase52": {
+        "accuracy": 0.6667,
+        "count": 90,
+        "false_accept_count": 0
+      },
+      "phase53": {
+        "accuracy": 0.5833,
+        "count": 108,
+        "false_accept_count": 0
+      },
+      "phase54": {
+        "accuracy": 0.6667,
+        "count": 150,
+        "false_accept_count": 0
+      },
+      "phase55": {
+        "accuracy": 0.6667,
+        "count": 150,
+        "false_accept_count": 0
+      }
+    },
+    "phase56_evaluator_unchanged": true,
+    "real_model_call_count": 1116,
+    "request_timeout_seconds": 900,
+    "status": "not_qualified"
+  },
+  "product_default_changed": false,
+  "recommendation": "hold_phase57_span_evaluator_historical_replay",
+  "runtime_replay": {
+    "real_model_call_count": 0,
+    "status": "not_requested_in_phase57"
+  },
+  "runtime_replay_executed": false,
+  "training_executed": false
+}
