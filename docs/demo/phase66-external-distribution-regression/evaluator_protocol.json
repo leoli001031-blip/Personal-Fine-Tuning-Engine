@@ -1,0 +1,72 @@
+{
+  "auto_promote_allowed": false,
+  "candidate_value_conflict_gate": 0,
+  "each_scored_split_may_be_called_once": true,
+  "evaluator_under_test": "phase65_scope_aware_candidates",
+  "external_candidate_exact_gate": 0.9,
+  "external_holdout_accuracy_gate": 0.95,
+  "external_holdout_allowed_only_after_preflight_pass": true,
+  "external_per_category_accuracy_gate": 0.9,
+  "external_per_field_accuracy_gate": 0.95,
+  "external_typed_exact_gate": 0.9,
+  "false_accept_gate": 0,
+  "fresh_external_holdout_count": 150,
+  "frozen_retry_limit_per_failed_item": 2,
+  "hermes_attachment_allowed": false,
+  "historical_overall_accuracy_gate": 0.95,
+  "historical_per_category_accuracy_gate": 0.9,
+  "historical_per_phase_accuracy_gate": 0.95,
+  "historical_phases": [
+    "phase51",
+    "phase52",
+    "phase53",
+    "phase54",
+    "phase55"
+  ],
+  "historical_replay_allowed_only_after_external_qualification": true,
+  "historical_replay_count": 558,
+  "judges_receive_gold_or_phase_identity": false,
+  "kind": "phase66_frozen_external_distribution_protocol",
+  "material_accuracy_delta_from_phase64_gate": 0.2,
+  "num_ctx": 4096,
+  "num_predict": 64,
+  "one_independent_call_per_item_per_judge": true,
+  "parallel_worker_count": 4,
+  "phase56_deterministic_composer_unchanged": true,
+  "phase62_risk_asymmetric_consensus_unchanged": true,
+  "phase63_field_typed_wire_unchanged": true,
+  "phase65_candidate_rule_unchanged": true,
+  "post_model_call_tuning_allowed": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "15e6f0a58bbf09434d6e2036dd310729f0d5be1146fc7a471f4a4f50f49fe633",
+  "resume_allowed_only_after_interruption": true,
+  "runtime_replay_allowed": false,
+  "schema_failure_gate": 0,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "stages": [
+    "preflight",
+    "external_holdout",
+    "historical_replay"
+  ],
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_wire_spec": {
+    "field_local_numbering": true,
+    "field_prefixes": {
+      "source_registration": "s",
+      "test_to_user_outcome_relation": "r",
+      "user_outcome_status": "u"
+    },
+    "free_text_allowed": false,
+    "pattern": "^PFE2\\|(none|s\\d{3})\\|(none|u\\d{3})\\|(none|r\\d{3})$",
+    "version": "PFE2"
+  }
+}
