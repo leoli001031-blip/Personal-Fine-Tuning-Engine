@@ -1,0 +1,248 @@
+{
+  "check_count": 8,
+  "checks": [
+    {
+      "command": [
+        "internal",
+        "phase61_evidence_consistency"
+      ],
+      "duration_seconds": 0.0017,
+      "name": "phase61_evidence_consistency",
+      "output_line_count": 1,
+      "output_sha256": "3cbc87c7681f34db4617feaa2c8801931bc5e42d8d0f560e756dd4cd92885f18",
+      "output_tail": [
+        "integrity=True manifest=True decision=hold_phase61_compact_candidate_wire_protocol preflight=12 calibration=60 holdout=0 raw_failures=0"
+      ],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "-m",
+        "py_compile",
+        "pfe-core/pfe_core/phase61_compact_candidate_wire_protocol.py",
+        "tools/phase61_prepare.py",
+        "tools/phase61_execute.py",
+        "tools/phase61_finalize_evidence.py",
+        "tools/phase61_validate.py",
+        "tests/test_phase61_compact_candidate_wire_protocol.py"
+      ],
+      "duration_seconds": 0.0356,
+      "name": "py_compile",
+      "output_line_count": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": [],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_phase61_compact_candidate_wire_protocol.py",
+        "tests/test_phase60_flat_schema_compatibility.py",
+        "tests/test_phase59_proposition_addressed_grounding.py",
+        "tests/test_phase58_clause_addressed_grounding.py",
+        "tests/test_phase57_span_evaluator_historical_replay.py",
+        "tests/test_phase56_evidence_span_grounded_atomic.py",
+        "tests/test_phase55_atomic_boundary_composition.py",
+        "tests/test_phase54_typed_proposition_evaluator.py",
+        "tests/test_phase53_evaluator_scope_recovery.py",
+        "tests/test_phase52_adversarial_evaluator_generalization.py",
+        "tests/test_phase51_dual_evaluator_hardening.py",
+        "tests/test_phase50_conditional_provenance_guard.py",
+        "tests/test_phase49_provenance_boundary_recovery.py",
+        "tests/test_phase48_compact_intent_runtime.py",
+        "tests/test_phase47_simulated_user_review.py",
+        "tests/test_phase46_runtime_first_latest_intent.py",
+        "tests/test_phase45_privacy_multiturn_preference.py"
+      ],
+      "duration_seconds": 2.9879,
+      "name": "phase61_focused_and_phase60_to_45_regression",
+      "output_line_count": 4,
+      "output_sha256": "67577be1c1a3de7478fd268bee70ea90039b6fa568221b32acdf57355650bf2f",
+      "output_tail": [
+        "........................................................................ [ 36%]",
+        "........................................................................ [ 72%]",
+        "......................................................                   [100%]",
+        "198 passed in 2.73s"
+      ],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "make",
+        "test-unit"
+      ],
+      "duration_seconds": 37.1202,
+      "name": "test_unit",
+      "output_line_count": 1443,
+      "output_sha256": "5c08823ef76aae64e9de9b46a28c67185954c3e060663ddb78ea4c6f7b402d21",
+      "output_tail": [
+        "tests/test_training_real_execution_gate.py::TestSubprocessMaterialization::test_relative_local_paths_are_resolved_before_child_cwd_changes PASSED [ 98%]",
+        "tests/test_training_real_execution_gate.py::TestMLXPreflight::test_mlx_local_model_blocks_when_available_memory_is_too_low PASSED [ 99%]",
+        "tests/test_training_real_execution_gate.py::TestMLXPreflight::test_mlx_small_local_model_uses_lower_memory_floor PASSED [ 99%]",
+        "tests/test_worker_daemon_auto_recovery.py::WorkerDaemonAutoRecoveryTests::test_daemon_status_auto_recovers_stale_daemon_when_enabled PASSED [ 99%]",
+        "tests/test_worker_daemon_auto_recovery.py::WorkerDaemonAutoRecoveryTests::test_daemon_status_respects_auto_recover_disabled_config PASSED [ 99%]",
+        "tests/test_worker_daemon_auto_recovery.py::WorkerDaemonAutoRecoveryTests::test_daemon_status_surfaces_atomic_health_states PASSED [ 99%]",
+        "tests/test_worker_daemon_auto_recovery.py::WorkerDaemonAutoRecoveryTests::test_pipeline_status_does_not_auto_recover_stale_daemon PASSED [ 99%]",
+        "tests/test_worker_daemon_auto_recovery.py::WorkerDaemonAutoRecoveryTests::test_start_daemon_uses_configured_heartbeat_and_lease_settings PASSED [ 99%]",
+        "tests/test_worker_daemon_auto_recovery.py::WorkerDaemonAutoRecoveryTests::test_stop_daemon_waits_for_pid_exit_and_marks_state_inactive PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_daemon_status_keeps_active_lock_when_heartbeat_is_fresh PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_http_surface_exposes_recover_and_restart_controls PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_http_surface_exposes_worker_daemon_controls PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_recover_worker_daemon_blocks_when_backoff_is_active PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_recover_worker_daemon_restarts_when_stale PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_run_worker_daemon_reuses_a_stable_runner_id_for_heartbeats PASSED [ 99%]",
+        "tests/test_worker_daemon_backend.py::WorkerDaemonBackendTests::test_start_and_stop_worker_daemon_persist_runtime_state PASSED [100%]",
+        "",
+        "=============================== warnings summary ===============================",
+        "tests/test_trainer_real_peft_job.py::TrainerRealPeftJobTests::test_run_real_local_peft_training_keeps_artifact_dir_adapter_only",
+        "  /Users/lichenhao/Desktop/PFE/.venv/lib/python3.11/site-packages/peft/tuners/lora/layer.py:2504: UserWarning: fan_in_fan_out is set to False but the target module is `Conv1D`. Setting fan_in_fan_out to True.",
+        "    warnings.warn(",
+        "",
+        "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
+        "=============== 1426 passed, 30 deselected, 1 warning in 35.91s ================"
+      ],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "make",
+        "test-surface"
+      ],
+      "duration_seconds": 19.6607,
+      "name": "test_surface",
+      "output_line_count": 173,
+      "output_sha256": "4c05666ada8b78a50ff3f56959e8fdf5493bab211c97e9d81e9eb090e1932265",
+      "output_tail": [
+        "tests/test_signal_status_surface.py::SignalStatusSurfaceTests::test_collect_cli_status_and_review_use_persisted_signals PASSED [ 87%]",
+        "tests/test_signal_status_surface.py::SignalStatusSurfaceTests::test_collect_stop_disables_signal_ingest_until_reenabled PASSED [ 87%]",
+        "tests/test_signal_status_surface.py::SignalStatusSurfaceTests::test_server_status_surfaces_signal_readiness_and_counts PASSED [ 88%]",
+        "tests/test_signal_status_surface.py::SignalStatusSurfaceTests::test_status_surfaces_signal_quality_filter_counts_and_reasons PASSED [ 88%]",
+        "tests/test_train_queue_surface.py::TrainQueueSurfaceTests::test_auto_train_enqueue_result_is_visible_in_queue_status PASSED [ 89%]",
+        "tests/test_train_queue_surface.py::TrainQueueSurfaceTests::test_queue_prioritizes_earlier_item_when_priority_ties PASSED [ 90%]",
+        "tests/test_train_queue_surface.py::TrainQueueSurfaceTests::test_queue_prioritizes_higher_priority_queued_item PASSED [ 90%]",
+        "tests/test_train_queue_surface.py::TrainQueueSurfaceTests::test_queue_state_machine_tracks_queued_running_completed_and_failed PASSED [ 91%]",
+        "tests/test_train_queue_surface.py::TrainQueueSurfaceTests::test_status_and_http_expose_train_queue_and_candidate_summary PASSED [ 91%]",
+        "tests/test_worker_daemon_cli_surface.py::WorkerDaemonCliSurfaceTests::test_daemon_help_and_status_surface_are_available PASSED [ 92%]",
+        "tests/test_worker_daemon_cli_surface.py::WorkerDaemonCliSurfaceTests::test_daemon_start_stop_history_updates_local_control_plane PASSED [ 93%]",
+        "tests/test_worker_daemon_recovery_surface.py::WorkerDaemonRecoverySurfaceTests::test_daemon_help_lists_recovery_commands PASSED [ 93%]",
+        "tests/test_worker_daemon_recovery_surface.py::WorkerDaemonRecoverySurfaceTests::test_daemon_recover_and_restart_update_local_recovery_state PASSED [ 94%]",
+        "tests/test_worker_daemon_surface.py::WorkerDaemonSurfaceTests::test_chat_page_serves_the_worker_daemon_surface PASSED [ 95%]",
+        "tests/test_worker_daemon_surface.py::WorkerDaemonSurfaceTests::test_chat_shell_exposes_worker_daemon_controls_and_status_card PASSED [ 95%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_http_and_frontend_surface_worker_runner_controls PASSED [ 96%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_http_status_embeds_runner_timeline_in_operations_console PASSED [ 96%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_http_surface_exposes_worker_runner_history PASSED [ 97%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_stale_worker_lock_is_marked_and_can_be_taken_over PASSED [ 98%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_stop_worker_runner_sets_stop_requested_state PASSED [ 98%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_worker_runner_processes_queue_and_surfaces_status PASSED [ 99%]",
+        "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_worker_runner_reentry_is_blocked_when_lock_is_active PASSED [100%]",
+        "",
+        "============================= 162 passed in 19.07s ============================="
+      ],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "make",
+        "test-e2e-mock"
+      ],
+      "duration_seconds": 37.8981,
+      "name": "test_e2e_mock",
+      "output_line_count": 24,
+      "output_sha256": "eaa6351c932444321cc89bc8726b8fe67e6ef3fb0f5ac9ee272d9ff13fbfa138",
+      "output_tail": [
+        ".venv/bin/python -m pytest tests/test_e2e_*.py tests/test_*_e2e.py -v -m \"not integration and not slow\" --tb=short",
+        "============================= test session starts ==============================",
+        "platform darwin -- Python 3.11.15, pytest-8.4.2, pluggy-1.6.0 -- /Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "cachedir: .pytest_cache",
+        "rootdir: /Users/lichenhao/Desktop/PFE",
+        "configfile: pyproject.toml",
+        "plugins: cov-5.0.0, anyio-4.13.0",
+        "collecting ... collected 35 items / 22 deselected / 13 selected",
+        "",
+        "tests/test_first_run_e2e.py::test_first_run_smoke_script_reaches_usable_local_surfaces PASSED [  7%]",
+        "tests/test_first_run_e2e.py::test_first_run_smoke_can_stop_after_auto_train_queue PASSED [ 15%]",
+        "tests/test_first_run_e2e.py::test_real_local_readiness_smoke_script_reaches_preview_surfaces PASSED [ 23%]",
+        "tests/test_first_run_e2e.py::test_studio_model_path_smoke_script_reaches_api_handoff PASSED [ 30%]",
+        "tests/test_first_run_e2e.py::test_server_live_smoke_script_probes_http_surfaces PASSED [ 38%]",
+        "tests/test_first_run_e2e.py::test_dashboard_console_live_smoke_script_probes_frontend_contracts PASSED [ 46%]",
+        "tests/test_first_run_e2e.py::test_real_local_happy_path_smoke_skips_without_model_path PASSED [ 53%]",
+        "tests/test_first_run_e2e.py::test_browser_ui_live_smoke_skips_without_playwright PASSED [ 61%]",
+        "tests/test_first_run_e2e.py::test_real_local_happy_path_smoke_strict_fails_without_model_path PASSED [ 69%]",
+        "tests/test_first_run_e2e.py::test_browser_ui_live_smoke_strict_fails_without_playwright PASSED [ 76%]",
+        "tests/test_trainer_export_server_e2e.py::TrainerExportServerE2ETests::test_gguf_export_command_plan_records_runner_and_audit_metadata PASSED [ 84%]",
+        "tests/test_trainer_export_server_e2e.py::TrainerExportServerE2ETests::test_serve_runtime_metadata_and_launch_mode_are_consistent_with_probe PASSED [ 92%]",
+        "tests/test_trainer_export_server_e2e.py::TrainerExportServerE2ETests::test_trainer_real_execution_fallback_records_audit_and_persisted_meta PASSED [100%]",
+        "",
+        "====================== 13 passed, 22 deselected in 37.43s ======================"
+      ],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "make",
+        "smoke-beta"
+      ],
+      "duration_seconds": 35.7533,
+      "name": "smoke_beta",
+      "output_line_count": 1685,
+      "output_sha256": "f55443be06dc0b2b22d7b68c2cc31d0c4aabbbf79a48bcbfaffdcbde4cc76c61",
+      "output_tail": [
+        "chat_resolved_model: /private/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-doe94_7n/models/studio-local",
+        ".venv/bin/python tools/server_live_smoke.py",
+        "workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-server-live-smoke-io80b4bf",
+        "python:  /Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "",
+        "SERVER LIVE SMOKE PASSED",
+        "workspace: server_live",
+        "version:   20260714-001",
+        "base_url:  http://127.0.0.1:58070",
+        "manifest:  /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-server-live-smoke-io80b4bf/.pfe/adapters/server_live/20260714-001/adapter_manifest.json",
+        "sdk_chunks: 5",
+        "sdk_finish: stop",
+        "sdk_content: [base] 关于“Give me one SDK-streamed next step.”，我会先给出一个通用、稳妥的基础回答。",
+        ".venv/bin/python tools/dashboard_console_live_smoke.py",
+        "workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-dashboard-console-live-smoke-anbcr9ik",
+        "python:  /Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "",
+        "DASHBOARD CONSOLE LIVE SMOKE PASSED",
+        "workspace:     dashboard_console_live",
+        "version:       20260714-001",
+        "base_url:      http://127.0.0.1:58090",
+        "dashboard_api: ok",
+        "chat_feedback: ok",
+        "[transformers] `torch_dtype` is deprecated! Use `dtype` instead!"
+      ],
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "duration_seconds": 0.0149,
+      "name": "git_diff_check",
+      "output_line_count": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": [],
+      "passed": true,
+      "returncode": 0
+    }
+  ],
+  "created_at": "2026-07-14T09:25:21.922190+00:00",
+  "failed_count": 0,
+  "kind": "phase61_validation_summary",
+  "passed_count": 8,
+  "status": "passed"
+}
