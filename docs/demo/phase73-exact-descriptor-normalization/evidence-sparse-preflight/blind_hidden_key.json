@@ -1,0 +1,390 @@
+{
+  "items": [
+    {
+      "case_id": "phase73-wire-01",
+      "category": "all_none",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-001"
+    },
+    {
+      "case_id": "phase73-wire-02",
+      "category": "source_safe",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-002"
+    },
+    {
+      "case_id": "phase73-wire-03",
+      "category": "outcome_safe",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-003"
+    },
+    {
+      "case_id": "phase73-wire-04",
+      "category": "relation_safe",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p001",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-004"
+    },
+    {
+      "case_id": "phase73-wire-05",
+      "category": "source_outcome",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p002"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-005"
+    },
+    {
+      "case_id": "phase73-wire-06",
+      "category": "source_relation",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "p002",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-006"
+    },
+    {
+      "case_id": "phase73-wire-07",
+      "category": "outcome_relation",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p002",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-007"
+    },
+    {
+      "case_id": "phase73-wire-08",
+      "category": "all_safe",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "p003",
+        "user_outcome_status": "p002"
+      },
+      "expected_label": "accept",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-008"
+    },
+    {
+      "case_id": "phase73-wire-09",
+      "category": "source_dangerous",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "allow_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-009"
+    },
+    {
+      "case_id": "phase73-wire-10",
+      "category": "outcome_dangerous",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "asserted_current"
+      },
+      "item_id": "phase73-wire-010"
+    },
+    {
+      "case_id": "phase73-wire-11",
+      "category": "relation_dangerous",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p001",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "establishes",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-011"
+    },
+    {
+      "case_id": "phase73-wire-12",
+      "category": "quoted_then_safe",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "p003",
+        "user_outcome_status": "p002"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-012"
+    },
+    {
+      "case_id": "phase73-wire-13",
+      "category": "source_safe_variant",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-013"
+    },
+    {
+      "case_id": "phase73-wire-14",
+      "category": "outcome_safe_variant",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-014"
+    },
+    {
+      "case_id": "phase73-wire-15",
+      "category": "relation_safe_variant",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p001",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-015"
+    },
+    {
+      "case_id": "phase73-wire-16",
+      "category": "source_outcome_no_relation",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p002"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-016"
+    },
+    {
+      "case_id": "phase73-wire-17",
+      "category": "source_relation_no_outcome",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "p002",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-017"
+    },
+    {
+      "case_id": "phase73-wire-18",
+      "category": "outcome_relation_no_source",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p002",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "edit",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "does_not_establish",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-018"
+    },
+    {
+      "case_id": "phase73-wire-19",
+      "category": "source_dangerous_variant",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "allow_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-019"
+    },
+    {
+      "case_id": "phase73-wire-20",
+      "category": "outcome_dangerous_variant",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "asserted_current"
+      },
+      "item_id": "phase73-wire-020"
+    },
+    {
+      "case_id": "phase73-wire-21",
+      "category": "relation_dangerous_variant",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p001",
+        "user_outcome_status": "none"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "establishes",
+        "user_outcome_status": "unstated"
+      },
+      "item_id": "phase73-wire-021"
+    },
+    {
+      "case_id": "phase73-wire-22",
+      "category": "dangerous_source_safe_outcome",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p002"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "allow_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "suspended_or_negated"
+      },
+      "item_id": "phase73-wire-022"
+    },
+    {
+      "case_id": "phase73-wire-23",
+      "category": "safe_source_dangerous_outcome",
+      "expected_candidate_ids": {
+        "source_registration": "p001",
+        "test_to_user_outcome_relation": "none",
+        "user_outcome_status": "p002"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "exclude_actual",
+        "test_to_user_outcome_relation": "unstated",
+        "user_outcome_status": "asserted_current"
+      },
+      "item_id": "phase73-wire-023"
+    },
+    {
+      "case_id": "phase73-wire-24",
+      "category": "dangerous_outcome_relation",
+      "expected_candidate_ids": {
+        "source_registration": "none",
+        "test_to_user_outcome_relation": "p002",
+        "user_outcome_status": "p001"
+      },
+      "expected_label": "reject",
+      "expected_typed": {
+        "source_registration": "unstated",
+        "test_to_user_outcome_relation": "establishes",
+        "user_outcome_status": "asserted_current"
+      },
+      "item_id": "phase73-wire-024"
+    }
+  ],
+  "kind": "phase73_evidence-sparse-preflight_hidden_key",
+  "not_sent_to_judges": true
+}
