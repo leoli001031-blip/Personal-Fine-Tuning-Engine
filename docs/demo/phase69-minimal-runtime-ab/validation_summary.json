@@ -70,16 +70,16 @@
         "tests/test_phase46_runtime_first_latest_intent.py",
         "tests/test_phase45_privacy_multiturn_preference.py"
       ],
-      "duration_seconds": 8.025,
+      "duration_seconds": 7.9673,
       "name": "phase69_focused_and_phase68_to45_regression",
       "output_line_count": 5,
-      "output_sha256": "de5ecfca17bb48867c895c7b9acecff0196cc1473efc7b2160bbf39180761873",
+      "output_sha256": "6056c2aba268df84bdb828f425364d0f3260ca8abf52d05b90d5c0810de066e1",
       "output_tail": [
         "........................................................................ [ 28%]",
         "........................................................................ [ 57%]",
         "........................................................................ [ 86%]",
         "..................................                                       [100%]",
-        "250 passed in 7.59s"
+        "250 passed in 7.62s"
       ],
       "passed": true,
       "returncode": 0
@@ -89,10 +89,10 @@
         "make",
         "test-unit"
       ],
-      "duration_seconds": 59.4053,
+      "duration_seconds": 58.6041,
       "name": "test_unit",
-      "output_line_count": 1495,
-      "output_sha256": "5defcd244d2998baf72b486be47f804262e0ebbde6bc23530686059458c05334",
+      "output_line_count": 1501,
+      "output_sha256": "8d35d3dd7ecbcb9a983eda611942a38976c020c09a166853d4b3424071e83104",
       "output_tail": [
         "tests/test_training_real_execution_gate.py::TestSubprocessMaterialization::test_relative_local_paths_are_resolved_before_child_cwd_changes PASSED [ 98%]",
         "tests/test_training_real_execution_gate.py::TestMLXPreflight::test_mlx_local_model_blocks_when_available_memory_is_too_low PASSED [ 99%]",
@@ -117,7 +117,7 @@
         "    warnings.warn(",
         "",
         "-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html",
-        "=============== 1478 passed, 30 deselected, 1 warning in 58.12s ================"
+        "=============== 1484 passed, 30 deselected, 1 warning in 56.71s ================"
       ],
       "passed": true,
       "returncode": 0
@@ -127,10 +127,10 @@
         "make",
         "test-surface"
       ],
-      "duration_seconds": 30.5802,
+      "duration_seconds": 30.098,
       "name": "test_surface",
       "output_line_count": 173,
-      "output_sha256": "ffff90d87072ee241f1f81a564d4c7743abaa7353f14c149d99a794f3491f021",
+      "output_sha256": "dbdacbcd3d637621c93b08627f01d217286a3be300d3cd86aef6f390d85533bb",
       "output_tail": [
         "tests/test_signal_status_surface.py::SignalStatusSurfaceTests::test_collect_cli_status_and_review_use_persisted_signals PASSED [ 87%]",
         "tests/test_signal_status_surface.py::SignalStatusSurfaceTests::test_collect_stop_disables_signal_ingest_until_reenabled PASSED [ 87%]",
@@ -155,7 +155,7 @@
         "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_worker_runner_processes_queue_and_surfaces_status PASSED [ 99%]",
         "tests/test_worker_runner_surface.py::WorkerRunnerSurfaceTests::test_worker_runner_reentry_is_blocked_when_lock_is_active PASSED [100%]",
         "",
-        "============================= 162 passed in 29.90s ============================="
+        "============================= 162 passed in 29.13s ============================="
       ],
       "passed": true,
       "returncode": 0
@@ -165,10 +165,10 @@
         "make",
         "test-e2e-mock"
       ],
-      "duration_seconds": 61.9689,
+      "duration_seconds": 62.4971,
       "name": "test_e2e_mock",
       "output_line_count": 24,
-      "output_sha256": "f7fe6b2cfa2b25c3bcf2cf30d61f1ebf33890e8118cb7db546d05de91bfeca07",
+      "output_sha256": "7f27eb0e6b2d317c995b0a2c16c16e0d1ebc83f1cc8c09f8465bf1c8ee8b07a6",
       "output_tail": [
         ".venv/bin/python -m pytest tests/test_e2e_*.py tests/test_*_e2e.py -v -m \"not integration and not slow\" --tb=short",
         "============================= test session starts ==============================",
@@ -193,7 +193,7 @@
         "tests/test_trainer_export_server_e2e.py::TrainerExportServerE2ETests::test_serve_runtime_metadata_and_launch_mode_are_consistent_with_probe PASSED [ 92%]",
         "tests/test_trainer_export_server_e2e.py::TrainerExportServerE2ETests::test_trainer_real_execution_fallback_records_audit_and_persisted_meta PASSED [100%]",
         "",
-        "================= 13 passed, 22 deselected in 61.37s (0:01:01) ================="
+        "================= 13 passed, 22 deselected in 61.34s (0:01:01) ================="
       ],
       "passed": true,
       "returncode": 0
@@ -203,32 +203,32 @@
         "make",
         "smoke-beta"
       ],
-      "duration_seconds": 59.5127,
+      "duration_seconds": 58.4451,
       "name": "smoke_beta",
       "output_line_count": 1685,
-      "output_sha256": "b6cd313e07e1f6f325c74761f7b63c4e5f8459b2a39997dceb10ed890ac27a02",
+      "output_sha256": "88757f3188c6ed4bedc006845291c82737f4c0615ec94d242bd84b7410334073",
       "output_tail": [
-        "chat_resolved_model: /private/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-wotey6s6/models/studio-local",
+        "chat_resolved_model: /private/var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-studio-model-path-jtztwgcy/models/studio-local",
         ".venv/bin/python tools/server_live_smoke.py",
-        "workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-server-live-smoke-9sbuuptu",
+        "workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-server-live-smoke-esxhb9ci",
         "python:  /Users/lichenhao/Desktop/PFE/.venv/bin/python",
         "",
         "SERVER LIVE SMOKE PASSED",
         "workspace: server_live",
-        "version:   20260714-001",
-        "base_url:  http://127.0.0.1:58986",
-        "manifest:  /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-server-live-smoke-9sbuuptu/.pfe/adapters/server_live/20260714-001/adapter_manifest.json",
+        "version:   20260715-001",
+        "base_url:  http://127.0.0.1:61257",
+        "manifest:  /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-server-live-smoke-esxhb9ci/.pfe/adapters/server_live/20260715-001/adapter_manifest.json",
         "sdk_chunks: 5",
         "sdk_finish: stop",
         "sdk_content: [base] 关于“Give me one SDK-streamed next step.”，我会先给出一个通用、稳妥的基础回答。",
         ".venv/bin/python tools/dashboard_console_live_smoke.py",
-        "workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-dashboard-console-live-smoke-stec5gx7",
+        "workdir: /var/folders/3s/4nftc3d52xd3j1yqbm1gf78m0000gn/T/pfe-dashboard-console-live-smoke-3lzo98dj",
         "python:  /Users/lichenhao/Desktop/PFE/.venv/bin/python",
         "",
         "DASHBOARD CONSOLE LIVE SMOKE PASSED",
         "workspace:     dashboard_console_live",
-        "version:       20260714-001",
-        "base_url:      http://127.0.0.1:59009",
+        "version:       20260715-001",
+        "base_url:      http://127.0.0.1:61293",
         "dashboard_api: ok",
         "chat_feedback: ok",
         "[transformers] `torch_dtype` is deprecated! Use `dtype` instead!"
@@ -242,7 +242,7 @@
         "diff",
         "--check"
       ],
-      "duration_seconds": 0.0299,
+      "duration_seconds": 0.2004,
       "name": "git_diff_check",
       "output_line_count": 0,
       "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -251,7 +251,7 @@
       "returncode": 0
     }
   ],
-  "created_at": "2026-07-14T15:40:27.719381+00:00",
+  "created_at": "2026-07-14T16:08:56.301798+00:00",
   "failed_count": 0,
   "kind": "phase69_validation_summary",
   "passed_count": 8,
