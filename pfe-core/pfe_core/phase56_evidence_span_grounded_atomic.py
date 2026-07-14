@@ -172,11 +172,19 @@ _DANGEROUS_VALUES = {
 _REGISTRATION_TARGET = re.compile(r"(?:actual_user_feedback|真实(?:用户)?反馈|实际用户反馈|真实反馈池)")
 _REGISTRATION_EXCLUSION = re.compile(r"(?:不能|不得|不允许|不可|拒绝|排除|不接纳|不计入|不进入|不写入|只保留|仅保留)")
 _REGISTRATION_ALLOWANCE = re.compile(r"(?:可以|允许|接纳|计入|进入|归入|纳入|登记为|写入)")
-_OUTCOME_SUBJECT = re.compile(r"(?:用户|产品收益|产品价值|实际使用|真实使用)")
+_OUTCOME_SUBJECT = re.compile(
+    r"(?:用户|该结果|用户结果|产品收益|产品价值|产品使用|产品侧|产品结果|实际使用|实际协作|真实使用)"
+)
 _OUTCOME_ASSERTION = re.compile(r"(?:已经|已|得到确认|成立|实现|改善|提升|更优|受益)")
-_OUTCOME_SUSPENSION = re.compile(r"(?:未确认|尚未确认|未验证|尚未验证|待核验|待验证|不成立|不能确认)")
+_OUTCOME_SUSPENSION = re.compile(
+    r"(?:未确认|尚未确认|未获确认|尚未获确认|未验证|尚未验证|无实际验证|"
+    r"保持未验证|尚待|仍待|待.{0,12}(?:核验|验证|实测|确认)|不成立|不能确认)"
+)
 _RELATION_VERB = re.compile(r"(?:证明|支持|推出|外推|推导|证据链|足以说明|足以确认)")
-_RELATION_NEGATION = re.compile(r"(?:不能|无法|不足以|不可|没有|不具备).{0,12}(?:证明|支持|推出|外推|推导|证据链|说明|确认)")
+_RELATION_NEGATION = re.compile(
+    r"(?:不能|无法|不足以|不可|没有|不具备|未能|不).{0,12}"
+    r"(?:证明|支持|推出|外推|推导|证据链|说明|确认|构成)"
+)
 _REPORTED_REJECTION = re.compile(r"(?:不代表认可|不采纳|不接受|只作转述|仅作转述|拒绝该引文)")
 
 
