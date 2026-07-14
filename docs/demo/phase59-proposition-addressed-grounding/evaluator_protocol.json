@@ -1,0 +1,121 @@
+{
+  "calibration_accuracy_gate": 0.97,
+  "candidate_selection_exact_match_gate": 0.9,
+  "categories": [
+    "separate_atomic_candidates",
+    "shared_atomic_candidate",
+    "postposed_negation_candidates",
+    "reported_claim_exclusion",
+    "operational_fact_exclusion"
+  ],
+  "composer_received_ungrounded_atom_gate": 0,
+  "false_accept_gate_on_reject_cases": 0,
+  "fixture_semantic_ambiguity_gate": 0,
+  "hard_rule_safe_false_positive_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_may_be_called_once": true,
+  "invalid_dangerous_atom_gate": 0,
+  "judges_receive_gold_candidate_ids": false,
+  "judges_receive_gold_label": false,
+  "judges_receive_gold_typed_fields": false,
+  "judges_receive_other_judge_identity": false,
+  "judges_return_direct_label": false,
+  "kind": "phase59_frozen_proposition_candidate_protocol",
+  "num_ctx": 4096,
+  "num_predict": 192,
+  "ollama_json_schema_template": {
+    "additionalProperties": false,
+    "properties": {
+      "reason": {
+        "type": "string"
+      },
+      "source_registration": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "enum": [
+              "none",
+              "p001"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id"
+        ],
+        "type": "object"
+      },
+      "test_to_user_outcome_relation": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "enum": [
+              "none",
+              "p003"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id"
+        ],
+        "type": "object"
+      },
+      "user_outcome_status": {
+        "additionalProperties": false,
+        "properties": {
+          "candidate_id": {
+            "enum": [
+              "none",
+              "p002"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source_registration",
+      "user_outcome_status",
+      "test_to_user_outcome_relation"
+    ],
+    "type": "object"
+  },
+  "one_independent_call_per_item_per_judge": true,
+  "parallel_worker_count": 4,
+  "per_category_accuracy_gate": 0.9,
+  "per_field_accuracy_gate": 0.95,
+  "phase58_aggregate_failure_basis": {
+    "failure_classes": [
+      "unsupported_value_clause_binding",
+      "cross_field_fixture_ambiguity"
+    ],
+    "individual_phase58_rows_used_for_prompt_tuning": false,
+    "invalid_atom_count": 9,
+    "invalid_dangerous_atom_count": 3,
+    "label_failure_count": 1
+  },
+  "post_calibration_tuning_allowed": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "7b74ec3cd75cb09ace025e0c37846ef016474369aa84ff03c512027c6f26a074",
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "structural_change": "pre_ground_field_value_clause_candidates_then_select_candidate_id",
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_exact_match_gate": 0.9
+}
