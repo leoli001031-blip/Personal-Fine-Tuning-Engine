@@ -76,7 +76,7 @@ from .studio_training_contracts import (
 from .studio_training_service import start_training_job as start_studio_training_job
 from pfe_core.inference.contracts import (
     BOUNDARY_CONTRACT_ID,
-    PERSONA_CONTRACT_ID,
+    PERSONA_CONTRACT_IDS,
     build_boundary_contract_fallback,
     build_persona_contract_fallback,
     resolve_response_contract,
@@ -505,7 +505,7 @@ class MockInferenceService:
         contract = resolve_response_contract(metadata=metadata)
         if contract == BOUNDARY_CONTRACT_ID:
             return build_boundary_contract_fallback(messages or [{"role": "user", "content": last_user}], metadata)
-        if contract == PERSONA_CONTRACT_ID:
+        if contract in PERSONA_CONTRACT_IDS:
             return build_persona_contract_fallback(
                 messages or [{"role": "user", "content": last_user}],
                 metadata,
