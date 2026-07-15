@@ -22,9 +22,11 @@ from .contracts import (
     PERSONA_REPETITION_PENALTY,
     PERSONA_V2_CONTRACT_ID,
     PERSONA_V2_MAX_OUTPUT_TOKENS,
+    PERSONA_V3_CONTRACT_ID,
     apply_response_contract,
     enforce_boundary_contract_output,
     enforce_persona_contract_output,
+    enforce_persona_v3_contract_output,
     resolve_response_contract,
 )
 from .export import plan_export
@@ -831,11 +833,15 @@ class InferenceEngine:
             contract_messages, contract_info = apply_response_contract(messages, metadata)
             metadata = {**metadata, "response_contract": response_contract}
             kwargs = {**kwargs, "metadata": metadata}
-        if response_contract in PERSONA_CONTRACT_IDS:
+        persona_route = dict(contract_info.get("route") or {})
+        persona_controls_apply = response_contract in PERSONA_CONTRACT_IDS and not (
+            response_contract == PERSONA_V3_CONTRACT_ID and persona_route.get("routed") is False
+        )
+        if persona_controls_apply:
             requested_max_tokens = kwargs.get("max_tokens") or kwargs.get("max_new_tokens")
             contract_max_tokens = (
                 PERSONA_V2_MAX_OUTPUT_TOKENS
-                if response_contract == PERSONA_V2_CONTRACT_ID
+                if response_contract in {PERSONA_V2_CONTRACT_ID, PERSONA_V3_CONTRACT_ID}
                 else PERSONA_MAX_OUTPUT_TOKENS
             )
             persona_max_tokens = min(
@@ -848,9 +854,17 @@ class InferenceEngine:
                 "repetition_penalty": PERSONA_REPETITION_PENALTY,
                 "no_repeat_ngram_size": PERSONA_NO_REPEAT_NGRAM_SIZE,
             }
-        last_user = next((message.get("content", "") for message in reversed(messages) if message.get("role") == "user"), "")
+        fallback_messages = contract_messages if response_contract in PERSONA_CONTRACT_IDS else messages
+        last_user = next(
+            (
+                message.get("content", "")
+                for message in reversed(fallback_messages)
+                if message.get("role") == "user"
+            ),
+            "",
+        )
         if not last_user:
-            last_user = messages[-1].get("content", "")
+            last_user = fallback_messages[-1].get("content", "")
         real_local_enabled = self._real_local_inference_enabled(metadata)
 
         if real_local_enabled:
@@ -908,6 +922,15 @@ class InferenceEngine:
                         response["text"] = text
                         response["response_contract"] = contract_info
                         response["contract_output"] = contract_output
+                    elif response_contract == PERSONA_V3_CONTRACT_ID:
+                        text, contract_output = enforce_persona_v3_contract_output(
+                            text,
+                            messages=messages,
+                            metadata=metadata,
+                        )
+                        response["text"] = text
+                        response["response_contract"] = contract_info
+                        response["contract_output"] = contract_output
                     elif response_contract in PERSONA_CONTRACT_IDS:
                         text, contract_output = enforce_persona_contract_output(
                             text,
@@ -917,6 +940,8 @@ class InferenceEngine:
                         response["text"] = text
                         response["response_contract"] = contract_info
                         response["contract_output"] = contract_output
+                    response.pop("raw_text", None)
+                    response["raw_output_persisted"] = False
                     self.last_generation_info = dict(response)
                     self.last_generation_info["real_local_enabled"] = True
                     if attempted_failures:
@@ -957,7 +982,24 @@ class InferenceEngine:
             self.last_generation_info["response_contract"] = contract_info
             self.last_generation_info["contract_output"] = contract_output
             return fallback
-        if response_contract in PERSONA_CONTRACT_IDS:
+        if response_contract == PERSONA_V3_CONTRACT_ID:
+            self.last_generation_info["response_contract"] = contract_info
+            if persona_route.get("routed") is True:
+                fallback, contract_output = enforce_persona_v3_contract_output(
+                    "",
+                    messages=messages,
+                    metadata=metadata,
+                )
+                self.last_generation_info["contract_output"] = contract_output
+                return fallback
+            self.last_generation_info["contract_output"] = {
+                "kind": "phase84_factual_completion_guard",
+                "ordinary_passthrough": persona_route.get("reason")
+                in {"latest_explicit_ordinary_action", "inherited_ordinary_context"},
+                "fallback_used": False,
+                "raw_output_persisted": False,
+            }
+        if response_contract in PERSONA_CONTRACT_IDS and response_contract != PERSONA_V3_CONTRACT_ID:
             fallback, contract_output = enforce_persona_contract_output(
                 "",
                 messages=messages,

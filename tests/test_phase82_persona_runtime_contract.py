@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from unittest.mock import patch
 
 from pfe_core.inference.contracts import (
@@ -126,6 +127,8 @@ def test_mock_service_supports_persona_contract_without_private_echo() -> None:
     response = asyncio.run(MockInferenceService().generate_chat_completion(request))
 
     assert secret not in response.choices[0].message.content
+    assert secret not in json.dumps(response.metadata, ensure_ascii=False)
+    assert "declared_private_values" not in response.metadata["request_metadata"]
     assert response.metadata["request_metadata"]["response_contract"] == "contract_persona_guarded"
 
 

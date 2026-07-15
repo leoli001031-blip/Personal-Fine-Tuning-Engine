@@ -81,6 +81,10 @@ from pfe_core.inference.contracts import (
     build_persona_contract_fallback,
     resolve_response_contract,
 )
+from pfe_core.phase77_private_value_guarded_runtime import (
+    guard_phase77_messages,
+    guard_phase77_output,
+)
 from pfe_core.phase23_runtime_contract_loop import (
     build_runtime_contract_response as build_phase23_runtime_contract_response,
     signal_record_from_contract_feedback as phase23_signal_record_from_contract_feedback,
@@ -420,6 +424,18 @@ class MockInferenceService:
             metadata=metadata,
             messages=[message.model_dump(mode="json") for message in request.messages],
         )
+        declared_private_values = [
+            str(value)
+            for value in metadata.get("declared_private_values") or []
+            if str(value)
+        ]
+        response_metadata = dict(metadata)
+        response_metadata.pop("declared_private_values", None)
+        if declared_private_values:
+            response_metadata["private_value_guard"] = {
+                "declared_private_value_count": len(declared_private_values),
+                "raw_private_value_persisted": False,
+            }
         completion_tokens = max(1, math.ceil(len(reply) / 4))
         prompt_tokens = max(1, math.ceil(sum(len(m.content or "") for m in request.messages) / 4))
         return ChatCompletionResponse(
@@ -441,7 +457,7 @@ class MockInferenceService:
             served_by="mock",
             metadata={
                 "note": "OpenAI-compatible inference only; personalization requires /pfe/signal.",
-                "request_metadata": metadata,
+                "request_metadata": response_metadata,
             },
         )
 
@@ -3324,11 +3340,25 @@ async def handle_chat_completions(
     session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
     request_id = request.request_id or f"req-{uuid4().hex[:8]}"
 
+    declared_private_values = [
+        str(value)
+        for value in dict(request.metadata or {}).get("declared_private_values") or []
+        if str(value)
+    ]
+    retained_user_rows, retained_input_guard = guard_phase77_messages(
+        [{"role": "user", "content": user_message}],
+        declared_private_values,
+    )
+    retained_user_message = str(retained_user_rows[0].get("content") or "")
+    retained_assistant_message, retained_output_guard = guard_phase77_output(
+        assistant_message,
+        declared_private_values,
+    )
     _store_pending_interaction(
         session_id=session_id,
         request_id=request_id,
-        user_message=user_message,
-        assistant_message=assistant_message,
+        user_message=retained_user_message,
+        assistant_message=retained_assistant_message,
         adapter_version=request.adapter_version,
         timestamp=response_start_time,
     )
@@ -3339,6 +3369,9 @@ async def handle_chat_completions(
         "session_id": session_id,
         "request_id": request_id,
         "interaction_stored": True,
+        "declared_private_value_count": len(declared_private_values),
+        "interaction_private_values_redacted": retained_input_guard.get("passed") is True
+        and retained_output_guard.get("passed") is True,
         "response_time_seconds": round(response_time, 3),
     }
     response.metadata = response_metadata
