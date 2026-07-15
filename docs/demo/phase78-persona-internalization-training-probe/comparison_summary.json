@@ -1,0 +1,54 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "adapter_artifact_created": false,
+  "adapter_benefit": "not_evaluated",
+  "created_at": "2026-07-15T08:48:38.160379+00:00",
+  "decision": {
+    "actual_product_benefit_claim_allowed": false,
+    "actual_user_benefit_claim_allowed": false,
+    "actual_user_feedback_count": 0,
+    "adapter_benefit": "not_evaluated_without_artifact",
+    "auto_promotion_allowed": false,
+    "checks": {
+      "completion_boundary_passed": true,
+      "full_regression_passed": true,
+      "holdout_isolation_passed": true,
+      "mps_unavailable_in_current_process": true,
+      "no_adapter_artifact_created": true,
+      "qwen3_4b_attempted_twice": true,
+      "training_quality_passed": true
+    },
+    "failed_checks": [
+      "real_12_step_training_completed",
+      "adapter_artifact_valid",
+      "adapter_benefit_evaluated"
+    ],
+    "hermes_attachment_allowed": false,
+    "kind": "phase78_final_decision",
+    "manual_review_required": true,
+    "next_gate": "phase79_cpu_feasible_persona_internalization_probe",
+    "product_default_changed": false,
+    "promotion_allowed": false,
+    "recommendation": "phase79_cpu_feasible_qwen_persona_probe",
+    "runtime_reference_status": "phase77_qualified_guarded_runtime_reference_unchanged",
+    "simulated_lab_benefit_claim_allowed": false,
+    "simulated_usage": true,
+    "status": "archive_execution_environment_blocked",
+    "training_success": false
+  },
+  "failure_evidence": [
+    "docs/demo/phase78-persona-internalization-training-probe/evidence-failures/probe-12step-attempt-1-cpu-stall.json",
+    "docs/demo/phase78-persona-internalization-training-probe/evidence-failures/probe-12step-attempt-2-cpu-no-truncation-stall.json"
+  ],
+  "holdout_session_count": 48,
+  "kind": "phase78_persona_internalization_comparison",
+  "real_generation_model_call_count": 0,
+  "real_independent_judge_call_count": 0,
+  "real_training_completed": false,
+  "runtime_reference": "Phase77 remains the qualified product behavior reference",
+  "selected_execution_device": "cpu",
+  "selected_model": "Qwen3-4B",
+  "simulated_usage": true,
+  "training_sample_count": 120
+}
