@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-07-15T13:50:50+08:00",
+  "kind": "phase77_judge_runtime",
+  "successful_endpoint": "http://127.0.0.1:11434",
+  "runbook_isolated_endpoint": "http://127.0.0.1:11435",
+  "endpoint_change_altered_prompt_or_gate": false,
+  "reason": "The restricted child Ollama process could not create a Metal command queue. The already-running host Ollama service completed both frozen judge runs without changing model, prompt, blind pairs, or thresholds.",
+  "models": [
+    {
+      "name": "gemma4:31b",
+      "digest": "6316f0629137b426c9d9b853ffc4c8209589f30ee39aebede6285096c0ff47e7",
+      "parameter_size": "31.3B",
+      "quantization": "Q4_K_M",
+      "completed_pair_count": 48,
+      "failure_count": 0
+    },
+    {
+      "name": "qwen3.6:latest",
+      "digest": "07d35212591fc27746f0a317c975a6d68754fb38e9053d82e25f06057af28522",
+      "parameter_size": "36.0B",
+      "quantization": "Q4_K_M",
+      "completed_pair_count": 48,
+      "failure_count": 0
+    }
+  ]
+}
