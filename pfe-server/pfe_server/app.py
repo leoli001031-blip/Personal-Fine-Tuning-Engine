@@ -76,7 +76,9 @@ from .studio_training_contracts import (
 from .studio_training_service import start_training_job as start_studio_training_job
 from pfe_core.inference.contracts import (
     BOUNDARY_CONTRACT_ID,
+    PERSONA_CONTRACT_ID,
     build_boundary_contract_fallback,
+    build_persona_contract_fallback,
     resolve_response_contract,
 )
 from pfe_core.phase23_runtime_contract_loop import (
@@ -500,8 +502,14 @@ class MockInferenceService:
         metadata: Mapping[str, Any],
         messages: list[dict[str, Any]] | None = None,
     ) -> str:
-        if resolve_response_contract(metadata=metadata) == BOUNDARY_CONTRACT_ID:
+        contract = resolve_response_contract(metadata=metadata)
+        if contract == BOUNDARY_CONTRACT_ID:
             return build_boundary_contract_fallback(messages or [{"role": "user", "content": last_user}], metadata)
+        if contract == PERSONA_CONTRACT_ID:
+            return build_persona_contract_fallback(
+                messages or [{"role": "user", "content": last_user}],
+                metadata,
+            )
         style = str(metadata.get("style_hint", "helpful")) if metadata else "helpful"
         if last_user:
             return f"[mock-{style}] I heard: {last_user}"

@@ -16,8 +16,13 @@ import os
 from .backends import plan_inference_backend
 from .contracts import (
     BOUNDARY_CONTRACT_ID,
+    PERSONA_CONTRACT_ID,
+    PERSONA_MAX_OUTPUT_TOKENS,
+    PERSONA_NO_REPEAT_NGRAM_SIZE,
+    PERSONA_REPETITION_PENALTY,
     apply_response_contract,
     enforce_boundary_contract_output,
+    enforce_persona_contract_output,
     resolve_response_contract,
 )
 from .export import plan_export
@@ -760,7 +765,8 @@ class InferenceEngine:
             }
         input_ids = encoded["input_ids"]
         input_length = int(input_ids.shape[-1]) if hasattr(input_ids, "shape") else 0
-        temperature = float(kwargs.get("temperature") or 0.7)
+        temperature_value = kwargs.get("temperature")
+        temperature = 0.7 if temperature_value is None else float(temperature_value)
         pad_token_id = getattr(tokenizer, "pad_token_id", None) or getattr(tokenizer, "eos_token_id", None)
         generation_kwargs = {
             "max_new_tokens": effective_max_new_tokens,
@@ -768,6 +774,12 @@ class InferenceEngine:
             "temperature": max(0.1, temperature) if temperature > 0 else 1.0,
             "pad_token_id": pad_token_id,
         }
+        repetition_penalty = min(2.0, max(0.5, float(kwargs.get("repetition_penalty") or 1.0)))
+        no_repeat_ngram_size = min(16, max(0, int(kwargs.get("no_repeat_ngram_size") or 0)))
+        if repetition_penalty > 0:
+            generation_kwargs["repetition_penalty"] = repetition_penalty
+        if no_repeat_ngram_size > 0:
+            generation_kwargs["no_repeat_ngram_size"] = no_repeat_ngram_size
         with torch.no_grad():
             output_ids = model.generate(**encoded, **generation_kwargs)
         generated_ids = output_ids[0][input_length:] if input_length else output_ids[0]
@@ -810,10 +822,25 @@ class InferenceEngine:
         response_contract = resolve_response_contract(metadata=metadata)
         contract_messages = messages
         contract_info: dict[str, object] = {"applied": False, "contract": None}
-        if response_contract == BOUNDARY_CONTRACT_ID:
+        for name in ("repetition_penalty", "no_repeat_ngram_size"):
+            if name not in kwargs and metadata.get(name) is not None:
+                kwargs = {**kwargs, name: metadata[name]}
+        if response_contract in {BOUNDARY_CONTRACT_ID, PERSONA_CONTRACT_ID}:
             contract_messages, contract_info = apply_response_contract(messages, metadata)
             metadata = {**metadata, "response_contract": response_contract}
             kwargs = {**kwargs, "metadata": metadata}
+        if response_contract == PERSONA_CONTRACT_ID:
+            requested_max_tokens = kwargs.get("max_tokens") or kwargs.get("max_new_tokens")
+            persona_max_tokens = min(
+                int(requested_max_tokens or PERSONA_MAX_OUTPUT_TOKENS),
+                PERSONA_MAX_OUTPUT_TOKENS,
+            )
+            kwargs = {
+                **kwargs,
+                "max_tokens": max(1, persona_max_tokens),
+                "repetition_penalty": PERSONA_REPETITION_PENALTY,
+                "no_repeat_ngram_size": PERSONA_NO_REPEAT_NGRAM_SIZE,
+            }
         last_user = next((message.get("content", "") for message in reversed(messages) if message.get("role") == "user"), "")
         if not last_user:
             last_user = messages[-1].get("content", "")
@@ -874,6 +901,15 @@ class InferenceEngine:
                         response["text"] = text
                         response["response_contract"] = contract_info
                         response["contract_output"] = contract_output
+                    elif response_contract == PERSONA_CONTRACT_ID:
+                        text, contract_output = enforce_persona_contract_output(
+                            text,
+                            messages=messages,
+                            metadata=metadata,
+                        )
+                        response["text"] = text
+                        response["response_contract"] = contract_info
+                        response["contract_output"] = contract_output
                     self.last_generation_info = dict(response)
                     self.last_generation_info["real_local_enabled"] = True
                     if attempted_failures:
@@ -907,6 +943,15 @@ class InferenceEngine:
 
         if response_contract == BOUNDARY_CONTRACT_ID:
             fallback, contract_output = enforce_boundary_contract_output(
+                "",
+                messages=messages,
+                metadata=metadata,
+            )
+            self.last_generation_info["response_contract"] = contract_info
+            self.last_generation_info["contract_output"] = contract_output
+            return fallback
+        if response_contract == PERSONA_CONTRACT_ID:
+            fallback, contract_output = enforce_persona_contract_output(
                 "",
                 messages=messages,
                 metadata=metadata,
