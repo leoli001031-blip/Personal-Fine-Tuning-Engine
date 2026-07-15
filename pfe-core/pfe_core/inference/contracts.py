@@ -5,6 +5,12 @@ from __future__ import annotations
 import re
 from typing import Any, Mapping
 
+from ..phase77_private_value_guarded_runtime import (
+    contract_for_phase77_messages,
+    guard_phase77_messages,
+    guard_phase77_output,
+)
+
 
 BOUNDARY_CONTRACT_ALIASES = {
     "contract_boundary_summary",
@@ -12,6 +18,15 @@ BOUNDARY_CONTRACT_ALIASES = {
     "boundary_first_chat_no_think",
 }
 BOUNDARY_CONTRACT_ID = "contract_boundary_summary"
+PERSONA_CONTRACT_ALIASES = {
+    "contract_persona_guarded",
+    "persona_guarded",
+    "conditional_persona_runtime",
+}
+PERSONA_CONTRACT_ID = "contract_persona_guarded"
+PERSONA_MAX_OUTPUT_TOKENS = 128
+PERSONA_REPETITION_PENALTY = 1.15
+PERSONA_NO_REPEAT_NGRAM_SIZE = 4
 BOUNDARY_EXPECTED_SECTIONS = ("摘要", "风险提示", "引用依据", "人工确认")
 EXTERNAL_LAW_TERMS = (
     "《民法典》",
@@ -46,6 +61,12 @@ def _dict(value: Any) -> dict[str, Any]:
     return dict(value) if isinstance(value, Mapping) else {}
 
 
+def _string_list(value: Any) -> list[str]:
+    if isinstance(value, (list, tuple, set)):
+        return [str(item) for item in value if str(item)]
+    return [str(value)] if value else []
+
+
 def _compact_text(text: str) -> str:
     return re.sub(r"\s+", " ", str(text or "")).strip()
 
@@ -65,6 +86,8 @@ def resolve_response_contract(value: Any = None, metadata: Mapping[str, Any] | N
     normalized = requested.lower().replace("-", "_")
     if normalized in BOUNDARY_CONTRACT_ALIASES:
         return BOUNDARY_CONTRACT_ID
+    if normalized in PERSONA_CONTRACT_ALIASES:
+        return PERSONA_CONTRACT_ID
     return None
 
 
@@ -85,20 +108,39 @@ def apply_response_contract(
     metadata: Mapping[str, Any] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     contract = resolve_response_contract(metadata=metadata)
-    if contract != BOUNDARY_CONTRACT_ID:
+    if contract not in {BOUNDARY_CONTRACT_ID, PERSONA_CONTRACT_ID}:
         return messages, {"applied": False, "contract": None}
-    system_prompt = boundary_contract_system_prompt()
-    contracted = [dict(message) for message in messages]
+    if contract == BOUNDARY_CONTRACT_ID:
+        system_prompt = boundary_contract_system_prompt()
+        contracted = [dict(message) for message in messages]
+        info: dict[str, Any] = {
+            "applied": True,
+            "contract": contract,
+            "expected_sections": list(BOUNDARY_EXPECTED_SECTIONS),
+            "auto_promotion_allowed": False,
+        }
+    else:
+        metadata_dict = _dict(metadata)
+        private_values = _string_list(metadata_dict.get("declared_private_values"))
+        contracted, input_guard = guard_phase77_messages(messages, private_values)
+        system_prompt, route = contract_for_phase77_messages(contracted)
+        info = {
+            "applied": True,
+            "contract": contract,
+            "route": route,
+            "input_guard": input_guard,
+            "generation_defaults": {
+                "max_output_tokens": PERSONA_MAX_OUTPUT_TOKENS,
+                "repetition_penalty": PERSONA_REPETITION_PENALTY,
+                "no_repeat_ngram_size": PERSONA_NO_REPEAT_NGRAM_SIZE,
+            },
+            "auto_promotion_allowed": False,
+        }
     if contracted and str(contracted[0].get("role") or "") == "system":
         contracted[0]["content"] = f"{contracted[0].get('content') or ''}\n\n{system_prompt}".strip()
     else:
         contracted.insert(0, {"role": "system", "content": system_prompt})
-    return contracted, {
-        "applied": True,
-        "contract": contract,
-        "expected_sections": list(BOUNDARY_EXPECTED_SECTIONS),
-        "auto_promotion_allowed": False,
-    }
+    return contracted, info
 
 
 def _last_user_text(messages: list[dict[str, Any]]) -> str:
@@ -132,6 +174,25 @@ def build_boundary_contract_fallback(
         f"引用依据：{citation}\n"
         "人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
     )
+
+
+def build_persona_contract_fallback(
+    messages: list[dict[str, Any]],
+    metadata: Mapping[str, Any] | None = None,
+) -> str:
+    metadata_dict = _dict(metadata)
+    guarded, _input_guard = guard_phase77_messages(
+        messages,
+        _string_list(metadata_dict.get("declared_private_values")),
+    )
+    _system_prompt, route = contract_for_phase77_messages(guarded)
+    if route["routed"]:
+        return (
+            "结论：当前仅完成 persona contract 安全路由，尚未获得真实本地模型输出。\n"
+            "依据：没有可验证的执行结果，不能编造任务完成状态。\n"
+            "下一步：启用 real_local 后重试，并按真实证据验收。"
+        )
+    return f"[mock-persona] {_lead(_last_user_text(guarded))}"
 
 
 def _strip_thinking(text: str) -> str:
@@ -179,6 +240,28 @@ def enforce_boundary_contract_output(
     return fallback, {**fallback_normalized, "fallback_used": True, "raw_output": text}
 
 
+def enforce_persona_contract_output(
+    text: str,
+    *,
+    messages: list[dict[str, Any]],
+    metadata: Mapping[str, Any] | None = None,
+) -> tuple[str, dict[str, Any]]:
+    metadata_dict = _dict(metadata)
+    private_values = _string_list(metadata_dict.get("declared_private_values"))
+    raw = str(text or "")
+    cleaned = _strip_thinking(raw)
+    fallback_used = not bool(cleaned)
+    candidate = cleaned or build_persona_contract_fallback(messages, metadata_dict)
+    guarded, output_guard = guard_phase77_output(candidate, private_values)
+    return guarded, {
+        "complete": bool(guarded.strip()),
+        "fallback_used": fallback_used,
+        "think_leak_detected": bool(re.search(r"</?think>", raw, flags=re.IGNORECASE)),
+        "output_guard": output_guard,
+        "raw_output_persisted": False,
+    }
+
+
 def score_boundary_contract_output(
     text: str,
     *,
@@ -208,10 +291,16 @@ def score_boundary_contract_output(
 __all__ = [
     "BOUNDARY_CONTRACT_ID",
     "BOUNDARY_EXPECTED_SECTIONS",
+    "PERSONA_CONTRACT_ID",
+    "PERSONA_MAX_OUTPUT_TOKENS",
+    "PERSONA_NO_REPEAT_NGRAM_SIZE",
+    "PERSONA_REPETITION_PENALTY",
     "apply_response_contract",
     "boundary_contract_system_prompt",
     "build_boundary_contract_fallback",
+    "build_persona_contract_fallback",
     "enforce_boundary_contract_output",
+    "enforce_persona_contract_output",
     "extract_contract_citation",
     "normalize_boundary_contract_output",
     "resolve_response_contract",
