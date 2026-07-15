@@ -1,0 +1,49 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "automatic_deployment_allowed": false,
+  "benefit_checks": {
+    "runtime_gain_at_least_0_04": true,
+    "runtime_hard_gate_non_regression": false,
+    "runtime_ordinary_non_regression": true,
+    "runtime_truncation_at_most_0_15": true,
+    "runtime_truncation_not_above_base": true
+  },
+  "checks": {
+    "both_variants_completed_30_sessions": true,
+    "fresh_holdout_isolated": true,
+    "pre_call_route_audit_exact": true,
+    "privacy_echo_zero": true,
+    "public_private_audit_passed": true,
+    "real_api_smoke_passed": true,
+    "runtime_route_accuracy_one": true,
+    "think_leak_zero": true
+  },
+  "failed_benefit_checks": [
+    "runtime_hard_gate_non_regression"
+  ],
+  "failed_checks": [],
+  "hermes_attachment_allowed": false,
+  "kind": "phase83_final_decision",
+  "next_gate": "phase84_repair_runtime_or_rewrite_training_objective",
+  "ordinary_scores": {
+    "base_api_length_control_160": 0.76,
+    "persona_api_contract_v2": 0.76
+  },
+  "product_default_changed": false,
+  "promotion_allowed": false,
+  "recommendation": "phase84_repair_runtime_or_rewrite_training_objective",
+  "runtime_gain_vs_base": 0.0809,
+  "simulated_lab_runtime_benefit": false,
+  "simulated_usage": true,
+  "status": "archive_persona_runtime_v2_not_qualified",
+  "target_scores": {
+    "base_api_length_control_160": 0.5033,
+    "persona_api_contract_v2": 0.5842
+  },
+  "truncation_rates": {
+    "base_api_length_control_160": 0.5667,
+    "persona_api_contract_v2": 0.0667
+  }
+}

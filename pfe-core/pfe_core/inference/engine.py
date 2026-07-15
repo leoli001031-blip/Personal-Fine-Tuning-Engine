@@ -16,10 +16,12 @@ import os
 from .backends import plan_inference_backend
 from .contracts import (
     BOUNDARY_CONTRACT_ID,
-    PERSONA_CONTRACT_ID,
+    PERSONA_CONTRACT_IDS,
     PERSONA_MAX_OUTPUT_TOKENS,
     PERSONA_NO_REPEAT_NGRAM_SIZE,
     PERSONA_REPETITION_PENALTY,
+    PERSONA_V2_CONTRACT_ID,
+    PERSONA_V2_MAX_OUTPUT_TOKENS,
     apply_response_contract,
     enforce_boundary_contract_output,
     enforce_persona_contract_output,
@@ -825,15 +827,20 @@ class InferenceEngine:
         for name in ("repetition_penalty", "no_repeat_ngram_size"):
             if name not in kwargs and metadata.get(name) is not None:
                 kwargs = {**kwargs, name: metadata[name]}
-        if response_contract in {BOUNDARY_CONTRACT_ID, PERSONA_CONTRACT_ID}:
+        if response_contract in {BOUNDARY_CONTRACT_ID, *PERSONA_CONTRACT_IDS}:
             contract_messages, contract_info = apply_response_contract(messages, metadata)
             metadata = {**metadata, "response_contract": response_contract}
             kwargs = {**kwargs, "metadata": metadata}
-        if response_contract == PERSONA_CONTRACT_ID:
+        if response_contract in PERSONA_CONTRACT_IDS:
             requested_max_tokens = kwargs.get("max_tokens") or kwargs.get("max_new_tokens")
+            contract_max_tokens = (
+                PERSONA_V2_MAX_OUTPUT_TOKENS
+                if response_contract == PERSONA_V2_CONTRACT_ID
+                else PERSONA_MAX_OUTPUT_TOKENS
+            )
             persona_max_tokens = min(
-                int(requested_max_tokens or PERSONA_MAX_OUTPUT_TOKENS),
-                PERSONA_MAX_OUTPUT_TOKENS,
+                int(requested_max_tokens or contract_max_tokens),
+                contract_max_tokens,
             )
             kwargs = {
                 **kwargs,
@@ -901,7 +908,7 @@ class InferenceEngine:
                         response["text"] = text
                         response["response_contract"] = contract_info
                         response["contract_output"] = contract_output
-                    elif response_contract == PERSONA_CONTRACT_ID:
+                    elif response_contract in PERSONA_CONTRACT_IDS:
                         text, contract_output = enforce_persona_contract_output(
                             text,
                             messages=messages,
@@ -950,7 +957,7 @@ class InferenceEngine:
             self.last_generation_info["response_contract"] = contract_info
             self.last_generation_info["contract_output"] = contract_output
             return fallback
-        if response_contract == PERSONA_CONTRACT_ID:
+        if response_contract in PERSONA_CONTRACT_IDS:
             fallback, contract_output = enforce_persona_contract_output(
                 "",
                 messages=messages,
