@@ -1,0 +1,26 @@
+{
+  "checks": {
+    "local_config_exists": true,
+    "phase32_cpu_training_history_exists": true,
+    "torch_runtime_available": true,
+    "weight_shards_exist": true
+  },
+  "config_sha256": "18e18afcaccafade98daf13a54092927904649e1dd4eba8299ab717d5d94ff45",
+  "historical_phase32_adapter_exists": true,
+  "historical_phase32_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase32-personal-agent-preference-qwen25-0_5b/dpo_adapter",
+  "historical_phase32_adapter_reused": false,
+  "kind": "phase79_model_selection",
+  "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+  "mps_available_in_current_process": false,
+  "not_selected": {
+    "Qwen3-4B": "Phase78 produced no adapter after two CPU attempts in this sandbox.",
+    "Qwen3.6-27B": "Phase12 training hit Metal OOM and is not a CPU training candidate."
+  },
+  "reason": "The local unquantized Qwen2.5-0.5B-Instruct is small enough for complete CPU LoRA training and evaluation in the current sandbox. It is a diagnostic candidate for persona internalization, not a replacement for the Phase77 runtime quality ceiling.",
+  "selected_execution_device": "cpu",
+  "selected_model": "Qwen2.5-0.5B-Instruct",
+  "status": "selected",
+  "torch_version": "2.12.0",
+  "weight_bytes": 988097824,
+  "weight_shard_count": 1
+}
