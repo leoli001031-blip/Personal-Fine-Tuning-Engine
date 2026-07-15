@@ -1,0 +1,28 @@
+{
+  "do_sample": false,
+  "enable_thinking": false,
+  "input_max_length": 3072,
+  "kind": "phase80_frozen_failure_taxonomy_generation_protocol",
+  "max_new_tokens": 192,
+  "private_value_guard_before_every_call": true,
+  "repetition_penalty": 1.05,
+  "runtime_variants_use_phase77_conditional_contract": true,
+  "same_holdout_all_variants": true,
+  "same_protocol_all_arms": true,
+  "score_or_gate_relaxation_allowed": false,
+  "standard_max_new_tokens": 192,
+  "standard_repetition_penalty": 1.05,
+  "stop_control_max_new_tokens": 192,
+  "stop_control_no_repeat_ngram_size": 4,
+  "stop_control_repetition_penalty": 1.15,
+  "three_user_turns_per_session": true,
+  "variants": [
+    "base_0_5b_minimal",
+    "runtime_0_5b",
+    "phase79_high_lr_adapter",
+    "phase80_low_lr_adapter",
+    "phase79_high_lr_stop_control",
+    "base_4b_minimal",
+    "runtime_4b"
+  ]
+}
