@@ -11,6 +11,10 @@ from ..phase77_private_value_guarded_runtime import (
     guard_phase77_output,
 )
 from ..phase83_persona_route_length_repair import contract_for_phase83_messages
+from ..phase84_factual_completion_guard import (
+    contract_for_phase84_messages,
+    enforce_phase84_persona_output,
+)
 
 
 BOUNDARY_CONTRACT_ALIASES = {
@@ -31,7 +35,16 @@ PERSONA_V2_CONTRACT_ALIASES = {
     "conditional_persona_runtime_v2",
 }
 PERSONA_V2_CONTRACT_ID = "contract_persona_guarded_v2"
-PERSONA_CONTRACT_IDS = frozenset({PERSONA_CONTRACT_ID, PERSONA_V2_CONTRACT_ID})
+PERSONA_V3_CONTRACT_ALIASES = {
+    "contract_persona_guarded_v3",
+    "persona_guarded_v3",
+    "conditional_persona_runtime_v3",
+    "factual_completion_guard",
+}
+PERSONA_V3_CONTRACT_ID = "contract_persona_guarded_v3"
+PERSONA_CONTRACT_IDS = frozenset(
+    {PERSONA_CONTRACT_ID, PERSONA_V2_CONTRACT_ID, PERSONA_V3_CONTRACT_ID}
+)
 PERSONA_MAX_OUTPUT_TOKENS = 128
 PERSONA_V2_MAX_OUTPUT_TOKENS = 160
 PERSONA_REPETITION_PENALTY = 1.15
@@ -95,6 +108,8 @@ def resolve_response_contract(value: Any = None, metadata: Mapping[str, Any] | N
     normalized = requested.lower().replace("-", "_")
     if normalized in BOUNDARY_CONTRACT_ALIASES:
         return BOUNDARY_CONTRACT_ID
+    if normalized in PERSONA_V3_CONTRACT_ALIASES:
+        return PERSONA_V3_CONTRACT_ID
     if normalized in PERSONA_V2_CONTRACT_ALIASES:
         return PERSONA_V2_CONTRACT_ID
     if normalized in PERSONA_CONTRACT_ALIASES:
@@ -134,7 +149,10 @@ def apply_response_contract(
         metadata_dict = _dict(metadata)
         private_values = _string_list(metadata_dict.get("declared_private_values"))
         contracted, input_guard = guard_phase77_messages(messages, private_values)
-        if contract == PERSONA_V2_CONTRACT_ID:
+        if contract == PERSONA_V3_CONTRACT_ID:
+            system_prompt, route = contract_for_phase84_messages(contracted)
+            max_output_tokens = PERSONA_V2_MAX_OUTPUT_TOKENS
+        elif contract == PERSONA_V2_CONTRACT_ID:
             system_prompt, route = contract_for_phase83_messages(contracted)
             max_output_tokens = PERSONA_V2_MAX_OUTPUT_TOKENS
         else:
@@ -205,7 +223,9 @@ def build_persona_contract_fallback(
         _string_list(metadata_dict.get("declared_private_values")),
     )
     contract = resolve_response_contract(metadata=metadata_dict)
-    if contract == PERSONA_V2_CONTRACT_ID:
+    if contract == PERSONA_V3_CONTRACT_ID:
+        _system_prompt, route = contract_for_phase84_messages(guarded)
+    elif contract == PERSONA_V2_CONTRACT_ID:
         _system_prompt, route = contract_for_phase83_messages(guarded)
     else:
         _system_prompt, route = contract_for_phase77_messages(guarded)
@@ -285,6 +305,20 @@ def enforce_persona_contract_output(
     }
 
 
+def enforce_persona_v3_contract_output(
+    text: str,
+    *,
+    messages: list[dict[str, Any]],
+    metadata: Mapping[str, Any] | None = None,
+) -> tuple[str, dict[str, Any]]:
+    metadata_dict = _dict(metadata)
+    return enforce_phase84_persona_output(
+        text,
+        messages=messages,
+        declared_private_values=_string_list(metadata_dict.get("declared_private_values")),
+    )
+
+
 def score_boundary_contract_output(
     text: str,
     *,
@@ -321,12 +355,14 @@ __all__ = [
     "PERSONA_REPETITION_PENALTY",
     "PERSONA_V2_CONTRACT_ID",
     "PERSONA_V2_MAX_OUTPUT_TOKENS",
+    "PERSONA_V3_CONTRACT_ID",
     "apply_response_contract",
     "boundary_contract_system_prompt",
     "build_boundary_contract_fallback",
     "build_persona_contract_fallback",
     "enforce_boundary_contract_output",
     "enforce_persona_contract_output",
+    "enforce_persona_v3_contract_output",
     "extract_contract_citation",
     "normalize_boundary_contract_output",
     "resolve_response_contract",
