@@ -1,0 +1,399 @@
+{
+  "backend": "dpo",
+  "base_adapter_path": null,
+  "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "dpo_config": {
+    "beta": 0.1,
+    "label_smoothing": 0.0,
+    "max_length": 192,
+    "max_prompt_length": 128
+  },
+  "dry_run": true,
+  "execution_mode": "real_import",
+  "job_spec": {
+    "backend": "dpo",
+    "dry_run": true,
+    "execution_backend": "dpo",
+    "execution_executor": "dpo",
+    "executor_mode": "real_import",
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase102-qwen3-4b-dpo/12step",
+    "phase102": {
+      "actual_user_feedback": false,
+      "automatic_promotion_allowed": false,
+      "failure_targeted": true,
+      "simulated_usage": true,
+      "starts_from_base_because_phase101_sft_archived": true
+    },
+    "recipe": {
+      "peft": {
+        "dpo_config": {
+          "beta": 0.1,
+          "label_smoothing": 0.0,
+          "max_length": 192,
+          "max_prompt_length": 128
+        },
+        "lora_config": {
+          "lora_alpha": 16,
+          "lora_dropout": 0.0,
+          "r": 8
+        },
+        "trainer_class": "trl.DPOTrainer"
+      },
+      "training": {
+        "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+        "base_model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+        "epochs": 1,
+        "learning_rate": 5e-06,
+        "local_only": true,
+        "max_steps": 12,
+        "method": "lora",
+        "num_train_samples": 24,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase102-qwen3-4b-dpo/12step",
+        "runtime_device": "mps",
+        "runtime_dtype": "float32",
+        "train_type": "dpo"
+      }
+    },
+    "training_examples": [
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：签收时间尚未填写\n依据：当前记录显示签收时间为空\n下一步：补充签收时间。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有签收时间仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-01",
+        "preference_category": "exact_three_line",
+        "rejected": "签收时间还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：校验摘要尚未填写\n依据：当前记录显示校验摘要为空\n下一步：补充校验摘要。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有校验摘要仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-02",
+        "preference_category": "exact_three_line",
+        "rejected": "校验摘要还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：归档位置尚未填写\n依据：当前记录显示归档位置为空\n下一步：补充归档位置。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有归档位置仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-03",
+        "preference_category": "exact_three_line",
+        "rejected": "归档位置还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：复核人员尚未填写\n依据：当前记录显示复核人员为空\n下一步：补充复核人员。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有复核人员仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-04",
+        "preference_category": "exact_three_line",
+        "rejected": "复核人员还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：版本编号尚未填写\n依据：当前记录显示版本编号为空\n下一步：补充版本编号。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有版本编号仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-05",
+        "preference_category": "exact_three_line",
+        "rejected": "版本编号还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：交接日期尚未填写\n依据：当前记录显示交接日期为空\n下一步：补充交接日期。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有交接日期仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-06",
+        "preference_category": "exact_three_line",
+        "rejected": "交接日期还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：验收批次尚未填写\n依据：当前记录显示验收批次为空\n下一步：补充验收批次。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有验收批次仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-07",
+        "preference_category": "exact_three_line",
+        "rejected": "验收批次还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：输出索引尚未填写\n依据：当前记录显示输出索引为空\n下一步：补充输出索引。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_incomplete_content_before_eos",
+        "feedback_source": "simulated_usage",
+        "instruction": "任务记录中只有输出索引仍为空白。只用结论、依据、下一步三行回答。",
+        "pair_id": "phase102-dpo-exact-08",
+        "preference_category": "exact_three_line",
+        "rejected": "输出索引还没写，需要后续处理。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：签收时间核对已完成\n依据：人工验收确认签收时间与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认签收时间与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-01",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少签收时间确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：校验摘要核对已完成\n依据：人工验收确认校验摘要与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认校验摘要与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-02",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少校验摘要确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：归档位置核对已完成\n依据：人工验收确认归档位置与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认归档位置与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-03",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少归档位置确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：复核人员核对已完成\n依据：人工验收确认复核人员与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认复核人员与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-04",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少复核人员确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：版本编号核对已完成\n依据：人工验收确认版本编号与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认版本编号与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-05",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少版本编号确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：交接日期核对已完成\n依据：人工验收确认交接日期与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认交接日期与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-06",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少交接日期确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：验收批次核对已完成\n依据：人工验收确认验收批次与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认验收批次与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-07",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少验收批次确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：输出索引核对已完成\n依据：人工验收确认输出索引与交接副本一致\n下一步：保存本次验收记录。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_false_block_boundary",
+        "feedback_source": "simulated_usage",
+        "instruction": "最新人工验收已经确认输出索引与交接副本一致。按事实输出三行完成状态。",
+        "pair_id": "phase102-dpo-complete-08",
+        "preference_category": "false_block",
+        "rejected": "结论：状态未验证\n依据：仍然缺少输出索引确认\n下一步：继续等待人工确认。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "签收时间记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-01",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "校验摘要记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-02",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "归档位置记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-03",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "复核人员记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-04",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "版本编号记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-05",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "交接日期记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-06",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "验收批次记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-07",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+        "eligible_for_training": true,
+        "failure_origin": "phase99_provenance_explicitness",
+        "feedback_source": "simulated_usage",
+        "instruction": "输出索引记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+        "pair_id": "phase102-dpo-provenance-08",
+        "preference_category": "provenance",
+        "rejected": "结论：来源已经确认\n依据：actual_user_feedback=true\n下一步：加入真实反馈。",
+        "simulated_usage": true
+      }
+    ]
+  },
+  "num_examples": 24,
+  "recipe": {
+    "peft": {
+      "dpo_config": {
+        "beta": 0.1,
+        "label_smoothing": 0.0,
+        "max_length": 192,
+        "max_prompt_length": 128
+      },
+      "lora_config": {
+        "lora_alpha": 16,
+        "lora_dropout": 0.0,
+        "r": 8
+      },
+      "trainer_class": "trl.DPOTrainer"
+    },
+    "training": {
+      "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "base_model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "epochs": 1,
+      "learning_rate": 5e-06,
+      "local_only": true,
+      "max_steps": 12,
+      "method": "lora",
+      "num_train_samples": 24,
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase102-qwen3-4b-dpo/12step",
+      "runtime_device": "mps",
+      "runtime_dtype": "float32",
+      "train_type": "dpo"
+    }
+  },
+  "status": "prepared",
+  "training_config": {
+    "learning_rate": 5e-06,
+    "lora_config": {
+      "lora_alpha": 16,
+      "lora_dropout": 0.0,
+      "r": 8
+    },
+    "runtime_resolution": {
+      "device": "mps",
+      "device_map": {
+        "": "mps"
+      },
+      "dtype": "float32",
+      "requested_device": "mps",
+      "requested_dtype": "float32",
+      "use_cpu": false
+    },
+    "use_cpu": false
+  }
+}

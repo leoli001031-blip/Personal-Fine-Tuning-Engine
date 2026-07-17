@@ -1,0 +1,79 @@
+{
+  "completed_steps": 1,
+  "error": null,
+  "loss_history": [
+    {
+      "entropy": 0.20261558890342712,
+      "epoch": 0.00625,
+      "grad_norm": 20.93390464782715,
+      "learning_rate": 5e-06,
+      "logits/chosen": -1.0539022173200334,
+      "logits/rejected": -1.2504355389138926,
+      "logps/chosen": -115.12655639648438,
+      "logps/rejected": -21.755529403686523,
+      "loss": 0.6931473016738892,
+      "mean_token_accuracy": 0.761904776096344,
+      "num_tokens": 461.0,
+      "rewards/accuracies": 0.0,
+      "rewards/chosen": -3.814697265625e-06,
+      "rewards/margins": -3.8146959013829473e-07,
+      "rewards/rejected": -3.4332276754867053e-06,
+      "step": 1
+    },
+    {
+      "epoch": 0.00625,
+      "step": 1,
+      "total_flos": 10512077783040.0,
+      "train_loss": 0.6931473016738892,
+      "train_runtime": 2.4821,
+      "train_samples_per_second": 0.403,
+      "train_steps_per_second": 0.403
+    }
+  ],
+  "non_finite_metrics": [],
+  "parameters_updated": true,
+  "requested_steps": 1,
+  "runtime_audit": {
+    "policy_after_lora": {
+      "parameter_count": 4038983168,
+      "parameter_devices": {
+        "mps:0": 4038983168
+      },
+      "parameter_dtypes": {
+        "float32": 4038983168
+      }
+    },
+    "policy_before_lora": {
+      "parameter_count": 4022468096,
+      "parameter_devices": {
+        "mps:0": 4022468096
+      },
+      "parameter_dtypes": {
+        "float32": 4022468096
+      }
+    },
+    "policy_matches_resolution": true,
+    "reference": {
+      "parameter_count": 4022468096,
+      "parameter_devices": {
+        "mps:0": 4022468096
+      },
+      "parameter_dtypes": {
+        "float32": 4022468096
+      }
+    },
+    "reference_matches_resolution": true,
+    "resolved": {
+      "device": "mps",
+      "device_map": {
+        "": "mps"
+      },
+      "dtype": "float32",
+      "requested_device": "mps",
+      "requested_dtype": "float32",
+      "use_cpu": false
+    }
+  },
+  "status": "completed",
+  "train_loss": 0.6931473016738892
+}

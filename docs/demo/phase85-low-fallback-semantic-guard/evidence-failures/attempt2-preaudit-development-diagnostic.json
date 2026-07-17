@@ -1,0 +1,20 @@
+{
+  "attempt": 2,
+  "benchmark_type": "simulated benchmark",
+  "canonical": false,
+  "used_for_decision": false,
+  "invalidated": true,
+  "invalidation_reasons": [
+    "driver cleanup boundaries were not fully symlink safe",
+    "runtime attempt accounting was not fail closed",
+    "manual review artifact binding was incomplete"
+  ],
+  "metrics": {
+    "base_api_length_control_160": {"target_score": 0.405, "native": 0.0, "repair": 0.0, "fallback": 1.0, "p95_seconds": 13.3848},
+    "persona_api_contract_v3_fresh": {"target_score": 0.6833, "native": 0.117647, "repair": 0.176471, "fallback": 0.705882, "p95_seconds": 7.7437},
+    "persona_api_contract_v4": {"target_score": 0.6467, "native": 0.088235, "repair": 0.161765, "fallback": 0.75, "p95_seconds": 6.956}
+  },
+  "manual_review_counts": {"residual_unsupported": 3, "false_block": 9, "other_semantic": 2},
+  "raw_output_persisted": false,
+  "actual_user_feedback_count": 0
+}

@@ -1,0 +1,93 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "automatic_deployment_allowed": false,
+  "benefit_checks": {
+    "independent_block_recall_one": true,
+    "independent_false_block_rate_zero": true,
+    "manual_review_found_no_semantic_failures": false,
+    "privacy_and_think_leak_zero": true,
+    "v4_each_target_category_at_least_0_75": false,
+    "v4_fallback_below_v3": false,
+    "v4_fallback_rate_at_most_0_10": false,
+    "v4_format_accounting_exact": true,
+    "v4_hard_gate_perfect": true,
+    "v4_latency_p95_no_material_regression": true,
+    "v4_native_format_rate_at_least_0_75": false,
+    "v4_ordinary_not_below_base": true,
+    "v4_post_guard_unsupported_zero": true,
+    "v4_required_labels_not_below_v3": true,
+    "v4_semantic_repair_rate_at_most_0_25": true,
+    "v4_target_gain_vs_base_at_least_0_04": true,
+    "v4_target_not_below_v3": false,
+    "v4_target_score_at_least_0_80": false,
+    "v4_truncation_at_most_0_15": true,
+    "v4_unsupported_claim_rate_zero": true
+  },
+  "checks": {
+    "all_variants_completed_30_sessions_90_calls": true,
+    "all_variants_use_68_routed_format_turns": true,
+    "fresh_holdout_isolated": true,
+    "generation_audit_one_call_per_turn": true,
+    "generation_audit_raw_output_not_persisted": true,
+    "independent_guard_calibration_passed": true,
+    "manual_review_can_only_tighten": true,
+    "manual_semantic_review_complete": true,
+    "metric_schema_complete": false,
+    "ordinary_identity_eighteen_turns": true,
+    "ordinary_identity_six_sessions": true,
+    "ordinary_v3_identity_one": true,
+    "ordinary_v4_identity_one": true,
+    "ordinary_v4_route_and_prompt_off": true,
+    "pre_call_route_audit_exact": true,
+    "public_private_audit_passed": true,
+    "real_api_smoke_passed": true
+  },
+  "failed_benefit_checks": [
+    "v4_target_score_at_least_0_80",
+    "v4_target_not_below_v3",
+    "v4_each_target_category_at_least_0_75",
+    "v4_native_format_rate_at_least_0_75",
+    "v4_fallback_rate_at_most_0_10",
+    "v4_fallback_below_v3",
+    "manual_review_found_no_semantic_failures"
+  ],
+  "failed_checks": [
+    "metric_schema_complete"
+  ],
+  "hermes_attachment_allowed": false,
+  "independent_guard_calibration": {
+    "block_recall": 1.0,
+    "detector_defined_denominator": false,
+    "false_block_rate": 0.0,
+    "passed": true
+  },
+  "kind": "phase85_final_decision",
+  "latency_p95_seconds": {
+    "v3": 2.9267,
+    "v4": 1.4068
+  },
+  "manual_review_can_only_tighten": true,
+  "next_gate": "repair_phase85_evidence",
+  "ordinary_scores": {
+    "base_api_length_control_160": 0.9,
+    "persona_api_contract_v3_fresh": 0.9,
+    "persona_api_contract_v4": 0.9
+  },
+  "phase84_rescore_allowed": false,
+  "product_default_changed": false,
+  "promotion_allowed": false,
+  "recommendation": "repair_phase85_evidence",
+  "simulated_lab_runtime_benefit": false,
+  "simulated_usage": true,
+  "status": "archive_incomplete_phase85_evidence",
+  "target_scores": {
+    "base_api_length_control_160": 0.4233,
+    "persona_api_contract_v3_fresh": 0.6933,
+    "persona_api_contract_v4": 0.6467
+  },
+  "v4_delta_vs_v3": -0.0466,
+  "v4_gain_vs_base": 0.2234,
+  "v4_target_category_floor": 0.52
+}

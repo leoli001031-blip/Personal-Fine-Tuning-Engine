@@ -2,6 +2,12 @@
 
 from .engine import InferenceConfig, InferenceEngine
 from .export import ExportPlan, plan_export
+from .provenance import (
+    PROVENANCE_CONTRACT_VERSION,
+    ProvenanceEnvelope,
+    TrustedProvenanceContext,
+    build_provenance_envelope,
+)
 from .export_runtime import (
     ExportRuntimeSpec,
     MaterializedExportPlan,
@@ -29,6 +35,10 @@ __all__ = [
     "InferenceEngine",
     "ExportPlan",
     "plan_export",
+    "PROVENANCE_CONTRACT_VERSION",
+    "ProvenanceEnvelope",
+    "TrustedProvenanceContext",
+    "build_provenance_envelope",
     "ExportRuntimeSpec",
     "MaterializedExportPlan",
     "MaterializedExportWriteResult",

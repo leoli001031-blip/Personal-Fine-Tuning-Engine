@@ -76,8 +76,15 @@ from .studio_training_contracts import (
 from .studio_training_service import start_training_job as start_studio_training_job
 from pfe_core.inference.contracts import (
     BOUNDARY_CONTRACT_ID,
+    PERSONA_CONTRACT_IDS,
     build_boundary_contract_fallback,
+    build_persona_contract_fallback,
     resolve_response_contract,
+)
+from pfe_core.inference.provenance import ProvenanceEnvelope, build_provenance_envelope
+from pfe_core.phase77_private_value_guarded_runtime import (
+    guard_phase77_messages,
+    guard_phase77_output,
 )
 from pfe_core.phase23_runtime_contract_loop import (
     build_runtime_contract_response as build_phase23_runtime_contract_response,
@@ -418,6 +425,18 @@ class MockInferenceService:
             metadata=metadata,
             messages=[message.model_dump(mode="json") for message in request.messages],
         )
+        declared_private_values = [
+            str(value)
+            for value in metadata.get("declared_private_values") or []
+            if str(value)
+        ]
+        response_metadata = dict(metadata)
+        response_metadata.pop("declared_private_values", None)
+        if declared_private_values:
+            response_metadata["private_value_guard"] = {
+                "declared_private_value_count": len(declared_private_values),
+                "raw_private_value_persisted": False,
+            }
         completion_tokens = max(1, math.ceil(len(reply) / 4))
         prompt_tokens = max(1, math.ceil(sum(len(m.content or "") for m in request.messages) / 4))
         return ChatCompletionResponse(
@@ -437,9 +456,14 @@ class MockInferenceService:
             session_id=request.session_id,
             adapter_version=request.adapter_version,
             served_by="mock",
+            pfe_provenance=build_provenance_envelope(
+                generation_origin="mock",
+                untrusted_metadata=metadata,
+                model_output=reply,
+            ),
             metadata={
                 "note": "OpenAI-compatible inference only; personalization requires /pfe/signal.",
-                "request_metadata": metadata,
+                "request_metadata": response_metadata,
             },
         )
 
@@ -500,8 +524,14 @@ class MockInferenceService:
         metadata: Mapping[str, Any],
         messages: list[dict[str, Any]] | None = None,
     ) -> str:
-        if resolve_response_contract(metadata=metadata) == BOUNDARY_CONTRACT_ID:
+        contract = resolve_response_contract(metadata=metadata)
+        if contract == BOUNDARY_CONTRACT_ID:
             return build_boundary_contract_fallback(messages or [{"role": "user", "content": last_user}], metadata)
+        if contract in PERSONA_CONTRACT_IDS:
+            return build_persona_contract_fallback(
+                messages or [{"role": "user", "content": last_user}],
+                metadata,
+            )
         style = str(metadata.get("style_hint", "helpful")) if metadata else "helpful"
         if last_user:
             return f"[mock-{style}] I heard: {last_user}"
@@ -3169,6 +3199,23 @@ def _sse_data(payload: Mapping[str, Any] | str) -> bytes:
     return ("data: " + json.dumps(dict(payload), ensure_ascii=False, separators=(",", ":")) + "\n\n").encode("utf-8")
 
 
+def _finalize_runtime_provenance(
+    *,
+    request: ChatCompletionRequest,
+    response: ChatCompletionResponse,
+    model_output: str,
+) -> ProvenanceEnvelope:
+    """Replace provider metadata with runtime-owned, fail-closed provenance."""
+
+    return ProvenanceEnvelope.model_validate(
+        build_provenance_envelope(
+            generation_origin=response.served_by,
+            untrusted_metadata=request.metadata,
+            model_output=model_output,
+        )
+    )
+
+
 async def _chat_completion_sse_events(
     *,
     request: ChatCompletionRequest,
@@ -3178,8 +3225,8 @@ async def _chat_completion_sse_events(
 
     stream_id = f"chatcmpl-{uuid4().hex[:12]}"
     created = int(time.time())
-    session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
-    request_id = request.request_id or f"req-{uuid4().hex[:8]}"
+    session_id = str(request.session_id)
+    request_id = str(request.request_id)
     base_chunk = {
         "id": stream_id,
         "object": "chat.completion.chunk",
@@ -3223,6 +3270,11 @@ async def _chat_completion_sse_events(
     if response.choices:
         content = response.choices[0].message.content or ""
         finish_reason = response.choices[0].finish_reason or "stop"
+    provenance = _finalize_runtime_provenance(
+        request=request,
+        response=response,
+        model_output=content,
+    )
     chunk_size = max(1, int(str(os.environ.get("PFE_SSE_CHUNK_CHARS", "24")).strip() or "24"))
     for index in range(0, len(content), chunk_size):
         yield _sse_data(
@@ -3243,11 +3295,24 @@ async def _chat_completion_sse_events(
         if message.role == "user" and message.content:
             user_message = message.content
             break
+    declared_private_values = [
+        str(value)
+        for value in dict(request.metadata or {}).get("declared_private_values") or []
+        if str(value)
+    ]
+    retained_user_rows, _input_guard = guard_phase77_messages(
+        [{"role": "user", "content": user_message}],
+        declared_private_values,
+    )
+    retained_assistant_message, _output_guard = guard_phase77_output(
+        content,
+        declared_private_values,
+    )
     _store_pending_interaction(
         session_id=session_id,
         request_id=request_id,
-        user_message=user_message,
-        assistant_message=content,
+        user_message=str(retained_user_rows[0].get("content") or ""),
+        assistant_message=retained_assistant_message,
         adapter_version=request.adapter_version,
         timestamp=response_start_time,
     )
@@ -3256,6 +3321,7 @@ async def _chat_completion_sse_events(
             **base_chunk,
             "choices": [{"index": 0, "delta": {}, "finish_reason": finish_reason}],
             "usage": response.usage.model_dump(mode="json"),
+            "pfe_provenance": provenance.model_dump(mode="json"),
             "pfe": {
                 "streaming_mode": "buffered_backend",
                 "incremental_backend": False,
@@ -3282,6 +3348,8 @@ async def handle_chat_completions(
             _error_payload("invalid chat completion request", "invalid_request", str(exc)),
             status_code=422,
         )
+    request.session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
+    request.request_id = request.request_id or f"req-{uuid4().hex[:8]}"
 
     if request.stream:
         if StreamingResponse is None:
@@ -3311,16 +3379,35 @@ async def handle_chat_completions(
     assistant_message = ""
     if response.choices and response.choices[0].message:
         assistant_message = response.choices[0].message.content or ""
+    response.pfe_provenance = _finalize_runtime_provenance(
+        request=request,
+        response=response,
+        model_output=assistant_message,
+    )
 
     # Store interaction for potential signal extraction
-    session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
-    request_id = request.request_id or f"req-{uuid4().hex[:8]}"
+    session_id = request.session_id
+    request_id = request.request_id
 
+    declared_private_values = [
+        str(value)
+        for value in dict(request.metadata or {}).get("declared_private_values") or []
+        if str(value)
+    ]
+    retained_user_rows, retained_input_guard = guard_phase77_messages(
+        [{"role": "user", "content": user_message}],
+        declared_private_values,
+    )
+    retained_user_message = str(retained_user_rows[0].get("content") or "")
+    retained_assistant_message, retained_output_guard = guard_phase77_output(
+        assistant_message,
+        declared_private_values,
+    )
     _store_pending_interaction(
         session_id=session_id,
         request_id=request_id,
-        user_message=user_message,
-        assistant_message=assistant_message,
+        user_message=retained_user_message,
+        assistant_message=retained_assistant_message,
         adapter_version=request.adapter_version,
         timestamp=response_start_time,
     )
@@ -3331,6 +3418,9 @@ async def handle_chat_completions(
         "session_id": session_id,
         "request_id": request_id,
         "interaction_stored": True,
+        "declared_private_value_count": len(declared_private_values),
+        "interaction_private_values_redacted": retained_input_guard.get("passed") is True
+        and retained_output_guard.get("passed") is True,
         "response_time_seconds": round(response_time, 3),
     }
     response.metadata = response_metadata

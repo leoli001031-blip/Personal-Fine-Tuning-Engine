@@ -1,0 +1,15 @@
+{
+  "created_at": "2026-07-14T23:40:18Z",
+  "failure_evidence": "full_regression_attempt_1_temp_cleanup_race.json",
+  "kind": "phase77_daemon_cleanup_recovery",
+  "root_cause": "The recovery surface test restarted a worker daemon but removed its temporary PFE_HOME without stopping the spawned process. A heartbeat could recreate data while TemporaryDirectory.cleanup was running.",
+  "remediation": "Stop the test-owned daemon in tearDown before restoring PFE_HOME and deleting the temporary directory.",
+  "scope": "tests/test_worker_daemon_recovery_surface.py",
+  "stale_test_daemons_removed": 26,
+  "targeted_test_file_runs": 6,
+  "targeted_test_cases_passed": 12,
+  "leaked_test_daemons_after_retest": 0,
+  "full_regression_exit_code_after_fix": 0,
+  "phase77_model_evidence_changed": false,
+  "phase77_scoring_changed": false
+}

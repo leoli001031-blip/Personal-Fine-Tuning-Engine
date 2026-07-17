@@ -1,0 +1,200 @@
+{
+  "checks": {
+    "all_seven_benefit_failures_unchanged": true,
+    "all_variant_accounting_exact": true,
+    "all_variants_have_30_sessions_90_calls_68_eligible": true,
+    "canonical_archive_incomplete_status_preserved_separately": true,
+    "canonical_decision_hash_bound": true,
+    "frozen_phase85_driver_core_test_hashes_match": true,
+    "promotion_deployment_hermes_training_product_claims_denied": true,
+    "stored_metrics_exactly_reaggregate_with_frozen_driver": true,
+    "variant_aware_metric_schema_v2_rules_pass": true
+  },
+  "expected_counts_per_variant": {
+    "api_call_count": 90,
+    "completed_session_count": 30,
+    "format_eligible_turn_count": 68,
+    "model_call_count": 90,
+    "runtime_attempt_count": 90,
+    "session_count": 30
+  },
+  "kind": "phase85_metric_schema_v2_overlay",
+  "overlay_decision": {
+    "canonical_archive_status": "archive_incomplete_phase85_evidence",
+    "claim_boundaries": {
+      "deployment_allowed": false,
+      "hermes_attachment_allowed": false,
+      "product_benefit_claim_allowed": false,
+      "promotion_allowed": false,
+      "training_benefit_claim_allowed": false
+    },
+    "failed_benefit_check_count": 7,
+    "failed_benefit_checks": [
+      "v4_target_score_at_least_0_80",
+      "v4_target_not_below_v3",
+      "v4_each_target_category_at_least_0_75",
+      "v4_native_format_rate_at_least_0_75",
+      "v4_fallback_rate_at_most_0_10",
+      "v4_fallback_below_v3",
+      "manual_review_found_no_semantic_failures"
+    ],
+    "product_gate_qualified": false,
+    "status": "archive_low_fallback_runtime_not_qualified",
+    "validation_pass_does_not_imply_product_pass": true
+  },
+  "payload_sha256": "5fdcd60e5dcac3ebca79c181fe61173f366b872c8bb7dee4355dfd778dd72b6d",
+  "read_only_source_overlay": true,
+  "schema_validation_passed": true,
+  "schema_version": 2,
+  "source_bindings": {
+    "canonical_decision": {
+      "failed_benefit_checks": [
+        "v4_target_score_at_least_0_80",
+        "v4_target_not_below_v3",
+        "v4_each_target_category_at_least_0_75",
+        "v4_native_format_rate_at_least_0_75",
+        "v4_fallback_rate_at_most_0_10",
+        "v4_fallback_below_v3",
+        "manual_review_found_no_semantic_failures"
+      ],
+      "path": "docs/demo/phase85-low-fallback-semantic-guard/phase85-final-decision.json",
+      "sha256": "45c8f845e2d795921e759dfbd6ff22e9296a852de129c924f3ad9d5da4934080",
+      "status": "archive_incomplete_phase85_evidence"
+    },
+    "frozen_phase85_sources": {
+      "phase85_core": {
+        "actual_sha256": "3e531ac5af3b4b0afcdbada1919090f4f5fdc1ec408dca24768e431f3da1d187",
+        "expected_sha256": "3e531ac5af3b4b0afcdbada1919090f4f5fdc1ec408dca24768e431f3da1d187",
+        "matched": true,
+        "path": "pfe-core/pfe_core/phase85_low_fallback_semantic_guard.py"
+      },
+      "phase85_driver": {
+        "actual_sha256": "6685173efeefbfc7332793e70306912077fee1f815c7bae658d380e8e79cc4d3",
+        "expected_sha256": "6685173efeefbfc7332793e70306912077fee1f815c7bae658d380e8e79cc4d3",
+        "matched": true,
+        "path": "tools/phase85_low_fallback_semantic_guard.py"
+      },
+      "phase85_driver_tests": {
+        "actual_sha256": "02de4e86e2d4b018b4a100cfc310b47c6782cae33790e70814dcea8ff425139f",
+        "expected_sha256": "02de4e86e2d4b018b4a100cfc310b47c6782cae33790e70814dcea8ff425139f",
+        "matched": true,
+        "path": "tests/test_phase85_driver_safety.py"
+      },
+      "phase85_engine_privacy_tests": {
+        "actual_sha256": "b7cb0caffedd8fe77889c7bceea6452ab8d14331e8819b7c50dbb0cd3ee1e3bc",
+        "expected_sha256": "b7cb0caffedd8fe77889c7bceea6452ab8d14331e8819b7c50dbb0cd3ee1e3bc",
+        "matched": true,
+        "path": "tests/test_phase85_engine_status_privacy.py"
+      },
+      "phase85_semantic_hardening_tests": {
+        "actual_sha256": "d838bc4f32fcd46b246a0c66b8bdfcf97f948dff6a7dc79289c38f9c4343dc44",
+        "expected_sha256": "d838bc4f32fcd46b246a0c66b8bdfcf97f948dff6a7dc79289c38f9c4343dc44",
+        "matched": true,
+        "path": "tests/test_phase85_semantic_guard_hardening.py"
+      },
+      "phase85_tests": {
+        "actual_sha256": "6f5726aef17a8672628e2889945d2eb84929aa8f8d5474796441a04f3fe231bd",
+        "expected_sha256": "6f5726aef17a8672628e2889945d2eb84929aa8f8d5474796441a04f3fe231bd",
+        "matched": true,
+        "path": "tests/test_phase85_low_fallback_semantic_guard.py"
+      }
+    },
+    "pre_experiment_freeze": {
+      "passed": true,
+      "path": "docs/demo/phase85-low-fallback-semantic-guard/pre_experiment_freeze.json",
+      "sha256": "62c40246d4816df48c07b9f4127efbe17b40f20d7932e5d46536bf6f77619e66"
+    }
+  },
+  "variants": {
+    "base_api_length_control_160": {
+      "api_call_count": 90,
+      "completed_session_count": 30,
+      "counterfactual_guard_fallback_turn_rate": 1.0,
+      "factual_guard_fallback_turn_rate": null,
+      "fallback_turn_count": 68,
+      "fallback_turn_rate": 1.0,
+      "fallback_turn_rate_is_counterfactual": true,
+      "format_accounting_exact": true,
+      "format_eligible_turn_count": 68,
+      "format_fallback_turn_count": 51,
+      "format_metrics_basis": "counterfactual_common_v4_evaluator",
+      "metric_schema_v2_rules_passed": true,
+      "model_call_count": 90,
+      "native_format_turn_count": 0,
+      "observed_runtime_fallback_turn_rate": null,
+      "runtime_attempt_count": 90,
+      "safety_fallback_turn_count": 17,
+      "semantic_repair_turn_count": 0,
+      "session_count": 30,
+      "stored_metrics": {
+        "exactly_reaggregated_with_frozen_driver": true,
+        "path": "docs/demo/phase85-low-fallback-semantic-guard/evidence-generation/metrics_base_api_length_control_160.json",
+        "sha256": "9274f57036ad52823cdf361a313741cd998576ce62594b10419c4c3331de1bdb"
+      },
+      "structural_jsonl": {
+        "path": "docs/demo/phase85-low-fallback-semantic-guard/evidence-generation/structural_sessions_base_api_length_control_160.jsonl",
+        "sha256": "d203419a5f07b1bfc00c3a22a7d14c0eae4b3bcdc099b9f5996286615ed04c9e"
+      }
+    },
+    "persona_api_contract_v3_fresh": {
+      "api_call_count": 90,
+      "completed_session_count": 30,
+      "counterfactual_guard_fallback_turn_rate": null,
+      "factual_guard_fallback_turn_rate": 0.7058823529411765,
+      "fallback_turn_count": 48,
+      "fallback_turn_rate": 0.7058823529411765,
+      "fallback_turn_rate_is_counterfactual": false,
+      "format_accounting_exact": true,
+      "format_eligible_turn_count": 68,
+      "format_fallback_turn_count": 46,
+      "format_metrics_basis": "runtime_contract_output",
+      "metric_schema_v2_rules_passed": true,
+      "model_call_count": 90,
+      "native_format_turn_count": 7,
+      "observed_runtime_fallback_turn_rate": 0.7058823529411765,
+      "runtime_attempt_count": 90,
+      "safety_fallback_turn_count": 2,
+      "semantic_repair_turn_count": 13,
+      "session_count": 30,
+      "stored_metrics": {
+        "exactly_reaggregated_with_frozen_driver": true,
+        "path": "docs/demo/phase85-low-fallback-semantic-guard/evidence-generation/metrics_persona_api_contract_v3_fresh.json",
+        "sha256": "256bc5ab66c3b33a1655778eccb34cbf3edff801c34710f21b32e9c701a771f3"
+      },
+      "structural_jsonl": {
+        "path": "docs/demo/phase85-low-fallback-semantic-guard/evidence-generation/structural_sessions_persona_api_contract_v3_fresh.jsonl",
+        "sha256": "357f3e8a8cd7305f90aac9afef0c3ef0785c11e621392c6b472c58c2348721df"
+      }
+    },
+    "persona_api_contract_v4": {
+      "api_call_count": 90,
+      "completed_session_count": 30,
+      "counterfactual_guard_fallback_turn_rate": null,
+      "factual_guard_fallback_turn_rate": 0.75,
+      "fallback_turn_count": 51,
+      "fallback_turn_rate": 0.75,
+      "fallback_turn_rate_is_counterfactual": false,
+      "format_accounting_exact": true,
+      "format_eligible_turn_count": 68,
+      "format_fallback_turn_count": 46,
+      "format_metrics_basis": "runtime_contract_output",
+      "metric_schema_v2_rules_passed": true,
+      "model_call_count": 90,
+      "native_format_turn_count": 7,
+      "observed_runtime_fallback_turn_rate": 0.75,
+      "runtime_attempt_count": 90,
+      "safety_fallback_turn_count": 5,
+      "semantic_repair_turn_count": 10,
+      "session_count": 30,
+      "stored_metrics": {
+        "exactly_reaggregated_with_frozen_driver": true,
+        "path": "docs/demo/phase85-low-fallback-semantic-guard/evidence-generation/metrics_persona_api_contract_v4.json",
+        "sha256": "5e0dfe7a48645bd5f3fe8790163c12a9ad3a2c8199dab10804066dcc078245bd"
+      },
+      "structural_jsonl": {
+        "path": "docs/demo/phase85-low-fallback-semantic-guard/evidence-generation/structural_sessions_persona_api_contract_v4.jsonl",
+        "sha256": "aba820f991e97625cce8834e8bb015a90f07f05da5dbee831d5c6ea44f7bcea1"
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "actual_user_feedback_count": 0,
+  "automatic_promotion_allowed": false,
+  "checks": {
+    "eval_calls_frozen_60": true,
+    "fresh_holdout_audit_passed": true,
+    "fresh_holdout_count_10": true,
+    "phase105_product_gate_false": true,
+    "phase105_remains_archive": true,
+    "phase105_sequential_exposure_problem_confirmed": true,
+    "six_exposures_per_category": true,
+    "stratified_exposure_plan_passed": true,
+    "training_template_alignment_passed": true
+  },
+  "created_at": "2026-07-16T18:56:59.833372+00:00",
+  "curriculum_manifest_sha256": "a792f6e7c83cfcc7b34dadb444437682bd3875b4c9929ef92b90050fabc1983e",
+  "generation_protocol": {
+    "do_sample": false,
+    "enable_thinking": false,
+    "guided_target_allowed": false,
+    "input_max_length": 3072,
+    "max_new_tokens": 160,
+    "model": "Qwen3-4B",
+    "model_calls_per_variant": 30,
+    "no_repeat_ngram_size": 4,
+    "phase": 106,
+    "phase105_model_call_budget": 60,
+    "phase106_model_call_budget": 60,
+    "post_hoc_truncation_allowed": false,
+    "premature_eos_suppression_allowed": false,
+    "repetition_penalty": 1.15,
+    "variants": [
+      "base",
+      "candidate"
+    ]
+  },
+  "generation_protocol_sha256": "9d22f4aa515b96fa74a360194f7d20e235aff1699060d5b2416506757d90062d",
+  "holdout_manifest_sha256": "6ff1916af24125c0907a2dc6d0fde4cdb3910c8405506060b62c1b7df5e768c9",
+  "kind": "phase106_pre_experiment_freeze",
+  "passed": true,
+  "product_gate_qualified": false,
+  "simulated_usage": true,
+  "source_sha256": {
+    "core": "fafb2d2c9b1eae30addf9a86d4bfd45a72ac6b4d465cb5787c46518ad11b7e1e",
+    "core_test": "e82c6a56aa6beaaeaaf1895d61933e14e1e280e3799975b48d68841c482e7912",
+    "driver": "f3adcef0bf2eb19ed812fcfec2f8118fd086d5c2a6476d7f25622ff7197d68a0",
+    "driver_test": "67d6c49fb7cbd60b5b1aa76e82cc8fae26cba12d21a03ae46f844ce592605747",
+    "executor": "a1d88831c5dc1311c2e6cf9a46ec93d5ceb85f58b94d0d1ff71be61fb17d84ea",
+    "phase105_core": "1b4ec045bfc5c5cb166e57488b312033c00c2473fd02089b019966101aef64cc",
+    "phase105_driver": "185a5e4e17867a42bccacc4df8b154fac66a9f878a247df073bd2df7d4615e05"
+  },
+  "training_steps": [
+    1,
+    12,
+    30
+  ]
+}

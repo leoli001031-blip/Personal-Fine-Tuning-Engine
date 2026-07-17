@@ -1,0 +1,155 @@
+{
+  "kind": "phase108_pre_experiment_freeze",
+  "frozen_at": "2026-07-17T09:44:40.842512+00:00",
+  "passed": true,
+  "checks": {
+    "phase107_archive_unchanged": true,
+    "phase107_product_gate_false": true,
+    "holdout_integrity_passed": true,
+    "model_manifest_present": true,
+    "phase106_adapter_valid": true,
+    "phase107_adapter_valid": true,
+    "runtime_http_contract_passed": true,
+    "call_ledger_empty": true,
+    "private_root_outside_repo": true,
+    "budget_exactly_300": true
+  },
+  "source_sha256": {
+    "phase108_core": "a828a4da2b5660562653a8ffc201253f8d30e4b344fae2b29ec7cccfcd8dc4a8",
+    "phase108_driver": "901725482e66724ae7406e02e3a1dc031a9d04a36ca8777bc1204c8e69db12b4",
+    "phase108_core_test": "237ec09c464eda64de13fd698c626802e73dbad98cd2b762a366856356c5147d",
+    "phase108_runtime_test": "23c79ed8338183febb05ceab3a7483f6ccd6ff895ce4f14486a95f32d2550793",
+    "phase108_driver_test": "d2e33afb0cdc791ee0fc05927f231f22acbf1d1bbcbc163592a8b5b1352ba1a1",
+    "provenance": "7a1aa8dc6b7954b9d71289f6021fcb25b518243aff6ea669b838d316bfe4a1bf",
+    "server_models": "fc0312accd196073de7f65a5a63cdc912bd2a67702a963dddb966c261dfffc5d",
+    "server_app": "0b142358e5185e57ece32aef65601262d6c571d7ec08afc6ed8c0ede0ca508a9",
+    "phase77_privacy_guard": "6750a332d9ba542b04807ea3f2ecbb71a5e66591a83d3b9079355de6c79301f5",
+    "phase99_generation": "f4ed758d8bf5f5aa8dc31a0e5c681b2d5413561b9b48ef0f2c364b5e1b3ee1b7",
+    "phase107_driver": "53d8aed5fb43b4cf81f6a1a02d252162613cd60468d3cc208239e56949c46c05",
+    "trainer_executor": "a1d88831c5dc1311c2e6cf9a46ec93d5ceb85f58b94d0d1ff71be61fb17d84ea"
+  },
+  "holdout_manifest_sha256": "9031eea965bbda7449391fe936600210cc071c506d9234b2ce400dddb4c7054e",
+  "model_manifest": {
+    "file_count": 8,
+    "files": [
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/config.json",
+        "size_bytes": 726,
+        "sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/generation_config.json",
+        "size_bytes": 239,
+        "sha256": "2325da0f15bb848e018c5ae071b7943332e9f871d6b60e2ed22ca97d4cb993d2"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/model-00001-of-00003.safetensors",
+        "size_bytes": 3957900840,
+        "sha256": "328a91d3122359d5547f9d79521205bc0a46e1f79a792dfe650e99fc2d651223"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/model-00002-of-00003.safetensors",
+        "size_bytes": 3987450520,
+        "sha256": "6cd087b316306a68c562436b5492edbcf6e16c6dba3a1308279caa5a58e21ca5"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/model-00003-of-00003.safetensors",
+        "size_bytes": 99630640,
+        "sha256": "e4bf436957184f4eeb86a80e9db394503f1f56446b2e6b7edeac5b81470f4ca1"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/model.safetensors.index.json",
+        "size_bytes": 32819,
+        "sha256": "6dc0981b8829fead746441f68f38f24c5ca4a3a66351f652c26c6df0efc43ab2"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/tokenizer.json",
+        "size_bytes": 11422654,
+        "sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4"
+      },
+      {
+        "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B/tokenizer_config.json",
+        "size_bytes": 9732,
+        "sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+      }
+    ],
+    "manifest_sha256": "12e0ddee037d77472c869eb889b903915514d460e9427b89aaa717256b05accd"
+  },
+  "adapter_manifests": {
+    "phase106_sft": {
+      "file_count": 2,
+      "files": [
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora/adapter_config.json",
+          "size_bytes": 1123,
+          "sha256": "b95cd0df15fe7f6d29ddcbfb1ede2bac5c19c69500fcc2a8c4c2dd542b2d0701"
+        },
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora/adapter_model.safetensors",
+          "size_bytes": 132187888,
+          "sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2"
+        }
+      ],
+      "manifest_sha256": "4462d4d0ae487029e14a61d8d1fe5a1a950a72ef53fd45e307f2e226905a8ff1",
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora",
+      "artifact_sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2",
+      "expected_sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2",
+      "valid": true
+    },
+    "phase107_dpo": {
+      "file_count": 2,
+      "files": [
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter/adapter_config.json",
+          "size_bytes": 1121,
+          "sha256": "a4ea53389112b4d39fa65900aff94747979820d1e471f826dce6632984837071"
+        },
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter/adapter_model.safetensors",
+          "size_bytes": 66126768,
+          "sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749"
+        }
+      ],
+      "manifest_sha256": "9589cbd0085a9b2debeb9cbeaba923f17d3516584f6273f3087b1a7e64d99927",
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter",
+      "artifact_sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749",
+      "expected_sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749",
+      "valid": true
+    }
+  },
+  "generation_protocol": {
+    "input_max_length": 3072,
+    "max_new_tokens": 160,
+    "do_sample": false,
+    "repetition_penalty": 1.15,
+    "no_repeat_ngram_size": 4,
+    "enable_thinking": false,
+    "guided_generation": false,
+    "post_hoc_truncation_allowed": false,
+    "automatic_retry_count": 0
+  },
+  "generation_protocol_sha256": "346860d1249dcc3b3269c74c0cba720ed9e66c8d2ffa617841c900ab50148a4c",
+  "load_plans": {
+    "base": "raw_qwen3_4b",
+    "phase106_sft": "raw_qwen3_4b_then_phase106_sft_merge",
+    "phase107_dpo": "raw_qwen3_4b_then_phase106_sft_merge_then_phase107_dpo",
+    "phase107_dpo_no_runtime": "same_phase107_weight_stack_with_minimal_system_contract"
+  },
+  "dependencies": {
+    "torch": "2.12.0",
+    "transformers": "5.12.0",
+    "peft": "0.19.1",
+    "pydantic": "2.13.4"
+  },
+  "call_budget": {
+    "main": 240,
+    "diagnostic": 20,
+    "confirmation_reserve": 40,
+    "total": 300
+  },
+  "external_provider_allowed": false,
+  "automatic_retry_allowed": false,
+  "automatic_training_allowed": false,
+  "automatic_promotion_allowed": false,
+  "private_transcripts_committed": false
+}

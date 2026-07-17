@@ -1,0 +1,45 @@
+{
+  "automatic_download_allowed": false,
+  "automatic_training_allowed": false,
+  "available_disk_bytes": 1058227703808,
+  "candidates": [
+    {
+      "architecture_compatible": true,
+      "download_bytes": 3098955668,
+      "download_complete": true,
+      "eligible": true,
+      "estimated_training_memory_bytes": 17179869184,
+      "local_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+      "model_id": "Qwen2.5-1.5B-Instruct",
+      "official_model_card": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct",
+      "official_qwen": true,
+      "parameter_billions": 1.54,
+      "repo_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+      "selection_note": "same Qwen2 architecture and PEFT path as the completed Phase79 CPU probe"
+    },
+    {
+      "architecture_compatible": true,
+      "download_bytes": 4079423234,
+      "download_complete": false,
+      "eligible": false,
+      "estimated_training_memory_bytes": 19327352832,
+      "local_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-1.7B",
+      "model_id": "Qwen3-1.7B",
+      "official_model_card": "https://huggingface.co/Qwen/Qwen3-1.7B",
+      "official_qwen": true,
+      "parameter_billions": 1.7,
+      "repo_id": "Qwen/Qwen3-1.7B",
+      "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+      "selection_note": "not preferred because thinking-mode behavior adds a second variable"
+    }
+  ],
+  "execution_device": "cpu",
+  "kind": "phase81_mid_model_selection",
+  "mps_available": false,
+  "selected_local_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+  "selected_model": "Qwen2.5-1.5B-Instruct",
+  "selection_reason": "smallest downloaded official Qwen in the frozen 1B-2B range with the already proven Qwen2/Transformers/PEFT training path",
+  "status": "selected",
+  "system_memory_bytes": 137438953472
+}

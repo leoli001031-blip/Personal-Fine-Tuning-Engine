@@ -1,0 +1,31 @@
+{
+  "probes": [
+    {
+      "learning_rate": 5e-06,
+      "max_steps": 4,
+      "probe_id": "cpu_float32",
+      "run_condition": "always",
+      "run_order": 1,
+      "runtime_device": "cpu",
+      "runtime_dtype": "float32"
+    },
+    {
+      "learning_rate": 5e-06,
+      "max_steps": 4,
+      "probe_id": "mps_float32",
+      "run_condition": "after_cpu_float32",
+      "run_order": 2,
+      "runtime_device": "mps",
+      "runtime_dtype": "float32"
+    },
+    {
+      "learning_rate": 1e-06,
+      "max_steps": 4,
+      "probe_id": "mps_float32_low_lr",
+      "run_condition": "only_if_cpu_passes_and_mps_base_lr_is_non_finite",
+      "run_order": 3,
+      "runtime_device": "mps",
+      "runtime_dtype": "float32"
+    }
+  ]
+}

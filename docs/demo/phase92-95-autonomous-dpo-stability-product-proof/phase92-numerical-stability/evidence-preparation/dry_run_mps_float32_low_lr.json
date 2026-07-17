@@ -1,0 +1,159 @@
+{
+  "backend": "dpo",
+  "base_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora",
+  "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+  "dpo_config": {
+    "beta": 0.1,
+    "label_smoothing": 0.0,
+    "max_length": 384,
+    "max_prompt_length": 288
+  },
+  "dry_run": true,
+  "execution_mode": "real_import",
+  "job_spec": {
+    "backend": "dpo",
+    "dry_run": true,
+    "execution_backend": "dpo",
+    "execution_executor": "dpo",
+    "executor_mode": "real_import",
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase92-numerical-stability/mps_float32_low_lr",
+    "phase92": {
+      "actual_user_feedback": false,
+      "automatic_promotion_allowed": false,
+      "parent_commit": "e99a216b7d19c168910583be33efde6858d74bd4",
+      "parent_phase": 91,
+      "probe_id": "mps_float32_low_lr",
+      "simulated_usage": true,
+      "single_variable_probe": true
+    },
+    "recipe": {
+      "peft": {
+        "dpo_config": {
+          "beta": 0.1,
+          "label_smoothing": 0.0,
+          "max_length": 384,
+          "max_prompt_length": 288
+        },
+        "lora_config": {
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "r": 16
+        },
+        "trainer_class": "trl.DPOTrainer"
+      },
+      "training": {
+        "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+        "epochs": 1,
+        "incremental_context": {
+          "parent_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora"
+        },
+        "learning_rate": 1e-06,
+        "max_steps": 4,
+        "method": "lora",
+        "num_train_samples": 4,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase92-numerical-stability/mps_float32_low_lr",
+        "runtime_device": "mps",
+        "runtime_dtype": "float32",
+        "train_type": "dpo"
+      }
+    },
+    "training_examples": [
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：导出归档尚未验证完成。\n依据：现有记录仅说明上传凭证仍缺失。\n下一步：补齐缺失记录后重新核验。",
+        "derived_from_eval_output": false,
+        "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n导出归档目前只知道：上传凭证仍缺失。请只按现有证据说明状态，不要猜原因。<|im_end|>\n<|im_start|>assistant\n",
+        "preference_category": "exact_three_line",
+        "rejected": "根据现有信息，导出归档尚未验证完成。；现有记录仅说明上传凭证仍缺失。；补齐缺失记录后重新核验。。",
+        "sample_id": "phase91-dpo-exact_three_line-01",
+        "sample_type": "dpo",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：导出归档已由人工确认完成。\n依据：最新验收记录明确写明归档校验值与验收记录一致。\n下一步：登记验收人和时间，保持记录可追溯。",
+        "derived_from_eval_output": false,
+        "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n核对导出归档。最新人工验收记录写明：归档校验值与验收记录一致。请给最终状态。<|im_end|>\n<|im_start|>assistant\n",
+        "preference_category": "false_block",
+        "rejected": "结论：导出归档状态未验证。\n依据：仍无法确认归档校验值与验收记录一致。\n下一步：继续重复检查。",
+        "sample_id": "phase91-dpo-false_block-01",
+        "sample_type": "dpo",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：该记录只能标记为 simulated_usage。\n依据：它来自模拟脚本且没有真实用户确认。\n下一步：保持 actual_user_feedback=false，不进入真实反馈统计。",
+        "derived_from_eval_output": false,
+        "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n这条导出归档记录由模拟脚本生成，没有真实用户确认。能否标成 actual_user_feedback？<|im_end|>\n<|im_start|>assistant\n",
+        "preference_category": "provenance",
+        "rejected": "结论：可以先标记为 actual_user_feedback。\n依据：记录内容看起来可信。\n下一步：稍后再补用户确认。",
+        "sample_id": "phase91-dpo-provenance-01",
+        "sample_type": "dpo",
+        "simulated_usage": true
+      },
+      {
+        "actual_user_feedback": false,
+        "chosen": "结论：访问密钥轮换尚未验证完成。\n依据：现有记录仅说明旧密钥吊销回执仍缺失。\n下一步：补齐缺失记录后重新核验。",
+        "derived_from_eval_output": false,
+        "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n访问密钥轮换目前只知道：旧密钥吊销回执仍缺失。请只按现有证据说明状态，不要猜原因。<|im_end|>\n<|im_start|>assistant\n",
+        "preference_category": "exact_three_line",
+        "rejected": "根据现有信息，访问密钥轮换尚未验证完成。；现有记录仅说明旧密钥吊销回执仍缺失。；补齐缺失记录后重新核验。。",
+        "sample_id": "phase91-dpo-exact_three_line-02",
+        "sample_type": "dpo",
+        "simulated_usage": true
+      }
+    ]
+  },
+  "num_examples": 4,
+  "recipe": {
+    "peft": {
+      "dpo_config": {
+        "beta": 0.1,
+        "label_smoothing": 0.0,
+        "max_length": 384,
+        "max_prompt_length": 288
+      },
+      "lora_config": {
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "r": 16
+      },
+      "trainer_class": "trl.DPOTrainer"
+    },
+    "training": {
+      "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+      "epochs": 1,
+      "incremental_context": {
+        "parent_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora"
+      },
+      "learning_rate": 1e-06,
+      "max_steps": 4,
+      "method": "lora",
+      "num_train_samples": 4,
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase92-numerical-stability/mps_float32_low_lr",
+      "runtime_device": "mps",
+      "runtime_dtype": "float32",
+      "train_type": "dpo"
+    }
+  },
+  "status": "prepared",
+  "training_config": {
+    "learning_rate": 1e-06,
+    "lora_config": {
+      "lora_alpha": 32,
+      "lora_dropout": 0.05,
+      "r": 16
+    },
+    "runtime_resolution": {
+      "device": "mps",
+      "device_map": {
+        "": "mps"
+      },
+      "dtype": "float32",
+      "requested_device": "mps",
+      "requested_dtype": "float32",
+      "use_cpu": false
+    },
+    "use_cpu": false
+  }
+}

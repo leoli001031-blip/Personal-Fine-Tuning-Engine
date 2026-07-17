@@ -1,0 +1,36 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "automatic_deployment_allowed": false,
+  "checks": {
+    "dpo_preflight_ready": true,
+    "fresh_holdout_isolated": true,
+    "parent_adapter_valid": true,
+    "preference_pair_quality_passed": true,
+    "real_12step_dpo_completed": false,
+    "token_boundaries_passed": true,
+    "valid_candidate_adapter_created": false
+  },
+  "failed_checks": [
+    "real_12step_dpo_completed",
+    "valid_candidate_adapter_created"
+  ],
+  "full_eval_run": false,
+  "hermes_attachment_allowed": false,
+  "kind": "phase91_controlled_dpo_decision",
+  "product_gate_qualified": false,
+  "promotion_allowed": false,
+  "recommendation": "archive_and_move_to_larger_model_or_stable_dpo_backend",
+  "sanity_generation_run": false,
+  "simulated_usage": true,
+  "status": "archive_phase91_12step_dpo_non_finite",
+  "thirty_step_training_run": false,
+  "training_failure": {
+    "category": "non_finite_dpo_metrics",
+    "first_metric": "grad_norm",
+    "first_non_finite_log_index": 3,
+    "requested_steps": 12,
+    "trainer_error": "TrainingError: real DPO training produced non-finite trainer metrics; first=grad_norm:nan at log_index=3"
+  }
+}

@@ -17,6 +17,7 @@ class WorkerDaemonRecoverySurfaceTests(unittest.TestCase):
         os.environ["PFE_HOME"] = str(self.pfe_home)
 
     def tearDown(self) -> None:
+        CliRunner().invoke(cli_main.app, ["daemon", "stop", "--workspace", "user_default"])
         if self.previous_home is None:
             os.environ.pop("PFE_HOME", None)
         else:

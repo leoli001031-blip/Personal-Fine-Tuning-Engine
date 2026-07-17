@@ -1,0 +1,221 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback": false,
+  "adapter_validation": {
+    "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora/adapter_model.safetensors",
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora",
+    "format": "safetensors",
+    "lora_tensor_count": 392,
+    "parameter_count": 18464768,
+    "parameters_updated": true,
+    "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora/adapter_model.safetensors",
+    "reason": null,
+    "sha256": "5dd3b60b0aa9e27ed00bad82c9d4b3068977d5f0d97d797ae0f0a4475f45be49",
+    "size_bytes": 73911112,
+    "steps": 4,
+    "tensor_count": 392,
+    "valid": true
+  },
+  "auto_promotion_allowed": false,
+  "candidate_eligible": false,
+  "duration_seconds": 1439.4785,
+  "execution": {
+    "accelerator": {
+      "class": "Accelerator",
+      "used": true
+    },
+    "adapter_validation": {
+      "format": "safetensors",
+      "lora_tensor_count": 392,
+      "parameter_count": 18464768,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora/adapter_model.safetensors",
+      "reason": null,
+      "size_bytes": 73911112,
+      "tensor_count": 392,
+      "valid": true
+    },
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora",
+    "artifact_kind": "real_local_peft",
+    "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/real_local_job_manifest.json",
+    "artifacts": {
+      "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora/adapter_config.json",
+      "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora/adapter_model.safetensors",
+      "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/real_local_job_manifest.json",
+      "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/train_metrics.json",
+      "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/real_execution.json",
+      "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/trainer_state.json",
+      "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/training_summary.json"
+    },
+    "blocked_by": [],
+    "blocking_reasons": [],
+    "category_exposure_counts": {
+      "autonomous_execution": 1,
+      "concise_workstyle": 1,
+      "privacy_non_echo": 1,
+      "provenance_labeling": 1
+    },
+    "config_path": null,
+    "dependency_ready": true,
+    "device": "cpu",
+    "duration_seconds": 1438.7359,
+    "epochs": 1,
+    "execution_mode": "real_local",
+    "executor_ready": true,
+    "exposure_accounting_enabled": true,
+    "final_loss": 4.59383,
+    "forward_error": null,
+    "initial_loss": 3.816282,
+    "kind": "real_local_peft",
+    "learning_rate": 2e-05,
+    "load_mode": "from_pretrained",
+    "loss_history": [
+      {
+        "loss": 3.816282,
+        "step": 1
+      },
+      {
+        "loss": 3.947986,
+        "step": 2
+      },
+      {
+        "loss": 2.106792,
+        "step": 3
+      },
+      {
+        "loss": 4.59383,
+        "step": 4
+      }
+    ],
+    "max_length": 176,
+    "max_steps": 4,
+    "message": "real_local_peft execution completed with optimizer updates",
+    "metrics": {
+      "adapter_validation": {
+        "format": "safetensors",
+        "lora_tensor_count": 392,
+        "parameter_count": 18464768,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "size_bytes": 73911112,
+        "tensor_count": 392,
+        "valid": true
+      },
+      "category_exposure_counts": {
+        "autonomous_execution": 1,
+        "concise_workstyle": 1,
+        "privacy_non_echo": 1,
+        "provenance_labeling": 1
+      },
+      "duration_seconds": 1438.7359,
+      "execution_mode": "real_local",
+      "exposure_accounting_enabled": true,
+      "final_loss": 4.59383,
+      "initial_loss": 3.816282,
+      "learning_rate": 2e-05,
+      "loss": 3.616223,
+      "loss_history": [
+        {
+          "loss": 3.816282,
+          "step": 1
+        },
+        {
+          "loss": 3.947986,
+          "step": 2
+        },
+        {
+          "loss": 2.106792,
+          "step": 3
+        },
+        {
+          "loss": 4.59383,
+          "step": 4
+        }
+      ],
+      "max_steps": 4,
+      "num_examples": 120,
+      "parameter_fingerprint_after": {
+        "l2_norm": 32.33516289,
+        "parameter_count": 18464768,
+        "sha256": "d2cdbbb542ce1a870f4352e9cfb481a554edd4e1d4b4b1d599aa3837d5297339",
+        "tensor_count": 392
+      },
+      "parameter_fingerprint_before": {
+        "l2_norm": 32.33331742,
+        "parameter_count": 18464768,
+        "sha256": "a202a758ad05d921088583655750434243a3f98a34617ea54c846ea5e8f759df",
+        "tensor_count": 392
+      },
+      "parameters_updated": true,
+      "preference_reinforced_fresh_sample_count": 0,
+      "preference_reinforced_fresh_sample_ids": [],
+      "preference_reinforced_fresh_sample_ratio": 0.0,
+      "sample_exposure_counts": {
+        "phase78-train-autonomous_execution-05": 1,
+        "phase78-train-concise_workstyle-09": 1,
+        "phase78-train-privacy_non_echo-12": 1,
+        "phase78-train-provenance_labeling-14": 1
+      },
+      "sampling_strategy": "seeded_stratified",
+      "seed": 81,
+      "status": "completed",
+      "steps": 4,
+      "trainable_parameter_count": 18464768,
+      "trainable_tensor_count": 392,
+      "unique_categories_exposed": 4,
+      "unique_samples_exposed": 4
+    },
+    "num_examples": 120,
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/peft_lora",
+    "parameter_fingerprint_after": {
+      "l2_norm": 32.33516289,
+      "parameter_count": 18464768,
+      "sha256": "d2cdbbb542ce1a870f4352e9cfb481a554edd4e1d4b4b1d599aa3837d5297339",
+      "tensor_count": 392
+    },
+    "parameter_fingerprint_before": {
+      "l2_norm": 32.33331742,
+      "parameter_count": 18464768,
+      "sha256": "a202a758ad05d921088583655750434243a3f98a34617ea54c846ea5e8f759df",
+      "tensor_count": 392
+    },
+    "parameters_updated": true,
+    "path": "real_local",
+    "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/real_execution.json",
+    "runtime_path": "real_local",
+    "sample_exposure_counts": {
+      "phase78-train-autonomous_execution-05": 1,
+      "phase78-train-concise_workstyle-09": 1,
+      "phase78-train-privacy_non_echo-12": 1,
+      "phase78-train-provenance_labeling-14": 1
+    },
+    "sampling_strategy": "seeded_stratified",
+    "seed": 81,
+    "source_kind": "path",
+    "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+    "source_ready": true,
+    "steps": 4,
+    "success": true,
+    "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/training_summary.json",
+    "tokenizer_loaded": true,
+    "train_loss": 3.616223,
+    "trainable_parameter_count": 18464768,
+    "trainable_tensor_count": 392,
+    "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase81-probe-4step/trainer_state.json",
+    "unique_categories_exposed": 4,
+    "unique_samples_exposed": 4
+  },
+  "finished_at": "2026-07-15T13:13:49.855308+00:00",
+  "kind": "phase81_mid_model_training_attempt",
+  "learning_rate": 2e-05,
+  "max_rss_after_bytes": 5735546880,
+  "max_rss_before_bytes": 466632704,
+  "model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+  "model_revision": "989aa7980e4cf806f80c7fef2b1adb7bc71aa306",
+  "real_training": true,
+  "requested_steps": 4,
+  "seed": 81,
+  "selected_model": "Qwen2.5-1.5B-Instruct",
+  "simulated_usage": true,
+  "started_at": "2026-07-15T12:49:50.351056+00:00",
+  "status": "completed"
+}

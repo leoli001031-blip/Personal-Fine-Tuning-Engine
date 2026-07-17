@@ -107,5 +107,46 @@ class ServerAdapterTests(unittest.TestCase):
         self.assertEqual(request.timestamp.tzinfo, timezone.utc)
         self.assertEqual(request.timestamp.isoformat(), "2026-04-20T12:00:00+00:00")
 
+    def test_inference_adapter_redacts_declared_private_values_before_retention(self) -> None:
+        pipeline = PipelineService()
+        inference = InferenceServiceAdapter(pipeline)
+        secret = "PHASE84_RETAINED_PRIVATE_DO_NOT_ECHO"
+        payload = {
+            "id": "chatcmpl-private",
+            "object": "chat.completion",
+            "model": "base",
+            "adapter_version": None,
+            "request_id": "req-private",
+            "session_id": "sess-private",
+            "served_by": "local",
+            "usage": {"prompt_tokens": 3, "completion_tokens": 3, "total_tokens": 6},
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": f"结果中包含 {secret}"},
+                    "finish_reason": "stop",
+                }
+            ],
+            "metadata": {"inference": {"served_by": "local"}},
+        }
+
+        with patch.object(pipeline, "chat_completion", return_value=payload):
+            response = asyncio.run(
+                inference.generate_chat_completion(
+                    ChatCompletionRequest(
+                        model="base",
+                        session_id="sess-private",
+                        request_id="req-private",
+                        messages=[{"role": "user", "content": f"检查 {secret}"}],
+                        metadata={"declared_private_values": [secret]},
+                    )
+                )
+            )
+
+        retained = inference._pending_interactions["sess-private"]
+        self.assertNotIn(secret, retained.user_message)
+        self.assertNotIn(secret, retained.assistant_message)
+        self.assertTrue(response.metadata["memory"]["retained_interaction_private_values_redacted"])
+
 if __name__ == "__main__":
     unittest.main()

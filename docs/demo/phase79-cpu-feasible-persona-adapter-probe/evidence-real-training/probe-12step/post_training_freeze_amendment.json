@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "adapter_hash_unchanged": true,
+    "existing_probe_completed": true,
+    "historical_adapter_not_reused": true,
+    "training_manifest_unchanged": true
+  },
+  "created_at": "2026-07-15T10:40:37.720979+00:00",
+  "kind": "phase79_post_training_driver_amendment",
+  "passed": true,
+  "probe_retraining_required": false,
+  "reason": "The first sanity command reused the Phase75 runtime loader, which is hardcoded to Qwen3-4B. Phase79 now loads its selected 0.5B base explicitly. No training recipe, sample, or adapter artifact changed."
+}

@@ -1,0 +1,17 @@
+{
+  "actual_optimizer_step_count": "unknown",
+  "adapter_artifact_created": false,
+  "attempt_started_at": "2026-07-15T07:39:51Z",
+  "completion_boundary_passed": true,
+  "diagnosis": "All 120 full prompt-plus-completion sequences fit within 148 tokens and the frozen max_length was reduced to 160, but the current process still had no MPS access. The CPU Qwen3-4B probe produced no optimizer or adapter artifact after roughly 46 minutes.",
+  "kind": "phase78_training_failure_evidence",
+  "max_full_sequence_tokens": 148,
+  "max_length": 160,
+  "model": "Qwen3-4B",
+  "observed_elapsed_seconds_at_abort": ">=2700",
+  "requested_steps": 12,
+  "resolution": "Archive the Phase78 Qwen3-4B training route for this execution environment. Continue the autonomous loop with a separately scoped CPU-feasible Qwen model; do not reinterpret this attempt as training or adapter benefit.",
+  "status": "interrupted_after_cpu_infeasibility_window",
+  "torch_version": "2.12.0",
+  "mps_available_in_current_process": false
+}

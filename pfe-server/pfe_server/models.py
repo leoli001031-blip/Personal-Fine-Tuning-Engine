@@ -6,6 +6,7 @@ from uuid import uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from pfe_core.inference.provenance import ProvenanceEnvelope, build_provenance_envelope
 from pfe_core.models import normalize_utc_datetime
 
 
@@ -15,6 +16,12 @@ def _utc_now() -> datetime:
 
 def _utc_timestamp() -> int:
     return int(_utc_now().timestamp())
+
+
+def _default_provenance() -> ProvenanceEnvelope:
+    return ProvenanceEnvelope.model_validate(
+        build_provenance_envelope(generation_origin="unknown")
+    )
 
 
 class PFEBaseModel(BaseModel):
@@ -69,6 +76,7 @@ class ChatCompletionResponse(PFEBaseModel):
     session_id: Optional[str] = None
     adapter_version: Optional[str] = None
     served_by: Literal["local", "mock", "cloud"] = "mock"
+    pfe_provenance: ProvenanceEnvelope = Field(default_factory=_default_provenance)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 

@@ -21,6 +21,7 @@ from .config import PFEConfig, PrivacyConfig
 from .curator.teacher_client import TeacherClientConfig, TeacherInferenceClient
 from .errors import EvalError
 from .inference.engine import InferenceConfig, InferenceEngine, resolve_base_model_reference
+from .inference.provenance import TrustedProvenanceContext, build_provenance_envelope
 from .models import parse_utc_datetime
 from .curator.datasets import SampleFilterConfig, build_signal_quality, signal_quality_filter_reasons
 from .pipeline_candidate import (
@@ -6374,6 +6375,7 @@ class PipelineService:
         request_id: str | None = None,
         session_id: str | None = None,
         workspace: str | None = None,
+        trusted_provenance_context: TrustedProvenanceContext | None = None,
     ) -> dict[str, Any]:
         adapter_path = None
         resolved_adapter = None
@@ -6405,6 +6407,12 @@ class PipelineService:
         prompt_tokens = int(token_budget.get("prompt_tokens") or max(0, len(prompt_text.strip()) // 4))
         completion_tokens = int(token_budget.get("completion_tokens") or max(0, len(content.strip()) // 4))
         finish_reason = str(generation.get("finish_reason") or "stop")
+        provenance = build_provenance_envelope(
+            generation_origin=str(inference_status.get("served_by") or "unknown"),
+            trusted_context=trusted_provenance_context,
+            untrusted_metadata=metadata,
+            model_output=content,
+        )
         return {
             "id": f"chatcmpl-{uuid4().hex[:12]}",
             "object": "chat.completion",
@@ -6413,6 +6421,7 @@ class PipelineService:
             "request_id": request_id,
             "session_id": session_id,
             "served_by": inference_status.get("served_by", "mock"),
+            "pfe_provenance": provenance,
             "choices": [
                 {
                     "index": 0,

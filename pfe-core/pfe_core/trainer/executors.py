@@ -2486,6 +2486,82 @@ def run_materialized_training_job_bundle(
     )
 
 
+def resolve_dpo_runtime_config(
+    *,
+    requested_device: str,
+    requested_dtype: str,
+    cuda_available: bool,
+    mps_available: bool,
+) -> dict[str, Any]:
+    """Resolve a DPO runtime without mixing an accelerator dtype with a CPU device."""
+    device_request = str(requested_device or "auto").strip().lower()
+    dtype_request = str(requested_dtype or "auto").strip().lower()
+    if device_request not in {"auto", "cpu", "cuda", "mps"}:
+        raise TrainingError(f"unsupported DPO runtime device: {device_request}")
+    if dtype_request not in {"auto", "float16", "float32", "bfloat16"}:
+        raise TrainingError(f"unsupported DPO runtime dtype: {dtype_request}")
+
+    if device_request == "auto":
+        device = "cuda" if cuda_available else ("mps" if mps_available else "cpu")
+    else:
+        device = device_request
+    if device == "cuda" and not cuda_available:
+        raise TrainingError("requested DPO runtime device cuda is unavailable")
+    if device == "mps" and not mps_available:
+        raise TrainingError("requested DPO runtime device mps is unavailable")
+
+    if dtype_request == "auto":
+        dtype = "float16" if device == "cuda" else "float32"
+    else:
+        dtype = dtype_request
+    if device == "cpu" and dtype == "float16":
+        raise TrainingError("CPU float16 is not allowed for DPO because it is numerically unstable")
+    if device == "mps" and dtype == "bfloat16":
+        raise TrainingError("MPS bfloat16 is not supported by the PFE DPO runtime")
+
+    return {
+        "requested_device": device_request,
+        "requested_dtype": dtype_request,
+        "device": device,
+        "dtype": dtype,
+        "device_map": "auto" if device == "cuda" else {"": device},
+        "use_cpu": device == "cpu",
+    }
+
+
+class _DPOTrainingDiagnosticError(TrainingError):
+    def __init__(self, message: str, diagnostics: Mapping[str, Any]) -> None:
+        super().__init__(message)
+        self.diagnostics = dict(diagnostics)
+
+
+def _model_device_dtype_summary(model: Any) -> dict[str, Any]:
+    devices: dict[str, int] = {}
+    dtypes: dict[str, int] = {}
+    for parameter in model.parameters():
+        device = str(parameter.device)
+        dtype = str(parameter.dtype).removeprefix("torch.")
+        devices[device] = devices.get(device, 0) + int(parameter.numel())
+        dtypes[dtype] = dtypes.get(dtype, 0) + int(parameter.numel())
+    return {
+        "parameter_devices": devices,
+        "parameter_dtypes": dtypes,
+        "parameter_count": sum(devices.values()),
+    }
+
+
+def _runtime_summary_matches(summary: Mapping[str, Any], resolution: Mapping[str, Any]) -> bool:
+    expected_device = str(resolution["device"])
+    expected_dtype = str(resolution["dtype"])
+    devices = list(dict(summary.get("parameter_devices") or {}))
+    dtypes = list(dict(summary.get("parameter_dtypes") or {}))
+    device_matches = all(
+        device == expected_device or device.startswith(f"{expected_device}:")
+        for device in devices
+    )
+    return bool(devices) and device_matches and dtypes == [expected_dtype]
+
+
 def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -> dict[str, Any]:
     """Execute DPO training using trl.DPOTrainer.
 
@@ -2515,6 +2591,22 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
     max_prompt_length = dpo_config.get("max_prompt_length", 1024)
     lora_config = dict(peft_config.get("lora_config") or {})
     use_cpu = bool(training.get("use_cpu") or job_spec.get("use_cpu"))
+    requested_device = "cpu" if use_cpu else str(
+        training.get("runtime_device") or job_spec.get("runtime_device") or "auto"
+    )
+    requested_dtype = str(
+        training.get("runtime_dtype") or job_spec.get("runtime_dtype") or "auto"
+    )
+    import torch
+
+    runtime_resolution = resolve_dpo_runtime_config(
+        requested_device=requested_device,
+        requested_dtype=requested_dtype,
+        cuda_available=bool(torch.cuda.is_available()),
+        mps_available=bool(
+            getattr(torch.backends, "mps", None) and torch.backends.mps.is_available()
+        ),
+    )
 
     # Extract training examples
     training_examples = list(job_spec.get("training_examples") or [])
@@ -2545,7 +2637,8 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             "training_config": {
                 "learning_rate": training.get("learning_rate", 5e-5),
                 "lora_config": lora_config,
-                "use_cpu": use_cpu,
+                "use_cpu": runtime_resolution["use_cpu"],
+                "runtime_resolution": runtime_resolution,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2563,8 +2656,10 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             label_smoothing=label_smoothing,
             max_length=max_length,
             max_prompt_length=max_prompt_length,
+            runtime_resolution=runtime_resolution,
         )
     except Exception as exc:
+        diagnostics = dict(getattr(exc, "diagnostics", {}) or {})
         return {
             "backend": "dpo",
             "dry_run": False,
@@ -2573,6 +2668,12 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             "recipe": recipe,
             "status": "failed",
             "error": f"{exc.__class__.__name__}: {exc}",
+            "failure_diagnostics": diagnostics,
+            "real_execution": {
+                "kind": "real_dpo",
+                "success": False,
+                **diagnostics,
+            },
             "dpo_config": {
                 "beta": beta,
                 "label_smoothing": label_smoothing,
@@ -2582,7 +2683,8 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             "training_config": {
                 "learning_rate": training.get("learning_rate", 5e-5),
                 "lora_config": lora_config,
-                "use_cpu": use_cpu,
+                "use_cpu": runtime_resolution["use_cpu"],
+                "runtime_resolution": runtime_resolution,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2600,6 +2702,7 @@ def _run_real_dpo_training(
     label_smoothing: float,
     max_length: int,
     max_prompt_length: int,
+    runtime_resolution: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Run actual DPO training with trl.DPOTrainer.
 
@@ -2627,13 +2730,9 @@ def _run_real_dpo_training(
     recipe = dict(job_spec.get("recipe") or {})
     training_recipe = dict(recipe.get("training") or {})
     peft_recipe = dict(recipe.get("peft") or {})
-    mps_available = bool(getattr(torch.backends, "mps", None) and torch.backends.mps.is_available())
-    accelerator_available = bool(torch.cuda.is_available() or mps_available)
-    use_cpu = bool(training_recipe.get("use_cpu") or job_spec.get("use_cpu") or not accelerator_available)
-
-    # Determine device and dtype
-    device_map = "auto" if torch.cuda.is_available() and not use_cpu else {"": "cpu"}
-    torch_dtype = torch.float16 if accelerator_available and not use_cpu else torch.float32
+    use_cpu = bool(runtime_resolution["use_cpu"])
+    device_map = runtime_resolution["device_map"]
+    torch_dtype = getattr(torch, str(runtime_resolution["dtype"]))
 
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
@@ -2652,6 +2751,7 @@ def _run_real_dpo_training(
     if base_adapter_path and Path(base_adapter_path).exists():
         model = PeftModel.from_pretrained(model, base_adapter_path)
         model = model.merge_and_unload()
+    policy_runtime_before_lora = _model_device_dtype_summary(model)
 
     # Create reference model (frozen copy of base model with SFT adapter)
     ref_model = AutoModelForCausalLM.from_pretrained(
@@ -2663,6 +2763,23 @@ def _run_real_dpo_training(
     if base_adapter_path and Path(base_adapter_path).exists():
         ref_model = PeftModel.from_pretrained(ref_model, base_adapter_path)
         ref_model = ref_model.merge_and_unload()
+    reference_runtime = _model_device_dtype_summary(ref_model)
+    runtime_audit = {
+        "resolved": dict(runtime_resolution),
+        "policy_before_lora": policy_runtime_before_lora,
+        "reference": reference_runtime,
+        "policy_matches_resolution": _runtime_summary_matches(
+            policy_runtime_before_lora, runtime_resolution
+        ),
+        "reference_matches_resolution": _runtime_summary_matches(
+            reference_runtime, runtime_resolution
+        ),
+    }
+    if not runtime_audit["policy_matches_resolution"] or not runtime_audit["reference_matches_resolution"]:
+        raise _DPOTrainingDiagnosticError(
+            "DPO model device/dtype does not match the resolved runtime",
+            {"runtime_audit": runtime_audit, "steps": 0},
+        )
 
     # Determine target modules based on base model architecture
     model_name_lower = base_model_name.lower()
@@ -2688,6 +2805,7 @@ def _run_real_dpo_training(
         task_type=TaskType.CAUSAL_LM,
     )
     model = get_peft_model(model, lora_config)
+    runtime_audit["policy_after_lora"] = _model_device_dtype_summary(model)
     fingerprint_before = _trainable_parameter_fingerprint(model)
 
     # Prepare DPO dataset
@@ -2737,8 +2855,8 @@ def _run_real_dpo_training(
             lr_scheduler_type="cosine",
             logging_steps=1,
             save_strategy="no",
-            bf16=False,
-            fp16=torch.cuda.is_available() and not use_cpu,
+            bf16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "bfloat16",
+            fp16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "float16",
             use_cpu=use_cpu,
             remove_unused_columns=False,
             dataloader_pin_memory=False,
@@ -2761,8 +2879,8 @@ def _run_real_dpo_training(
             lr_scheduler_type="cosine",
             logging_steps=10,
             save_strategy="epoch",
-            bf16=False,
-            fp16=torch.cuda.is_available() and not use_cpu,
+            bf16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "bfloat16",
+            fp16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "float16",
             use_cpu=use_cpu,
             remove_unused_columns=False,
             dataloader_pin_memory=False,
@@ -2811,9 +2929,23 @@ def _run_real_dpo_training(
     non_finite_metrics = _find_non_finite_trainer_metrics(trainer_log_history)
     if non_finite_metrics:
         first = non_finite_metrics[0]
-        raise TrainingError(
+        raise _DPOTrainingDiagnosticError(
             "real DPO training produced non-finite trainer metrics; "
-            f"first={first['metric']}:{first['value']} at log_index={first['log_index']}"
+            f"first={first['metric']}:{first['value']} at log_index={first['log_index']}",
+            {
+                "steps": completed_steps,
+                "max_steps": max_steps,
+                "duration_seconds": duration_seconds,
+                "train_loss": train_loss,
+                "loss_history": trainer_log_history,
+                "non_finite_metrics": non_finite_metrics,
+                "parameter_fingerprint_before": fingerprint_before,
+                "parameter_fingerprint_after": fingerprint_after,
+                "parameters_updated": parameters_updated,
+                "device": runtime_resolution["device"],
+                "dtype": runtime_resolution["dtype"],
+                "runtime_audit": runtime_audit,
+            },
         )
 
     # Save adapter
@@ -2862,7 +2994,10 @@ def _run_real_dpo_training(
             "learning_rate": learning_rate,
             "max_steps": max_steps,
             "completed_steps": completed_steps,
-            "device": "cpu" if use_cpu else ("cuda" if torch.cuda.is_available() else "mps"),
+            "device": runtime_resolution["device"],
+            "dtype": runtime_resolution["dtype"],
+            "runtime_resolution": dict(runtime_resolution),
+            "runtime_audit": runtime_audit,
             "lora_config": {
                 "r": lora_r,
                 "lora_alpha": lora_alpha,
@@ -2895,7 +3030,9 @@ def _run_real_dpo_training(
             "duration_seconds": duration_seconds,
             "max_steps": max_steps,
             "steps": completed_steps,
-            "device": "cpu" if use_cpu else ("cuda" if torch.cuda.is_available() else "mps"),
+            "device": runtime_resolution["device"],
+            "dtype": runtime_resolution["dtype"],
+            "runtime_audit": runtime_audit,
             "parameter_fingerprint_before": fingerprint_before,
             "parameter_fingerprint_after": fingerprint_after,
             "parameters_updated": parameters_updated,

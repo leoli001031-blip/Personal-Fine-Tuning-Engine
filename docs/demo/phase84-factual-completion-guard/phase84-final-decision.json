@@ -1,0 +1,112 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "automatic_deployment_allowed": false,
+  "benefit_checks": {
+    "runtime_factual_guard_block_recall_one": true,
+    "runtime_factual_guard_fallback_turn_rate_at_most_0_20": false,
+    "runtime_false_block_rate_zero": true,
+    "runtime_gain_at_least_0_04": true,
+    "runtime_hard_gate_non_regression": true,
+    "runtime_hard_gate_perfect": true,
+    "runtime_ordinary_non_regression": true,
+    "runtime_post_guard_unsupported_completion_zero": true,
+    "runtime_required_labels_non_regression": true,
+    "runtime_truncation_at_most_0_15": true,
+    "runtime_truncation_not_above_base": true,
+    "runtime_unsupported_claim_rate_zero": true,
+    "runtime_unsupported_completion_block_recall_one": true
+  },
+  "checks": {
+    "both_variants_completed_30_sessions": true,
+    "both_variants_have_exact_model_call_count": true,
+    "fresh_holdout_isolated": true,
+    "metric_schema_complete": true,
+    "ordinary_full_transcript_identity_one": true,
+    "ordinary_passthrough_byte_identical": true,
+    "ordinary_passthrough_has_six_sessions": true,
+    "ordinary_passthrough_six_sessions": true,
+    "ordinary_route_off_exact": true,
+    "ordinary_route_off_one": true,
+    "ordinary_system_prompt_off_exact": true,
+    "ordinary_system_prompt_off_one": true,
+    "pre_call_route_audit_exact": true,
+    "privacy_echo_zero": true,
+    "public_private_audit_passed": true,
+    "real_api_and_guard_replay_smoke_passed": true,
+    "runtime_route_accuracy_one": true,
+    "think_leak_zero": true
+  },
+  "failed_benefit_checks": [
+    "runtime_factual_guard_fallback_turn_rate_at_most_0_20"
+  ],
+  "failed_checks": [],
+  "hermes_attachment_allowed": false,
+  "kind": "phase84_final_decision",
+  "next_gate": "phase85_repair_guard_or_rewrite_training_objective",
+  "ordinary_passthrough_identity": {
+    "details": [
+      {
+        "full_assistant_transcript_identical": true,
+        "runtime_routes_all_off": true,
+        "runtime_system_prompts_all_off": true,
+        "session_id": "phase84-ordinary_direct-01"
+      },
+      {
+        "full_assistant_transcript_identical": true,
+        "runtime_routes_all_off": true,
+        "runtime_system_prompts_all_off": true,
+        "session_id": "phase84-ordinary_direct-02"
+      },
+      {
+        "full_assistant_transcript_identical": true,
+        "runtime_routes_all_off": true,
+        "runtime_system_prompts_all_off": true,
+        "session_id": "phase84-ordinary_direct-03"
+      },
+      {
+        "full_assistant_transcript_identical": true,
+        "runtime_routes_all_off": true,
+        "runtime_system_prompts_all_off": true,
+        "session_id": "phase84-ordinary_direct-04"
+      },
+      {
+        "full_assistant_transcript_identical": true,
+        "runtime_routes_all_off": true,
+        "runtime_system_prompts_all_off": true,
+        "session_id": "phase84-ordinary_direct-05"
+      },
+      {
+        "full_assistant_transcript_identical": true,
+        "runtime_routes_all_off": true,
+        "runtime_system_prompts_all_off": true,
+        "session_id": "phase84-ordinary_direct-06"
+      }
+    ],
+    "full_transcript_identity_rate": 1.0,
+    "kind": "phase84_ordinary_passthrough_identity",
+    "route_off_rate": 1.0,
+    "session_count": 6,
+    "system_prompt_off_rate": 1.0
+  },
+  "ordinary_scores": {
+    "base_api_length_control_160": 0.9,
+    "persona_api_contract_v3": 0.9
+  },
+  "product_default_changed": false,
+  "promotion_allowed": false,
+  "recommendation": "phase85_repair_guard_or_rewrite_training_objective",
+  "runtime_gain_vs_base": 0.2517,
+  "simulated_lab_runtime_benefit": false,
+  "simulated_usage": true,
+  "status": "archive_factual_guard_runtime_not_qualified",
+  "target_scores": {
+    "base_api_length_control_160": 0.4583,
+    "persona_api_contract_v3": 0.71
+  },
+  "truncation_rates": {
+    "base_api_length_control_160": 0.6333,
+    "persona_api_contract_v3": 0.0
+  }
+}

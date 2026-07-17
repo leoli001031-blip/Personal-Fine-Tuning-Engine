@@ -16,8 +16,19 @@ import os
 from .backends import plan_inference_backend
 from .contracts import (
     BOUNDARY_CONTRACT_ID,
+    PERSONA_CONTRACT_IDS,
+    PERSONA_MAX_OUTPUT_TOKENS,
+    PERSONA_NO_REPEAT_NGRAM_SIZE,
+    PERSONA_REPETITION_PENALTY,
+    PERSONA_V2_CONTRACT_ID,
+    PERSONA_V2_MAX_OUTPUT_TOKENS,
+    PERSONA_V3_CONTRACT_ID,
+    PERSONA_V4_CONTRACT_ID,
     apply_response_contract,
     enforce_boundary_contract_output,
+    enforce_persona_contract_output,
+    enforce_persona_v3_contract_output,
+    enforce_persona_v4_contract_output,
     resolve_response_contract,
 )
 from .export import plan_export
@@ -174,6 +185,52 @@ def _looks_like_local_path(value: str | None) -> bool:
 
 def _safe_metadata_dict(metadata: object) -> dict[str, object]:
     return dict(metadata) if isinstance(metadata, dict) else {}
+
+
+def _status_contract_output(contract_output: dict[str, object]) -> dict[str, object]:
+    structural = {
+        key: value
+        for key, value in contract_output.items()
+        if key not in {"raw_output", "normalized_output"}
+    }
+    structural["raw_output_persisted"] = False
+    return structural
+
+
+_STATUS_PRIVATE_GENERATION_FIELDS = frozenset(
+    {
+        "text",
+        "raw_text",
+        "command",
+        "prompt",
+        "formatted_prompt",
+        "raw_output",
+        "normalized_output",
+        "generated_text",
+        "input_text",
+        "output_text",
+        "messages",
+        "adapter_reason",
+    }
+)
+
+
+def _status_generation_info(response: dict[str, object]) -> dict[str, object]:
+    def sanitize(value: object) -> object:
+        if isinstance(value, dict):
+            return {
+                key: sanitize(item)
+                for key, item in value.items()
+                if key not in _STATUS_PRIVATE_GENERATION_FIELDS
+            }
+        if isinstance(value, list):
+            return [sanitize(item) for item in value]
+        return value
+
+    sanitized = sanitize(response)
+    assert isinstance(sanitized, dict)
+    sanitized["raw_output_persisted"] = False
+    return sanitized
 
 
 def _resolve_llama_cpp_runtime_binary() -> dict[str, object]:
@@ -427,7 +484,6 @@ class InferenceEngine:
         *,
         runtime_binary: str,
         model_path: str,
-        prompt_text: str,
         max_tokens: int,
         temperature: float,
         adapter_gguf_path: str | None = None,
@@ -443,8 +499,6 @@ class InferenceEngine:
             "--no-perf",
             "--no-display-prompt",
             "--no-warmup",
-            "-p",
-            prompt_text,
             "-n",
             str(max(1, min(max_tokens, _positive_env_int("PFE_MAX_OUTPUT_TOKENS", 512)))),
             "--temp",
@@ -489,7 +543,6 @@ class InferenceEngine:
         command = self._llama_cpp_command(
             runtime_binary=str(runtime_resolution["path"]),
             model_path=str(base_gguf["path"]),
-            prompt_text=prompt_text,
             max_tokens=max_tokens,
             temperature=temperature,
             adapter_gguf_path=adapter_gguf_path,
@@ -500,17 +553,20 @@ class InferenceEngine:
                 cwd=str(_repo_root()),
                 capture_output=True,
                 text=True,
+                input=prompt_text,
                 check=False,
                 timeout=max(30, max_tokens * 6),
             )
         except subprocess.TimeoutExpired as exc:
-            raise InferenceError(f"llama.cpp runtime timed out: {exc}") from exc
+            raise InferenceError("llama.cpp runtime timed out") from exc
         except Exception as exc:
-            raise InferenceError(f"llama.cpp runtime failed to start: {exc.__class__.__name__}: {exc}") from exc
+            raise InferenceError(
+                f"llama.cpp runtime failed to start: {exc.__class__.__name__}"
+            ) from exc
         if completed.returncode != 0:
-            stderr_lines = [line.strip() for line in (completed.stderr or "").splitlines() if line.strip()]
-            stderr_summary = stderr_lines[-1] if stderr_lines else f"exit code {completed.returncode}"
-            raise InferenceError(f"llama.cpp runtime failed: {stderr_summary}")
+            raise InferenceError(
+                f"llama.cpp runtime failed with exit code {completed.returncode}"
+            )
         raw_text = str(completed.stdout or "").strip()
         text = _clean_llama_cpp_output(raw_text)
         if not text:
@@ -597,7 +653,7 @@ class InferenceEngine:
                         model = peft_model_cls.from_pretrained(model, effective_adapter_path, local_files_only=True)
                         adapter_loaded = True
                     except Exception as exc:
-                        adapter_reason = f"adapter load failed: {exc.__class__.__name__}: {exc}"
+                        adapter_reason = f"adapter load failed: {exc.__class__.__name__}"
         elif placeholder_adapter:
             adapter_reason = "adapter artifact is still a placeholder and cannot be loaded for inference"
 
@@ -676,7 +732,7 @@ class InferenceEngine:
             adapted_bundle["model"] = model
             adapted_bundle["adapter_loaded"] = True
         except Exception as exc:
-            adapted_bundle["adapter_reason"] = f"adapter load failed: {exc.__class__.__name__}: {exc}"
+            adapted_bundle["adapter_reason"] = f"adapter load failed: {exc.__class__.__name__}"
         return adapted_bundle
 
     def _generate_real_response(
@@ -760,7 +816,8 @@ class InferenceEngine:
             }
         input_ids = encoded["input_ids"]
         input_length = int(input_ids.shape[-1]) if hasattr(input_ids, "shape") else 0
-        temperature = float(kwargs.get("temperature") or 0.7)
+        temperature_value = kwargs.get("temperature")
+        temperature = 0.7 if temperature_value is None else float(temperature_value)
         pad_token_id = getattr(tokenizer, "pad_token_id", None) or getattr(tokenizer, "eos_token_id", None)
         generation_kwargs = {
             "max_new_tokens": effective_max_new_tokens,
@@ -768,6 +825,12 @@ class InferenceEngine:
             "temperature": max(0.1, temperature) if temperature > 0 else 1.0,
             "pad_token_id": pad_token_id,
         }
+        repetition_penalty = min(2.0, max(0.5, float(kwargs.get("repetition_penalty") or 1.0)))
+        no_repeat_ngram_size = min(16, max(0, int(kwargs.get("no_repeat_ngram_size") or 0)))
+        if repetition_penalty > 0:
+            generation_kwargs["repetition_penalty"] = repetition_penalty
+        if no_repeat_ngram_size > 0:
+            generation_kwargs["no_repeat_ngram_size"] = no_repeat_ngram_size
         with torch.no_grad():
             output_ids = model.generate(**encoded, **generation_kwargs)
         generated_ids = output_ids[0][input_length:] if input_length else output_ids[0]
@@ -810,13 +873,47 @@ class InferenceEngine:
         response_contract = resolve_response_contract(metadata=metadata)
         contract_messages = messages
         contract_info: dict[str, object] = {"applied": False, "contract": None}
-        if response_contract == BOUNDARY_CONTRACT_ID:
+        for name in ("repetition_penalty", "no_repeat_ngram_size"):
+            if name not in kwargs and metadata.get(name) is not None:
+                kwargs = {**kwargs, name: metadata[name]}
+        if response_contract in {BOUNDARY_CONTRACT_ID, *PERSONA_CONTRACT_IDS}:
             contract_messages, contract_info = apply_response_contract(messages, metadata)
             metadata = {**metadata, "response_contract": response_contract}
             kwargs = {**kwargs, "metadata": metadata}
-        last_user = next((message.get("content", "") for message in reversed(messages) if message.get("role") == "user"), "")
+        persona_route = dict(contract_info.get("route") or {})
+        persona_controls_apply = response_contract in PERSONA_CONTRACT_IDS and not (
+            response_contract in {PERSONA_V3_CONTRACT_ID, PERSONA_V4_CONTRACT_ID}
+            and persona_route.get("routed") is False
+        )
+        if persona_controls_apply:
+            requested_max_tokens = kwargs.get("max_tokens") or kwargs.get("max_new_tokens")
+            contract_max_tokens = (
+                PERSONA_V2_MAX_OUTPUT_TOKENS
+                if response_contract
+                in {PERSONA_V2_CONTRACT_ID, PERSONA_V3_CONTRACT_ID, PERSONA_V4_CONTRACT_ID}
+                else PERSONA_MAX_OUTPUT_TOKENS
+            )
+            persona_max_tokens = min(
+                int(requested_max_tokens or contract_max_tokens),
+                contract_max_tokens,
+            )
+            kwargs = {
+                **kwargs,
+                "max_tokens": max(1, persona_max_tokens),
+                "repetition_penalty": PERSONA_REPETITION_PENALTY,
+                "no_repeat_ngram_size": PERSONA_NO_REPEAT_NGRAM_SIZE,
+            }
+        fallback_messages = contract_messages if response_contract in PERSONA_CONTRACT_IDS else messages
+        last_user = next(
+            (
+                message.get("content", "")
+                for message in reversed(fallback_messages)
+                if message.get("role") == "user"
+            ),
+            "",
+        )
         if not last_user:
-            last_user = messages[-1].get("content", "")
+            last_user = fallback_messages[-1].get("content", "")
         real_local_enabled = self._real_local_inference_enabled(metadata)
 
         if real_local_enabled:
@@ -860,8 +957,10 @@ class InferenceEngine:
                     )
                 )
 
+            attempted_backends: list[str] = []
             attempted_failures: list[str] = []
             for runtime_name, runner in runtime_attempts:
+                attempted_backends.append(runtime_name)
                 try:
                     response = runner()
                     text = str(response["text"])
@@ -874,13 +973,48 @@ class InferenceEngine:
                         response["text"] = text
                         response["response_contract"] = contract_info
                         response["contract_output"] = contract_output
-                    self.last_generation_info = dict(response)
-                    self.last_generation_info["real_local_enabled"] = True
+                    elif response_contract == PERSONA_V4_CONTRACT_ID:
+                        text, contract_output = enforce_persona_v4_contract_output(
+                            text,
+                            messages=messages,
+                            metadata=metadata,
+                        )
+                        response["text"] = text
+                        response["response_contract"] = contract_info
+                        response["contract_output"] = contract_output
+                    elif response_contract == PERSONA_V3_CONTRACT_ID:
+                        text, contract_output = enforce_persona_v3_contract_output(
+                            text,
+                            messages=messages,
+                            metadata=metadata,
+                        )
+                        response["text"] = text
+                        response["response_contract"] = contract_info
+                        response["contract_output"] = contract_output
+                    elif response_contract in PERSONA_CONTRACT_IDS:
+                        text, contract_output = enforce_persona_contract_output(
+                            text,
+                            messages=messages,
+                            metadata=metadata,
+                        )
+                        response["text"] = text
+                        response["response_contract"] = contract_info
+                        response["contract_output"] = contract_output
+                    if "contract_output" in response:
+                        response["contract_output"] = _status_contract_output(
+                            response["contract_output"]
+                        )
+                    response["runtime_attempt_count"] = len(attempted_backends)
+                    response["attempted_backends"] = list(attempted_backends)
+                    response["real_local_enabled"] = True
                     if attempted_failures:
-                        self.last_generation_info["previous_runtime_failures"] = attempted_failures
+                        response["previous_runtime_failures"] = attempted_failures
+                    self.last_generation_info = _status_generation_info(response)
                     return text
                 except Exception as exc:
-                    attempted_failures.append(f"{runtime_name}: {exc.__class__.__name__}: {exc}")
+                    attempted_failures.append(
+                        f"{runtime_name}: {exc.__class__.__name__}"
+                    )
             self.last_generation_info = {
                 "served_by": "mock",
                 "path": "template_fallback",
@@ -890,6 +1024,8 @@ class InferenceEngine:
                 "adapter_requested": bool(self.adapter_manifest),
                 "adapter_placeholder": _is_placeholder_adapter_artifact(self.config.adapter_path),
                 "real_local_enabled": True,
+                "runtime_attempt_count": len(attempted_backends),
+                "attempted_backends": list(attempted_backends),
             }
         else:
             self.last_generation_info = {
@@ -903,6 +1039,8 @@ class InferenceEngine:
                 "adapter_requested": bool(self.adapter_manifest),
                 "adapter_placeholder": _is_placeholder_adapter_artifact(self.config.adapter_path),
                 "real_local_enabled": False,
+                "runtime_attempt_count": 1,
+                "attempted_backends": ["mock"],
             }
 
         if response_contract == BOUNDARY_CONTRACT_ID:
@@ -912,7 +1050,60 @@ class InferenceEngine:
                 metadata=metadata,
             )
             self.last_generation_info["response_contract"] = contract_info
-            self.last_generation_info["contract_output"] = contract_output
+            self.last_generation_info["contract_output"] = _status_contract_output(contract_output)
+            return fallback
+        if response_contract == PERSONA_V3_CONTRACT_ID:
+            self.last_generation_info["response_contract"] = contract_info
+            if persona_route.get("routed") is True:
+                fallback, contract_output = enforce_persona_v3_contract_output(
+                    "",
+                    messages=messages,
+                    metadata=metadata,
+                )
+                self.last_generation_info["contract_output"] = _status_contract_output(
+                    contract_output
+                )
+                return fallback
+            self.last_generation_info["contract_output"] = _status_contract_output(
+                {
+                    "kind": "phase84_factual_completion_guard",
+                    "ordinary_passthrough": persona_route.get("reason")
+                    in {"latest_explicit_ordinary_action", "inherited_ordinary_context"},
+                    "fallback_used": False,
+                }
+            )
+        if response_contract == PERSONA_V4_CONTRACT_ID:
+            self.last_generation_info["response_contract"] = contract_info
+            if persona_route.get("routed") is True:
+                fallback, contract_output = enforce_persona_v4_contract_output(
+                    "",
+                    messages=messages,
+                    metadata=metadata,
+                )
+                self.last_generation_info["contract_output"] = _status_contract_output(
+                    contract_output
+                )
+                return fallback
+            self.last_generation_info["contract_output"] = _status_contract_output(
+                {
+                    "kind": "phase85_low_fallback_semantic_guard",
+                    "ordinary_passthrough": persona_route.get("ordinary_passthrough") is True,
+                    "guard_applied": False,
+                    "factual_guard_evaluated": False,
+                    "fallback_used": False,
+                }
+            )
+        if response_contract in PERSONA_CONTRACT_IDS and response_contract not in {
+            PERSONA_V3_CONTRACT_ID,
+            PERSONA_V4_CONTRACT_ID,
+        }:
+            fallback, contract_output = enforce_persona_contract_output(
+                "",
+                messages=messages,
+                metadata=metadata,
+            )
+            self.last_generation_info["response_contract"] = contract_info
+            self.last_generation_info["contract_output"] = _status_contract_output(contract_output)
             return fallback
         if self.adapter_manifest:
             version = self.adapter_manifest.get("version", "latest")

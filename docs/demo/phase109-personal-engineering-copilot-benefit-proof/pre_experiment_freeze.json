@@ -1,0 +1,90 @@
+{
+  "kind": "phase109_pre_experiment_freeze",
+  "passed": true,
+  "checks": {
+    "phase108_remains_archive": true,
+    "phase108_product_gate_false": true,
+    "data_integrity_passed": true,
+    "tokenizer_diagnostic_passed": true,
+    "model_available": true,
+    "phase106_adapter_available": true,
+    "phase107_adapter_available": true,
+    "all_dpo_dry_runs_ready": true,
+    "exact_call_budget": true,
+    "call_ledger_empty": true,
+    "private_root_outside_repo": true
+  },
+  "source_sha256": {
+    "phase109_core": "4dd95c18253353f4c5b59ee03fbb6a962646c8d11c22756e4dc71a28784252ab",
+    "phase109_driver": "966ec3e59aebd943dc007e36daf09a9167ffb85e8e46c03239d40664db9b1cce",
+    "phase109_test": "3146b159b5bf355ec2dbec5db00bf6b0ce652980de14325a5e17fe2f34839fef",
+    "phase109_driver_test": "a42406a1dd92488fe213673d70b180c8b752ab1b36e14eecdd523f26df6dd6b8",
+    "phase32_taxonomy": "a6ee0ec29d98606ed7ed09ff078ee633b81aaa7fc8cd728f8c71fc642d6d04e4",
+    "phase32_review_summary": "e9d455e57d9f53c307523bf9b092bbdaf6e21ef489fece0322945b2024fc45a7",
+    "phase108_decision": "cc087645e33ec6db385b43823fac1d9cefff2b03363971cd49001d2056b188c1"
+  },
+  "training_pair_manifest_sha256": "09f58246b7db554d5fe8ffaa2d4badab87e6737d12ff17baa652a32284012a53",
+  "holdout_manifest_sha256": "d49044801f719e8223ccb671ce85fab0c0efe4893707cd404b4c136b5da48171",
+  "personal_contract_sha256": "c6ea6875380c2897e232fe2b8dc61eddd98092cd5dc5036616763b64f9eb3ca7",
+  "job_spec_sha256": {
+    "1": "219e6b28ec6a643336d483c2e2396dcce6128d8759a8c9a24cba6ae50fc5523d",
+    "12": "23fc27b7f3d9c27dab3313f9b1c0269688cc66b83249c8735015adb49c08ae91",
+    "30": "650dcd6881adfd472e4253b809562c62bd8b6be6a3721e6fd8a6ebcbd9a7db92"
+  },
+  "model_manifest": {
+    "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "exists": true,
+    "file_count": 41,
+    "total_bytes": 16112213302,
+    "required_files_present": true,
+    "config_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a"
+  },
+  "historical_adapter_manifests": {
+    "phase106_sft": {
+      "valid": true,
+      "reason": null,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora/adapter_model.safetensors",
+      "format": "safetensors",
+      "size_bytes": 132187888,
+      "tensor_count": 504,
+      "lora_tensor_count": 504,
+      "parameter_count": 33030144,
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora",
+      "artifact_sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2"
+    },
+    "phase107_dpo": {
+      "valid": true,
+      "reason": null,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter/adapter_model.safetensors",
+      "format": "safetensors",
+      "size_bytes": 66126768,
+      "tensor_count": 504,
+      "lora_tensor_count": 504,
+      "parameter_count": 16515072,
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter",
+      "artifact_sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749"
+    }
+  },
+  "generation_protocol": {
+    "input_max_length": 3072,
+    "max_new_tokens": 160,
+    "do_sample": false,
+    "repetition_penalty": 1.12,
+    "no_repeat_ngram_size": 4,
+    "enable_thinking": false,
+    "post_hoc_truncation_allowed": false,
+    "automatic_retry_count": 0
+  },
+  "model_call_budget": 105,
+  "eval_variants": [
+    "base",
+    "phase107_dpo",
+    "phase109_personal_dpo"
+  ],
+  "external_provider_allowed": false,
+  "automatic_training_allowed": false,
+  "automatic_promotion_allowed": false,
+  "actual_user_feedback": false,
+  "private_transcripts_committed": false,
+  "frozen_at": "2026-07-17T13:43:04.138094+00:00"
+}

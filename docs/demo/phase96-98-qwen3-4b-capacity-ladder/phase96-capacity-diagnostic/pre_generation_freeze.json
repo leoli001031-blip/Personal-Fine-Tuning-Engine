@@ -1,0 +1,64 @@
+{
+  "actual_user_feedback_count": 0,
+  "automatic_promotion_allowed": false,
+  "checks": {
+    "all_simulated_not_actual": true,
+    "both_models_complete": true,
+    "capacity_session_count_8": true,
+    "holdout_isolation_passed": true,
+    "planned_model_calls_48": true
+  },
+  "created_at": "2026-07-16T15:47:10.406110+00:00",
+  "holdout_isolation_sha256": "9dd2046896ae165c7c69e7d15cbd4803809941ae24320ce17f460fac05c581d6",
+  "holdout_manifest_sha256": "24447bf93306e0b2c134ebf88521629b350e405e19f0acc58a785dc8a824000b",
+  "kind": "phase96_capacity_pre_generation_freeze",
+  "model_call_budget": {
+    "maximum": 48,
+    "planned": 48
+  },
+  "models": {
+    "qwen25_1_5b": {
+      "all_shards_present": true,
+      "config_present": true,
+      "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+      "shard_count": 1,
+      "shards": [
+        "model.safetensors"
+      ],
+      "tokenizer_present": true,
+      "total_weight_bytes": 3087467144
+    },
+    "qwen3_4b": {
+      "all_shards_present": true,
+      "config_present": true,
+      "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "shard_count": 3,
+      "shards": [
+        "model-00001-of-00003.safetensors",
+        "model-00002-of-00003.safetensors",
+        "model-00003-of-00003.safetensors"
+      ],
+      "tokenizer_present": true,
+      "total_weight_bytes": 8044982000
+    }
+  },
+  "passed": true,
+  "simulated_usage": true,
+  "source_sha256": {
+    "core": "2f6dd182d9c8dbc5fdf479b35d492ffe4053669880e424cd7244aa40a5712137",
+    "core_test": "9b49b4e48039bd49848ace1406f7f5894dbfbb5702dcba6f98948beefe7ad877",
+    "driver": "592ef3923946d0c38432da583b588cdadf490bafb9a4db98021702c21d3942c1",
+    "driver_test": "3d8f27efb7f2cd89ad387d2edf4fd8e2261d7df79cfb122197189a24b9452a4c"
+  },
+  "thresholds": {
+    "automatic_promotion_allowed": false,
+    "core_regression_allowed": false,
+    "ordinary_control_regression_allowed": false,
+    "privacy_echo_maximum": 0.0,
+    "repetition_regression_allowed": false,
+    "strict_core_improvement_required": true,
+    "think_leak_maximum": 0.0,
+    "unsupported_regression_allowed": false
+  },
+  "thresholds_sha256": "76d00df9be1d4e28fe43bb3624138a19186bdd95601fba10fd5dd1bcfa3326a0"
+}

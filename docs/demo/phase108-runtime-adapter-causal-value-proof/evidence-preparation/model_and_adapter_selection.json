@@ -1,0 +1,52 @@
+{
+  "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "adapters": {
+    "phase106_sft": {
+      "file_count": 2,
+      "files": [
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora/adapter_config.json",
+          "size_bytes": 1123,
+          "sha256": "b95cd0df15fe7f6d29ddcbfb1ede2bac5c19c69500fcc2a8c4c2dd542b2d0701"
+        },
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora/adapter_model.safetensors",
+          "size_bytes": 132187888,
+          "sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2"
+        }
+      ],
+      "manifest_sha256": "4462d4d0ae487029e14a61d8d1fe5a1a950a72ef53fd45e307f2e226905a8ff1",
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase106-qwen3-4b-sft-30step/peft_lora",
+      "artifact_sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2",
+      "expected_sha256": "8bb2035aa9ae1b4dd8dd90cf92127b8aa4aef4d97bc1fb5903728b58961063d2",
+      "valid": true
+    },
+    "phase107_dpo": {
+      "file_count": 2,
+      "files": [
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter/adapter_config.json",
+          "size_bytes": 1121,
+          "sha256": "a4ea53389112b4d39fa65900aff94747979820d1e471f826dce6632984837071"
+        },
+        {
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter/adapter_model.safetensors",
+          "size_bytes": 66126768,
+          "sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749"
+        }
+      ],
+      "manifest_sha256": "9589cbd0085a9b2debeb9cbeaba923f17d3516584f6273f3087b1a7e64d99927",
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase107-qwen3-4b-token-faithful-dpo/30step/dpo_adapter",
+      "artifact_sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749",
+      "expected_sha256": "6840137a178f9fb37a62aae9cb1b2cd404bfb616fe9c8a667e32ffd855e05749",
+      "valid": true
+    }
+  },
+  "load_plans": {
+    "base": "raw_qwen3_4b",
+    "phase106_sft": "raw_qwen3_4b_then_phase106_sft_merge",
+    "phase107_dpo": "raw_qwen3_4b_then_phase106_sft_merge_then_phase107_dpo",
+    "phase107_dpo_no_runtime": "same_phase107_weight_stack_with_minimal_system_contract"
+  },
+  "selected": true
+}
