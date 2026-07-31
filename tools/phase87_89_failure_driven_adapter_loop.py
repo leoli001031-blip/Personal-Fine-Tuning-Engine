@@ -50,6 +50,7 @@ from pfe_core.phase85_low_fallback_semantic_guard import (
 from pfe_core.trainer.executors import (
     _build_sft_prompt_and_text,
     _encode_sft_examples,
+    _encode_training_text,
     _run_real_local_peft_training,
 )
 
@@ -197,17 +198,22 @@ def _select_probe_samples(samples: Iterable[Mapping[str, Any]]) -> list[dict[str
 
 
 def _completion_boundary_report(spec: Mapping[str, Any]) -> dict[str, Any]:
-    from transformers import AutoTokenizer
+    tokenizer = None
+    try:
+        from transformers import AutoTokenizer
 
-    tokenizer = AutoTokenizer.from_pretrained(str(MODEL_PATH), local_files_only=True)
+        tokenizer = AutoTokenizer.from_pretrained(str(MODEL_PATH), local_files_only=True)
+    except ModuleNotFoundError:
+        tokenizer = None
     training = dict(dict(spec.get("recipe") or {}).get("training") or {})
     maximum = int(training.get("max_length") or TRAINING_MAX_LENGTH)
     examples = [dict(row) for row in spec.get("training_examples") or []]
+    vocab_size = int(getattr(tokenizer, "vocab_size", 0) or 151936)
     encoded = _encode_sft_examples(
         tokenizer=tokenizer,
         training_examples=examples,
         max_length=maximum,
-        vocab_size=int(getattr(tokenizer, "vocab_size", 0) or 151936),
+        vocab_size=vocab_size,
     )
     details = []
     for source, row in zip(examples, encoded):
@@ -217,18 +223,36 @@ def _completion_boundary_report(spec: Mapping[str, Any]) -> dict[str, Any]:
             str(source.get("chosen") or ""),
             messages=source.get("messages"),
         )
-        full_token_count = len(
-            tokenizer(full_text, add_special_tokens=False).get("input_ids") or []
-        )
-        prompt_tokens = tokenizer(
-            prompt,
-            truncation=True,
-            max_length=maximum,
-            add_special_tokens=False,
-        ).get("input_ids") or []
+        if tokenizer is None:
+            full_token_count = len(
+                _encode_training_text(
+                    full_text,
+                    max_length=max(maximum, len(full_text) + 1),
+                    vocab_size=vocab_size,
+                )
+            )
+            prompt_tokens = _encode_training_text(
+                prompt,
+                max_length=maximum,
+                vocab_size=vocab_size,
+            )
+            prompt_boundary = min(
+                max(0, len(prompt_tokens) - 1),
+                len(row.get("labels") or []),
+            )
+        else:
+            full_token_count = len(
+                tokenizer(full_text, add_special_tokens=False).get("input_ids") or []
+            )
+            prompt_tokens = tokenizer(
+                prompt,
+                truncation=True,
+                max_length=maximum,
+                add_special_tokens=False,
+            ).get("input_ids") or []
+            prompt_boundary = min(len(prompt_tokens), len(row.get("labels") or []))
         labels = list(row.get("labels") or [])
         completion = [index for index, value in enumerate(labels) if int(value) != -100]
-        prompt_boundary = min(len(prompt_tokens), len(labels))
         details.append({
             "sample_id": source.get("sample_id"),
             "taxonomy_dimension": source.get("taxonomy_dimension"),

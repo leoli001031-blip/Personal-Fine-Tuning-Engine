@@ -90,7 +90,14 @@ def build_phase108_stopping_criteria(
 ) -> tuple[Any, dict[str, Any]]:
     """Build a batch-one stopping criterion aligned to a Phase108 format contract."""
 
-    from transformers import StoppingCriteria, StoppingCriteriaList
+    try:
+        from transformers import StoppingCriteria, StoppingCriteriaList
+    except ModuleNotFoundError:
+        class StoppingCriteria:  # type: ignore[no-redef]
+            pass
+
+        class StoppingCriteriaList(list):  # type: ignore[no-redef]
+            pass
 
     state: dict[str, Any] = {
         "triggered": False,

@@ -2597,14 +2597,21 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
     requested_dtype = str(
         training.get("runtime_dtype") or job_spec.get("runtime_dtype") or "auto"
     )
-    import torch
+    torch_module = None
+    try:
+        import torch as torch_module
+    except ModuleNotFoundError:
+        if not dry_run:
+            raise
 
     runtime_resolution = resolve_dpo_runtime_config(
         requested_device=requested_device,
         requested_dtype=requested_dtype,
-        cuda_available=bool(torch.cuda.is_available()),
+        cuda_available=bool(torch_module and torch_module.cuda.is_available()),
         mps_available=bool(
-            getattr(torch.backends, "mps", None) and torch.backends.mps.is_available()
+            torch_module
+            and getattr(torch_module.backends, "mps", None)
+            and torch_module.backends.mps.is_available()
         ),
     )
 
