@@ -1,0 +1,91 @@
+{
+  "actual_human_review_count": 0,
+  "actual_user_feedback_count": 0,
+  "adapter_created": false,
+  "boundary_clause_design": {
+    "created": false,
+    "status": "not_requested_in_phase53"
+  },
+  "formal_evaluator": {
+    "calibration_accuracy": 0.9889,
+    "calibration_per_category": {
+      "mixed_affirmative_negative_clauses": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "postposed_negation": {
+        "accuracy": 0.9667,
+        "count": 30
+      },
+      "punctuation_dependent_scope": {
+        "accuracy": 1.0,
+        "count": 30
+      }
+    },
+    "calibration_real_model_call_count": 180,
+    "calibration_status": "qualified",
+    "holdout_accuracy": 0.8519,
+    "holdout_failure_summary": {
+      "failure_count": 16,
+      "judge_disagreement_failure_count": 10,
+      "reject_false_accept_count": 0,
+      "transition_counts": {
+        "accept->edit": 3,
+        "accept->reject": 3,
+        "edit->reject": 10
+      }
+    },
+    "holdout_false_accept_count": 0,
+    "holdout_hard_vs_two_accept_conflict_count": 0,
+    "holdout_per_category": {
+      "mixed_affirmative_negative_clauses": {
+        "accuracy": 0.8333,
+        "count": 36
+      },
+      "postposed_negation": {
+        "accuracy": 0.8611,
+        "count": 36
+      },
+      "punctuation_dependent_scope": {
+        "accuracy": 0.8611,
+        "count": 36
+      }
+    },
+    "holdout_real_model_call_count": 216,
+    "holdout_status": "not_qualified"
+  },
+  "hermes_attached": false,
+  "invalidated_calibration_attempts": [
+    {
+      "accuracy": 0.7778,
+      "completed_item_count": 90,
+      "edit_recall": 0.4333,
+      "failure_count": 0,
+      "formal_result_eligible": false,
+      "name": "attempt-01-edit-scope-ambiguity",
+      "real_model_call_count": 180,
+      "status": "not_qualified"
+    },
+    {
+      "accuracy": 0.9222,
+      "completed_item_count": 89,
+      "edit_recall": 0.8333,
+      "failure_count": 1,
+      "formal_result_eligible": false,
+      "name": "attempt-02-incomplete-and-residual-disagreement",
+      "real_model_call_count": 179,
+      "status": "not_qualified"
+    }
+  ],
+  "kind": "phase53_scope_recovery_comparison",
+  "phase52_recommendation": "hold_phase52_evaluator_generalization",
+  "product_default_changed": false,
+  "recommendation": "hold_phase53_evaluator_scope_recovery",
+  "router_changed": false,
+  "runtime_prompt_changed": false,
+  "runtime_replay": {
+    "real_model_call_count": 0,
+    "status": "not_requested_in_phase53"
+  },
+  "training_executed": false
+}

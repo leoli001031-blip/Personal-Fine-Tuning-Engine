@@ -1,0 +1,19 @@
+{
+  "actual_optimizer_step_count": "unknown",
+  "adapter_artifact_created": false,
+  "attempt_started_at": "2026-07-15T07:19:32Z",
+  "diagnosis": "The current Codex execution process reported torch.backends.mps.is_available() == false. The 512-token Qwen3-4B probe therefore ran on CPU and produced no optimizer or adapter artifact during the observation window.",
+  "historical_same_machine_12_step_duration_seconds": [
+    7.2706,
+    9.1868,
+    10.9715
+  ],
+  "kind": "phase78_training_failure_evidence",
+  "model": "Qwen3-4B",
+  "observed_elapsed_seconds_at_abort": ">=840",
+  "requested_steps": 12,
+  "resolution": "Preserve this failed attempt, reduce max_length only to the measured no-truncation bound, refreeze all sources, and retry as an explicit CPU probe.",
+  "status": "interrupted_after_stall",
+  "torch_version": "2.12.0",
+  "mps_available_in_current_process": false
+}

@@ -1,0 +1,79 @@
+{
+  "candidate_count": 24,
+  "chosen_rejected_boundaries_valid": true,
+  "executor_probe": {
+    "backend": "dpo",
+    "execution_executor": "dpo",
+    "executor_mode": "real_import",
+    "fallback_from": null,
+    "import_attempts": [
+      {
+        "available": true,
+        "module": "torch"
+      },
+      {
+        "available": true,
+        "module": "transformers"
+      },
+      {
+        "available": true,
+        "module": "peft"
+      },
+      {
+        "available": true,
+        "module": "trl"
+      },
+      {
+        "available": true,
+        "module": "accelerate"
+      }
+    ],
+    "imported_modules": [
+      "torch",
+      "transformers",
+      "peft",
+      "trl",
+      "accelerate"
+    ],
+    "missing_attrs": [],
+    "missing_modules": [],
+    "ready": true,
+    "reasons": [
+      "dpo importable with required executor attributes"
+    ],
+    "required_attrs": {
+      "accelerate": [
+        "Accelerator"
+      ],
+      "peft": [
+        "LoraConfig",
+        "get_peft_model",
+        "PeftModel"
+      ],
+      "torch": [
+        "nn"
+      ],
+      "transformers": [
+        "AutoModelForCausalLM",
+        "AutoTokenizer",
+        "TrainingArguments"
+      ],
+      "trl": [
+        "DPOTrainer"
+      ]
+    },
+    "required_modules": [
+      "torch",
+      "transformers",
+      "peft",
+      "trl",
+      "accelerate"
+    ]
+  },
+  "executor_ready": true,
+  "kind": "phase43_qwen3_4b_dpo_preflight",
+  "memory_preflight_passed": true,
+  "model_selected": true,
+  "mps_available": true,
+  "ready": true
+}

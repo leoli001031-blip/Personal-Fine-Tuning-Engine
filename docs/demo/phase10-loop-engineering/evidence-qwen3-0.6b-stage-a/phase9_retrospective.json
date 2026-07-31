@@ -1,0 +1,75 @@
+{
+  "created_at": "2026-06-19T18:51:52.624436+00:00",
+  "diff_summary": {
+    "citation_delta": -0.4,
+    "evaluated_prompt_count": 10,
+    "improved_prompt_count": 0,
+    "safety_boundary_delta": 0.0,
+    "structure_delta": -0.4,
+    "unsupported_assertion_delta": -4
+  },
+  "eval_available": true,
+  "findings": [
+    "Phase9 real eval archived the adapter because it did not beat base on structure, citation, unsupported assertions, or safety boundary.",
+    "Phase9 evidence indicates output-only loss masking was enabled, so Phase10 treats sample target shape and generation boundary as the primary loop variables.",
+    "Phase10 starts with format-only curriculum before introducing richer contract snippets or Qwen3.6 4-bit scale."
+  ],
+  "kind": "phase10_phase9_retrospective",
+  "phase9_eval_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase9-output-format-training-stability/evidence-real-qwen3-0.6b/eval_report.json",
+  "phase9_training_job_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase9-output-format-training-stability/evidence-real-qwen3-0.6b/training_job_result.json",
+  "sample_failures": [
+    {
+      "adapter_excerpt": "摘要：[src-1f964ca970ae:src-1f964ca970ae-chunk-030] 风险提示：[src-1f964ca970ae:src-1f964ca970ae-chunk-030] 引用依据：[src-1f964ca970ae:src-1f964ca970ae-chunk-030] 人工确认：[src-1f964ca970ae:src-1f",
+      "base_excerpt": "摘要：[src-1f964ca970ae:src-1f964ca970ae-chunk-030] 风险提示：[src-1f964ca970ae:src-1f964ca970ae-chunk-030] 引用依据：[src-1f964ca970ae:src-1f964ca970ae-chunk-030] 人工确认：[src-1f964ca970ae:src-1f",
+      "prompt_id": "phase9-holdout-001"
+    },
+    {
+      "adapter_excerpt": "摘要：[src-1f964ca970ae:src-1f964ca970ae-chunk-029] 证据：[src-1f964ca970ae:src-1f964ca970ae-chunk-029] 人工确认：[src-1f964ca970ae:src-1f964ca970ae-chunk-029] 输出：摘要：[src-1f964ca970ae:src-1f",
+      "base_excerpt": "摘要：[src-1f964ca970ae:src-1f964ca970ae-chunk-029] 风险提示：[src-1f964ca970ae:src-1f964ca970ae-chunk-029] 引用依据：[src-1f964ca970ae:src-1f964ca970ae-chunk-029] 人工确认：[src-1f964ca970ae:src-1f",
+      "prompt_id": "phase9-holdout-002"
+    },
+    {
+      "adapter_excerpt": "摘要：法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务法务",
+      "base_excerpt": "摘要：[src-1f964ca970ae:src-1f964ca970ae-chunk-028] 风险提示：[src-1f964ca970ae:src-1f964ca9ca5b3] 引用依据：[src-1f964ca970ae:src-1f964ca970ae-chunk-028] 人工确认：[src-1f964ca970ae:src-1f964ca9",
+      "prompt_id": "phase9-holdout-003"
+    },
+    {
+      "adapter_excerpt": "不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断，不能判断",
+      "base_excerpt": "摘要：协议中没有明确说明对客户有利，因此无法判断该协议是否对客户有利。 风险提示：协议中没有提供任何关于客户利益的讨论，因此无法判断该协议是否对客户有利。 引用依据：[src-1f964ca970ae:src-1f964ca970ae-chunk-027] 人工确认：协议中没有明确说明对客户有利，因此无法判断该协议是否对客户有利。 ### 标准答案 摘要：协议中没有明确说明对客户有利，因此无法判断该协议是否对客户",
+      "prompt_id": "phase9-holdout-004"
+    },
+    {
+      "adapter_excerpt": "判断：合法 判断依据：法律法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条法条",
+      "base_excerpt": "A. 合法 B. 不合法 C. 无法判断 D. 无答案 ### 标准答案 A. 合法 B. 不合法 C. 无法判断 D. 无答案 ### 标准答案 A. 合法 B. 不合法 C. 无法判断 D. 无答案 ### 标准答案 A. 合法 B. 不合法 C. 无法判断 D. 无答案 ### 标准答案 A. 合法 B. 不合法 C",
+      "prompt_id": "phase9-holdout-005"
+    }
+  ],
+  "scores": {
+    "adapter": {
+      "citation_hit_rate": 0.3,
+      "safety_boundary_rate": 0.0,
+      "structure_hit_rate": 0.325,
+      "unsupported_assertions": 17
+    },
+    "base": {
+      "citation_hit_rate": 0.7,
+      "safety_boundary_rate": 0.0,
+      "structure_hit_rate": 0.725,
+      "unsupported_assertions": 13
+    },
+    "delta": {
+      "citation_hit_rate": -0.4,
+      "safety_boundary_rate": 0.0,
+      "structure_hit_rate": -0.4,
+      "unsupported_assertions": -4
+    }
+  },
+  "training_job_available": true,
+  "training_metadata": {
+    "dataset_format": null,
+    "num_samples": null,
+    "num_steps": null,
+    "output_only_loss_masking": null
+  },
+  "workspace": "phase10_loop_engineering"
+}

@@ -166,6 +166,19 @@ def _build_next_plan(workspace: str | None = None) -> dict[str, Any]:
                 ],
             }
         )
+    elif serve.get("adapter_resolution_state") == "adapter_blocked":
+        blocked_version = _first_non_empty(serve.get("blocked_adapter_version"), latest_promoted)
+        plan.update(
+            {
+                "state": "adapter_blocked",
+                "next": "serve the base model and inspect the failed adapter quality evidence",
+                "why": f"adapter {blocked_version or 'latest'} did not pass the serving quality gate",
+                "commands": [
+                    f"pfe status --workspace {workspace_name} --json",
+                    f"pfe serve --port 8921 --workspace {workspace_name} --live",
+                ],
+            }
+        )
     elif bool(candidate_summary.get("candidate_needs_promotion")) and candidate_version:
         plan.update(
             {
@@ -218,6 +231,15 @@ def _build_next_plan(workspace: str | None = None) -> dict[str, Any]:
                     f"pfe eval --base-model base --adapter {candidate_version} --num-samples 3 --workspace {workspace_name}",
                     f"pfe adapter promote {candidate_version} --workspace {workspace_name}",
                 ],
+            }
+        )
+    elif serve.get("adapter_resolution_state") == "base_ready":
+        plan.update(
+            {
+                "state": "base_ready",
+                "next": "serve the base model while no qualified adapter is available",
+                "why": "no adapter has passed the serving quality gate",
+                "commands": [f"pfe serve --port 8921 --workspace {workspace_name} --live"],
             }
         )
     else:

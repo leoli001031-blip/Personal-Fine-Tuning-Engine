@@ -1,0 +1,23 @@
+{
+  "checks": {
+    "historical_real_training_evidence_exists": true,
+    "local_config_exists": true,
+    "torch_runtime_available": true,
+    "weight_shards_exist": true
+  },
+  "config_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+  "kind": "phase78_model_selection",
+  "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "mps_available_in_current_process": false,
+  "not_selected": {
+    "Qwen2.5-0.5B": "Prior preference probes were trainable but too weak for this semantic benchmark.",
+    "Qwen3.6-27B": "Phase12 real training hit Metal OOM; it is a runtime reference, not a Phase78 trainer."
+  },
+  "reason": "The local full-precision Qwen3-4B has already completed real PEFT LoRA probes on this machine. Phase78 changes the privacy-safe curriculum and benefit gate, not model scale. The current execution sandbox cannot expose MPS, so the frozen 160-token curriculum also supports an honest CPU fallback without truncating any sample.",
+  "selected_execution_device": "cpu",
+  "selected_model": "Qwen3-4B",
+  "status": "selected",
+  "torch_version": "2.12.0",
+  "weight_bytes": 8044982000,
+  "weight_shard_count": 3
+}

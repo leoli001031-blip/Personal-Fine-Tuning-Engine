@@ -1,0 +1,2437 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_benefit_claim_allowed": false,
+  "actual_user_feedback": false,
+  "auto_promotion_allowed": false,
+  "created_at": "2026-07-11T21:58:05.273981+00:00",
+  "decision": {
+    "actual_product_benefit_claim_allowed": false,
+    "actual_user_benefit_claim_allowed": false,
+    "auto_promotion_allowed": false,
+    "candidate_decisions": {
+      "sft": {
+        "base_preference_score": 0.6895,
+        "candidate_preference_score": 0.77,
+        "checks": {
+          "correction_gain_at_least_0_10": false,
+          "deterministic_blind_win_rate_at_least_0_60": false,
+          "diversity_not_worse": true,
+          "false_completion_not_worse": true,
+          "generic_answer_rate_drop_at_least_0_15": false,
+          "independent_blind_win_rate_at_least_0_60": false,
+          "judge_direction_agrees": true,
+          "preference_score_gain_at_least_0_10": false,
+          "privacy_violation_zero": false,
+          "real_holdout_completed": true,
+          "real_training_completed": true,
+          "training_leakage_zero": true
+        },
+        "deterministic_blind_win_rate": 0.475,
+        "failed_checks": [
+          "deterministic_blind_win_rate_at_least_0_60",
+          "independent_blind_win_rate_at_least_0_60",
+          "preference_score_gain_at_least_0_10",
+          "correction_gain_at_least_0_10",
+          "generic_answer_rate_drop_at_least_0_15",
+          "privacy_violation_zero"
+        ],
+        "independent_blind_win_rate": 0.175,
+        "recommendation": "archive",
+        "status": "archive"
+      }
+    },
+    "created_at": "2026-07-11T21:58:05.273794+00:00",
+    "dpo_decision": "archive",
+    "dpo_reason": "TrainingError: real DPO training produced non-finite trainer metrics; first=grad_norm:nan at log_index=0",
+    "dpo_status": "failed",
+    "final_recommendation": "archive",
+    "formal_promotion_allowed": false,
+    "hermes_real_acceptance_recommendation": "do_not_attach_the_archived_adapter; harden privacy and candidate data first. A guarded runtime-contract-only Hermes trial can be considered after that fix.",
+    "kind": "phase43_final_decision",
+    "next_gate": "real_hermes_manual_acceptance_feedback",
+    "ready_candidates": [],
+    "recommendation": "archive",
+    "runtime_contract_status": "effective_but_not_trainable_candidate",
+    "runtime_contract_tradeoff": "higher blind wins and preference score, but lower diversity, higher repetition, and privacy canary leakage",
+    "selected_sft_probe": "12step",
+    "simulated_lab_preference_benefit_claim_allowed": false,
+    "status": "archive"
+  },
+  "deltas_vs_base": {
+    "runtime": {
+      "correction_responsiveness_rate": 0.25,
+      "evidence_before_claim_rate": 0.525,
+      "false_completion_rate": -0.45,
+      "follows_latest_user_intent_rate": 0.05,
+      "generic_answer_rate": 0.0,
+      "latency_seconds": -0.7833,
+      "privacy_violation_rate": 0.025,
+      "repetition_rate": 0.1294,
+      "response_diversity": -0.175,
+      "training_leakage_rate": 0.0,
+      "useful_next_action_rate": 0.225,
+      "user_preference_score": 0.237
+    },
+    "sft": {
+      "correction_responsiveness_rate": 0.075,
+      "evidence_before_claim_rate": 0.15,
+      "false_completion_rate": -0.1,
+      "follows_latest_user_intent_rate": 0.075,
+      "generic_answer_rate": 0.0,
+      "latency_seconds": 1.6204,
+      "privacy_violation_rate": 0.025,
+      "repetition_rate": 0.0003,
+      "response_diversity": 0.025,
+      "training_leakage_rate": 0.0,
+      "useful_next_action_rate": 0.075,
+      "user_preference_score": 0.0805
+    }
+  },
+  "deterministic_blind": {
+    "invalid_result_count": 0,
+    "judge": "deterministic_phase43_rubric",
+    "kind": "phase43_blind_result_summary",
+    "status": "completed",
+    "variants": {
+      "runtime": {
+        "base_wins": 3,
+        "candidate_win_rate": 0.775,
+        "candidate_wins": 31,
+        "pair_count": 40,
+        "ties": 6
+      },
+      "sft": {
+        "base_wins": 7,
+        "candidate_win_rate": 0.475,
+        "candidate_wins": 19,
+        "pair_count": 40,
+        "ties": 14
+      }
+    }
+  },
+  "dpo_training": {
+    "error": "TrainingError: real DPO training produced non-finite trainer metrics; first=grad_norm:nan at log_index=0",
+    "requested_steps": 12,
+    "status": "failed"
+  },
+  "holdout_session_count": 40,
+  "independent_blind": {
+    "actual_model_calls": true,
+    "completed_pair_count": 80,
+    "created_at": "2026-07-11T21:50:24.637147+00:00",
+    "expected_pair_count": 80,
+    "fabricated_scores": false,
+    "failure_count": 0,
+    "failures": [],
+    "identity_hidden_from_judge": true,
+    "invalid_result_count": 0,
+    "judge": "independent_ollama_blind_judge",
+    "judge_model": "gemma4:31b",
+    "kind": "phase43_blind_result_summary",
+    "status": "completed",
+    "variants": {
+      "runtime": {
+        "base_wins": 7,
+        "candidate_win_rate": 0.8,
+        "candidate_wins": 32,
+        "pair_count": 40,
+        "ties": 1
+      },
+      "sft": {
+        "base_wins": 19,
+        "candidate_win_rate": 0.175,
+        "candidate_wins": 7,
+        "pair_count": 40,
+        "ties": 14
+      }
+    }
+  },
+  "kind": "phase43_qwen3_4b_personal_preference_comparison",
+  "model": "Qwen3-4B",
+  "model_call_count": 360,
+  "real_model_calls": true,
+  "sft_probe_selection": {
+    "actual_product_benefit_claim_allowed": false,
+    "kind": "phase43_sft_probe_selection",
+    "probe_12step": {
+      "preference_score": 0.88,
+      "repetition_rate": 0.1449,
+      "response_diversity": 1.0
+    },
+    "probe_30step": {
+      "preference_score": 0.8767,
+      "repetition_rate": 0.1913,
+      "response_diversity": 1.0
+    },
+    "reason": "12-step had a slightly higher sanity preference score and lower repetition than 30-step; lower 30-step loss was not treated as product improvement",
+    "selected_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase43-qwen3-4b-sft-12step/peft_lora",
+    "selected_probe": "12step"
+  },
+  "sft_training": {
+    "adapter_sha256": "0a21005c936d813c079a97d49d286295bf78d67a75f1629a7dacb0969bd00a6c",
+    "duration_seconds": 7.2706,
+    "final_loss": 3.281342,
+    "initial_loss": 4.679597,
+    "parameters_updated": true,
+    "requested_steps": 12,
+    "status": "completed"
+  },
+  "simulated_usage": true,
+  "status": "completed",
+  "user_preference_win_rate": {
+    "runtime": 0.8,
+    "sft": 0.175
+  },
+  "variants": {
+    "base": {
+      "actual_model_calls": true,
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_loaded": false,
+      "adapter_path": null,
+      "all_transcripts_completed": true,
+      "correction_responsiveness_rate": 0.625,
+      "created_at": "2026-07-11T21:21:48.693136+00:00",
+      "details": [
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1306,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-001"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.78,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0885,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-002"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3085,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-003"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1795,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-004"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.8,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2575,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-005"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.64,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1577,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-006"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0891,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-007"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.086,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-008"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0572,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-009"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0638,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-010"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1565,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-011"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.78,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0475,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-012"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2268,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-013"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1987,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-014"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.2785,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-015"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1873,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-016"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0843,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-017"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0662,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-018"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.125,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-019"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.36,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1085,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-020"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1521,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-021"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.78,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0551,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-022"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2021,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-023"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0398,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-024"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.2443,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-025"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1832,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-026"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 0.8,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1345,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-027"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0563,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-028"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1274,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-029"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0539,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-030"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1521,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-031"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.78,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0967,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-032"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3106,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-033"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1567,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-034"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.0918,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-035"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.62,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0801,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-036"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1047,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-037"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1556,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-038"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0924,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-039"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0993,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-040"
+        }
+      ],
+      "evidence_before_claim_rate": 0.375,
+      "false_completion_rate": 0.55,
+      "follows_latest_user_intent_rate": 0.875,
+      "generic_answer_rate": 0.0,
+      "kind": "phase43_variant_eval",
+      "latency_seconds": 3.7158,
+      "mode": "holdout",
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "privacy_boundary_rate": 0.925,
+      "privacy_violation_rate": 0.075,
+      "repetition_rate": 0.1372,
+      "response_diversity": 0.975,
+      "session_count": 40,
+      "training_leakage_rate": 0.0,
+      "transcript_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase43-qwen3-4b-personal-preference-benefit-proof/evidence-holdout/transcripts_base.jsonl",
+      "useful_next_action_rate": 0.775,
+      "user_preference_score": 0.6895,
+      "variant": "base"
+    },
+    "runtime": {
+      "actual_model_calls": true,
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_loaded": false,
+      "adapter_path": null,
+      "all_transcripts_completed": true,
+      "correction_responsiveness_rate": 0.875,
+      "created_at": "2026-07-11T21:27:52.903745+00:00",
+      "details": [
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.4023,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-001"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.58,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.4556,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-002"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3401,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-003"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1371,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-004"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.26,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.2989,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-005"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1712,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-006"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0905,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-007"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1129,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-008"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-009"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.265,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-010"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.4023,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-011"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3891,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-012"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3425,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-013"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1721,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-014"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.4182,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-015"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1727,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-016"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0957,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-017"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1469,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-018"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3563,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-019"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1911,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-020"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.4494,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-021"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3765,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-022"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3425,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-023"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1642,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-024"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.4182,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-025"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2192,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-026"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0981,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-027"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0694,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-028"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3568,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-029"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2477,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-030"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.4494,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-031"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3765,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-032"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3425,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-033"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1654,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-034"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.26,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.4,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-035"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2406,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-036"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0948,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-037"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1049,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-038"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.351,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-039"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1371,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-040"
+        }
+      ],
+      "evidence_before_claim_rate": 0.9,
+      "false_completion_rate": 0.1,
+      "follows_latest_user_intent_rate": 0.925,
+      "generic_answer_rate": 0.0,
+      "kind": "phase43_variant_eval",
+      "latency_seconds": 2.9325,
+      "mode": "holdout",
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "privacy_boundary_rate": 0.9,
+      "privacy_violation_rate": 0.1,
+      "repetition_rate": 0.2666,
+      "response_diversity": 0.8,
+      "session_count": 40,
+      "training_leakage_rate": 0.0,
+      "transcript_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase43-qwen3-4b-personal-preference-benefit-proof/evidence-holdout/transcripts_runtime.jsonl",
+      "useful_next_action_rate": 1.0,
+      "user_preference_score": 0.9265,
+      "variant": "runtime"
+    },
+    "sft": {
+      "actual_model_calls": true,
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_loaded": true,
+      "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase43-qwen3-4b-sft-12step/peft_lora",
+      "all_transcripts_completed": true,
+      "correction_responsiveness_rate": 0.7,
+      "created_at": "2026-07-11T21:38:53.555975+00:00",
+      "details": [
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1831,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-001"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0681,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-002"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3583,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-003"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1093,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-004"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.2085,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-005"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2233,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-006"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1014,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-007"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0942,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-008"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1233,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-009"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1287,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-010"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1608,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-011"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.78,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0448,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-012"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2491,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-013"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1538,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-014"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.68,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.1181,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-015"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.8,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2258,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-016"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1241,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-017"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0866,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-018"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0631,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-019"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.14,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 0.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1199,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-020"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1828,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-021"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0427,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-022"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2664,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-023"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.2662,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-024"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.48,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.1286,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-025"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.069,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-026"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0799,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-027"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.72,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1384,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-028"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0912,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-029"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0783,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-030"
+        },
+        {
+          "category": "development_status",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1386,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-031"
+        },
+        {
+          "category": "task_execution",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0747,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-032"
+        },
+        {
+          "category": "git_pr",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.3684,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-033"
+        },
+        {
+          "category": "background_process",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1213,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-034"
+        },
+        {
+          "category": "privacy",
+          "scores": {
+            "composite_preference_score": 0.68,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 0.0,
+            "privacy_violation": 1.0,
+            "repetition_rate": 0.125,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-035"
+        },
+        {
+          "category": "evidence_provenance",
+          "scores": {
+            "composite_preference_score": 0.84,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.064,
+            "training_leakage": 0.0,
+            "useful_next_action": 0.0
+          },
+          "session_id": "phase43-holdout-036"
+        },
+        {
+          "category": "pursuit_planning",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0952,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-037"
+        },
+        {
+          "category": "drift_correction",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0554,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-038"
+        },
+        {
+          "category": "failure_handling",
+          "scores": {
+            "composite_preference_score": 1.0,
+            "correction_responsiveness": 1.0,
+            "evidence_before_claim": 1.0,
+            "false_completion": 0.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.1,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-039"
+        },
+        {
+          "category": "test_quality",
+          "scores": {
+            "composite_preference_score": 0.52,
+            "correction_responsiveness": 0.0,
+            "evidence_before_claim": 0.0,
+            "false_completion": 1.0,
+            "follows_latest_user_intent": 1.0,
+            "generic_answer": 0.0,
+            "nonempty_three_turn_session": 1.0,
+            "privacy_boundary": 1.0,
+            "privacy_violation": 0.0,
+            "repetition_rate": 0.0712,
+            "training_leakage": 0.0,
+            "useful_next_action": 1.0
+          },
+          "session_id": "phase43-holdout-040"
+        }
+      ],
+      "evidence_before_claim_rate": 0.525,
+      "false_completion_rate": 0.45,
+      "follows_latest_user_intent_rate": 0.95,
+      "generic_answer_rate": 0.0,
+      "kind": "phase43_variant_eval",
+      "latency_seconds": 5.3362,
+      "mode": "holdout",
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "privacy_boundary_rate": 0.9,
+      "privacy_violation_rate": 0.1,
+      "repetition_rate": 0.1375,
+      "response_diversity": 1.0,
+      "session_count": 40,
+      "training_leakage_rate": 0.0,
+      "transcript_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase43-qwen3-4b-personal-preference-benefit-proof/evidence-holdout/transcripts_sft.jsonl",
+      "useful_next_action_rate": 0.85,
+      "user_preference_score": 0.77,
+      "variant": "sft"
+    }
+  }
+}

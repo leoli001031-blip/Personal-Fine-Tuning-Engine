@@ -1,0 +1,132 @@
+{
+  "actual_human_review_count": 0,
+  "actual_user_feedback_count": 0,
+  "adapter_created": false,
+  "boundary_clause_design": {
+    "created": false,
+    "status": "not_requested_in_phase55"
+  },
+  "hermes_attached": false,
+  "kind": "phase55_atomic_evaluator_comparison",
+  "phase54": {
+    "holdout_accuracy": 0.9933,
+    "recommendation": "hold_phase54_typed_proposition_evaluator",
+    "subjective_provenance_boundary_field": true,
+    "typed_exact_match_rate": 0.9433
+  },
+  "phase55": {
+    "calibration_accuracy": 0.9917,
+    "calibration_per_category": {
+      "evidence_outcome_relation": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "explicit_registration_clause": {
+        "accuracy": 0.9583,
+        "count": 24
+      },
+      "future_actual_feedback_condition": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "quoted_claim_scope": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "split_clause_composition": {
+        "accuracy": 1.0,
+        "count": 24
+      }
+    },
+    "calibration_per_field": {
+      "source_registration": {
+        "accuracy": 0.9792,
+        "count": 240
+      },
+      "test_to_user_outcome_relation": {
+        "accuracy": 1.0,
+        "count": 240
+      },
+      "user_outcome_status": {
+        "accuracy": 0.9958,
+        "count": 240
+      }
+    },
+    "calibration_real_model_call_count": 240,
+    "calibration_status": "qualified",
+    "calibration_typed_exact_match_rate": 0.975,
+    "final_label_generated_by_deterministic_composer": true,
+    "holdout_accuracy": 1.0,
+    "holdout_false_accept_count": 0,
+    "holdout_hard_vs_two_safe_accept_conflict_count": 0,
+    "holdout_judge_direct_label_count": 0,
+    "holdout_per_category": {
+      "evidence_outcome_relation": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "explicit_registration_clause": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "future_actual_feedback_condition": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "quoted_claim_scope": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "split_clause_composition": {
+        "accuracy": 1.0,
+        "count": 30
+      }
+    },
+    "holdout_per_field": {
+      "source_registration": {
+        "accuracy": 0.9167,
+        "count": 300
+      },
+      "test_to_user_outcome_relation": {
+        "accuracy": 1.0,
+        "count": 300
+      },
+      "user_outcome_status": {
+        "accuracy": 0.9767,
+        "count": 300
+      }
+    },
+    "holdout_real_model_call_count": 300,
+    "holdout_status": "not_qualified",
+    "holdout_typed_exact_match_rate": 0.8933,
+    "invalidated_calibration_attempts": [
+      {
+        "attempt_id": "attempt-01-atomic-overinference",
+        "calibration_accuracy": 0.9917,
+        "completed_item_count": 119,
+        "created_at": "2026-07-13T18:46:12Z",
+        "diagnosis": [
+          "Qwen inferred does_not_establish when registration and outcome clauses were merely adjacent.",
+          "Qwen inferred source registration from an explicit no-proof relation without a registration action.",
+          "Qwen returned one enum-external user_outcome_status value, unstable, on both retries."
+        ],
+        "formal_result_eligible": false,
+        "holdout_model_call_count": 0,
+        "source_registration_accuracy": 0.9372,
+        "status": "not_qualified",
+        "test_to_user_outcome_relation_accuracy": 0.8326,
+        "typed_exact_match_rate": 0.7699,
+        "user_outcome_status_accuracy": 1.0
+      }
+    ]
+  },
+  "product_default_changed": false,
+  "recommendation": "hold_phase55_atomic_boundary_composition",
+  "router_changed": false,
+  "runtime_prompt_changed": false,
+  "runtime_replay": {
+    "real_model_call_count": 0,
+    "status": "not_requested_in_phase55"
+  },
+  "training_executed": false
+}

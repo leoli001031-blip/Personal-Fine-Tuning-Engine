@@ -1,0 +1,301 @@
+{
+  "baseline_a_phase10": {
+    "scores": {
+      "citation_hit_rate": 0.367,
+      "explicit_boundary_rate": 0.0,
+      "external_law_reference_rate": 0.133,
+      "extra_text_after_first_block_rate": 0.0,
+      "safety_boundary_rate": 0.0,
+      "structure_hit_rate": 0.567,
+      "think_leak_rate": 0.967,
+      "unsupported_assertions": 36
+    },
+    "status": "completed"
+  },
+  "baseline_b_qwen36_boundary_base": {
+    "scores": {
+      "citation_hit_rate": 1.0,
+      "explicit_boundary_rate": 1.0,
+      "external_law_reference_rate": 0.0,
+      "extra_text_after_first_block_rate": 0.0,
+      "safety_boundary_rate": 1.0,
+      "structure_hit_rate": 1.0,
+      "think_leak_rate": 0.0,
+      "unsupported_assertions": 0
+    },
+    "status": "completed"
+  },
+  "candidate_c_mid_model": {
+    "eval": {
+      "eval_gate": {
+        "auto_promotion_allowed": false,
+        "manual_review_required": false,
+        "promotion_allowed": false,
+        "reasons": [
+          "adapter_citation_hit_rate_below_qwen36_boundary_base",
+          "adapter_safety_boundary_rate_below_qwen36_boundary_base",
+          "adapter_unsupported_assertions_above_qwen36_boundary_base",
+          "adapter_external_law_reference_present"
+        ],
+        "recommendation": "archive",
+        "status": "blocked"
+      },
+      "real_model_calls": true,
+      "recommendation": "archive",
+      "scores": {
+        "adapter": {
+          "citation_hit_rate": 0.933,
+          "explicit_boundary_rate": 1.0,
+          "external_law_reference_rate": 0.033,
+          "extra_text_after_first_block_rate": 0.0,
+          "safety_boundary_rate": 0.9,
+          "structure_hit_rate": 1.0,
+          "think_leak_rate": 0.0,
+          "unsupported_assertions": 4
+        },
+        "base": {
+          "citation_hit_rate": 0.933,
+          "explicit_boundary_rate": 1.0,
+          "external_law_reference_rate": 0.033,
+          "extra_text_after_first_block_rate": 0.0,
+          "safety_boundary_rate": 1.0,
+          "structure_hit_rate": 1.0,
+          "think_leak_rate": 0.0,
+          "unsupported_assertions": 1
+        }
+      }
+    },
+    "training": {
+      "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model/adapters",
+      "command": "/Users/lichenhao/Desktop/PFE/.venv/bin/python /Users/lichenhao/Desktop/PFE/tools/phase13_boundary_contract_probe.py --training-worker --mid-model-id mlx-community/Qwen3-8B-4bit --worker-train-data /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model/phase13_train_rows.jsonl --worker-result /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model/phase13_worker_result.json --training-output-dir /Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model --training-steps 12 --train-max-seq-length 768",
+      "created_at": "2026-06-20T04:49:34.488184+00:00",
+      "duration_seconds": 26.396,
+      "format_report": {
+        "chat_template_applied_count": 48,
+        "chat_template_error_count": 0,
+        "chat_template_errors": [],
+        "selected_count": 48
+      },
+      "kind": "phase13_mid_model_training_worker_result",
+      "model_id": "mlx-community/Qwen3-8B-4bit",
+      "real_training": "completed",
+      "result": {
+        "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model/adapters",
+        "config": {
+          "batch_size": 1,
+          "gradient_checkpointing": true,
+          "learning_rate": 5e-05,
+          "logging_steps": 1,
+          "lora_alpha": 16,
+          "lora_dropout": 0.0,
+          "lora_r": 8,
+          "max_seq_length": 768,
+          "num_epochs": 12,
+          "quantization_bits": 4,
+          "save_steps": 12,
+          "target_modules": [
+            "q_proj",
+            "v_proj"
+          ],
+          "warmup_steps": 0
+        },
+        "error": null,
+        "final_loss": 0.0,
+        "loss_history": [
+          0.0
+        ],
+        "metadata": {
+          "base_model": "mlx-community/Qwen3-8B-4bit",
+          "data_file": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model/train_data.jsonl",
+          "dataset_format": "prompt_completion_output_only_loss",
+          "device": "Device(gpu, 0)",
+          "output_only_loss_masking": true
+        },
+        "num_samples": 48,
+        "num_steps": 12,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model",
+        "success": true
+      },
+      "train_sample_count": 48,
+      "training_output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase13-mid-model",
+      "training_run": true,
+      "training_steps": 12,
+      "worker_returncode": 0
+    }
+  },
+  "created_at": "2026-06-20T04:51:19.976462+00:00",
+  "dataset": {
+    "candidate_samples": {
+      "count": 70,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase13-boundary-contract-runtime-and-trainable-probe/evidence-trainable-mid-model/candidate_samples.jsonl"
+    },
+    "holdout": {
+      "count": 30,
+      "not_for_training": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase13-boundary-contract-runtime-and-trainable-probe/evidence-trainable-mid-model/holdout.json"
+    },
+    "quality_report": {
+      "candidate_passed_count": 70,
+      "candidate_sample_count": 70,
+      "created_at": "2026-06-20T04:47:18.860457+00:00",
+      "holdout_chunk_ids": [
+        "phase13-holdout-chunk-001",
+        "phase13-holdout-chunk-002",
+        "phase13-holdout-chunk-003",
+        "phase13-holdout-chunk-004",
+        "phase13-holdout-chunk-005",
+        "phase13-holdout-chunk-006",
+        "phase13-holdout-chunk-007",
+        "phase13-holdout-chunk-008",
+        "phase13-holdout-chunk-009",
+        "phase13-holdout-chunk-010",
+        "phase13-holdout-chunk-011",
+        "phase13-holdout-chunk-012",
+        "phase13-holdout-chunk-013",
+        "phase13-holdout-chunk-014",
+        "phase13-holdout-chunk-015",
+        "phase13-holdout-chunk-016",
+        "phase13-holdout-chunk-017",
+        "phase13-holdout-chunk-018",
+        "phase13-holdout-chunk-019",
+        "phase13-holdout-chunk-020",
+        "phase13-holdout-chunk-021",
+        "phase13-holdout-chunk-022",
+        "phase13-holdout-chunk-023",
+        "phase13-holdout-chunk-024",
+        "phase13-holdout-chunk-025",
+        "phase13-holdout-chunk-026",
+        "phase13-holdout-chunk-027",
+        "phase13-holdout-chunk-028",
+        "phase13-holdout-chunk-029",
+        "phase13-holdout-chunk-030"
+      ],
+      "kind": "phase13_quality_report",
+      "meets_quality_goal": true,
+      "split_counts": {
+        "train": 59,
+        "val": 11
+      }
+    },
+    "source_manifest": {
+      "candidate_source_count": 70,
+      "created_at": "2026-06-20T04:47:18.860094+00:00",
+      "external_legal_sources_allowed": false,
+      "holdout_count": 30,
+      "kind": "phase13_source_manifest",
+      "source_mode": "synthetic_contract_boundary_curriculum_no_external_fetch"
+    }
+  },
+  "kind": "phase13_three_way_comparison_summary",
+  "model_selection": {
+    "checked": [
+      {
+        "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--mlx-community--Qwen3-8B-4bit",
+        "cache_present": true,
+        "model_id": "mlx-community/Qwen3-8B-4bit",
+        "preflight": {
+          "allow_remote_download": true,
+          "backend": "mlx",
+          "base_model_source": "Qwen/Qwen3.6-27B",
+          "blocked_by": [],
+          "dependencies": {
+            "mlx": true,
+            "mlx_lm": true
+          },
+          "disk": {
+            "cache_root": "/Users/lichenhao/.cache/huggingface",
+            "free_gb": 1021.1,
+            "min_required_gb": 10.0
+          },
+          "kind": "phase6_qwen36_mlx_preflight",
+          "model_id": "mlx-community/Qwen3-8B-4bit",
+          "model_path": "",
+          "model_status": "remote_hub_model",
+          "ready_for_real_training": true,
+          "recommended_training": {
+            "backend": "mlx",
+            "batch_size": 1,
+            "epochs": 1,
+            "grad_accumulation": 8,
+            "lora_rank": 8,
+            "seq_length": 2048,
+            "train_type": "sft"
+          },
+          "require_local_model": false,
+          "status": "ready",
+          "system": {
+            "machine": "arm64",
+            "memory_gb": 128.0,
+            "processor": "arm",
+            "python": "3.11.15",
+            "system": "Darwin"
+          },
+          "warnings": []
+        },
+        "snapshot_count": 1
+      }
+    ],
+    "created_at": "2026-06-20T04:47:18.868290+00:00",
+    "selected": "mlx-community/Qwen3-8B-4bit",
+    "status": "selected"
+  },
+  "output_examples_path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase13-boundary-contract-runtime-and-trainable-probe/evidence-trainable-mid-model/output_examples.md",
+  "phase12_review": {
+    "conclusion": [
+      "qwen36_boundary_first_base_succeeded",
+      "qwen36_training_probe_archived_after_metal_oom",
+      "auto_promote_not_allowed"
+    ],
+    "created_at": "2026-06-20T04:47:18.851446+00:00",
+    "kind": "phase13_phase12_review",
+    "phase12_best_result": {
+      "model_id": "mlx-community/Qwen3.6-27B-4bit",
+      "prompt_mode": "boundary_first_chat_no_think",
+      "scores": {
+        "citation_hit_rate": 1.0,
+        "complete_four_section_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      }
+    },
+    "phase12_final_decision_excerpt": "# Phase12 Final Decision ## Base Probe - Best model: mlx-community/Qwen3.6-27B-4bit - Best prompt mode: boundary_first_chat_no_think - Structure hit rate: 1.0 - Citation hit rate: 1.0 - Safety boundary rate: 1.0 - Unsupported assertions: 0 - Think leak rate: 0.0 - External law reference rate: 0.0 ## Training Probe - Training run: true - Real training: failed - Error type: metal_out_of_memory - Exit code: 134 - Adapter artifact created: false - Eval real model calls: false - Eval recommendation: archive ## Decision Phase12 proves that `boundary_first_chat_no_think` makes Qwen3.6-27B obey the PFE output boundary in base inference, but the 12-step 27B MLX training probe is blocked by Metal out-of-memory before an adapter artifact/eval can be produced. Do not promote. Next step should either use the boundary-first chat prompt as the inference contract, try a smaller 8B adapter training prob...",
+    "phase12_training_attempt": {
+      "adapter_artifact_created": false,
+      "command": ".venv/bin/python tools/phase12_boundary_first.py --evidence-dir docs/demo/phase12-boundary-first/evidence-real-qwen36-27b --clean-evidence --model mlx-community/Qwen3.6-27B-4bit --prompt-mode phase10 --prompt-mode no_think_four_line --prompt-mode boundary_first_four_line --prompt-mode boundary_first_chat_no_think --holdout-count 10 --candidate-count 40 --max-tokens 192 --repetition-penalty 1.2 --run-training-probe --training-steps 12 --train-sample-limit 40 --train-max-seq-length 1024 --clean-training-output",
+      "created_at": "2026-06-19T20:24:02.671265+00:00",
+      "error_excerpt": "libc++abi: terminating due to uncaught exception of type std::runtime_error: [METAL] Command buffer execution failed: Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory)",
+      "error_type": "metal_out_of_memory",
+      "exit_code": 134,
+      "kind": "phase12_training_attempt",
+      "model_id": "mlx-community/Qwen3.6-27B-4bit",
+      "observed_stage": "qwen36_27b_mlx_training_probe_process_terminated_before_training_attempt_json",
+      "real_training": "failed",
+      "train_data_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase12-boundary-first-qwen36/train_data.jsonl",
+      "train_sample_limit": 40,
+      "training_output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase12-boundary-first-qwen36",
+      "training_run": true,
+      "training_steps_requested": 12
+    }
+  },
+  "runtime_contract": {
+    "contracted_messages": {
+      "applied": true,
+      "auto_promotion_allowed": false,
+      "contract": "contract_boundary_summary",
+      "expected_sections": [
+        "摘要",
+        "风险提示",
+        "引用依据",
+        "人工确认"
+      ]
+    },
+    "created_at": "2026-06-20T04:47:18.861057+00:00",
+    "fallback_output": "摘要：资料引用：[smoke:chunk] 请判断能不能签。\n风险提示：仅能基于已提供资料做整理和风险提示，不判断合法/违法。\n引用依据：[smoke:chunk]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+    "kind": "phase13_runtime_contract_smoke"
+  }
+}

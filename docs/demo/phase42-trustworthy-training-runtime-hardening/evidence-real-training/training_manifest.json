@@ -1,0 +1,137 @@
+{
+  "audit": {
+    "import_probe": {
+      "missing_modules": [],
+      "ready": true
+    }
+  },
+  "backend": "peft",
+  "dry_run": false,
+  "execution_backend": "peft",
+  "execution_executor": "peft",
+  "executor_mode": "real_local",
+  "ready": true,
+  "recipe": {
+    "training": {
+      "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+      "base_model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+      "epochs": 1,
+      "learning_rate": 0.0002,
+      "local_only": true,
+      "max_steps": 12,
+      "method": "lora",
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase42-real-local-qwen25-0_5b-12step",
+      "seed": 42
+    }
+  },
+  "training_examples": [
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先检查 PID、监听端口和最近日志，再报告真实状态。",
+      "instruction": "如何确认服务正在运行？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-001",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "先检查 git status 和 diff，运行 focused tests，再提交相关文件。",
+      "instruction": "提交代码前做什么？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-002",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "保存命令、退出码、错误日志和产物目录，并将状态标为 blocked。",
+      "instruction": "训练失败应该怎么记录？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-003",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "明确标记 simulated_usage，不把它写成 actual_user_feedback。",
+      "instruction": "如何区分模拟反馈？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-004",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "只有独立 holdout 通过且人工复核后才提出 promote 建议。",
+      "instruction": "什么时候可以 promote？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-005",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "只保存脱敏结构、hash 和计数，不提交原始私密正文。",
+      "instruction": "如何保护私密资料？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-006",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "对 base 和 adapter 使用同一 holdout，比较原始输出与预设指标。",
+      "instruction": "如何判断 adapter 有效？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-007",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "立即以最新目标为准，停止无关展开，并重新核对验收条件。",
+      "instruction": "用户纠正方向后怎么办？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-008",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "不等于；还需要真实运行、协议兼容和用户场景证据。",
+      "instruction": "测试通过等于产品可用吗？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-009",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "计算真实 token 预算，保留最近上下文，并显式报告是否截断。",
+      "instruction": "上下文太长如何处理？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-010",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "发送最终 finish_reason，然后发送 data: [DONE]。",
+      "instruction": "流式接口如何结束？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-011",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "回退到 base，并把 adapter 状态明确标成 blocked 或 archived。",
+      "instruction": "没有合格 adapter 时怎么服务？",
+      "rejected": null,
+      "sample_id": "phase42-real-sft-012",
+      "sample_type": "sft",
+      "source": "phase42_runtime_integrity_probe"
+    }
+  ]
+}

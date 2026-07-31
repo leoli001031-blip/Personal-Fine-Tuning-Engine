@@ -1,0 +1,65 @@
+{
+  "automatic_promotion_allowed": false,
+  "checks": {
+    "call_ledger_empty": true,
+    "completion_boundary_passed": true,
+    "data_integrity_passed": true,
+    "dpo_tokenizer_diagnostic_passed": true,
+    "model_available": true,
+    "phase109_adapter_available": true,
+    "phase109_archived": true,
+    "phase109_product_gate_false": true,
+    "private_root_outside_repo": true
+  },
+  "diagnostic_forward_passes": 40,
+  "dpo_manifest_sha256": "bddcaedbae4fd63b013b2ee99fc436229df9b2ab9ee0383c9e4bc47ff6ee54d4",
+  "dpo_requires_sft_gate": true,
+  "external_provider_allowed": false,
+  "frozen_at": "2026-07-23T00:50:18.149309+00:00",
+  "generation_protocol": {
+    "automatic_retry_count": 0,
+    "do_sample": false,
+    "enable_thinking": false,
+    "input_max_length": 3072,
+    "max_new_tokens": 160,
+    "no_repeat_ngram_size": 4,
+    "post_hoc_truncation_allowed": false,
+    "repetition_penalty": 1.12
+  },
+  "holdout_manifest_sha256": "52e7bd5f4f30c0a30e7e963871150a41b55542f000f00b9015793f68011d3d10",
+  "kind": "phase110_pre_experiment_freeze",
+  "max_model_call_budget": 168,
+  "model_manifest": {
+    "config_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+    "exists": true,
+    "file_count": 41,
+    "path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "required_files_present": true,
+    "total_bytes": 16112213302
+  },
+  "paid_api_allowed": false,
+  "passed": true,
+  "phase109_adapter_manifest": {
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase109-personal-engineering-dpo/30step/dpo_adapter",
+    "artifact_sha256": "76e5a666595b3ee868a8f01b97439ab42dc912f603391ee2f6d2ffb6cc2a247d",
+    "format": "safetensors",
+    "lora_tensor_count": 504,
+    "parameter_count": 16515072,
+    "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase109-personal-engineering-dpo/30step/dpo_adapter/adapter_model.safetensors",
+    "reason": null,
+    "size_bytes": 66126768,
+    "tensor_count": 504,
+    "valid": true
+  },
+  "product_gate_qualified": false,
+  "runtime_contract_sha256": "6222827969a4377627c5cbf6d136796958b9f517de3afc89d9aa41f1771db307",
+  "sft_manifest_sha256": "4827936ce2244b84a9d40d13b1e9b8f9327557d202152939aed9103a490f7386",
+  "source_sha256": {
+    "core": "06a5af0b582af42d11679173ba4f7e67aa74fe4bfd0236d9992635e09453ec65",
+    "core_test": "2d5d96c378edf5dad9bed6e891a431f6c4160aff00e8da5d4603853cd68b18f7",
+    "driver": "ab93ee43fea30694ab6ecdd28ad405beb76d061029af6d77689afdb26cfa4824",
+    "driver_test": "9575552a7a274a3c72318f502db888b67f34fe0ecdf1e0a0039366a5f73cc310",
+    "executor": "a1d88831c5dc1311c2e6cf9a46ec93d5ceb85f58b94d0d1ff71be61fb17d84ea",
+    "phase109_decision": "537ba6adb53146810246bc37de989ca4810d78724b27d7e89dba51143ddcd1e5"
+  }
+}

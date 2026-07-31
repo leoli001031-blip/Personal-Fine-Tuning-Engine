@@ -1,0 +1,71 @@
+{
+  "kind": "phase45_privacy_boundary_evidence",
+  "model_prompt_contains_raw_private_values": false,
+  "nonsecret_control_values": [
+    "43210",
+    "8927",
+    "2471c8b",
+    "ISSUE-4501",
+    "PR-55"
+  ],
+  "nonsecret_controls_preserved": true,
+  "output_after_persistence_sanitization": "检测到 已脱敏内容，内部字段 已脱敏内容。",
+  "output_sanitization_audit": {
+    "kind": "phase45_privacy_output_sanitization",
+    "output_redaction_count": 2,
+    "placeholder_leak_detected_before_sanitization": true,
+    "placeholder_occurrence_count": 1,
+    "raw_output_persisted": false,
+    "raw_output_sha256_before_sanitization": "62b0d12864c5d26abc2551455a83b0d77e007fed16f1802e823381694501dea7",
+    "secret_echo_detected_before_sanitization": true,
+    "secret_echo_occurrence_count": 1
+  },
+  "raw_private_values_absent_from_persisted_evidence": true,
+  "redaction_manifest": {
+    "kind": "phase45_privacy_redaction_manifest",
+    "manifest_sha256": "1b70a6fca92ea0f7c3d7b123d451ff54cd640b2f05fa80a1deac4fa3bed4383d",
+    "message_count": 1,
+    "raw_values_persisted": false,
+    "redaction_count": 3,
+    "redaction_type_counts": {
+      "api_key": 1,
+      "private_canary": 1,
+      "telegram_token": 1
+    },
+    "redactions": [
+      {
+        "end": 37,
+        "message_index": 0,
+        "placeholder_type": "PRIVATE_API_KEY",
+        "sha256": "957033ea7cace7770033481796129f6a79ca36c3af06cdd88d01083f7a2df49f",
+        "start": 8,
+        "type": "api_key"
+      },
+      {
+        "end": 94,
+        "message_index": 0,
+        "placeholder_type": "PRIVATE_TELEGRAM_TOKEN",
+        "sha256": "66c6bc39d09fbb0a2aeb895cc69d0379dfcee1c6214c22eb738238dcd51ee37d",
+        "start": 43,
+        "type": "telegram_token"
+      },
+      {
+        "end": 139,
+        "message_index": 0,
+        "placeholder_type": "PRIVATE_PRIVATE_CANARY",
+        "sha256": "830bdd806c71a7d45f0affae37ba7813071fa4e39c809eedf885056402925fa9",
+        "start": 103,
+        "type": "private_canary"
+      }
+    ]
+  },
+  "status": "passed",
+  "training_samples_contain_raw_private_values": false,
+  "transcript_contains_raw_private_values": false,
+  "transformed_messages": [
+    {
+      "content": "api_key=<PRIVATE_API_KEY_01>; bot=<PRIVATE_TELEGRAM_TOKEN_01>; canary=<PRIVATE_PRIVATE_CANARY_01>; PID 43210, port 8927, commit 2471c8b, public ISSUE-4501, PR-55",
+      "role": "user"
+    }
+  ]
+}

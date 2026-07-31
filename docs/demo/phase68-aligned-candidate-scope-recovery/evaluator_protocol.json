@@ -1,0 +1,70 @@
+{
+  "aligned_phase55_categories": [
+    "explicit_registration_clause",
+    "evidence_outcome_relation",
+    "quoted_claim_scope",
+    "split_clause_composition",
+    "future_actual_feedback_condition"
+  ],
+  "aligned_phase55_count": 150,
+  "aligned_phase55_label_accuracy_gate": 0.95,
+  "aligned_phase55_typed_metrics_diagnostic_only": true,
+  "auto_promote_allowed": false,
+  "candidate_conflict_gate": 0,
+  "each_scored_split_may_be_called_once": true,
+  "false_accept_gate": 0,
+  "fresh_calibration_accuracy_gate": 0.97,
+  "fresh_calibration_count": 60,
+  "fresh_candidate_exact_gate": 0.9,
+  "fresh_categories": [
+    "no_actual_verification",
+    "pending_independent_confirmation",
+    "not_yet_confirmed_variant",
+    "bracketed_negative_relation",
+    "unmodalized_negative_relation"
+  ],
+  "fresh_holdout_accuracy_gate": 0.95,
+  "fresh_holdout_count": 120,
+  "fresh_per_category_accuracy_gate": 0.9,
+  "fresh_per_field_accuracy_gate": 0.95,
+  "fresh_typed_exact_gate": 0.9,
+  "frozen_retry_limit_per_failed_item": 2,
+  "hermes_attachment_allowed": false,
+  "kind": "phase68_frozen_negation_scope_protocol",
+  "num_ctx": 4096,
+  "num_predict": 64,
+  "one_independent_call_per_item_per_judge": true,
+  "parallel_worker_count": 4,
+  "post_model_call_tuning_allowed": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "6933e70d730d0d780bac97232d5589ed19c5f8fbca35d941ead24b3a725d7b32",
+  "runtime_replay_allowed": false,
+  "schema_failure_gate": 0,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "single_structural_correction": "negation_first_outcome_and_relation_candidate_scope",
+  "stages": [
+    "preflight",
+    "calibration",
+    "holdout",
+    "phase55_regression"
+  ],
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_wire": {
+    "field_prefixes": {
+      "source_registration": "s",
+      "test_to_user_outcome_relation": "r",
+      "user_outcome_status": "u"
+    },
+    "pattern": "^PFE2\\|(none|s\\d{3})\\|(none|u\\d{3})\\|(none|r\\d{3})$",
+    "version": "PFE2"
+  }
+}

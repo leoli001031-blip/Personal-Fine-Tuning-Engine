@@ -1,0 +1,423 @@
+{
+  "attestation_template": {
+    "attestation_version": "phase25-actual-user-feedback-attestation-v1",
+    "auto_promotion_allowed": false,
+    "feedback_source": "actual_user_feedback",
+    "kind": "phase25_actual_feedback_attestation_template",
+    "required_attestation": {
+      "capture_method": "api_or_review_ui",
+      "captured_at": "ISO-8601 timestamp",
+      "confirmed_actual_user_feedback": true,
+      "consent_for_training_candidate_review": true,
+      "not_scripted_or_curated": true,
+      "operator_id": "human-reviewer-id"
+    },
+    "required_feedback": {
+      "action": "correction_or_edit",
+      "edited_text": "four-section boundary-preserving target when action is edit/correction",
+      "user_feedback": "human feedback note"
+    }
+  },
+  "collection_count": 12,
+  "created_at": "2026-06-20T23:59:59.936661+00:00",
+  "items": [
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-001",
+      "messages": [
+        {
+          "content": "任务：请整理付款义务相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-001:phase26-collection-chunk-001]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-001",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-001:phase26-collection-chunk-001]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。",
+        "source_id": "phase26-collection-source-001"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理付款义务相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-001:phase26-collection-chunk-001]\n资料摘录：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-001:phase26-collection-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明客户需在发票日后三十日内付款，逾期服务可能暂停。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-001:phase26-collection-chunk-001]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-002",
+      "messages": [
+        {
+          "content": "任务：请整理服务水平相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-002:phase26-collection-chunk-002]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-002",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-002:phase26-collection-chunk-002]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明服务可用性目标和服务补偿可能写在订单或附件中。",
+        "source_id": "phase26-collection-source-002"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理服务水平相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-002:phase26-collection-chunk-002]\n资料摘录：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-002:phase26-collection-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明服务可用性目标和服务补偿可能写在订单或附件中。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-002:phase26-collection-chunk-002]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-003",
+      "messages": [
+        {
+          "content": "任务：请整理终止条款相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-003:phase26-collection-chunk-003]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-003",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-003:phase26-collection-chunk-003]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明任一方可在重大违约后三十日内终止协议。",
+        "source_id": "phase26-collection-source-003"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理终止条款相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-003:phase26-collection-chunk-003]\n资料摘录：资料说明任一方可在重大违约后三十日内终止协议。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明任一方可在重大违约后三十日内终止协议。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-003:phase26-collection-chunk-003]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明任一方可在重大违约后三十日内终止协议。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-003:phase26-collection-chunk-003]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-004",
+      "messages": [
+        {
+          "content": "任务：请整理自动续约相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-004:phase26-collection-chunk-004]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-004",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-004:phase26-collection-chunk-004]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明协议可能按年度自动续约，除非提前通知终止。",
+        "source_id": "phase26-collection-source-004"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理自动续约相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-004:phase26-collection-chunk-004]\n资料摘录：资料说明协议可能按年度自动续约，除非提前通知终止。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明协议可能按年度自动续约，除非提前通知终止。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-004:phase26-collection-chunk-004]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明协议可能按年度自动续约，除非提前通知终止。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-004:phase26-collection-chunk-004]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-005",
+      "messages": [
+        {
+          "content": "任务：请整理审计权利相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-005:phase26-collection-chunk-005]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-005",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-005:phase26-collection-chunk-005]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。",
+        "source_id": "phase26-collection-source-005"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理审计权利相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-005:phase26-collection-chunk-005]\n资料摘录：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-005:phase26-collection-chunk-005]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明客户可能有审计权，但审计频率、范围和保密要求需核对。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-005:phase26-collection-chunk-005]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-006",
+      "messages": [
+        {
+          "content": "任务：请整理数据处理相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-006:phase26-collection-chunk-006]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-006",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-006:phase26-collection-chunk-006]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。",
+        "source_id": "phase26-collection-source-006"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理数据处理相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-006:phase26-collection-chunk-006]\n资料摘录：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-006:phase26-collection-chunk-006]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明服务商可为提供服务处理客户数据，但未列出全部安全措施。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-006:phase26-collection-chunk-006]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-007",
+      "messages": [
+        {
+          "content": "任务：请整理责任限制相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-007:phase26-collection-chunk-007]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-007",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-007:phase26-collection-chunk-007]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明间接损失可能被排除，直接损失可能受费用上限限制。",
+        "source_id": "phase26-collection-source-007"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理责任限制相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-007:phase26-collection-chunk-007]\n资料摘录：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-007:phase26-collection-chunk-007]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明间接损失可能被排除，直接损失可能受费用上限限制。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-007:phase26-collection-chunk-007]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-008",
+      "messages": [
+        {
+          "content": "任务：请整理知识产权相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-008:phase26-collection-chunk-008]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-008",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-008:phase26-collection-chunk-008]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明客户保留输入资料权利，服务商保留平台技术权利。",
+        "source_id": "phase26-collection-source-008"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理知识产权相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-008:phase26-collection-chunk-008]\n资料摘录：资料说明客户保留输入资料权利，服务商保留平台技术权利。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明客户保留输入资料权利，服务商保留平台技术权利。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-008:phase26-collection-chunk-008]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明客户保留输入资料权利，服务商保留平台技术权利。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-008:phase26-collection-chunk-008]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-009",
+      "messages": [
+        {
+          "content": "任务：请整理保密义务相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-009:phase26-collection-chunk-009]\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-009",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-009:phase26-collection-chunk-009]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明双方需保护非公开信息，并限制未授权披露。",
+        "source_id": "phase26-collection-source-009"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理保密义务相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-009:phase26-collection-chunk-009]\n资料摘录：资料说明双方需保护非公开信息，并限制未授权披露。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明双方需保护非公开信息，并限制未授权披露。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-009:phase26-collection-chunk-009]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明双方需保护非公开信息，并限制未授权披露。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-009:phase26-collection-chunk-009]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-010",
+      "messages": [
+        {
+          "content": "任务：请整理违约责任相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-010:phase26-collection-chunk-010]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-010",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-010:phase26-collection-chunk-010]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。",
+        "source_id": "phase26-collection-source-010"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理违约责任相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-010:phase26-collection-chunk-010]\n资料摘录：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-010:phase26-collection-chunk-010]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料说明逾期交付可能触发违约金，但未列明上限和豁免情形。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-010:phase26-collection-chunk-010]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-011",
+      "messages": [
+        {
+          "content": "任务：请整理资料缺失相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-011:phase26-collection-chunk-011]\n资料摘录：资料只说明存在补充订单，但没有给出订单正文、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-011",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-011:phase26-collection-chunk-011]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料只说明存在补充订单，但没有给出订单正文、附件和适用范围。",
+        "source_id": "phase26-collection-source-011"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理资料缺失相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-011:phase26-collection-chunk-011]\n资料摘录：资料只说明存在补充订单，但没有给出订单正文、附件和适用范围。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料只说明存在补充订单，但没有给出订单正文、附件和适用范围。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-011:phase26-collection-chunk-011]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料只说明存在补充订单，但没有给出订单正文、附件和适用范围。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-011:phase26-collection-chunk-011]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    },
+    {
+      "actual_feedback_required": true,
+      "collection_id": "phase26-collection-012",
+      "messages": [
+        {
+          "content": "任务：请整理引用冲突相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-012:phase26-collection-chunk-012]\n资料摘录：资料 A 说明提前三十日通知终止，资料 B 说明提前六十日通知终止，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+          "role": "user"
+        }
+      ],
+      "metadata": {
+        "chunk_id": "phase26-collection-chunk-012",
+        "collection_item": true,
+        "expected_citation": "[phase26-collection-source-012:phase26-collection-chunk-012]",
+        "phase": "phase26",
+        "response_contract": "contract_boundary_summary",
+        "source_excerpt": "资料 A 说明提前三十日通知终止，资料 B 说明提前六十日通知终止，需要人工确认冲突。",
+        "source_id": "phase26-collection-source-012"
+      },
+      "not_training_data_until_attested_and_approved": true,
+      "prompt": "任务：请整理引用冲突相关摘要、风险提示、引用依据和人工确认项。\n资料引用：[phase26-collection-source-012:phase26-collection-chunk-012]\n资料摘录：资料 A 说明提前三十日通知终止，资料 B 说明提前六十日通知终止，需要人工确认冲突。\n只基于给定资料回答，不输出法律结论。",
+      "runtime_output": "摘要：资料显示：资料 A 说明提前三十日通知终止，资料 B 说明提前六十日通知终止，需要人工确认冲突。\n风险提示：需结合完整合同、附件和业务背景人工确认；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-012:phase26-collection-chunk-012]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。",
+      "runtime_scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "suggested_target_template": "摘要：资料显示：资料 A 说明提前三十日通知终止，资料 B 说明提前六十日通知终止，需要人工确认冲突。\n风险提示：需核对资料完整性、适用范围、附件和冲突条款；只做资料整理和风险提示，不判断合法/违法。\n引用依据：[phase26-collection-source-012:phase26-collection-chunk-012]\n人工确认：不输出法律结论，不能支持最终法律结论；需人工/法务结合完整材料确认。"
+    }
+  ],
+  "kind": "phase26_actual_feedback_collection_pack",
+  "minimum_required_approved_actual_candidates": 12
+}

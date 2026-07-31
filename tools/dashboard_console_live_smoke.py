@@ -69,7 +69,8 @@ def _check_studio_surface(base_url: str, *, request_timeout: float) -> None:
         raise AssertionError(f"Studio HTML returned unexpected status: {studio['status']}")
     for expected in (
         "PFE / 本地模型工作台",
-        "选择模型，拿到本机 API。",
+        "本地版本可验证、可接入。",
+        "效果证据",
         "复制 API 地址",
         "/pfe/static/studio.css",
         "/pfe/static/studio.js",

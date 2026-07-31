@@ -1,0 +1,2087 @@
+{
+  "kind": "phase44_sft_probe_index",
+  "probes": {
+    "1": {
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_validation": {
+        "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora",
+        "format": "safetensors",
+        "lora_tensor_count": 504,
+        "parameter_count": 33030144,
+        "parameters_updated": true,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "sha256": "e3664eb0472c57d58c20a6e1fd5ea7d26525792534119985419c1c6babf2ff4c",
+        "size_bytes": 132187888,
+        "steps": 1,
+        "tensor_count": 504,
+        "valid": true
+      },
+      "auto_promotion_allowed": false,
+      "candidate_eligible": false,
+      "duration_seconds": 5.504,
+      "execution": {
+        "accelerator": {
+          "class": "Accelerator",
+          "used": true
+        },
+        "adapter_validation": {
+          "format": "safetensors",
+          "lora_tensor_count": 504,
+          "parameter_count": 33030144,
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+          "reason": null,
+          "size_bytes": 132187888,
+          "tensor_count": 504,
+          "valid": true
+        },
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora",
+        "artifact_kind": "real_local_peft",
+        "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/real_local_job_manifest.json",
+        "artifacts": {
+          "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora/adapter_config.json",
+          "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+          "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/real_local_job_manifest.json",
+          "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/train_metrics.json",
+          "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/real_execution.json",
+          "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/trainer_state.json",
+          "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/training_summary.json"
+        },
+        "blocked_by": [],
+        "blocking_reasons": [],
+        "category_exposure_counts": {
+          "failure_and_blocked_handling": 1
+        },
+        "config_path": null,
+        "dependency_ready": true,
+        "device": "mps",
+        "duration_seconds": 0.7187,
+        "epochs": 1,
+        "execution_mode": "real_local",
+        "executor_ready": true,
+        "final_loss": 6.674794,
+        "forward_error": null,
+        "initial_loss": 6.674794,
+        "kind": "real_local_peft",
+        "learning_rate": 2e-05,
+        "load_mode": "from_pretrained",
+        "loss_history": [
+          {
+            "loss": 6.674794,
+            "step": 1
+          }
+        ],
+        "max_length": 384,
+        "max_steps": 1,
+        "message": "real_local_peft execution completed with optimizer updates",
+        "metrics": {
+          "adapter_validation": {
+            "format": "safetensors",
+            "lora_tensor_count": 504,
+            "parameter_count": 33030144,
+            "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+            "reason": null,
+            "size_bytes": 132187888,
+            "tensor_count": 504,
+            "valid": true
+          },
+          "category_exposure_counts": {
+            "failure_and_blocked_handling": 1
+          },
+          "duration_seconds": 0.7187,
+          "execution_mode": "real_local",
+          "final_loss": 6.674794,
+          "initial_loss": 6.674794,
+          "learning_rate": 2e-05,
+          "loss": 6.674794,
+          "loss_history": [
+            {
+              "loss": 6.674794,
+              "step": 1
+            }
+          ],
+          "max_steps": 1,
+          "num_examples": 120,
+          "parameter_fingerprint_after": {
+            "l2_norm": 36.66322129,
+            "parameter_count": 33030144,
+            "sha256": "fe9ffb94f867a9da2cf670e5cd2783089d9e2f5b43ef627936edc87ccd35985a",
+            "tensor_count": 504
+          },
+          "parameter_fingerprint_before": {
+            "l2_norm": 36.66313136,
+            "parameter_count": 33030144,
+            "sha256": "b6b309bd1f01cb097109157a5998141a78c0a231d5ad9dd87a66aa8c80c1880e",
+            "tensor_count": 504
+          },
+          "parameters_updated": true,
+          "preference_reinforced_fresh_sample_count": 0,
+          "preference_reinforced_fresh_sample_ids": [],
+          "preference_reinforced_fresh_sample_ratio": 0.0,
+          "sample_exposure_counts": {
+            "phase44-sample-047": 1
+          },
+          "sampling_strategy": "seeded_stratified",
+          "seed": 44,
+          "status": "completed",
+          "steps": 1,
+          "trainable_parameter_count": 33030144,
+          "trainable_tensor_count": 504,
+          "unique_categories_exposed": 1,
+          "unique_samples_exposed": 1
+        },
+        "num_examples": 120,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/peft_lora",
+        "parameter_fingerprint_after": {
+          "l2_norm": 36.66322129,
+          "parameter_count": 33030144,
+          "sha256": "fe9ffb94f867a9da2cf670e5cd2783089d9e2f5b43ef627936edc87ccd35985a",
+          "tensor_count": 504
+        },
+        "parameter_fingerprint_before": {
+          "l2_norm": 36.66313136,
+          "parameter_count": 33030144,
+          "sha256": "b6b309bd1f01cb097109157a5998141a78c0a231d5ad9dd87a66aa8c80c1880e",
+          "tensor_count": 504
+        },
+        "parameters_updated": true,
+        "path": "real_local",
+        "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/real_execution.json",
+        "runtime_path": "real_local",
+        "sample_exposure_counts": {
+          "phase44-sample-047": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "seed": 44,
+        "source_kind": "path",
+        "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+        "source_ready": true,
+        "steps": 1,
+        "success": true,
+        "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/training_summary.json",
+        "tokenizer_loaded": true,
+        "train_loss": 6.674794,
+        "trainable_parameter_count": 33030144,
+        "trainable_tensor_count": 504,
+        "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-1step/trainer_state.json",
+        "unique_categories_exposed": 1,
+        "unique_samples_exposed": 1
+      },
+      "exposure": {
+        "actual_step_count": 1,
+        "category_exposure_counts": {
+          "failure_and_blocked_handling": 1
+        },
+        "category_exposure_spread": 0,
+        "eligible_as_final_candidate": false,
+        "full_coverage": false,
+        "kind": "phase44_actual_exposure_report",
+        "maximum_sample_exposure": 1,
+        "minimum_sample_exposure": 1,
+        "requested_steps": 1,
+        "sample_exposure_counts": {
+          "phase44-sample-047": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "source_sample_count": 120,
+        "unique_categories_exposed": 1,
+        "unique_samples_exposed": 1
+      },
+      "finished_at": "2026-07-12T08:21:03.560630+00:00",
+      "kind": "phase44_qwen3_4b_sft_training_attempt",
+      "max_rss_after_bytes": 16530079744,
+      "max_rss_before_bytes": 512655360,
+      "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "real_training": true,
+      "requested_steps": 1,
+      "simulated_usage": true,
+      "started_at": "2026-07-12T08:20:58.056490+00:00",
+      "status": "completed"
+    },
+    "12": {
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_validation": {
+        "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora/adapter_model.safetensors",
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora",
+        "format": "safetensors",
+        "lora_tensor_count": 504,
+        "parameter_count": 33030144,
+        "parameters_updated": true,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "sha256": "4573e228e209f16bb336398fa0d62bd394c168cac4814b5cf2e40c6454787987",
+        "size_bytes": 132187888,
+        "steps": 12,
+        "tensor_count": 504,
+        "valid": true
+      },
+      "auto_promotion_allowed": false,
+      "candidate_eligible": false,
+      "duration_seconds": 10.9715,
+      "execution": {
+        "accelerator": {
+          "class": "Accelerator",
+          "used": true
+        },
+        "adapter_validation": {
+          "format": "safetensors",
+          "lora_tensor_count": 504,
+          "parameter_count": 33030144,
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora/adapter_model.safetensors",
+          "reason": null,
+          "size_bytes": 132187888,
+          "tensor_count": 504,
+          "valid": true
+        },
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora",
+        "artifact_kind": "real_local_peft",
+        "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/real_local_job_manifest.json",
+        "artifacts": {
+          "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora/adapter_config.json",
+          "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora/adapter_model.safetensors",
+          "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/real_local_job_manifest.json",
+          "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/train_metrics.json",
+          "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/real_execution.json",
+          "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/trainer_state.json",
+          "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/training_summary.json"
+        },
+        "blocked_by": [],
+        "blocking_reasons": [],
+        "category_exposure_counts": {
+          "actual_simulated_provenance": 1,
+          "concise_specific_response": 1,
+          "concrete_next_action": 1,
+          "evidence_before_claim": 1,
+          "failure_and_blocked_handling": 2,
+          "git_pr_truthfulness": 2,
+          "latest_user_correction": 1,
+          "ordinary_task_without_overcontract": 1,
+          "privacy_non_echo": 1,
+          "process_state_truthfulness": 1
+        },
+        "config_path": null,
+        "dependency_ready": true,
+        "device": "mps",
+        "duration_seconds": 7.7268,
+        "epochs": 1,
+        "execution_mode": "real_local",
+        "executor_ready": true,
+        "final_loss": 4.177814,
+        "forward_error": null,
+        "initial_loss": 6.674794,
+        "kind": "real_local_peft",
+        "learning_rate": 2e-05,
+        "load_mode": "from_pretrained",
+        "loss_history": [
+          {
+            "loss": 6.674794,
+            "step": 1
+          },
+          {
+            "loss": 5.392104,
+            "step": 2
+          },
+          {
+            "loss": 6.326467,
+            "step": 3
+          },
+          {
+            "loss": 5.515886,
+            "step": 4
+          },
+          {
+            "loss": 5.184375,
+            "step": 5
+          },
+          {
+            "loss": 4.737465,
+            "step": 6
+          },
+          {
+            "loss": 6.468807,
+            "step": 7
+          },
+          {
+            "loss": 5.618677,
+            "step": 8
+          },
+          {
+            "loss": 5.710437,
+            "step": 9
+          },
+          {
+            "loss": 4.879847,
+            "step": 10
+          },
+          {
+            "loss": 5.244875,
+            "step": 11
+          },
+          {
+            "loss": 4.177814,
+            "step": 12
+          }
+        ],
+        "max_length": 384,
+        "max_steps": 12,
+        "message": "real_local_peft execution completed with optimizer updates",
+        "metrics": {
+          "adapter_validation": {
+            "format": "safetensors",
+            "lora_tensor_count": 504,
+            "parameter_count": 33030144,
+            "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora/adapter_model.safetensors",
+            "reason": null,
+            "size_bytes": 132187888,
+            "tensor_count": 504,
+            "valid": true
+          },
+          "category_exposure_counts": {
+            "actual_simulated_provenance": 1,
+            "concise_specific_response": 1,
+            "concrete_next_action": 1,
+            "evidence_before_claim": 1,
+            "failure_and_blocked_handling": 2,
+            "git_pr_truthfulness": 2,
+            "latest_user_correction": 1,
+            "ordinary_task_without_overcontract": 1,
+            "privacy_non_echo": 1,
+            "process_state_truthfulness": 1
+          },
+          "duration_seconds": 7.7268,
+          "execution_mode": "real_local",
+          "final_loss": 4.177814,
+          "initial_loss": 6.674794,
+          "learning_rate": 2e-05,
+          "loss": 5.494296,
+          "loss_history": [
+            {
+              "loss": 6.674794,
+              "step": 1
+            },
+            {
+              "loss": 5.392104,
+              "step": 2
+            },
+            {
+              "loss": 6.326467,
+              "step": 3
+            },
+            {
+              "loss": 5.515886,
+              "step": 4
+            },
+            {
+              "loss": 5.184375,
+              "step": 5
+            },
+            {
+              "loss": 4.737465,
+              "step": 6
+            },
+            {
+              "loss": 6.468807,
+              "step": 7
+            },
+            {
+              "loss": 5.618677,
+              "step": 8
+            },
+            {
+              "loss": 5.710437,
+              "step": 9
+            },
+            {
+              "loss": 4.879847,
+              "step": 10
+            },
+            {
+              "loss": 5.244875,
+              "step": 11
+            },
+            {
+              "loss": 4.177814,
+              "step": 12
+            }
+          ],
+          "max_steps": 12,
+          "num_examples": 120,
+          "parameter_fingerprint_after": {
+            "l2_norm": 36.681633,
+            "parameter_count": 33030144,
+            "sha256": "6d80c63c61fb0eab75d0e6d2c3b9db706bbc3c6ba5f9ce631082f5fd7142feb5",
+            "tensor_count": 504
+          },
+          "parameter_fingerprint_before": {
+            "l2_norm": 36.66313136,
+            "parameter_count": 33030144,
+            "sha256": "b6b309bd1f01cb097109157a5998141a78c0a231d5ad9dd87a66aa8c80c1880e",
+            "tensor_count": 504
+          },
+          "parameters_updated": true,
+          "preference_reinforced_fresh_sample_count": 0,
+          "preference_reinforced_fresh_sample_ids": [],
+          "preference_reinforced_fresh_sample_ratio": 0.0,
+          "sample_exposure_counts": {
+            "phase44-sample-004": 1,
+            "phase44-sample-019": 1,
+            "phase44-sample-031": 1,
+            "phase44-sample-045": 1,
+            "phase44-sample-047": 1,
+            "phase44-sample-052": 1,
+            "phase44-sample-057": 1,
+            "phase44-sample-063": 1,
+            "phase44-sample-075": 1,
+            "phase44-sample-088": 1,
+            "phase44-sample-102": 1,
+            "phase44-sample-119": 1
+          },
+          "sampling_strategy": "seeded_stratified",
+          "seed": 44,
+          "status": "completed",
+          "steps": 12,
+          "trainable_parameter_count": 33030144,
+          "trainable_tensor_count": 504,
+          "unique_categories_exposed": 10,
+          "unique_samples_exposed": 12
+        },
+        "num_examples": 120,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/peft_lora",
+        "parameter_fingerprint_after": {
+          "l2_norm": 36.681633,
+          "parameter_count": 33030144,
+          "sha256": "6d80c63c61fb0eab75d0e6d2c3b9db706bbc3c6ba5f9ce631082f5fd7142feb5",
+          "tensor_count": 504
+        },
+        "parameter_fingerprint_before": {
+          "l2_norm": 36.66313136,
+          "parameter_count": 33030144,
+          "sha256": "b6b309bd1f01cb097109157a5998141a78c0a231d5ad9dd87a66aa8c80c1880e",
+          "tensor_count": 504
+        },
+        "parameters_updated": true,
+        "path": "real_local",
+        "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/real_execution.json",
+        "runtime_path": "real_local",
+        "sample_exposure_counts": {
+          "phase44-sample-004": 1,
+          "phase44-sample-019": 1,
+          "phase44-sample-031": 1,
+          "phase44-sample-045": 1,
+          "phase44-sample-047": 1,
+          "phase44-sample-052": 1,
+          "phase44-sample-057": 1,
+          "phase44-sample-063": 1,
+          "phase44-sample-075": 1,
+          "phase44-sample-088": 1,
+          "phase44-sample-102": 1,
+          "phase44-sample-119": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "seed": 44,
+        "source_kind": "path",
+        "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+        "source_ready": true,
+        "steps": 12,
+        "success": true,
+        "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/training_summary.json",
+        "tokenizer_loaded": true,
+        "train_loss": 5.494296,
+        "trainable_parameter_count": 33030144,
+        "trainable_tensor_count": 504,
+        "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-12step/trainer_state.json",
+        "unique_categories_exposed": 10,
+        "unique_samples_exposed": 12
+      },
+      "exposure": {
+        "actual_step_count": 12,
+        "category_exposure_counts": {
+          "actual_simulated_provenance": 1,
+          "concise_specific_response": 1,
+          "concrete_next_action": 1,
+          "evidence_before_claim": 1,
+          "failure_and_blocked_handling": 2,
+          "git_pr_truthfulness": 2,
+          "latest_user_correction": 1,
+          "ordinary_task_without_overcontract": 1,
+          "privacy_non_echo": 1,
+          "process_state_truthfulness": 1
+        },
+        "category_exposure_spread": 1,
+        "eligible_as_final_candidate": false,
+        "full_coverage": false,
+        "kind": "phase44_actual_exposure_report",
+        "maximum_sample_exposure": 1,
+        "minimum_sample_exposure": 1,
+        "requested_steps": 12,
+        "sample_exposure_counts": {
+          "phase44-sample-004": 1,
+          "phase44-sample-019": 1,
+          "phase44-sample-031": 1,
+          "phase44-sample-045": 1,
+          "phase44-sample-047": 1,
+          "phase44-sample-052": 1,
+          "phase44-sample-057": 1,
+          "phase44-sample-063": 1,
+          "phase44-sample-075": 1,
+          "phase44-sample-088": 1,
+          "phase44-sample-102": 1,
+          "phase44-sample-119": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "source_sample_count": 120,
+        "unique_categories_exposed": 10,
+        "unique_samples_exposed": 12
+      },
+      "finished_at": "2026-07-12T08:21:41.132266+00:00",
+      "kind": "phase44_qwen3_4b_sft_training_attempt",
+      "max_rss_after_bytes": 16529358848,
+      "max_rss_before_bytes": 512081920,
+      "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "real_training": true,
+      "requested_steps": 12,
+      "simulated_usage": true,
+      "started_at": "2026-07-12T08:21:30.160518+00:00",
+      "status": "completed"
+    },
+    "120": {
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_validation": {
+        "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora/adapter_model.safetensors",
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora",
+        "format": "safetensors",
+        "lora_tensor_count": 504,
+        "parameter_count": 33030144,
+        "parameters_updated": true,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "sha256": "7ce2ff2630ebd4d5fb9a5e8fe1c141f6317c5fb389dc9fe97ff26b3ffe9972cb",
+        "size_bytes": 132187888,
+        "steps": 120,
+        "tensor_count": 504,
+        "valid": true
+      },
+      "auto_promotion_allowed": false,
+      "candidate_eligible": true,
+      "duration_seconds": 86.595,
+      "execution": {
+        "accelerator": {
+          "class": "Accelerator",
+          "used": true
+        },
+        "adapter_validation": {
+          "format": "safetensors",
+          "lora_tensor_count": 504,
+          "parameter_count": 33030144,
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora/adapter_model.safetensors",
+          "reason": null,
+          "size_bytes": 132187888,
+          "tensor_count": 504,
+          "valid": true
+        },
+        "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora",
+        "artifact_kind": "real_local_peft",
+        "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/real_local_job_manifest.json",
+        "artifacts": {
+          "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora/adapter_config.json",
+          "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora/adapter_model.safetensors",
+          "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/real_local_job_manifest.json",
+          "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/train_metrics.json",
+          "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/real_execution.json",
+          "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/trainer_state.json",
+          "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/training_summary.json"
+        },
+        "blocked_by": [],
+        "blocking_reasons": [],
+        "category_exposure_counts": {
+          "actual_simulated_provenance": 12,
+          "concise_specific_response": 12,
+          "concrete_next_action": 12,
+          "evidence_before_claim": 12,
+          "failure_and_blocked_handling": 12,
+          "git_pr_truthfulness": 12,
+          "latest_user_correction": 12,
+          "ordinary_task_without_overcontract": 12,
+          "privacy_non_echo": 12,
+          "process_state_truthfulness": 12
+        },
+        "config_path": null,
+        "dependency_ready": true,
+        "device": "mps",
+        "duration_seconds": 83.5579,
+        "epochs": 1,
+        "execution_mode": "real_local",
+        "executor_ready": true,
+        "final_loss": 1.470769,
+        "forward_error": null,
+        "initial_loss": 6.674794,
+        "kind": "real_local_peft",
+        "learning_rate": 2e-05,
+        "load_mode": "from_pretrained",
+        "loss_history": [
+          {
+            "loss": 6.674794,
+            "step": 1
+          },
+          {
+            "loss": 5.392104,
+            "step": 2
+          },
+          {
+            "loss": 6.326467,
+            "step": 3
+          },
+          {
+            "loss": 5.515886,
+            "step": 4
+          },
+          {
+            "loss": 5.184375,
+            "step": 5
+          },
+          {
+            "loss": 4.737465,
+            "step": 6
+          },
+          {
+            "loss": 6.468807,
+            "step": 7
+          },
+          {
+            "loss": 5.618677,
+            "step": 8
+          },
+          {
+            "loss": 5.710437,
+            "step": 9
+          },
+          {
+            "loss": 4.879847,
+            "step": 10
+          },
+          {
+            "loss": 5.244875,
+            "step": 11
+          },
+          {
+            "loss": 4.177814,
+            "step": 12
+          },
+          {
+            "loss": 5.203658,
+            "step": 13
+          },
+          {
+            "loss": 4.308327,
+            "step": 14
+          },
+          {
+            "loss": 5.213653,
+            "step": 15
+          },
+          {
+            "loss": 3.358985,
+            "step": 16
+          },
+          {
+            "loss": 5.23623,
+            "step": 17
+          },
+          {
+            "loss": 4.736547,
+            "step": 18
+          },
+          {
+            "loss": 5.14003,
+            "step": 19
+          },
+          {
+            "loss": 3.662874,
+            "step": 20
+          },
+          {
+            "loss": 4.352501,
+            "step": 21
+          },
+          {
+            "loss": 3.223577,
+            "step": 22
+          },
+          {
+            "loss": 4.759305,
+            "step": 23
+          },
+          {
+            "loss": 4.318979,
+            "step": 24
+          },
+          {
+            "loss": 4.507152,
+            "step": 25
+          },
+          {
+            "loss": 2.665577,
+            "step": 26
+          },
+          {
+            "loss": 4.753439,
+            "step": 27
+          },
+          {
+            "loss": 3.75806,
+            "step": 28
+          },
+          {
+            "loss": 4.797953,
+            "step": 29
+          },
+          {
+            "loss": 3.282868,
+            "step": 30
+          },
+          {
+            "loss": 3.953065,
+            "step": 31
+          },
+          {
+            "loss": 3.221252,
+            "step": 32
+          },
+          {
+            "loss": 4.490887,
+            "step": 33
+          },
+          {
+            "loss": 3.23347,
+            "step": 34
+          },
+          {
+            "loss": 3.599107,
+            "step": 35
+          },
+          {
+            "loss": 2.369864,
+            "step": 36
+          },
+          {
+            "loss": 3.361824,
+            "step": 37
+          },
+          {
+            "loss": 2.624724,
+            "step": 38
+          },
+          {
+            "loss": 4.662942,
+            "step": 39
+          },
+          {
+            "loss": 2.524008,
+            "step": 40
+          },
+          {
+            "loss": 3.760936,
+            "step": 41
+          },
+          {
+            "loss": 3.025198,
+            "step": 42
+          },
+          {
+            "loss": 3.894344,
+            "step": 43
+          },
+          {
+            "loss": 3.324624,
+            "step": 44
+          },
+          {
+            "loss": 3.721423,
+            "step": 45
+          },
+          {
+            "loss": 2.89526,
+            "step": 46
+          },
+          {
+            "loss": 2.324773,
+            "step": 47
+          },
+          {
+            "loss": 3.277068,
+            "step": 48
+          },
+          {
+            "loss": 4.366781,
+            "step": 49
+          },
+          {
+            "loss": 2.389735,
+            "step": 50
+          },
+          {
+            "loss": 3.782477,
+            "step": 51
+          },
+          {
+            "loss": 3.054731,
+            "step": 52
+          },
+          {
+            "loss": 3.733676,
+            "step": 53
+          },
+          {
+            "loss": 3.020602,
+            "step": 54
+          },
+          {
+            "loss": 3.946465,
+            "step": 55
+          },
+          {
+            "loss": 2.793993,
+            "step": 56
+          },
+          {
+            "loss": 2.720028,
+            "step": 57
+          },
+          {
+            "loss": 2.635694,
+            "step": 58
+          },
+          {
+            "loss": 4.153418,
+            "step": 59
+          },
+          {
+            "loss": 2.474496,
+            "step": 60
+          },
+          {
+            "loss": 3.692919,
+            "step": 61
+          },
+          {
+            "loss": 2.471914,
+            "step": 62
+          },
+          {
+            "loss": 3.885415,
+            "step": 63
+          },
+          {
+            "loss": 3.469347,
+            "step": 64
+          },
+          {
+            "loss": 3.7907,
+            "step": 65
+          },
+          {
+            "loss": 1.998625,
+            "step": 66
+          },
+          {
+            "loss": 2.129603,
+            "step": 67
+          },
+          {
+            "loss": 2.896196,
+            "step": 68
+          },
+          {
+            "loss": 4.144429,
+            "step": 69
+          },
+          {
+            "loss": 2.500772,
+            "step": 70
+          },
+          {
+            "loss": 2.984495,
+            "step": 71
+          },
+          {
+            "loss": 2.373633,
+            "step": 72
+          },
+          {
+            "loss": 3.321406,
+            "step": 73
+          },
+          {
+            "loss": 2.771933,
+            "step": 74
+          },
+          {
+            "loss": 3.554374,
+            "step": 75
+          },
+          {
+            "loss": 2.002334,
+            "step": 76
+          },
+          {
+            "loss": 2.357156,
+            "step": 77
+          },
+          {
+            "loss": 2.223755,
+            "step": 78
+          },
+          {
+            "loss": 3.729166,
+            "step": 79
+          },
+          {
+            "loss": 1.983868,
+            "step": 80
+          },
+          {
+            "loss": 2.911265,
+            "step": 81
+          },
+          {
+            "loss": 2.355847,
+            "step": 82
+          },
+          {
+            "loss": 3.254319,
+            "step": 83
+          },
+          {
+            "loss": 2.645952,
+            "step": 84
+          },
+          {
+            "loss": 3.243261,
+            "step": 85
+          },
+          {
+            "loss": 1.748558,
+            "step": 86
+          },
+          {
+            "loss": 2.288502,
+            "step": 87
+          },
+          {
+            "loss": 2.236794,
+            "step": 88
+          },
+          {
+            "loss": 3.617782,
+            "step": 89
+          },
+          {
+            "loss": 2.417525,
+            "step": 90
+          },
+          {
+            "loss": 2.779001,
+            "step": 91
+          },
+          {
+            "loss": 2.091626,
+            "step": 92
+          },
+          {
+            "loss": 3.248907,
+            "step": 93
+          },
+          {
+            "loss": 2.572695,
+            "step": 94
+          },
+          {
+            "loss": 2.920915,
+            "step": 95
+          },
+          {
+            "loss": 1.753074,
+            "step": 96
+          },
+          {
+            "loss": 2.480533,
+            "step": 97
+          },
+          {
+            "loss": 1.988013,
+            "step": 98
+          },
+          {
+            "loss": 3.190867,
+            "step": 99
+          },
+          {
+            "loss": 1.569777,
+            "step": 100
+          },
+          {
+            "loss": 2.398886,
+            "step": 101
+          },
+          {
+            "loss": 2.359159,
+            "step": 102
+          },
+          {
+            "loss": 2.717432,
+            "step": 103
+          },
+          {
+            "loss": 2.368147,
+            "step": 104
+          },
+          {
+            "loss": 2.096939,
+            "step": 105
+          },
+          {
+            "loss": 2.173613,
+            "step": 106
+          },
+          {
+            "loss": 1.909756,
+            "step": 107
+          },
+          {
+            "loss": 1.845656,
+            "step": 108
+          },
+          {
+            "loss": 2.902155,
+            "step": 109
+          },
+          {
+            "loss": 1.790162,
+            "step": 110
+          },
+          {
+            "loss": 2.358726,
+            "step": 111
+          },
+          {
+            "loss": 1.880361,
+            "step": 112
+          },
+          {
+            "loss": 2.534341,
+            "step": 113
+          },
+          {
+            "loss": 2.037391,
+            "step": 114
+          },
+          {
+            "loss": 2.653353,
+            "step": 115
+          },
+          {
+            "loss": 1.552011,
+            "step": 116
+          },
+          {
+            "loss": 2.285218,
+            "step": 117
+          },
+          {
+            "loss": 1.985183,
+            "step": 118
+          },
+          {
+            "loss": 3.056202,
+            "step": 119
+          },
+          {
+            "loss": 1.470769,
+            "step": 120
+          }
+        ],
+        "max_length": 384,
+        "max_steps": 120,
+        "message": "real_local_peft execution completed with optimizer updates",
+        "metrics": {
+          "adapter_validation": {
+            "format": "safetensors",
+            "lora_tensor_count": 504,
+            "parameter_count": 33030144,
+            "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora/adapter_model.safetensors",
+            "reason": null,
+            "size_bytes": 132187888,
+            "tensor_count": 504,
+            "valid": true
+          },
+          "category_exposure_counts": {
+            "actual_simulated_provenance": 12,
+            "concise_specific_response": 12,
+            "concrete_next_action": 12,
+            "evidence_before_claim": 12,
+            "failure_and_blocked_handling": 12,
+            "git_pr_truthfulness": 12,
+            "latest_user_correction": 12,
+            "ordinary_task_without_overcontract": 12,
+            "privacy_non_echo": 12,
+            "process_state_truthfulness": 12
+          },
+          "duration_seconds": 83.5579,
+          "execution_mode": "real_local",
+          "final_loss": 1.470769,
+          "initial_loss": 6.674794,
+          "learning_rate": 2e-05,
+          "loss": 3.30434,
+          "loss_history": [
+            {
+              "loss": 6.674794,
+              "step": 1
+            },
+            {
+              "loss": 5.392104,
+              "step": 2
+            },
+            {
+              "loss": 6.326467,
+              "step": 3
+            },
+            {
+              "loss": 5.515886,
+              "step": 4
+            },
+            {
+              "loss": 5.184375,
+              "step": 5
+            },
+            {
+              "loss": 4.737465,
+              "step": 6
+            },
+            {
+              "loss": 6.468807,
+              "step": 7
+            },
+            {
+              "loss": 5.618677,
+              "step": 8
+            },
+            {
+              "loss": 5.710437,
+              "step": 9
+            },
+            {
+              "loss": 4.879847,
+              "step": 10
+            },
+            {
+              "loss": 5.244875,
+              "step": 11
+            },
+            {
+              "loss": 4.177814,
+              "step": 12
+            },
+            {
+              "loss": 5.203658,
+              "step": 13
+            },
+            {
+              "loss": 4.308327,
+              "step": 14
+            },
+            {
+              "loss": 5.213653,
+              "step": 15
+            },
+            {
+              "loss": 3.358985,
+              "step": 16
+            },
+            {
+              "loss": 5.23623,
+              "step": 17
+            },
+            {
+              "loss": 4.736547,
+              "step": 18
+            },
+            {
+              "loss": 5.14003,
+              "step": 19
+            },
+            {
+              "loss": 3.662874,
+              "step": 20
+            },
+            {
+              "loss": 4.352501,
+              "step": 21
+            },
+            {
+              "loss": 3.223577,
+              "step": 22
+            },
+            {
+              "loss": 4.759305,
+              "step": 23
+            },
+            {
+              "loss": 4.318979,
+              "step": 24
+            },
+            {
+              "loss": 4.507152,
+              "step": 25
+            },
+            {
+              "loss": 2.665577,
+              "step": 26
+            },
+            {
+              "loss": 4.753439,
+              "step": 27
+            },
+            {
+              "loss": 3.75806,
+              "step": 28
+            },
+            {
+              "loss": 4.797953,
+              "step": 29
+            },
+            {
+              "loss": 3.282868,
+              "step": 30
+            },
+            {
+              "loss": 3.953065,
+              "step": 31
+            },
+            {
+              "loss": 3.221252,
+              "step": 32
+            },
+            {
+              "loss": 4.490887,
+              "step": 33
+            },
+            {
+              "loss": 3.23347,
+              "step": 34
+            },
+            {
+              "loss": 3.599107,
+              "step": 35
+            },
+            {
+              "loss": 2.369864,
+              "step": 36
+            },
+            {
+              "loss": 3.361824,
+              "step": 37
+            },
+            {
+              "loss": 2.624724,
+              "step": 38
+            },
+            {
+              "loss": 4.662942,
+              "step": 39
+            },
+            {
+              "loss": 2.524008,
+              "step": 40
+            },
+            {
+              "loss": 3.760936,
+              "step": 41
+            },
+            {
+              "loss": 3.025198,
+              "step": 42
+            },
+            {
+              "loss": 3.894344,
+              "step": 43
+            },
+            {
+              "loss": 3.324624,
+              "step": 44
+            },
+            {
+              "loss": 3.721423,
+              "step": 45
+            },
+            {
+              "loss": 2.89526,
+              "step": 46
+            },
+            {
+              "loss": 2.324773,
+              "step": 47
+            },
+            {
+              "loss": 3.277068,
+              "step": 48
+            },
+            {
+              "loss": 4.366781,
+              "step": 49
+            },
+            {
+              "loss": 2.389735,
+              "step": 50
+            },
+            {
+              "loss": 3.782477,
+              "step": 51
+            },
+            {
+              "loss": 3.054731,
+              "step": 52
+            },
+            {
+              "loss": 3.733676,
+              "step": 53
+            },
+            {
+              "loss": 3.020602,
+              "step": 54
+            },
+            {
+              "loss": 3.946465,
+              "step": 55
+            },
+            {
+              "loss": 2.793993,
+              "step": 56
+            },
+            {
+              "loss": 2.720028,
+              "step": 57
+            },
+            {
+              "loss": 2.635694,
+              "step": 58
+            },
+            {
+              "loss": 4.153418,
+              "step": 59
+            },
+            {
+              "loss": 2.474496,
+              "step": 60
+            },
+            {
+              "loss": 3.692919,
+              "step": 61
+            },
+            {
+              "loss": 2.471914,
+              "step": 62
+            },
+            {
+              "loss": 3.885415,
+              "step": 63
+            },
+            {
+              "loss": 3.469347,
+              "step": 64
+            },
+            {
+              "loss": 3.7907,
+              "step": 65
+            },
+            {
+              "loss": 1.998625,
+              "step": 66
+            },
+            {
+              "loss": 2.129603,
+              "step": 67
+            },
+            {
+              "loss": 2.896196,
+              "step": 68
+            },
+            {
+              "loss": 4.144429,
+              "step": 69
+            },
+            {
+              "loss": 2.500772,
+              "step": 70
+            },
+            {
+              "loss": 2.984495,
+              "step": 71
+            },
+            {
+              "loss": 2.373633,
+              "step": 72
+            },
+            {
+              "loss": 3.321406,
+              "step": 73
+            },
+            {
+              "loss": 2.771933,
+              "step": 74
+            },
+            {
+              "loss": 3.554374,
+              "step": 75
+            },
+            {
+              "loss": 2.002334,
+              "step": 76
+            },
+            {
+              "loss": 2.357156,
+              "step": 77
+            },
+            {
+              "loss": 2.223755,
+              "step": 78
+            },
+            {
+              "loss": 3.729166,
+              "step": 79
+            },
+            {
+              "loss": 1.983868,
+              "step": 80
+            },
+            {
+              "loss": 2.911265,
+              "step": 81
+            },
+            {
+              "loss": 2.355847,
+              "step": 82
+            },
+            {
+              "loss": 3.254319,
+              "step": 83
+            },
+            {
+              "loss": 2.645952,
+              "step": 84
+            },
+            {
+              "loss": 3.243261,
+              "step": 85
+            },
+            {
+              "loss": 1.748558,
+              "step": 86
+            },
+            {
+              "loss": 2.288502,
+              "step": 87
+            },
+            {
+              "loss": 2.236794,
+              "step": 88
+            },
+            {
+              "loss": 3.617782,
+              "step": 89
+            },
+            {
+              "loss": 2.417525,
+              "step": 90
+            },
+            {
+              "loss": 2.779001,
+              "step": 91
+            },
+            {
+              "loss": 2.091626,
+              "step": 92
+            },
+            {
+              "loss": 3.248907,
+              "step": 93
+            },
+            {
+              "loss": 2.572695,
+              "step": 94
+            },
+            {
+              "loss": 2.920915,
+              "step": 95
+            },
+            {
+              "loss": 1.753074,
+              "step": 96
+            },
+            {
+              "loss": 2.480533,
+              "step": 97
+            },
+            {
+              "loss": 1.988013,
+              "step": 98
+            },
+            {
+              "loss": 3.190867,
+              "step": 99
+            },
+            {
+              "loss": 1.569777,
+              "step": 100
+            },
+            {
+              "loss": 2.398886,
+              "step": 101
+            },
+            {
+              "loss": 2.359159,
+              "step": 102
+            },
+            {
+              "loss": 2.717432,
+              "step": 103
+            },
+            {
+              "loss": 2.368147,
+              "step": 104
+            },
+            {
+              "loss": 2.096939,
+              "step": 105
+            },
+            {
+              "loss": 2.173613,
+              "step": 106
+            },
+            {
+              "loss": 1.909756,
+              "step": 107
+            },
+            {
+              "loss": 1.845656,
+              "step": 108
+            },
+            {
+              "loss": 2.902155,
+              "step": 109
+            },
+            {
+              "loss": 1.790162,
+              "step": 110
+            },
+            {
+              "loss": 2.358726,
+              "step": 111
+            },
+            {
+              "loss": 1.880361,
+              "step": 112
+            },
+            {
+              "loss": 2.534341,
+              "step": 113
+            },
+            {
+              "loss": 2.037391,
+              "step": 114
+            },
+            {
+              "loss": 2.653353,
+              "step": 115
+            },
+            {
+              "loss": 1.552011,
+              "step": 116
+            },
+            {
+              "loss": 2.285218,
+              "step": 117
+            },
+            {
+              "loss": 1.985183,
+              "step": 118
+            },
+            {
+              "loss": 3.056202,
+              "step": 119
+            },
+            {
+              "loss": 1.470769,
+              "step": 120
+            }
+          ],
+          "max_steps": 120,
+          "num_examples": 120,
+          "parameter_fingerprint_after": {
+            "l2_norm": 36.91844815,
+            "parameter_count": 33030144,
+            "sha256": "dfcb63be7a075a28cac04707155b616f07101b58cce23dfcc79289942cb5de30",
+            "tensor_count": 504
+          },
+          "parameter_fingerprint_before": {
+            "l2_norm": 36.66313136,
+            "parameter_count": 33030144,
+            "sha256": "b6b309bd1f01cb097109157a5998141a78c0a231d5ad9dd87a66aa8c80c1880e",
+            "tensor_count": 504
+          },
+          "parameters_updated": true,
+          "preference_reinforced_fresh_sample_count": 0,
+          "preference_reinforced_fresh_sample_ids": [],
+          "preference_reinforced_fresh_sample_ratio": 0.0,
+          "sample_exposure_counts": {
+            "phase44-sample-001": 1,
+            "phase44-sample-002": 1,
+            "phase44-sample-003": 1,
+            "phase44-sample-004": 1,
+            "phase44-sample-005": 1,
+            "phase44-sample-006": 1,
+            "phase44-sample-007": 1,
+            "phase44-sample-008": 1,
+            "phase44-sample-009": 1,
+            "phase44-sample-010": 1,
+            "phase44-sample-011": 1,
+            "phase44-sample-012": 1,
+            "phase44-sample-013": 1,
+            "phase44-sample-014": 1,
+            "phase44-sample-015": 1,
+            "phase44-sample-016": 1,
+            "phase44-sample-017": 1,
+            "phase44-sample-018": 1,
+            "phase44-sample-019": 1,
+            "phase44-sample-020": 1,
+            "phase44-sample-021": 1,
+            "phase44-sample-022": 1,
+            "phase44-sample-023": 1,
+            "phase44-sample-024": 1,
+            "phase44-sample-025": 1,
+            "phase44-sample-026": 1,
+            "phase44-sample-027": 1,
+            "phase44-sample-028": 1,
+            "phase44-sample-029": 1,
+            "phase44-sample-030": 1,
+            "phase44-sample-031": 1,
+            "phase44-sample-032": 1,
+            "phase44-sample-033": 1,
+            "phase44-sample-034": 1,
+            "phase44-sample-035": 1,
+            "phase44-sample-036": 1,
+            "phase44-sample-037": 1,
+            "phase44-sample-038": 1,
+            "phase44-sample-039": 1,
+            "phase44-sample-040": 1,
+            "phase44-sample-041": 1,
+            "phase44-sample-042": 1,
+            "phase44-sample-043": 1,
+            "phase44-sample-044": 1,
+            "phase44-sample-045": 1,
+            "phase44-sample-046": 1,
+            "phase44-sample-047": 1,
+            "phase44-sample-048": 1,
+            "phase44-sample-049": 1,
+            "phase44-sample-050": 1,
+            "phase44-sample-051": 1,
+            "phase44-sample-052": 1,
+            "phase44-sample-053": 1,
+            "phase44-sample-054": 1,
+            "phase44-sample-055": 1,
+            "phase44-sample-056": 1,
+            "phase44-sample-057": 1,
+            "phase44-sample-058": 1,
+            "phase44-sample-059": 1,
+            "phase44-sample-060": 1,
+            "phase44-sample-061": 1,
+            "phase44-sample-062": 1,
+            "phase44-sample-063": 1,
+            "phase44-sample-064": 1,
+            "phase44-sample-065": 1,
+            "phase44-sample-066": 1,
+            "phase44-sample-067": 1,
+            "phase44-sample-068": 1,
+            "phase44-sample-069": 1,
+            "phase44-sample-070": 1,
+            "phase44-sample-071": 1,
+            "phase44-sample-072": 1,
+            "phase44-sample-073": 1,
+            "phase44-sample-074": 1,
+            "phase44-sample-075": 1,
+            "phase44-sample-076": 1,
+            "phase44-sample-077": 1,
+            "phase44-sample-078": 1,
+            "phase44-sample-079": 1,
+            "phase44-sample-080": 1,
+            "phase44-sample-081": 1,
+            "phase44-sample-082": 1,
+            "phase44-sample-083": 1,
+            "phase44-sample-084": 1,
+            "phase44-sample-085": 1,
+            "phase44-sample-086": 1,
+            "phase44-sample-087": 1,
+            "phase44-sample-088": 1,
+            "phase44-sample-089": 1,
+            "phase44-sample-090": 1,
+            "phase44-sample-091": 1,
+            "phase44-sample-092": 1,
+            "phase44-sample-093": 1,
+            "phase44-sample-094": 1,
+            "phase44-sample-095": 1,
+            "phase44-sample-096": 1,
+            "phase44-sample-097": 1,
+            "phase44-sample-098": 1,
+            "phase44-sample-099": 1,
+            "phase44-sample-100": 1,
+            "phase44-sample-101": 1,
+            "phase44-sample-102": 1,
+            "phase44-sample-103": 1,
+            "phase44-sample-104": 1,
+            "phase44-sample-105": 1,
+            "phase44-sample-106": 1,
+            "phase44-sample-107": 1,
+            "phase44-sample-108": 1,
+            "phase44-sample-109": 1,
+            "phase44-sample-110": 1,
+            "phase44-sample-111": 1,
+            "phase44-sample-112": 1,
+            "phase44-sample-113": 1,
+            "phase44-sample-114": 1,
+            "phase44-sample-115": 1,
+            "phase44-sample-116": 1,
+            "phase44-sample-117": 1,
+            "phase44-sample-118": 1,
+            "phase44-sample-119": 1,
+            "phase44-sample-120": 1
+          },
+          "sampling_strategy": "seeded_stratified",
+          "seed": 44,
+          "status": "completed",
+          "steps": 120,
+          "trainable_parameter_count": 33030144,
+          "trainable_tensor_count": 504,
+          "unique_categories_exposed": 10,
+          "unique_samples_exposed": 120
+        },
+        "num_examples": 120,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/peft_lora",
+        "parameter_fingerprint_after": {
+          "l2_norm": 36.91844815,
+          "parameter_count": 33030144,
+          "sha256": "dfcb63be7a075a28cac04707155b616f07101b58cce23dfcc79289942cb5de30",
+          "tensor_count": 504
+        },
+        "parameter_fingerprint_before": {
+          "l2_norm": 36.66313136,
+          "parameter_count": 33030144,
+          "sha256": "b6b309bd1f01cb097109157a5998141a78c0a231d5ad9dd87a66aa8c80c1880e",
+          "tensor_count": 504
+        },
+        "parameters_updated": true,
+        "path": "real_local",
+        "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/real_execution.json",
+        "runtime_path": "real_local",
+        "sample_exposure_counts": {
+          "phase44-sample-001": 1,
+          "phase44-sample-002": 1,
+          "phase44-sample-003": 1,
+          "phase44-sample-004": 1,
+          "phase44-sample-005": 1,
+          "phase44-sample-006": 1,
+          "phase44-sample-007": 1,
+          "phase44-sample-008": 1,
+          "phase44-sample-009": 1,
+          "phase44-sample-010": 1,
+          "phase44-sample-011": 1,
+          "phase44-sample-012": 1,
+          "phase44-sample-013": 1,
+          "phase44-sample-014": 1,
+          "phase44-sample-015": 1,
+          "phase44-sample-016": 1,
+          "phase44-sample-017": 1,
+          "phase44-sample-018": 1,
+          "phase44-sample-019": 1,
+          "phase44-sample-020": 1,
+          "phase44-sample-021": 1,
+          "phase44-sample-022": 1,
+          "phase44-sample-023": 1,
+          "phase44-sample-024": 1,
+          "phase44-sample-025": 1,
+          "phase44-sample-026": 1,
+          "phase44-sample-027": 1,
+          "phase44-sample-028": 1,
+          "phase44-sample-029": 1,
+          "phase44-sample-030": 1,
+          "phase44-sample-031": 1,
+          "phase44-sample-032": 1,
+          "phase44-sample-033": 1,
+          "phase44-sample-034": 1,
+          "phase44-sample-035": 1,
+          "phase44-sample-036": 1,
+          "phase44-sample-037": 1,
+          "phase44-sample-038": 1,
+          "phase44-sample-039": 1,
+          "phase44-sample-040": 1,
+          "phase44-sample-041": 1,
+          "phase44-sample-042": 1,
+          "phase44-sample-043": 1,
+          "phase44-sample-044": 1,
+          "phase44-sample-045": 1,
+          "phase44-sample-046": 1,
+          "phase44-sample-047": 1,
+          "phase44-sample-048": 1,
+          "phase44-sample-049": 1,
+          "phase44-sample-050": 1,
+          "phase44-sample-051": 1,
+          "phase44-sample-052": 1,
+          "phase44-sample-053": 1,
+          "phase44-sample-054": 1,
+          "phase44-sample-055": 1,
+          "phase44-sample-056": 1,
+          "phase44-sample-057": 1,
+          "phase44-sample-058": 1,
+          "phase44-sample-059": 1,
+          "phase44-sample-060": 1,
+          "phase44-sample-061": 1,
+          "phase44-sample-062": 1,
+          "phase44-sample-063": 1,
+          "phase44-sample-064": 1,
+          "phase44-sample-065": 1,
+          "phase44-sample-066": 1,
+          "phase44-sample-067": 1,
+          "phase44-sample-068": 1,
+          "phase44-sample-069": 1,
+          "phase44-sample-070": 1,
+          "phase44-sample-071": 1,
+          "phase44-sample-072": 1,
+          "phase44-sample-073": 1,
+          "phase44-sample-074": 1,
+          "phase44-sample-075": 1,
+          "phase44-sample-076": 1,
+          "phase44-sample-077": 1,
+          "phase44-sample-078": 1,
+          "phase44-sample-079": 1,
+          "phase44-sample-080": 1,
+          "phase44-sample-081": 1,
+          "phase44-sample-082": 1,
+          "phase44-sample-083": 1,
+          "phase44-sample-084": 1,
+          "phase44-sample-085": 1,
+          "phase44-sample-086": 1,
+          "phase44-sample-087": 1,
+          "phase44-sample-088": 1,
+          "phase44-sample-089": 1,
+          "phase44-sample-090": 1,
+          "phase44-sample-091": 1,
+          "phase44-sample-092": 1,
+          "phase44-sample-093": 1,
+          "phase44-sample-094": 1,
+          "phase44-sample-095": 1,
+          "phase44-sample-096": 1,
+          "phase44-sample-097": 1,
+          "phase44-sample-098": 1,
+          "phase44-sample-099": 1,
+          "phase44-sample-100": 1,
+          "phase44-sample-101": 1,
+          "phase44-sample-102": 1,
+          "phase44-sample-103": 1,
+          "phase44-sample-104": 1,
+          "phase44-sample-105": 1,
+          "phase44-sample-106": 1,
+          "phase44-sample-107": 1,
+          "phase44-sample-108": 1,
+          "phase44-sample-109": 1,
+          "phase44-sample-110": 1,
+          "phase44-sample-111": 1,
+          "phase44-sample-112": 1,
+          "phase44-sample-113": 1,
+          "phase44-sample-114": 1,
+          "phase44-sample-115": 1,
+          "phase44-sample-116": 1,
+          "phase44-sample-117": 1,
+          "phase44-sample-118": 1,
+          "phase44-sample-119": 1,
+          "phase44-sample-120": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "seed": 44,
+        "source_kind": "path",
+        "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+        "source_ready": true,
+        "steps": 120,
+        "success": true,
+        "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/training_summary.json",
+        "tokenizer_loaded": true,
+        "train_loss": 3.30434,
+        "trainable_parameter_count": 33030144,
+        "trainable_tensor_count": 504,
+        "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase44-qwen3-4b-sft-120step/trainer_state.json",
+        "unique_categories_exposed": 10,
+        "unique_samples_exposed": 120
+      },
+      "exposure": {
+        "actual_step_count": 120,
+        "category_exposure_counts": {
+          "actual_simulated_provenance": 12,
+          "concise_specific_response": 12,
+          "concrete_next_action": 12,
+          "evidence_before_claim": 12,
+          "failure_and_blocked_handling": 12,
+          "git_pr_truthfulness": 12,
+          "latest_user_correction": 12,
+          "ordinary_task_without_overcontract": 12,
+          "privacy_non_echo": 12,
+          "process_state_truthfulness": 12
+        },
+        "category_exposure_spread": 0,
+        "eligible_as_final_candidate": true,
+        "full_coverage": true,
+        "kind": "phase44_actual_exposure_report",
+        "maximum_sample_exposure": 1,
+        "minimum_sample_exposure": 1,
+        "requested_steps": 120,
+        "sample_exposure_counts": {
+          "phase44-sample-001": 1,
+          "phase44-sample-002": 1,
+          "phase44-sample-003": 1,
+          "phase44-sample-004": 1,
+          "phase44-sample-005": 1,
+          "phase44-sample-006": 1,
+          "phase44-sample-007": 1,
+          "phase44-sample-008": 1,
+          "phase44-sample-009": 1,
+          "phase44-sample-010": 1,
+          "phase44-sample-011": 1,
+          "phase44-sample-012": 1,
+          "phase44-sample-013": 1,
+          "phase44-sample-014": 1,
+          "phase44-sample-015": 1,
+          "phase44-sample-016": 1,
+          "phase44-sample-017": 1,
+          "phase44-sample-018": 1,
+          "phase44-sample-019": 1,
+          "phase44-sample-020": 1,
+          "phase44-sample-021": 1,
+          "phase44-sample-022": 1,
+          "phase44-sample-023": 1,
+          "phase44-sample-024": 1,
+          "phase44-sample-025": 1,
+          "phase44-sample-026": 1,
+          "phase44-sample-027": 1,
+          "phase44-sample-028": 1,
+          "phase44-sample-029": 1,
+          "phase44-sample-030": 1,
+          "phase44-sample-031": 1,
+          "phase44-sample-032": 1,
+          "phase44-sample-033": 1,
+          "phase44-sample-034": 1,
+          "phase44-sample-035": 1,
+          "phase44-sample-036": 1,
+          "phase44-sample-037": 1,
+          "phase44-sample-038": 1,
+          "phase44-sample-039": 1,
+          "phase44-sample-040": 1,
+          "phase44-sample-041": 1,
+          "phase44-sample-042": 1,
+          "phase44-sample-043": 1,
+          "phase44-sample-044": 1,
+          "phase44-sample-045": 1,
+          "phase44-sample-046": 1,
+          "phase44-sample-047": 1,
+          "phase44-sample-048": 1,
+          "phase44-sample-049": 1,
+          "phase44-sample-050": 1,
+          "phase44-sample-051": 1,
+          "phase44-sample-052": 1,
+          "phase44-sample-053": 1,
+          "phase44-sample-054": 1,
+          "phase44-sample-055": 1,
+          "phase44-sample-056": 1,
+          "phase44-sample-057": 1,
+          "phase44-sample-058": 1,
+          "phase44-sample-059": 1,
+          "phase44-sample-060": 1,
+          "phase44-sample-061": 1,
+          "phase44-sample-062": 1,
+          "phase44-sample-063": 1,
+          "phase44-sample-064": 1,
+          "phase44-sample-065": 1,
+          "phase44-sample-066": 1,
+          "phase44-sample-067": 1,
+          "phase44-sample-068": 1,
+          "phase44-sample-069": 1,
+          "phase44-sample-070": 1,
+          "phase44-sample-071": 1,
+          "phase44-sample-072": 1,
+          "phase44-sample-073": 1,
+          "phase44-sample-074": 1,
+          "phase44-sample-075": 1,
+          "phase44-sample-076": 1,
+          "phase44-sample-077": 1,
+          "phase44-sample-078": 1,
+          "phase44-sample-079": 1,
+          "phase44-sample-080": 1,
+          "phase44-sample-081": 1,
+          "phase44-sample-082": 1,
+          "phase44-sample-083": 1,
+          "phase44-sample-084": 1,
+          "phase44-sample-085": 1,
+          "phase44-sample-086": 1,
+          "phase44-sample-087": 1,
+          "phase44-sample-088": 1,
+          "phase44-sample-089": 1,
+          "phase44-sample-090": 1,
+          "phase44-sample-091": 1,
+          "phase44-sample-092": 1,
+          "phase44-sample-093": 1,
+          "phase44-sample-094": 1,
+          "phase44-sample-095": 1,
+          "phase44-sample-096": 1,
+          "phase44-sample-097": 1,
+          "phase44-sample-098": 1,
+          "phase44-sample-099": 1,
+          "phase44-sample-100": 1,
+          "phase44-sample-101": 1,
+          "phase44-sample-102": 1,
+          "phase44-sample-103": 1,
+          "phase44-sample-104": 1,
+          "phase44-sample-105": 1,
+          "phase44-sample-106": 1,
+          "phase44-sample-107": 1,
+          "phase44-sample-108": 1,
+          "phase44-sample-109": 1,
+          "phase44-sample-110": 1,
+          "phase44-sample-111": 1,
+          "phase44-sample-112": 1,
+          "phase44-sample-113": 1,
+          "phase44-sample-114": 1,
+          "phase44-sample-115": 1,
+          "phase44-sample-116": 1,
+          "phase44-sample-117": 1,
+          "phase44-sample-118": 1,
+          "phase44-sample-119": 1,
+          "phase44-sample-120": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "source_sample_count": 120,
+        "unique_categories_exposed": 10,
+        "unique_samples_exposed": 120
+      },
+      "finished_at": "2026-07-12T08:23:28.031660+00:00",
+      "kind": "phase44_qwen3_4b_sft_training_attempt",
+      "max_rss_after_bytes": 16531439616,
+      "max_rss_before_bytes": 511393792,
+      "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "real_training": true,
+      "requested_steps": 120,
+      "simulated_usage": true,
+      "started_at": "2026-07-12T08:22:01.434708+00:00",
+      "status": "completed"
+    }
+  },
+  "updated_at": "2026-07-12T08:23:28.035909+00:00"
+}

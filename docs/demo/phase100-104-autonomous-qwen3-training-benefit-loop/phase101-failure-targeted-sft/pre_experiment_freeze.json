@@ -1,0 +1,52 @@
+{
+  "actual_user_feedback_count": 0,
+  "automatic_promotion_allowed": false,
+  "candidate_manifest_sha256": "6a02ac8f448ae63aac634ea8af1014241c8071b5f1b8eae2254ae40727915e93",
+  "checks": {
+    "candidate_count_32": true,
+    "generation_calls_frozen_48": true,
+    "holdout_count_8": true,
+    "model_config_present": true,
+    "model_index_present": true,
+    "phase100_gate_passed": true,
+    "training_holdout_integrity_passed": true
+  },
+  "created_at": "2026-07-16T17:48:28.004521+00:00",
+  "generation_protocol": {
+    "do_sample": false,
+    "enable_thinking": false,
+    "guided_target_allowed": false,
+    "input_max_length": 3072,
+    "long_run_total_call_budget": 270,
+    "max_new_tokens": 160,
+    "model": "Qwen3-4B",
+    "model_calls_per_variant": 24,
+    "no_repeat_ngram_size": 4,
+    "phase101_model_call_budget": 48,
+    "post_hoc_truncation_allowed": false,
+    "premature_eos_suppression_allowed": false,
+    "repetition_penalty": 1.15,
+    "variants": [
+      "base",
+      "sft"
+    ]
+  },
+  "generation_protocol_sha256": "554deb5d35eeec3ba3b537f260318519997e2afaf5c469a7211c16047eff047f",
+  "holdout_manifest_sha256": "7ae05165ab599eca15dbeb8408ab530376b060579fe8d7cf15da4cb0a5482446",
+  "kind": "phase101_pre_experiment_freeze",
+  "passed": true,
+  "phase100_decision_sha256": "07e7a899cd57d5a78675051dc4670d57e11747fabb1d0127605232e102ca1b2e",
+  "simulated_usage": true,
+  "source_sha256": {
+    "core": "ae15506d7e17cd89f169f088e8fb171b458812007716f65c30585b97d0a34209",
+    "core_test": "efbd603135c5a47ba486fe23255e2fdb27ac79ab106a3f7252e9556f0e5d5bbc",
+    "driver": "54a0e1bc921e939e74473a9f9c21b42a0ccda22ac1b10b722ae70b64913623a3",
+    "driver_test": "fe176330cb6c8a46f35b8ac908eb53f603ffe3ea60f8eb234a02cc54d6fc4c31",
+    "executor": "a1d88831c5dc1311c2e6cf9a46ec93d5ceb85f58b94d0d1ff71be61fb17d84ea"
+  },
+  "training_steps": [
+    1,
+    12,
+    30
+  ]
+}

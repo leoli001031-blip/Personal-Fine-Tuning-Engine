@@ -1,0 +1,58 @@
+{
+  "decision_limits": {
+    "auto_promote": false,
+    "hermes_attachment": false,
+    "maximum_recommendation": "manual_shadow_only",
+    "product_default_change": false,
+    "training": false
+  },
+  "evaluator": {
+    "adjudication": "hard_reject_then_agreement_else_reject_over_edit_over_accept",
+    "calibration_accuracy_gate": 0.95,
+    "deterministic_hard_reject_scope": "explicit_source_elevation_only",
+    "false_accept_gate_on_reject_cases": 0,
+    "hard_reject_false_positive_gate": 0,
+    "hard_reject_recall_gate": 1.0,
+    "holdout_accuracy_gate": 0.9,
+    "judges_receive_gold_label": false,
+    "judges_receive_other_judge_identity": false,
+    "judges_receive_variant_identity": false,
+    "labels": [
+      "accept",
+      "edit",
+      "reject"
+    ],
+    "semantic_judge_aliases": [
+      "semantic_judge_alpha",
+      "semantic_judge_beta"
+    ],
+    "semantic_judge_models_private": {
+      "semantic_judge_alpha": "gemma4:31b",
+      "semantic_judge_beta": "qwen3.6:latest"
+    },
+    "temperature": 0,
+    "think": false
+  },
+  "kind": "phase51_frozen_evaluator_and_runtime_protocol",
+  "protocol_sha256": "987297fd58c524b0bafd3070b1e3b483b79b78389c1332e36c502f03aa932391",
+  "runtime": {
+    "adapter_loaded_any_arm": false,
+    "compact_v1_contract": "以最后一条用户消息为当前任务；若与历史冲突，以最后一条为准。不要继续已取消事项，也不要声称完成未执行动作。",
+    "conditional_router_version": "phase50-deterministic-two-axis-v1",
+    "do_sample": false,
+    "global_v2_clause": "仅依据当前证据；模拟、脚本或自动评测不能当作真实用户反馈或产品收益。",
+    "input_max_length": 4096,
+    "length_contract": "每次回答最多三个短句，总长度不超过120个汉字。只回答当前请求，不使用标题、表格、代码块或背景扩写；给出结论后立即结束。",
+    "max_new_tokens": 384,
+    "phase50_router_and_prompts_unchanged": true,
+    "privacy_transform_all_arms": true,
+    "repetition_penalty": 1.05,
+    "same_qwen3_4b_base_all_arms": true,
+    "think": false,
+    "variants": [
+      "base_compact_v1",
+      "base_global_v2",
+      "base_conditional_guard"
+    ]
+  }
+}

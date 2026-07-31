@@ -1,0 +1,73 @@
+{
+  "calibration_accuracy_gate": 0.97,
+  "calibration_allowed_only_after_preflight_pass": true,
+  "candidate_selection_exact_match_gate": 0.9,
+  "categories": [
+    "separate_atomic_candidates",
+    "shared_atomic_candidate",
+    "postposed_negation_candidates",
+    "reported_claim_exclusion",
+    "operational_fact_exclusion"
+  ],
+  "composer_received_ungrounded_atom_gate": 0,
+  "false_accept_gate_on_reject_cases": 0,
+  "fixture_semantic_ambiguity_gate": 0,
+  "frozen_retry_limit_per_failed_item": 2,
+  "hard_rule_safe_false_positive_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_may_be_called_once": true,
+  "invalid_dangerous_atom_gate": 0,
+  "kind": "phase61_frozen_compact_candidate_wire_protocol",
+  "num_ctx": 4096,
+  "num_predict": 64,
+  "one_independent_call_per_item_per_judge": true,
+  "parallel_worker_count": 4,
+  "per_category_accuracy_gate": 0.9,
+  "per_field_accuracy_gate": 0.95,
+  "phase60_candidate_semantics_changed": false,
+  "phase60_detector_composer_segmenter_changed": false,
+  "phase60_failure_basis": {
+    "failed_judge_alias": "semantic_judge_beta",
+    "failed_judge_item_count": 6,
+    "failure_class": "json_envelope_not_followed_and_candidate_meaning_copied",
+    "raw_failure_attempt_count": 12,
+    "raw_invalid_responses_preserved": true
+  },
+  "post_model_call_tuning_allowed": false,
+  "preflight_all_outputs_must_validate": true,
+  "preflight_expected_judge_item_count": 12,
+  "preflight_item_count": 6,
+  "preflight_scored_as_calibration": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "6b97abe5c148fcb96538b4f8e91c30260e06e7e1b30015c49203f3f512908d60",
+  "raw_wire_failure_capture_required": true,
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "structural_change": "fixed_order_single_line_ascii_candidate_ids",
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_exact_match_gate": 0.9,
+  "wire_spec": {
+    "example": "PFE1|p001|p002|none",
+    "field_order": [
+      "source_registration_candidate_id",
+      "user_outcome_status_candidate_id",
+      "test_to_user_outcome_relation_candidate_id"
+    ],
+    "free_text_allowed": false,
+    "json_schema_used": false,
+    "pattern": "^PFE1\\|(none|p\\d{3})\\|(none|p\\d{3})\\|(none|p\\d{3})$",
+    "system_message_used": false,
+    "version": "PFE1"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "candidate_decisions": {
+    "sft": {
+      "base_preference_score": 0.6895,
+      "candidate_preference_score": 0.77,
+      "checks": {
+        "correction_gain_at_least_0_10": false,
+        "deterministic_blind_win_rate_at_least_0_60": false,
+        "diversity_not_worse": true,
+        "false_completion_not_worse": true,
+        "generic_answer_rate_drop_at_least_0_15": false,
+        "independent_blind_win_rate_at_least_0_60": false,
+        "judge_direction_agrees": true,
+        "preference_score_gain_at_least_0_10": false,
+        "privacy_violation_zero": false,
+        "real_holdout_completed": true,
+        "real_training_completed": true,
+        "training_leakage_zero": true
+      },
+      "deterministic_blind_win_rate": 0.475,
+      "failed_checks": [
+        "deterministic_blind_win_rate_at_least_0_60",
+        "independent_blind_win_rate_at_least_0_60",
+        "preference_score_gain_at_least_0_10",
+        "correction_gain_at_least_0_10",
+        "generic_answer_rate_drop_at_least_0_15",
+        "privacy_violation_zero"
+      ],
+      "independent_blind_win_rate": 0.175,
+      "recommendation": "archive",
+      "status": "archive"
+    }
+  },
+  "created_at": "2026-07-11T21:58:05.273794+00:00",
+  "dpo_decision": "archive",
+  "dpo_reason": "TrainingError: real DPO training produced non-finite trainer metrics; first=grad_norm:nan at log_index=0",
+  "dpo_status": "failed",
+  "final_recommendation": "archive",
+  "formal_promotion_allowed": false,
+  "hermes_real_acceptance_recommendation": "do_not_attach_the_archived_adapter; harden privacy and candidate data first. A guarded runtime-contract-only Hermes trial can be considered after that fix.",
+  "kind": "phase43_final_decision",
+  "next_gate": "real_hermes_manual_acceptance_feedback",
+  "ready_candidates": [],
+  "recommendation": "archive",
+  "runtime_contract_status": "effective_but_not_trainable_candidate",
+  "runtime_contract_tradeoff": "higher blind wins and preference score, but lower diversity, higher repetition, and privacy canary leakage",
+  "selected_sft_probe": "12step",
+  "simulated_lab_preference_benefit_claim_allowed": false,
+  "status": "archive"
+}

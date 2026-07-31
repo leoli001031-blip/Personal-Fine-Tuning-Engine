@@ -9,7 +9,9 @@ from .collector import ChatCollector, ChatInteraction, CollectorConfig
 from .config import PFEConfig
 from .inference.engine import InferenceConfig, InferenceEngine
 from .pipeline import PipelineService, service as pipeline_service
+from .phase77_private_value_guarded_runtime import guard_phase77_messages, guard_phase77_output
 from .router import ScenarioRouter, RoutingResult, create_router
+from .security.identifiers import safe_user_storage_id
 from .user_memory import get_user_memory_store, UserMemoryStore
 
 
@@ -94,9 +96,15 @@ class InferenceServiceAdapter:
     async def generate_chat_completion(self, request: Any) -> Any:
         from pfe_server.models import ChatCompletionResponse
 
-        # Get user profile for memory injection
-        user_id = request.session_id or "default_user"
-        user_profile_text = self.user_memory.get_profile_for_prompt(user_id)
+        metadata = dict(request.metadata or {})
+        declared_private_values = [
+            str(value)
+            for value in metadata.get("declared_private_values") or []
+            if str(value)
+        ]
+        memory_consent = metadata.get("memory_consent") is True
+        user_id = safe_user_storage_id(request.session_id or "default_user")
+        user_profile_text = self.user_memory.get_profile_for_prompt(user_id) if memory_consent else ""
 
         # Prepare messages with user memory
         messages = [message.model_dump(mode="json") for message in request.messages]
@@ -118,13 +126,17 @@ class InferenceServiceAdapter:
 
         import os
         workspace = os.environ.get("PFE_WORKSPACE")
+        if getattr(request, "response_contract", None):
+            metadata["response_contract"] = request.response_contract
+        if routing_info:
+            metadata["routing"] = routing_info
         payload = self.pipeline.chat_completion(
             messages=messages,
             model=request.model,
             adapter_version=adapter_version,
             temperature=request.temperature,
             max_tokens=request.max_tokens,
-            metadata={**(request.metadata or {}), "routing": routing_info} if routing_info else request.metadata,
+            metadata=metadata,
             request_id=request.request_id,
             session_id=request.session_id,
             workspace=workspace,
@@ -135,25 +147,49 @@ class InferenceServiceAdapter:
         assistant_message = ""
         if payload.get("choices"):
             assistant_message = payload["choices"][0].get("message", {}).get("content", "")
+        guarded_interaction, interaction_input_guard = guard_phase77_messages(
+            [{"role": "user", "content": user_message}],
+            declared_private_values,
+        )
+        retained_user_message = str(guarded_interaction[0].get("content") or "")
+        retained_assistant_message, interaction_output_guard = guard_phase77_output(
+            assistant_message,
+            declared_private_values,
+        )
 
-        # Extract user facts from conversation
-        if user_message and assistant_message:
+        # Long-term memory is opt-in. Temporary interaction retention remains
+        # available for an explicit follow-up feedback action.
+        if memory_consent and retained_user_message and retained_assistant_message:
             self.user_memory.extract_facts_from_conversation(
                 user_id=user_id,
-                user_message=user_message,
-                assistant_message=assistant_message,
+                user_message=retained_user_message,
+                assistant_message=retained_assistant_message,
                 request_id=request.request_id or payload.get("id", ""),
             )
 
-            # Store interaction for signal extraction
+        if retained_user_message and retained_assistant_message:
             interaction = ChatInteraction(
                 session_id=request.session_id or "",
                 request_id=request.request_id or payload.get("id", ""),
-                user_message=user_message,
-                assistant_message=assistant_message,
+                user_message=retained_user_message,
+                assistant_message=retained_assistant_message,
                 adapter_version=request.adapter_version,
             )
             self._pending_interactions[request.session_id or request.request_id or ""] = interaction
+
+        payload_metadata = dict(payload.get("metadata") or {})
+        payload_metadata["memory"] = {
+            "explicit_consent": memory_consent,
+            "long_term_memory_read": memory_consent,
+            "long_term_memory_written": bool(memory_consent and user_message and assistant_message),
+            "temporary_interaction_retained": bool(user_message and assistant_message),
+            "declared_private_value_count": len(declared_private_values),
+            "retained_interaction_private_values_redacted": (
+                interaction_input_guard.get("passed") is True
+                and interaction_output_guard.get("passed") is True
+            ),
+        }
+        payload["metadata"] = payload_metadata
 
         return ChatCompletionResponse.model_validate(payload)
 

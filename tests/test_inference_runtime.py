@@ -59,6 +59,7 @@ class InferenceRuntimeTests(unittest.TestCase):
 
     def test_llama_cpp_prompt_echo_is_not_returned_as_answer(self) -> None:
         engine = InferenceEngine(InferenceConfig(base_model="local-default"))
+        private_prompt = "用一句中文回复：PFE 本地模型测试。"
         with patch(
             "pfe_core.inference.engine._resolve_llama_cpp_runtime_binary",
             return_value={"available": True, "path": "/tmp/llama-completion"},
@@ -69,15 +70,20 @@ class InferenceRuntimeTests(unittest.TestCase):
             "pfe_core.inference.engine.subprocess.run",
             return_value=SimpleNamespace(
                 returncode=0,
-                stdout="USER: 用一句中文回复：PFE 本地模型测试。\nASSISTANT:",
+                stdout=f"USER: {private_prompt}\nASSISTANT:",
                 stderr="",
             ),
-        ):
+        ) as run:
             with self.assertRaises(InferenceError):
                 engine._generate_llama_cpp_response(
-                    [{"role": "user", "content": "用一句中文回复：PFE 本地模型测试。"}],
+                    [{"role": "user", "content": private_prompt}],
                     resolved_base_model=str(Path(self.tempdir.name) / "fake-base-model"),
                 )
+
+        command = run.call_args.args[0]
+        self.assertNotIn("-p", command)
+        self.assertNotIn(private_prompt, command)
+        self.assertIn(private_prompt, run.call_args.kwargs["input"])
 
     def test_resolve_base_model_reference_can_disable_repo_auto_discovery(self) -> None:
         os.environ.pop("PFE_BASE_MODEL", None)
@@ -122,7 +128,10 @@ class InferenceRuntimeTests(unittest.TestCase):
 
         self.assertIn("[base]", text)
         self.assertEqual(engine.status()["served_by"], "mock")
-        self.assertIn("requires a local base model path", engine.status()["generation"]["fallback_reason"])
+        self.assertEqual(
+            engine.status()["generation"]["fallback_reason"],
+            "transformers: InferenceError",
+        )
 
     def test_llama_cpp_runtime_resolution_prefers_cpu_build(self) -> None:
         repo_root = Path(self.tempdir.name) / "repo"
@@ -212,8 +221,8 @@ class InferenceRuntimeTests(unittest.TestCase):
 
         self.assertIn("[adapter:20260325-001]", text)
         generation = engine.status()["generation"]
-        self.assertIn("llama_cpp: RuntimeError: llama failed", generation["fallback_reason"])
-        self.assertEqual(generation["previous_runtime_failures"], ["llama_cpp: RuntimeError: llama failed"])
+        self.assertEqual(generation["fallback_reason"], "llama_cpp: RuntimeError")
+        self.assertEqual(generation["previous_runtime_failures"], ["llama_cpp: RuntimeError"])
 
     def test_pipeline_chat_completion_surfaces_local_served_by_and_usage(self) -> None:
         service = PipelineService()

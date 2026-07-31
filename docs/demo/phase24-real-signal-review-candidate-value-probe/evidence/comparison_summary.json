@@ -1,0 +1,1882 @@
+{
+  "auto_promotion_allowed": false,
+  "candidate_manifest": {
+    "created_at": "2026-06-20T22:12:09.809913+00:00",
+    "dpo_pair_count": 15,
+    "eligible_signal_count": 15,
+    "excluded_signal_count": 65,
+    "holdout_isolation_required": true,
+    "kind": "phase24_candidate_manifest",
+    "product_value_training_allowed_count": 0,
+    "sample_source_policy": "reviewed_lab_signals_can_generate_candidate_specs_but_not_product_value_training",
+    "sft_sample_count": 15
+  },
+  "candidate_quality_report": {
+    "created_at": "2026-06-20T22:12:09.809907+00:00",
+    "dpo_pair_count": 15,
+    "failure_count": 0,
+    "failures": [],
+    "kind": "phase24_candidate_quality_report",
+    "low_contrast_pair_count": 0,
+    "passed": true,
+    "sft_sample_count": 15,
+    "valid_dpo_pair_count": 15,
+    "valid_sft_sample_count": 15
+  },
+  "created_at": "2026-06-20T22:12:09.825937+00:00",
+  "feedback_signal_count": 80,
+  "feedback_source_counts": {
+    "actual_user_feedback": 0,
+    "curated_review_feedback": 53,
+    "scripted_probe_feedback": 27
+  },
+  "final_recommendation": "runtime_contract_primary_training_candidate_archived",
+  "holdout_integrity_check": {
+    "contaminated_chunk_ids": [],
+    "created_at": "2026-06-20T22:12:09.809979+00:00",
+    "dpo_pair_count": 15,
+    "holdout_chunk_id_count": 100,
+    "holdout_count": 100,
+    "kind": "phase24_holdout_integrity_check",
+    "passed": true,
+    "sft_sample_count": 15,
+    "training_chunk_id_count": 15
+  },
+  "interaction_count": 80,
+  "kind": "phase24_comparison_summary",
+  "model_selection": {
+    "created_at": "2026-06-20T22:12:09.819268+00:00",
+    "kind": "phase24_model_selection",
+    "local_model_count": 12,
+    "policy": "do_not_default_to_27b; prefer local small/mid Qwen only if full train and eval are feasible",
+    "qwen_candidate_count": 12,
+    "selected_model": {
+      "exists": true,
+      "looks_oversized_for_local_training": false,
+      "looks_quantized": false,
+      "name": "models--Qwen--Qwen3-4B",
+      "non_generative": false,
+      "path": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-4B",
+      "qwen": true,
+      "selection_note": "local inventory hint only; real product probe still requires actual user feedback",
+      "trainable": true
+    },
+    "selection_status": "selected"
+  },
+  "review_state_counts": {
+    "approved_for_candidate": 17,
+    "excluded": 53,
+    "needs_more_context": 10
+  },
+  "routing_report": {
+    "created_at": "2026-06-20T22:12:09.809116+00:00",
+    "eligible_training_count": 15,
+    "excluded_reason_counts": {
+      "accept_not_enough_for_training": 3,
+      "contract_output_incomplete": 4,
+      "detected_high_risk_pii": 5,
+      "external_law_inducement": 5,
+      "high_risk_domain_conclusion": 16,
+      "low_information_feedback": 3,
+      "missing_citation": 2,
+      "requires_positive_pair": 7,
+      "safety_block": 20
+    },
+    "excluded_signal_rate": 0.812,
+    "feedback_source_counts": {
+      "curated_review_feedback": 53,
+      "scripted_probe_feedback": 27
+    },
+    "kind": "phase24_signal_routing_report",
+    "product_value_training_allowed_count": 0,
+    "product_value_training_allowed_rate": 0.0,
+    "route_counts": {
+      "excluded": 55,
+      "manual_review": 60,
+      "memory": 18,
+      "training_candidate": 15
+    },
+    "routed_signals": [
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-001",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-002",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "missing_citation",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 candidate quality gate excluded this signal",
+          "requires_human_review": true,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "missing_citation"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-003",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-004",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-005",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-006",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-007",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-008",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-009",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-010",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-011",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-012",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "signal_id": "phase24-signal-013",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-014",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-015",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-016",
+        "signal_type": "preference"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-017",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-018",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-019",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-020",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-021",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-022",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-023",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-024",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-025",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-026",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-027",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-028",
+        "signal_type": "preference"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-029",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-030",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-031",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-032",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "signal_id": "phase24-signal-033",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-034",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-035",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-036",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-037",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-038",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-039",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-040",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-041",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-042",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-043",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-044",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-045",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-046",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-047",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-048",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-049",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-050",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-051",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-052",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-053",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-054",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-055",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-056",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "external_law_inducement",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "external_law_inducement"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-057",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-058",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-059",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-060",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-061",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-062",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "missing_citation",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 candidate quality gate excluded this signal",
+          "requires_human_review": true,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "missing_citation"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-063",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-064",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-065",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-066",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-067",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-068",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-069",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "contract_output_incomplete",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "contract_output_incomplete"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-070",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "requires_positive_pair",
+          "lanes": [
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "requires_positive_pair"
+          ],
+          "training_target": "dpo_rejected_only"
+        },
+        "signal_id": "phase24-signal-071",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-072",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "accept_not_enough_for_training",
+          "lanes": [
+            "memory",
+            "manual_review"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "needs_more_context",
+          "rule_hits": [
+            "accept_not_enough_for_training"
+          ],
+          "training_target": "none"
+        },
+        "signal_id": "phase24-signal-073",
+        "signal_type": "accept"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": true,
+          "excluded_reason": "",
+          "lanes": [
+            "memory",
+            "training_candidate"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "review-approved correction/edit preserves four-section boundary and citation",
+          "requires_human_review": false,
+          "review_state": "approved_for_candidate",
+          "rule_hits": [
+            "phase24_review_approved_contract_safe_candidate"
+          ],
+          "training_target": "sft_candidate"
+        },
+        "signal_id": "phase24-signal-074",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-075",
+        "signal_type": "correction"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "high_risk_domain_conclusion",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "high_risk_domain_conclusion"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-076",
+        "signal_type": "preference"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "detected_high_risk_pii",
+          "lanes": [
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "detected_high_risk_pii"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-077",
+        "signal_type": "reject"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-078",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "scripted_probe_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "safety_block",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "safety_block"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-079",
+        "signal_type": "safety_block"
+      },
+      {
+        "feedback_source": "curated_review_feedback",
+        "phase24_route": {
+          "eligible_for_training": false,
+          "excluded_reason": "low_information_feedback",
+          "lanes": [
+            "manual_review",
+            "excluded"
+          ],
+          "product_value_training_allowed": false,
+          "reason": "Phase24 inherits Phase23 exclusion before adding candidate value gates",
+          "requires_human_review": true,
+          "review_state": "excluded",
+          "rule_hits": [
+            "low_information_feedback"
+          ],
+          "training_target": "blocked"
+        },
+        "signal_id": "phase24-signal-080",
+        "signal_type": "correction"
+      }
+    ],
+    "signal_count": 80,
+    "training_candidate_eligibility_rate": 0.188,
+    "type_counts": {
+      "accept": 8,
+      "correction": 36,
+      "preference": 3,
+      "reject": 13,
+      "safety_block": 20
+    }
+  },
+  "runtime_contract_eval": {
+    "decision": {
+      "auto_promotion_allowed": false,
+      "created_at": "2026-06-20T22:12:09.822131+00:00",
+      "kind": "phase24_runtime_product_decision",
+      "reasons": [
+        "runtime_contract_stable_on_holdout"
+      ],
+      "recommendation": "primary_product_path"
+    },
+    "holdout_count": 100,
+    "scores": {
+      "citation_hit_rate": 1.0,
+      "explicit_boundary_rate": 1.0,
+      "external_law_reference_rate": 0.0,
+      "extra_text_after_first_block_rate": 0.0,
+      "safety_boundary_rate": 1.0,
+      "structure_hit_rate": 1.0,
+      "think_leak_rate": 0.0,
+      "unsupported_assertions": 0
+    }
+  },
+  "runtime_output_count": 80,
+  "status": "completed",
+  "three_way_eval": {
+    "A_runtime_contract_base": {
+      "recommendation": "primary_product_path",
+      "scores": {
+        "citation_hit_rate": 1.0,
+        "explicit_boundary_rate": 1.0,
+        "external_law_reference_rate": 0.0,
+        "extra_text_after_first_block_rate": 0.0,
+        "safety_boundary_rate": 1.0,
+        "structure_hit_rate": 1.0,
+        "think_leak_rate": 0.0,
+        "unsupported_assertions": 0
+      },
+      "status": "completed"
+    },
+    "B_phase24_sft_adapter": {
+      "reason": "insufficient_actual_user_feedback_for_product_value_training_probe",
+      "status": "not_run"
+    },
+    "C_phase24_dpo_adapter": {
+      "reason": "insufficient_actual_user_feedback_for_product_value_training_probe",
+      "status": "not_run"
+    },
+    "D_phase18_phase17_historical_archived_adapter": {
+      "created_at": "2026-06-20T22:12:09.825835+00:00",
+      "kind": "phase24_historical_archived_adapter_reference",
+      "note": "Historical adapters are archived references, not promoted product paths.",
+      "phase13_reference": {
+        "recommendation": null
+      },
+      "phase17_reference": {
+        "final_recommendation": null,
+        "training_candidate_decision": null
+      },
+      "phase18_reference": {
+        "final_recommendation": "archive",
+        "training_candidate_decision": null
+      },
+      "phase23_reference": {
+        "runtime_decision": "primary_product_path",
+        "training_candidate_decision": "archive"
+      }
+    }
+  },
+  "training_candidate_decision": {
+    "auto_promotion_allowed": false,
+    "created_at": "2026-06-20T22:12:09.822133+00:00",
+    "kind": "phase24_training_candidate_value_decision",
+    "manual_review_required": true,
+    "reasons": [
+      "insufficient_actual_user_feedback_for_product_value_training_probe"
+    ],
+    "recommendation": "archive",
+    "runtime_contract_remains_primary": true
+  },
+  "training_feasibility": {
+    "actual_user_feedback_count": 0,
+    "blockers": [
+      "insufficient_actual_user_feedback_for_product_value_training_probe"
+    ],
+    "created_at": "2026-06-20T22:12:09.819276+00:00",
+    "dpo_pair_count": 15,
+    "kind": "phase24_training_feasibility",
+    "minimum_probe_steps": 12,
+    "selected_model": {
+      "exists": true,
+      "looks_oversized_for_local_training": false,
+      "looks_quantized": false,
+      "name": "models--Qwen--Qwen3-4B",
+      "non_generative": false,
+      "path": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-4B",
+      "qwen": true,
+      "selection_note": "local inventory hint only; real product probe still requires actual user feedback",
+      "trainable": true
+    },
+    "sft_sample_count": 15,
+    "status": "blocked",
+    "would_generate_job_specs": true
+  }
+}

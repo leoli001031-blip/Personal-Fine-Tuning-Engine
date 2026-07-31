@@ -1,0 +1,418 @@
+{
+  "categories": {
+    "correction": 5,
+    "dont_drift": 5,
+    "next_goal": 5,
+    "privacy_boundary": 5,
+    "process_check": 5,
+    "start_execution": 5,
+    "status_check": 5,
+    "submit_pr": 5
+  },
+  "created_at": "2026-07-02T18:38:02.929971+00:00",
+  "holdout_count": 40,
+  "kind": "phase32_personal_preference_holdout",
+  "not_for_training": true,
+  "prompts": [
+    {
+      "category": "start_execution",
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "not_for_training": true,
+      "prompt": "可以，开始执行下一步。",
+      "prompt_id": "phase32-holdout-001"
+    },
+    {
+      "category": "status_check",
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "现在情况如何？用最短的话告诉我。",
+      "prompt_id": "phase32-holdout-002"
+    },
+    {
+      "category": "correction",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "not_for_training": true,
+      "prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。",
+      "prompt_id": "phase32-holdout-003"
+    },
+    {
+      "category": "submit_pr",
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。",
+      "prompt_id": "phase32-holdout-004"
+    },
+    {
+      "category": "process_check",
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。",
+      "prompt_id": "phase32-holdout-005"
+    },
+    {
+      "category": "next_goal",
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "not_for_training": true,
+      "prompt": "给我一个下一阶段长程追求目标提示词。",
+      "prompt_id": "phase32-holdout-006"
+    },
+    {
+      "category": "dont_drift",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。",
+      "prompt_id": "phase32-holdout-007"
+    },
+    {
+      "category": "privacy_boundary",
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。",
+      "prompt_id": "phase32-holdout-008"
+    },
+    {
+      "category": "start_execution",
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "not_for_training": true,
+      "prompt": "可以，开始执行下一步。",
+      "prompt_id": "phase32-holdout-009"
+    },
+    {
+      "category": "status_check",
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "现在情况如何？用最短的话告诉我。",
+      "prompt_id": "phase32-holdout-010"
+    },
+    {
+      "category": "correction",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "not_for_training": true,
+      "prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。",
+      "prompt_id": "phase32-holdout-011"
+    },
+    {
+      "category": "submit_pr",
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。",
+      "prompt_id": "phase32-holdout-012"
+    },
+    {
+      "category": "process_check",
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。",
+      "prompt_id": "phase32-holdout-013"
+    },
+    {
+      "category": "next_goal",
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "not_for_training": true,
+      "prompt": "给我一个下一阶段长程追求目标提示词。",
+      "prompt_id": "phase32-holdout-014"
+    },
+    {
+      "category": "dont_drift",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。",
+      "prompt_id": "phase32-holdout-015"
+    },
+    {
+      "category": "privacy_boundary",
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。",
+      "prompt_id": "phase32-holdout-016"
+    },
+    {
+      "category": "start_execution",
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "not_for_training": true,
+      "prompt": "可以，开始执行下一步。",
+      "prompt_id": "phase32-holdout-017"
+    },
+    {
+      "category": "status_check",
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "现在情况如何？用最短的话告诉我。",
+      "prompt_id": "phase32-holdout-018"
+    },
+    {
+      "category": "correction",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "not_for_training": true,
+      "prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。",
+      "prompt_id": "phase32-holdout-019"
+    },
+    {
+      "category": "submit_pr",
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。",
+      "prompt_id": "phase32-holdout-020"
+    },
+    {
+      "category": "process_check",
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。",
+      "prompt_id": "phase32-holdout-021"
+    },
+    {
+      "category": "next_goal",
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "not_for_training": true,
+      "prompt": "给我一个下一阶段长程追求目标提示词。",
+      "prompt_id": "phase32-holdout-022"
+    },
+    {
+      "category": "dont_drift",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。",
+      "prompt_id": "phase32-holdout-023"
+    },
+    {
+      "category": "privacy_boundary",
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。",
+      "prompt_id": "phase32-holdout-024"
+    },
+    {
+      "category": "start_execution",
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "not_for_training": true,
+      "prompt": "可以，开始执行下一步。",
+      "prompt_id": "phase32-holdout-025"
+    },
+    {
+      "category": "status_check",
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "现在情况如何？用最短的话告诉我。",
+      "prompt_id": "phase32-holdout-026"
+    },
+    {
+      "category": "correction",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "not_for_training": true,
+      "prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。",
+      "prompt_id": "phase32-holdout-027"
+    },
+    {
+      "category": "submit_pr",
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。",
+      "prompt_id": "phase32-holdout-028"
+    },
+    {
+      "category": "process_check",
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。",
+      "prompt_id": "phase32-holdout-029"
+    },
+    {
+      "category": "next_goal",
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "not_for_training": true,
+      "prompt": "给我一个下一阶段长程追求目标提示词。",
+      "prompt_id": "phase32-holdout-030"
+    },
+    {
+      "category": "dont_drift",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。",
+      "prompt_id": "phase32-holdout-031"
+    },
+    {
+      "category": "privacy_boundary",
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。",
+      "prompt_id": "phase32-holdout-032"
+    },
+    {
+      "category": "start_execution",
+      "expected_taxonomy": [
+        "execution_first",
+        "persistence"
+      ],
+      "not_for_training": true,
+      "prompt": "可以，开始执行下一步。",
+      "prompt_id": "phase32-holdout-033"
+    },
+    {
+      "category": "status_check",
+      "expected_taxonomy": [
+        "concise_status",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "现在情况如何？用最短的话告诉我。",
+      "prompt_id": "phase32-holdout-034"
+    },
+    {
+      "category": "correction",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "execution_first"
+      ],
+      "not_for_training": true,
+      "prompt": "你这个方向跑偏了，别讲法律场景，回到我的 Agent 偏好训练。",
+      "prompt_id": "phase32-holdout-035"
+    },
+    {
+      "category": "submit_pr",
+      "expected_taxonomy": [
+        "persistence",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "整理一下然后提交，最后告诉我 PR 和 gate 情况。",
+      "prompt_id": "phase32-holdout-036"
+    },
+    {
+      "category": "process_check",
+      "expected_taxonomy": [
+        "local_context_awareness",
+        "evidence_first"
+      ],
+      "not_for_training": true,
+      "prompt": "帮我看下后台大模型还在跑吗，先关掉不需要的。",
+      "prompt_id": "phase32-holdout-037"
+    },
+    {
+      "category": "next_goal",
+      "expected_taxonomy": [
+        "execution_first",
+        "concise_status"
+      ],
+      "not_for_training": true,
+      "prompt": "给我一个下一阶段长程追求目标提示词。",
+      "prompt_id": "phase32-holdout-038"
+    },
+    {
+      "category": "dont_drift",
+      "expected_taxonomy": [
+        "correction_responsiveness",
+        "boundary_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "重点别跑偏，我要证明 PFE 能学我的协作偏好。",
+      "prompt_id": "phase32-holdout-039"
+    },
+    {
+      "category": "privacy_boundary",
+      "expected_taxonomy": [
+        "boundary_awareness",
+        "local_context_awareness"
+      ],
+      "not_for_training": true,
+      "prompt": "可以用我的历史记录，但不要把原始私密内容提交进去。",
+      "prompt_id": "phase32-holdout-040"
+    }
+  ]
+}

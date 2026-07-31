@@ -1,0 +1,87 @@
+{
+  "actual_human_review_completed": false,
+  "actual_product_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "blind": {
+    "comparison_counts": {
+      "intent_runtime_base_vs_archived_adapter": 72,
+      "intent_runtime_vs_privacy_base": 72
+    },
+    "expected_pair_count": 144,
+    "identity_hidden_from_judge": true,
+    "kind": "phase46_blind_integrity_check",
+    "pair_count": 144,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "scorer_frozen": true,
+    "scorer_source_sha256": "b2b17b29f8212956d5284945442deb7a6523e9538ed4905b22cb462b4820a56d"
+  },
+  "calibration": {
+    "case_count": 8,
+    "precision": 1.0,
+    "recall": 1.0,
+    "status": "passed"
+  },
+  "candidate_audit_passed": true,
+  "created_at": "2026-07-12T17:53:53.657514+00:00",
+  "critical_evidence_file_count": 47,
+  "critical_evidence_manifest_sha256": "065fd2875e3f05dca7b50c9c1d58145881e4df35a970f44bd18af4a4fd92d508",
+  "failed_runtime_attempt_preserved": true,
+  "independent_judge_completed_pair_count": 144,
+  "kind": "phase46_evidence_integrity",
+  "passed": true,
+  "phase45_canonical": {
+    "frozen_file_count": 112,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "passed": true,
+    "phase45_adapter_sha256": "fe54254ce302dc528c1fcb466e92ebf75d50ecce835e7174314bdca0af055b75",
+    "phase45_commit": "6294d83",
+    "phase45_pr_number": 56,
+    "phase45_recommendation": "archive"
+  },
+  "split_integrity_passed": true,
+  "training_status": "skipped_by_design",
+  "transcripts": [
+    {
+      "actual_model_call_count": 216,
+      "all_completed": true,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase46-runtime-first-latest-intent-ablation/evidence-real-runtime-ablation/transcripts_base_privacy.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 72,
+      "sha256": "77d90b49a0699cac8e7537847672cc8eee6a0628c2b4db7034fb70296fd4b12a",
+      "unique_session_id_count": 72,
+      "variant": "base_privacy"
+    },
+    {
+      "actual_model_call_count": 216,
+      "all_completed": true,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase46-runtime-first-latest-intent-ablation/evidence-real-runtime-ablation/transcripts_base_privacy_intent.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 72,
+      "sha256": "8eae12e9f3756f7edfa16d8ebb4724097ad70aab504fd4ba1adc4161e9457327",
+      "unique_session_id_count": 72,
+      "variant": "base_privacy_intent"
+    },
+    {
+      "actual_model_call_count": 216,
+      "all_completed": true,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase46-runtime-first-latest-intent-ablation/evidence-real-runtime-ablation/transcripts_adapter_privacy_intent.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "row_count": 72,
+      "sha256": "230559438debaa5ccc337a079c1980522f903c6bae912aaa1c0ca3754d42bcc5",
+      "unique_session_id_count": 72,
+      "variant": "adapter_privacy_intent"
+    }
+  ]
+}

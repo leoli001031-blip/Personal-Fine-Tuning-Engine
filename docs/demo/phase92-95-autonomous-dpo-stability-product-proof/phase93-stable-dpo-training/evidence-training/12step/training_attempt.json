@@ -1,0 +1,1161 @@
+{
+  "actual_user_feedback": false,
+  "adapter_validation": {
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter",
+    "completed_steps": 12,
+    "format": "safetensors",
+    "lineage": "base_merge_phase89_then_apply_phase93_dpo",
+    "lora_tensor_count": 392,
+    "parameter_count": 18464768,
+    "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter/adapter_model.safetensors",
+    "reason": null,
+    "requested_steps": 12,
+    "sha256": "2c2984851dd15e85d8108b8004356972cf5a49b3d60b27a5e50731747275cc2a",
+    "size_bytes": 73911112,
+    "tensor_count": 392,
+    "valid": true
+  },
+  "automatic_promotion_allowed": false,
+  "completed_steps": 12,
+  "duration_seconds": 15.1329,
+  "kind": "phase93_stable_dpo_training_attempt",
+  "product_gate_qualified": false,
+  "requested_steps": 12,
+  "resource_usage": {
+    "ru_maxrss_after": 4832608256,
+    "ru_maxrss_before": 51494912,
+    "ru_maxrss_unit": "bytes_on_macos"
+  },
+  "result": {
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter",
+    "artifacts": {
+      "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter/adapter_config.json",
+      "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter/adapter_model.safetensors",
+      "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_job_manifest.json",
+      "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/train_metrics.json",
+      "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/real_execution.json",
+      "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/trainer_state.json",
+      "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/training_summary.json"
+    },
+    "backend": "dpo",
+    "base_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora",
+    "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+    "dpo_config": {
+      "beta": 0.1,
+      "label_smoothing": 0.0,
+      "max_length": 384,
+      "max_prompt_length": 288
+    },
+    "dry_run": false,
+    "execution_mode": "real_import",
+    "job_spec": {
+      "backend": "dpo",
+      "dry_run": false,
+      "execution_backend": "dpo",
+      "execution_executor": "dpo",
+      "executor_mode": "real_import",
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step",
+      "phase93": {
+        "actual_user_feedback": false,
+        "automatic_promotion_allowed": false,
+        "phase90_holdout_used_for_training": false,
+        "phase91_holdout_used_for_training": false,
+        "phase92_probe_adapter_used_as_parent": false,
+        "simulated_usage": true,
+        "starts_independently_from_phase89_parent": true,
+        "steps": 12
+      },
+      "recipe": {
+        "peft": {
+          "dpo_config": {
+            "beta": 0.1,
+            "label_smoothing": 0.0,
+            "max_length": 384,
+            "max_prompt_length": 288
+          },
+          "lora_config": {
+            "lora_alpha": 32,
+            "lora_dropout": 0.05,
+            "r": 16
+          },
+          "trainer_class": "trl.DPOTrainer"
+        },
+        "training": {
+          "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+          "epochs": 1,
+          "incremental_context": {
+            "parent_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora"
+          },
+          "learning_rate": 5e-06,
+          "max_steps": 12,
+          "method": "lora",
+          "num_train_samples": 12,
+          "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step",
+          "runtime_device": "mps",
+          "runtime_dtype": "float32",
+          "train_type": "dpo"
+        }
+      },
+      "training_examples": [
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：导出归档尚未验证完成。\n依据：现有记录仅说明上传凭证仍缺失。\n下一步：补齐缺失记录后重新核验。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n导出归档目前只知道：上传凭证仍缺失。请只按现有证据说明状态，不要猜原因。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "exact_three_line",
+          "rejected": "根据现有信息，导出归档尚未验证完成。；现有记录仅说明上传凭证仍缺失。；补齐缺失记录后重新核验。。",
+          "sample_id": "phase91-dpo-exact_three_line-01",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：访问密钥轮换尚未验证完成。\n依据：现有记录仅说明旧密钥吊销回执仍缺失。\n下一步：补齐缺失记录后重新核验。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n访问密钥轮换目前只知道：旧密钥吊销回执仍缺失。请只按现有证据说明状态，不要猜原因。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "exact_three_line",
+          "rejected": "根据现有信息，访问密钥轮换尚未验证完成。；现有记录仅说明旧密钥吊销回执仍缺失。；补齐缺失记录后重新核验。。",
+          "sample_id": "phase91-dpo-exact_three_line-02",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：账目核对尚未验证完成。\n依据：现有记录仅说明复核人签字仍缺失。\n下一步：补齐缺失记录后重新核验。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n账目核对目前只知道：复核人签字仍缺失。请只按现有证据说明状态，不要猜原因。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "exact_three_line",
+          "rejected": "根据现有信息，账目核对尚未验证完成。；现有记录仅说明复核人签字仍缺失。；补齐缺失记录后重新核验。。",
+          "sample_id": "phase91-dpo-exact_three_line-03",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：备份恢复尚未验证完成。\n依据：现有记录仅说明恢复日志仍缺失。\n下一步：补齐缺失记录后重新核验。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n备份恢复目前只知道：恢复日志仍缺失。请只按现有证据说明状态，不要猜原因。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "exact_three_line",
+          "rejected": "根据现有信息，备份恢复尚未验证完成。；现有记录仅说明恢复日志仍缺失。；补齐缺失记录后重新核验。。",
+          "sample_id": "phase91-dpo-exact_three_line-04",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：导出归档已由人工确认完成。\n依据：最新验收记录明确写明归档校验值与验收记录一致。\n下一步：登记验收人和时间，保持记录可追溯。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n核对导出归档。最新人工验收记录写明：归档校验值与验收记录一致。请给最终状态。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "false_block",
+          "rejected": "结论：导出归档状态未验证。\n依据：仍无法确认归档校验值与验收记录一致。\n下一步：继续重复检查。",
+          "sample_id": "phase91-dpo-false_block-01",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：访问密钥轮换已由人工确认完成。\n依据：最新验收记录明确写明新指纹已由值班人复核。\n下一步：登记验收人和时间，保持记录可追溯。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n核对访问密钥轮换。最新人工验收记录写明：新指纹已由值班人复核。请给最终状态。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "false_block",
+          "rejected": "结论：访问密钥轮换状态未验证。\n依据：仍无法确认新指纹已由值班人复核。\n下一步：继续重复检查。",
+          "sample_id": "phase91-dpo-false_block-02",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：账目核对已由人工确认完成。\n依据：最新验收记录明确写明差异清单已清零并签字。\n下一步：登记验收人和时间，保持记录可追溯。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n核对账目核对。最新人工验收记录写明：差异清单已清零并签字。请给最终状态。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "false_block",
+          "rejected": "结论：账目核对状态未验证。\n依据：仍无法确认差异清单已清零并签字。\n下一步：继续重复检查。",
+          "sample_id": "phase91-dpo-false_block-03",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：备份恢复已由人工确认完成。\n依据：最新验收记录明确写明恢复演练记录显示校验通过。\n下一步：登记验收人和时间，保持记录可追溯。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n核对备份恢复。最新人工验收记录写明：恢复演练记录显示校验通过。请给最终状态。<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "false_block",
+          "rejected": "结论：备份恢复状态未验证。\n依据：仍无法确认恢复演练记录显示校验通过。\n下一步：继续重复检查。",
+          "sample_id": "phase91-dpo-false_block-04",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：该记录只能标记为 simulated_usage。\n依据：它来自模拟脚本且没有真实用户确认。\n下一步：保持 actual_user_feedback=false，不进入真实反馈统计。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n这条导出归档记录由模拟脚本生成，没有真实用户确认。能否标成 actual_user_feedback？<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "provenance",
+          "rejected": "结论：可以先标记为 actual_user_feedback。\n依据：记录内容看起来可信。\n下一步：稍后再补用户确认。",
+          "sample_id": "phase91-dpo-provenance-01",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：该记录只能标记为 simulated_usage。\n依据：它来自模拟脚本且没有真实用户确认。\n下一步：保持 actual_user_feedback=false，不进入真实反馈统计。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n这条访问密钥轮换记录由模拟脚本生成，没有真实用户确认。能否标成 actual_user_feedback？<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "provenance",
+          "rejected": "结论：可以先标记为 actual_user_feedback。\n依据：记录内容看起来可信。\n下一步：稍后再补用户确认。",
+          "sample_id": "phase91-dpo-provenance-02",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：该记录只能标记为 simulated_usage。\n依据：它来自模拟脚本且没有真实用户确认。\n下一步：保持 actual_user_feedback=false，不进入真实反馈统计。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n这条账目核对记录由模拟脚本生成，没有真实用户确认。能否标成 actual_user_feedback？<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "provenance",
+          "rejected": "结论：可以先标记为 actual_user_feedback。\n依据：记录内容看起来可信。\n下一步：稍后再补用户确认。",
+          "sample_id": "phase91-dpo-provenance-03",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        },
+        {
+          "actual_user_feedback": false,
+          "chosen": "结论：该记录只能标记为 simulated_usage。\n依据：它来自模拟脚本且没有真实用户确认。\n下一步：保持 actual_user_feedback=false，不进入真实反馈统计。",
+          "derived_from_eval_output": false,
+          "instruction": "<|im_start|>system\n你是本地执行状态助手。只输出三行，不得输出其他文字：\n结论：一句当前状态\n依据：一句输入中已有的证据\n下一步：一句可验证动作\n每行一句，总计不超过140个汉字。\n当前任务有缺失、不一致、旧状态、失败或未验收时，必须写“不能确认已完成”或“状态未验证”。\n只有当前任务最新消息明确写人工验收通过或确认完成，才可写完成。不要补写输入中没有的事实。\n模拟使用只能写simulated_usage；不得回显私密值。现在从“结论：”开始。<|im_end|>\n<|im_start|>user\n这条备份恢复记录由模拟脚本生成，没有真实用户确认。能否标成 actual_user_feedback？<|im_end|>\n<|im_start|>assistant\n",
+          "preference_category": "provenance",
+          "rejected": "结论：可以先标记为 actual_user_feedback。\n依据：记录内容看起来可信。\n下一步：稍后再补用户确认。",
+          "sample_id": "phase91-dpo-provenance-04",
+          "sample_type": "dpo",
+          "simulated_usage": true
+        }
+      ]
+    },
+    "metrics": {
+      "duration_seconds": 9.418,
+      "execution_mode": "real_import",
+      "loss": 0.5750453645984331,
+      "loss_history": [
+        {
+          "entropy": 1.3233582973480225,
+          "epoch": 0.08333333333333333,
+          "grad_norm": 12.144501686096191,
+          "learning_rate": 5e-06,
+          "logits/chosen": -2.0737511771065846,
+          "logits/rejected": -1.775110371907552,
+          "logps/chosen": -67.3912353515625,
+          "logps/rejected": -57.845523834228516,
+          "loss": 0.6931537389755249,
+          "mean_token_accuracy": 0.6666666865348816,
+          "num_tokens": 414.0,
+          "rewards/accuracies": 0.0,
+          "rewards/chosen": -1.220703143189894e-05,
+          "rewards/margins": -1.296997106692288e-05,
+          "rewards/rejected": 7.629394644936838e-07,
+          "step": 1
+        },
+        {
+          "entropy": 1.508489966392517,
+          "epoch": 0.16666666666666666,
+          "grad_norm": 13.768239974975586,
+          "learning_rate": 4.914814565722671e-06,
+          "logits/chosen": -1.394614771792763,
+          "logits/rejected": -1.2313006474421575,
+          "logps/chosen": -91.93651580810547,
+          "logps/rejected": -76.73802947998047,
+          "loss": 0.6875218152999878,
+          "mean_token_accuracy": 0.5526315569877625,
+          "num_tokens": 814.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.0064979554153978825,
+          "rewards/margins": 0.01128234900534153,
+          "rewards/rejected": -0.004784393589943647,
+          "step": 2
+        },
+        {
+          "entropy": 1.1506414413452148,
+          "epoch": 0.25,
+          "grad_norm": 11.150623321533203,
+          "learning_rate": 4.665063509461098e-06,
+          "logits/chosen": -2.104929673044305,
+          "logits/rejected": -2.2596933465254936,
+          "logps/chosen": -63.62763977050781,
+          "logps/rejected": -103.87467193603516,
+          "loss": 0.6909242272377014,
+          "mean_token_accuracy": 0.6578947305679321,
+          "num_tokens": 1238.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": -0.002149963518604636,
+          "rewards/margins": 0.004450988955795765,
+          "rewards/rejected": -0.0066009522415697575,
+          "step": 3
+        },
+        {
+          "entropy": 1.4995002746582031,
+          "epoch": 0.3333333333333333,
+          "grad_norm": 10.129477500915527,
+          "learning_rate": 4.267766952966369e-06,
+          "logits/chosen": -1.8999765396118165,
+          "logits/rejected": -1.5897393907819475,
+          "logps/chosen": -71.35914611816406,
+          "logps/rejected": -61.76329040527344,
+          "loss": 0.5636597275733948,
+          "mean_token_accuracy": 0.6499999761581421,
+          "num_tokens": 1644.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.1798751801252365,
+          "rewards/margins": 0.27827149629592896,
+          "rewards/rejected": -0.09839630126953125,
+          "step": 4
+        },
+        {
+          "entropy": 1.358572244644165,
+          "epoch": 0.4166666666666667,
+          "grad_norm": 12.91708755493164,
+          "learning_rate": 3.7500000000000005e-06,
+          "logits/chosen": -1.7031763792037964,
+          "logits/rejected": -1.8897517919540405,
+          "logps/chosen": -65.13172149658203,
+          "logps/rejected": -107.29570007324219,
+          "loss": 0.6317864656448364,
+          "mean_token_accuracy": 0.5625,
+          "num_tokens": 2044.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.020200347527861595,
+          "rewards/margins": 0.1267341673374176,
+          "rewards/rejected": -0.10653381794691086,
+          "step": 5
+        },
+        {
+          "entropy": 1.187778115272522,
+          "epoch": 0.5,
+          "grad_norm": 12.12729549407959,
+          "learning_rate": 3.147047612756302e-06,
+          "logits/chosen": -2.035142786362592,
+          "logits/rejected": -2.1734118742101334,
+          "logps/chosen": -63.65980911254883,
+          "logps/rejected": -111.47296142578125,
+          "loss": 0.6069974303245544,
+          "mean_token_accuracy": 0.5882353186607361,
+          "num_tokens": 2452.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.009409332647919655,
+          "rewards/margins": 0.18042679131031036,
+          "rewards/rejected": -0.17101745307445526,
+          "step": 6
+        },
+        {
+          "entropy": 1.4864912033081055,
+          "epoch": 0.5833333333333334,
+          "grad_norm": 11.495268821716309,
+          "learning_rate": 2.5e-06,
+          "logits/chosen": -1.4408470956902755,
+          "logits/rejected": -1.2924170860877404,
+          "logps/chosen": -87.56990051269531,
+          "logps/rejected": -73.85575866699219,
+          "loss": 0.5346881151199341,
+          "mean_token_accuracy": 0.5526315569877625,
+          "num_tokens": 2852.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.22626952826976776,
+          "rewards/margins": 0.3468437194824219,
+          "rewards/rejected": -0.12057419121265411,
+          "step": 7
+        },
+        {
+          "entropy": 1.4577198028564453,
+          "epoch": 0.6666666666666666,
+          "grad_norm": 11.198684692382812,
+          "learning_rate": 1.852952387243698e-06,
+          "logits/chosen": -1.4434850592362254,
+          "logits/rejected": -1.251003412099985,
+          "logps/chosen": -86.52308654785156,
+          "logps/rejected": -77.26942443847656,
+          "loss": 0.5129068493843079,
+          "mean_token_accuracy": 0.5789473652839661,
+          "num_tokens": 3248.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.2471923828125,
+          "rewards/margins": 0.40027010440826416,
+          "rewards/rejected": -0.15307770669460297,
+          "step": 8
+        },
+        {
+          "entropy": 1.1838542222976685,
+          "epoch": 0.75,
+          "grad_norm": 8.7728910446167,
+          "learning_rate": 1.2500000000000007e-06,
+          "logits/chosen": -2.1366708928888496,
+          "logits/rejected": -1.7656201124191284,
+          "logps/chosen": -67.25064086914062,
+          "logps/rejected": -62.44690704345703,
+          "loss": 0.49686673283576965,
+          "mean_token_accuracy": 0.6363636255264282,
+          "num_tokens": 3670.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.2786209285259247,
+          "rewards/margins": 0.44073450565338135,
+          "rewards/rejected": -0.16211357712745667,
+          "step": 9
+        },
+        {
+          "entropy": 1.4801124334335327,
+          "epoch": 0.8333333333333334,
+          "grad_norm": 11.189138412475586,
+          "learning_rate": 7.322330470336314e-07,
+          "logits/chosen": -1.954530777469758,
+          "logits/rejected": -2.0830240557270665,
+          "logps/chosen": -61.6085319519043,
+          "logps/rejected": -109.11286926269531,
+          "loss": 0.5260260701179504,
+          "mean_token_accuracy": 0.5483871102333069,
+          "num_tokens": 4066.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.031632233411073685,
+          "rewards/margins": 0.3678886592388153,
+          "rewards/rejected": -0.3362564146518707,
+          "step": 10
+        },
+        {
+          "entropy": 1.2417593002319336,
+          "epoch": 0.9166666666666666,
+          "grad_norm": 9.220940589904785,
+          "learning_rate": 3.3493649053890325e-07,
+          "logits/chosen": -2.022266387939453,
+          "logits/rejected": -1.775882601737976,
+          "logps/chosen": -61.88697814941406,
+          "logps/rejected": -56.849266052246094,
+          "loss": 0.4672204554080963,
+          "mean_token_accuracy": 0.6590909361839294,
+          "num_tokens": 4488.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.34337615966796875,
+          "rewards/margins": 0.5182647705078125,
+          "rewards/rejected": -0.17488861083984375,
+          "step": 11
+        },
+        {
+          "entropy": 1.4655649662017822,
+          "epoch": 1.0,
+          "grad_norm": 10.79257583618164,
+          "learning_rate": 8.518543427732951e-08,
+          "logits/chosen": -1.3898034346731085,
+          "logits/rejected": -1.2158437875600963,
+          "logps/chosen": -88.68810272216797,
+          "logps/rejected": -73.91912841796875,
+          "loss": 0.48879274725914,
+          "mean_token_accuracy": 0.5526315569877625,
+          "num_tokens": 4890.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.2994575500488281,
+          "rewards/margins": 0.4614852964878082,
+          "rewards/rejected": -0.1620277464389801,
+          "step": 12
+        },
+        {
+          "epoch": 1.0,
+          "step": 12,
+          "total_flos": 39752541628416.0,
+          "train_loss": 0.5750453645984331,
+          "train_runtime": 9.3283,
+          "train_samples_per_second": 1.286,
+          "train_steps_per_second": 1.286
+        }
+      ],
+      "max_steps": 12,
+      "num_examples": 12,
+      "parameter_fingerprint_after": {
+        "l2_norm": 32.32588333,
+        "parameter_count": 18464768,
+        "sha256": "816ae1be318a722aab49ff19e3985e0f5af95f51cbd47299ec4683c6531e7bd9",
+        "tensor_count": 392
+      },
+      "parameter_fingerprint_before": {
+        "l2_norm": 32.32464711,
+        "parameter_count": 18464768,
+        "sha256": "465f39fddb501f1c034f5aac1f80bf83fea73393a7e3235ab349447294a72142",
+        "tensor_count": 392
+      },
+      "parameters_updated": true,
+      "preference_reinforced_fresh_sample_count": 0,
+      "preference_reinforced_fresh_sample_ids": [],
+      "preference_reinforced_fresh_sample_ratio": 0.0,
+      "status": "completed",
+      "steps": 12
+    },
+    "num_examples": 12,
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step",
+    "real_execution": {
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter",
+      "artifact_kind": "real_dpo",
+      "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_job_manifest.json",
+      "artifacts": {
+        "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter/adapter_config.json",
+        "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_adapter/adapter_model.safetensors",
+        "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/dpo_job_manifest.json",
+        "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/train_metrics.json",
+        "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/real_execution.json",
+        "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/trainer_state.json",
+        "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/training_summary.json"
+      },
+      "device": "mps",
+      "dtype": "float32",
+      "duration_seconds": 9.418,
+      "kind": "real_dpo",
+      "loss_history": [
+        {
+          "entropy": 1.3233582973480225,
+          "epoch": 0.08333333333333333,
+          "grad_norm": 12.144501686096191,
+          "learning_rate": 5e-06,
+          "logits/chosen": -2.0737511771065846,
+          "logits/rejected": -1.775110371907552,
+          "logps/chosen": -67.3912353515625,
+          "logps/rejected": -57.845523834228516,
+          "loss": 0.6931537389755249,
+          "mean_token_accuracy": 0.6666666865348816,
+          "num_tokens": 414.0,
+          "rewards/accuracies": 0.0,
+          "rewards/chosen": -1.220703143189894e-05,
+          "rewards/margins": -1.296997106692288e-05,
+          "rewards/rejected": 7.629394644936838e-07,
+          "step": 1
+        },
+        {
+          "entropy": 1.508489966392517,
+          "epoch": 0.16666666666666666,
+          "grad_norm": 13.768239974975586,
+          "learning_rate": 4.914814565722671e-06,
+          "logits/chosen": -1.394614771792763,
+          "logits/rejected": -1.2313006474421575,
+          "logps/chosen": -91.93651580810547,
+          "logps/rejected": -76.73802947998047,
+          "loss": 0.6875218152999878,
+          "mean_token_accuracy": 0.5526315569877625,
+          "num_tokens": 814.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.0064979554153978825,
+          "rewards/margins": 0.01128234900534153,
+          "rewards/rejected": -0.004784393589943647,
+          "step": 2
+        },
+        {
+          "entropy": 1.1506414413452148,
+          "epoch": 0.25,
+          "grad_norm": 11.150623321533203,
+          "learning_rate": 4.665063509461098e-06,
+          "logits/chosen": -2.104929673044305,
+          "logits/rejected": -2.2596933465254936,
+          "logps/chosen": -63.62763977050781,
+          "logps/rejected": -103.87467193603516,
+          "loss": 0.6909242272377014,
+          "mean_token_accuracy": 0.6578947305679321,
+          "num_tokens": 1238.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": -0.002149963518604636,
+          "rewards/margins": 0.004450988955795765,
+          "rewards/rejected": -0.0066009522415697575,
+          "step": 3
+        },
+        {
+          "entropy": 1.4995002746582031,
+          "epoch": 0.3333333333333333,
+          "grad_norm": 10.129477500915527,
+          "learning_rate": 4.267766952966369e-06,
+          "logits/chosen": -1.8999765396118165,
+          "logits/rejected": -1.5897393907819475,
+          "logps/chosen": -71.35914611816406,
+          "logps/rejected": -61.76329040527344,
+          "loss": 0.5636597275733948,
+          "mean_token_accuracy": 0.6499999761581421,
+          "num_tokens": 1644.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.1798751801252365,
+          "rewards/margins": 0.27827149629592896,
+          "rewards/rejected": -0.09839630126953125,
+          "step": 4
+        },
+        {
+          "entropy": 1.358572244644165,
+          "epoch": 0.4166666666666667,
+          "grad_norm": 12.91708755493164,
+          "learning_rate": 3.7500000000000005e-06,
+          "logits/chosen": -1.7031763792037964,
+          "logits/rejected": -1.8897517919540405,
+          "logps/chosen": -65.13172149658203,
+          "logps/rejected": -107.29570007324219,
+          "loss": 0.6317864656448364,
+          "mean_token_accuracy": 0.5625,
+          "num_tokens": 2044.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.020200347527861595,
+          "rewards/margins": 0.1267341673374176,
+          "rewards/rejected": -0.10653381794691086,
+          "step": 5
+        },
+        {
+          "entropy": 1.187778115272522,
+          "epoch": 0.5,
+          "grad_norm": 12.12729549407959,
+          "learning_rate": 3.147047612756302e-06,
+          "logits/chosen": -2.035142786362592,
+          "logits/rejected": -2.1734118742101334,
+          "logps/chosen": -63.65980911254883,
+          "logps/rejected": -111.47296142578125,
+          "loss": 0.6069974303245544,
+          "mean_token_accuracy": 0.5882353186607361,
+          "num_tokens": 2452.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.009409332647919655,
+          "rewards/margins": 0.18042679131031036,
+          "rewards/rejected": -0.17101745307445526,
+          "step": 6
+        },
+        {
+          "entropy": 1.4864912033081055,
+          "epoch": 0.5833333333333334,
+          "grad_norm": 11.495268821716309,
+          "learning_rate": 2.5e-06,
+          "logits/chosen": -1.4408470956902755,
+          "logits/rejected": -1.2924170860877404,
+          "logps/chosen": -87.56990051269531,
+          "logps/rejected": -73.85575866699219,
+          "loss": 0.5346881151199341,
+          "mean_token_accuracy": 0.5526315569877625,
+          "num_tokens": 2852.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.22626952826976776,
+          "rewards/margins": 0.3468437194824219,
+          "rewards/rejected": -0.12057419121265411,
+          "step": 7
+        },
+        {
+          "entropy": 1.4577198028564453,
+          "epoch": 0.6666666666666666,
+          "grad_norm": 11.198684692382812,
+          "learning_rate": 1.852952387243698e-06,
+          "logits/chosen": -1.4434850592362254,
+          "logits/rejected": -1.251003412099985,
+          "logps/chosen": -86.52308654785156,
+          "logps/rejected": -77.26942443847656,
+          "loss": 0.5129068493843079,
+          "mean_token_accuracy": 0.5789473652839661,
+          "num_tokens": 3248.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.2471923828125,
+          "rewards/margins": 0.40027010440826416,
+          "rewards/rejected": -0.15307770669460297,
+          "step": 8
+        },
+        {
+          "entropy": 1.1838542222976685,
+          "epoch": 0.75,
+          "grad_norm": 8.7728910446167,
+          "learning_rate": 1.2500000000000007e-06,
+          "logits/chosen": -2.1366708928888496,
+          "logits/rejected": -1.7656201124191284,
+          "logps/chosen": -67.25064086914062,
+          "logps/rejected": -62.44690704345703,
+          "loss": 0.49686673283576965,
+          "mean_token_accuracy": 0.6363636255264282,
+          "num_tokens": 3670.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.2786209285259247,
+          "rewards/margins": 0.44073450565338135,
+          "rewards/rejected": -0.16211357712745667,
+          "step": 9
+        },
+        {
+          "entropy": 1.4801124334335327,
+          "epoch": 0.8333333333333334,
+          "grad_norm": 11.189138412475586,
+          "learning_rate": 7.322330470336314e-07,
+          "logits/chosen": -1.954530777469758,
+          "logits/rejected": -2.0830240557270665,
+          "logps/chosen": -61.6085319519043,
+          "logps/rejected": -109.11286926269531,
+          "loss": 0.5260260701179504,
+          "mean_token_accuracy": 0.5483871102333069,
+          "num_tokens": 4066.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.031632233411073685,
+          "rewards/margins": 0.3678886592388153,
+          "rewards/rejected": -0.3362564146518707,
+          "step": 10
+        },
+        {
+          "entropy": 1.2417593002319336,
+          "epoch": 0.9166666666666666,
+          "grad_norm": 9.220940589904785,
+          "learning_rate": 3.3493649053890325e-07,
+          "logits/chosen": -2.022266387939453,
+          "logits/rejected": -1.775882601737976,
+          "logps/chosen": -61.88697814941406,
+          "logps/rejected": -56.849266052246094,
+          "loss": 0.4672204554080963,
+          "mean_token_accuracy": 0.6590909361839294,
+          "num_tokens": 4488.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.34337615966796875,
+          "rewards/margins": 0.5182647705078125,
+          "rewards/rejected": -0.17488861083984375,
+          "step": 11
+        },
+        {
+          "entropy": 1.4655649662017822,
+          "epoch": 1.0,
+          "grad_norm": 10.79257583618164,
+          "learning_rate": 8.518543427732951e-08,
+          "logits/chosen": -1.3898034346731085,
+          "logits/rejected": -1.2158437875600963,
+          "logps/chosen": -88.68810272216797,
+          "logps/rejected": -73.91912841796875,
+          "loss": 0.48879274725914,
+          "mean_token_accuracy": 0.5526315569877625,
+          "num_tokens": 4890.0,
+          "rewards/accuracies": 1.0,
+          "rewards/chosen": 0.2994575500488281,
+          "rewards/margins": 0.4614852964878082,
+          "rewards/rejected": -0.1620277464389801,
+          "step": 12
+        },
+        {
+          "epoch": 1.0,
+          "step": 12,
+          "total_flos": 39752541628416.0,
+          "train_loss": 0.5750453645984331,
+          "train_runtime": 9.3283,
+          "train_samples_per_second": 1.286,
+          "train_steps_per_second": 1.286
+        }
+      ],
+      "max_steps": 12,
+      "message": "DPO training completed successfully",
+      "metrics": {
+        "duration_seconds": 9.418,
+        "execution_mode": "real_import",
+        "loss": 0.5750453645984331,
+        "loss_history": [
+          {
+            "entropy": 1.3233582973480225,
+            "epoch": 0.08333333333333333,
+            "grad_norm": 12.144501686096191,
+            "learning_rate": 5e-06,
+            "logits/chosen": -2.0737511771065846,
+            "logits/rejected": -1.775110371907552,
+            "logps/chosen": -67.3912353515625,
+            "logps/rejected": -57.845523834228516,
+            "loss": 0.6931537389755249,
+            "mean_token_accuracy": 0.6666666865348816,
+            "num_tokens": 414.0,
+            "rewards/accuracies": 0.0,
+            "rewards/chosen": -1.220703143189894e-05,
+            "rewards/margins": -1.296997106692288e-05,
+            "rewards/rejected": 7.629394644936838e-07,
+            "step": 1
+          },
+          {
+            "entropy": 1.508489966392517,
+            "epoch": 0.16666666666666666,
+            "grad_norm": 13.768239974975586,
+            "learning_rate": 4.914814565722671e-06,
+            "logits/chosen": -1.394614771792763,
+            "logits/rejected": -1.2313006474421575,
+            "logps/chosen": -91.93651580810547,
+            "logps/rejected": -76.73802947998047,
+            "loss": 0.6875218152999878,
+            "mean_token_accuracy": 0.5526315569877625,
+            "num_tokens": 814.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.0064979554153978825,
+            "rewards/margins": 0.01128234900534153,
+            "rewards/rejected": -0.004784393589943647,
+            "step": 2
+          },
+          {
+            "entropy": 1.1506414413452148,
+            "epoch": 0.25,
+            "grad_norm": 11.150623321533203,
+            "learning_rate": 4.665063509461098e-06,
+            "logits/chosen": -2.104929673044305,
+            "logits/rejected": -2.2596933465254936,
+            "logps/chosen": -63.62763977050781,
+            "logps/rejected": -103.87467193603516,
+            "loss": 0.6909242272377014,
+            "mean_token_accuracy": 0.6578947305679321,
+            "num_tokens": 1238.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": -0.002149963518604636,
+            "rewards/margins": 0.004450988955795765,
+            "rewards/rejected": -0.0066009522415697575,
+            "step": 3
+          },
+          {
+            "entropy": 1.4995002746582031,
+            "epoch": 0.3333333333333333,
+            "grad_norm": 10.129477500915527,
+            "learning_rate": 4.267766952966369e-06,
+            "logits/chosen": -1.8999765396118165,
+            "logits/rejected": -1.5897393907819475,
+            "logps/chosen": -71.35914611816406,
+            "logps/rejected": -61.76329040527344,
+            "loss": 0.5636597275733948,
+            "mean_token_accuracy": 0.6499999761581421,
+            "num_tokens": 1644.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.1798751801252365,
+            "rewards/margins": 0.27827149629592896,
+            "rewards/rejected": -0.09839630126953125,
+            "step": 4
+          },
+          {
+            "entropy": 1.358572244644165,
+            "epoch": 0.4166666666666667,
+            "grad_norm": 12.91708755493164,
+            "learning_rate": 3.7500000000000005e-06,
+            "logits/chosen": -1.7031763792037964,
+            "logits/rejected": -1.8897517919540405,
+            "logps/chosen": -65.13172149658203,
+            "logps/rejected": -107.29570007324219,
+            "loss": 0.6317864656448364,
+            "mean_token_accuracy": 0.5625,
+            "num_tokens": 2044.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.020200347527861595,
+            "rewards/margins": 0.1267341673374176,
+            "rewards/rejected": -0.10653381794691086,
+            "step": 5
+          },
+          {
+            "entropy": 1.187778115272522,
+            "epoch": 0.5,
+            "grad_norm": 12.12729549407959,
+            "learning_rate": 3.147047612756302e-06,
+            "logits/chosen": -2.035142786362592,
+            "logits/rejected": -2.1734118742101334,
+            "logps/chosen": -63.65980911254883,
+            "logps/rejected": -111.47296142578125,
+            "loss": 0.6069974303245544,
+            "mean_token_accuracy": 0.5882353186607361,
+            "num_tokens": 2452.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.009409332647919655,
+            "rewards/margins": 0.18042679131031036,
+            "rewards/rejected": -0.17101745307445526,
+            "step": 6
+          },
+          {
+            "entropy": 1.4864912033081055,
+            "epoch": 0.5833333333333334,
+            "grad_norm": 11.495268821716309,
+            "learning_rate": 2.5e-06,
+            "logits/chosen": -1.4408470956902755,
+            "logits/rejected": -1.2924170860877404,
+            "logps/chosen": -87.56990051269531,
+            "logps/rejected": -73.85575866699219,
+            "loss": 0.5346881151199341,
+            "mean_token_accuracy": 0.5526315569877625,
+            "num_tokens": 2852.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.22626952826976776,
+            "rewards/margins": 0.3468437194824219,
+            "rewards/rejected": -0.12057419121265411,
+            "step": 7
+          },
+          {
+            "entropy": 1.4577198028564453,
+            "epoch": 0.6666666666666666,
+            "grad_norm": 11.198684692382812,
+            "learning_rate": 1.852952387243698e-06,
+            "logits/chosen": -1.4434850592362254,
+            "logits/rejected": -1.251003412099985,
+            "logps/chosen": -86.52308654785156,
+            "logps/rejected": -77.26942443847656,
+            "loss": 0.5129068493843079,
+            "mean_token_accuracy": 0.5789473652839661,
+            "num_tokens": 3248.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.2471923828125,
+            "rewards/margins": 0.40027010440826416,
+            "rewards/rejected": -0.15307770669460297,
+            "step": 8
+          },
+          {
+            "entropy": 1.1838542222976685,
+            "epoch": 0.75,
+            "grad_norm": 8.7728910446167,
+            "learning_rate": 1.2500000000000007e-06,
+            "logits/chosen": -2.1366708928888496,
+            "logits/rejected": -1.7656201124191284,
+            "logps/chosen": -67.25064086914062,
+            "logps/rejected": -62.44690704345703,
+            "loss": 0.49686673283576965,
+            "mean_token_accuracy": 0.6363636255264282,
+            "num_tokens": 3670.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.2786209285259247,
+            "rewards/margins": 0.44073450565338135,
+            "rewards/rejected": -0.16211357712745667,
+            "step": 9
+          },
+          {
+            "entropy": 1.4801124334335327,
+            "epoch": 0.8333333333333334,
+            "grad_norm": 11.189138412475586,
+            "learning_rate": 7.322330470336314e-07,
+            "logits/chosen": -1.954530777469758,
+            "logits/rejected": -2.0830240557270665,
+            "logps/chosen": -61.6085319519043,
+            "logps/rejected": -109.11286926269531,
+            "loss": 0.5260260701179504,
+            "mean_token_accuracy": 0.5483871102333069,
+            "num_tokens": 4066.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.031632233411073685,
+            "rewards/margins": 0.3678886592388153,
+            "rewards/rejected": -0.3362564146518707,
+            "step": 10
+          },
+          {
+            "entropy": 1.2417593002319336,
+            "epoch": 0.9166666666666666,
+            "grad_norm": 9.220940589904785,
+            "learning_rate": 3.3493649053890325e-07,
+            "logits/chosen": -2.022266387939453,
+            "logits/rejected": -1.775882601737976,
+            "logps/chosen": -61.88697814941406,
+            "logps/rejected": -56.849266052246094,
+            "loss": 0.4672204554080963,
+            "mean_token_accuracy": 0.6590909361839294,
+            "num_tokens": 4488.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.34337615966796875,
+            "rewards/margins": 0.5182647705078125,
+            "rewards/rejected": -0.17488861083984375,
+            "step": 11
+          },
+          {
+            "entropy": 1.4655649662017822,
+            "epoch": 1.0,
+            "grad_norm": 10.79257583618164,
+            "learning_rate": 8.518543427732951e-08,
+            "logits/chosen": -1.3898034346731085,
+            "logits/rejected": -1.2158437875600963,
+            "logps/chosen": -88.68810272216797,
+            "logps/rejected": -73.91912841796875,
+            "loss": 0.48879274725914,
+            "mean_token_accuracy": 0.5526315569877625,
+            "num_tokens": 4890.0,
+            "rewards/accuracies": 1.0,
+            "rewards/chosen": 0.2994575500488281,
+            "rewards/margins": 0.4614852964878082,
+            "rewards/rejected": -0.1620277464389801,
+            "step": 12
+          },
+          {
+            "epoch": 1.0,
+            "step": 12,
+            "total_flos": 39752541628416.0,
+            "train_loss": 0.5750453645984331,
+            "train_runtime": 9.3283,
+            "train_samples_per_second": 1.286,
+            "train_steps_per_second": 1.286
+          }
+        ],
+        "max_steps": 12,
+        "num_examples": 12,
+        "parameter_fingerprint_after": {
+          "l2_norm": 32.32588333,
+          "parameter_count": 18464768,
+          "sha256": "816ae1be318a722aab49ff19e3985e0f5af95f51cbd47299ec4683c6531e7bd9",
+          "tensor_count": 392
+        },
+        "parameter_fingerprint_before": {
+          "l2_norm": 32.32464711,
+          "parameter_count": 18464768,
+          "sha256": "465f39fddb501f1c034f5aac1f80bf83fea73393a7e3235ab349447294a72142",
+          "tensor_count": 392
+        },
+        "parameters_updated": true,
+        "preference_reinforced_fresh_sample_count": 0,
+        "preference_reinforced_fresh_sample_ids": [],
+        "preference_reinforced_fresh_sample_ratio": 0.0,
+        "status": "completed",
+        "steps": 12
+      },
+      "num_examples": 12,
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step",
+      "parameter_fingerprint_after": {
+        "l2_norm": 32.32588333,
+        "parameter_count": 18464768,
+        "sha256": "816ae1be318a722aab49ff19e3985e0f5af95f51cbd47299ec4683c6531e7bd9",
+        "tensor_count": 392
+      },
+      "parameter_fingerprint_before": {
+        "l2_norm": 32.32464711,
+        "parameter_count": 18464768,
+        "sha256": "465f39fddb501f1c034f5aac1f80bf83fea73393a7e3235ab349447294a72142",
+        "tensor_count": 392
+      },
+      "parameters_updated": true,
+      "path": "real_dpo",
+      "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/real_execution.json",
+      "runtime_audit": {
+        "policy_after_lora": {
+          "parameter_count": 1562179072,
+          "parameter_devices": {
+            "mps:0": 1562179072
+          },
+          "parameter_dtypes": {
+            "float32": 1562179072
+          }
+        },
+        "policy_before_lora": {
+          "parameter_count": 1543714304,
+          "parameter_devices": {
+            "mps:0": 1543714304
+          },
+          "parameter_dtypes": {
+            "float32": 1543714304
+          }
+        },
+        "policy_matches_resolution": true,
+        "reference": {
+          "parameter_count": 1543714304,
+          "parameter_devices": {
+            "mps:0": 1543714304
+          },
+          "parameter_dtypes": {
+            "float32": 1543714304
+          }
+        },
+        "reference_matches_resolution": true,
+        "resolved": {
+          "device": "mps",
+          "device_map": {
+            "": "mps"
+          },
+          "dtype": "float32",
+          "requested_device": "mps",
+          "requested_dtype": "float32",
+          "use_cpu": false
+        }
+      },
+      "runtime_path": "real_dpo",
+      "steps": 12,
+      "success": true,
+      "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/training_summary.json",
+      "train_loss": 0.5750453645984331,
+      "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step/trainer_state.json"
+    },
+    "recipe": {
+      "peft": {
+        "dpo_config": {
+          "beta": 0.1,
+          "label_smoothing": 0.0,
+          "max_length": 384,
+          "max_prompt_length": 288
+        },
+        "lora_config": {
+          "lora_alpha": 32,
+          "lora_dropout": 0.05,
+          "r": 16
+        },
+        "trainer_class": "trl.DPOTrainer"
+      },
+      "training": {
+        "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-1.5B-Instruct",
+        "epochs": 1,
+        "incremental_context": {
+          "parent_adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora"
+        },
+        "learning_rate": 5e-06,
+        "max_steps": 12,
+        "method": "lora",
+        "num_train_samples": 12,
+        "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase93-stable-dpo/12step",
+        "runtime_device": "mps",
+        "runtime_dtype": "float32",
+        "train_type": "dpo"
+      }
+    },
+    "status": "completed",
+    "train_loss": 0.5750453645984331,
+    "training_config": {
+      "completed_steps": 12,
+      "device": "mps",
+      "dtype": "float32",
+      "learning_rate": 5e-06,
+      "lora_config": {
+        "lora_alpha": 32,
+        "lora_dropout": 0.05,
+        "r": 16
+      },
+      "max_steps": 12,
+      "runtime_audit": {
+        "policy_after_lora": {
+          "parameter_count": 1562179072,
+          "parameter_devices": {
+            "mps:0": 1562179072
+          },
+          "parameter_dtypes": {
+            "float32": 1562179072
+          }
+        },
+        "policy_before_lora": {
+          "parameter_count": 1543714304,
+          "parameter_devices": {
+            "mps:0": 1543714304
+          },
+          "parameter_dtypes": {
+            "float32": 1543714304
+          }
+        },
+        "policy_matches_resolution": true,
+        "reference": {
+          "parameter_count": 1543714304,
+          "parameter_devices": {
+            "mps:0": 1543714304
+          },
+          "parameter_dtypes": {
+            "float32": 1543714304
+          }
+        },
+        "reference_matches_resolution": true,
+        "resolved": {
+          "device": "mps",
+          "device_map": {
+            "": "mps"
+          },
+          "dtype": "float32",
+          "requested_device": "mps",
+          "requested_dtype": "float32",
+          "use_cpu": false
+        }
+      },
+      "runtime_resolution": {
+        "device": "mps",
+        "device_map": {
+          "": "mps"
+        },
+        "dtype": "float32",
+        "requested_device": "mps",
+        "requested_dtype": "float32",
+        "use_cpu": false
+      }
+    }
+  },
+  "runtime_resolution": {
+    "device": "mps",
+    "device_map": {
+      "": "mps"
+    },
+    "dtype": "float32",
+    "requested_device": "mps",
+    "requested_dtype": "float32",
+    "use_cpu": false
+  },
+  "simulated_usage": true,
+  "starts_independently_from_phase89_parent": true,
+  "status": "completed"
+}

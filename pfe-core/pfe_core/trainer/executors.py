@@ -13,11 +13,15 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
+import hashlib
 import json
+import math
 import os
+import random
 import signal
 import subprocess
 import sys
+import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Mapping
@@ -1121,18 +1125,48 @@ def _resolve_training_sequence_length(config: Any, *, default: int = 192, maximu
     return default
 
 
-def _build_sft_prompt_and_text(tokenizer: Any, instruction: str, chosen: str) -> tuple[str, str]:
-    messages = [{"role": "user", "content": instruction}]
-    full_messages = [*messages, {"role": "assistant", "content": chosen}]
+def _normalize_sft_prompt_messages(value: Any, *, instruction: str) -> list[dict[str, str]]:
+    if value is None:
+        return [{"role": "user", "content": instruction}]
+    if not isinstance(value, list) or not value:
+        raise ValueError("SFT messages must be a non-empty list")
+    messages: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, Mapping):
+            raise ValueError("SFT message entries must be mappings")
+        role = str(item.get("role") or "").strip()
+        content = str(item.get("content") or "").strip()
+        if role not in {"system", "user", "assistant"} or not content:
+            raise ValueError("SFT messages require a supported role and non-empty content")
+        messages.append({"role": role, "content": content})
+    if messages[-1]["role"] != "user":
+        raise ValueError("native multi-turn SFT requires the latest prompt message to be a user turn")
+    return messages
+
+
+def _build_sft_prompt_and_text(
+    tokenizer: Any,
+    instruction: str,
+    chosen: str,
+    *,
+    messages: Any = None,
+) -> tuple[str, str]:
+    prompt_messages = _normalize_sft_prompt_messages(messages, instruction=instruction)
+    full_messages = [*prompt_messages, {"role": "assistant", "content": chosen}]
     apply_chat_template = getattr(tokenizer, "apply_chat_template", None)
     if callable(apply_chat_template):
         try:
-            prompt_text = apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             full_text = apply_chat_template(full_messages, tokenize=False, add_generation_prompt=False)
-            return str(prompt_text), str(full_text)
+            rendered_full = str(full_text)
+            chosen_offset = rendered_full.rfind(chosen) if chosen else -1
+            if chosen_offset >= 0:
+                return rendered_full[:chosen_offset], rendered_full
+            prompt_text = apply_chat_template(prompt_messages, tokenize=False, add_generation_prompt=True)
+            return str(prompt_text), rendered_full
         except Exception:
             pass
-    prompt_text = f"USER: {instruction}\nASSISTANT:"
+    prompt_text = "\n".join(f"{item['role'].upper()}: {item['content']}" for item in prompt_messages)
+    prompt_text = f"{prompt_text}\nASSISTANT:"
     full_text = f"{prompt_text} {chosen}"
     return prompt_text, full_text
 
@@ -1149,15 +1183,27 @@ def _encode_sft_examples(
         for item in training_examples:
             instruction = str(item.get("instruction") or "")
             chosen = str(item.get("chosen") or "")
-            text = (instruction + "\n" + chosen).strip()
-            token_ids = _encode_training_text(text, max_length=max_length, vocab_size=max(vocab_size, 16))
+            prompt_text, full_text = _build_sft_prompt_and_text(
+                tokenizer,
+                instruction,
+                chosen,
+                messages=item.get("messages"),
+            )
+            token_ids = _encode_training_text(full_text, max_length=max_length, vocab_size=max(vocab_size, 16))
+            prompt_ids = _encode_training_text(prompt_text, max_length=max_length, vocab_size=max(vocab_size, 16))
             padded = token_ids + [0] * (max_length - len(token_ids))
             attention = [1] * len(token_ids) + [0] * (max_length - len(token_ids))
+            labels = list(padded)
+            prompt_length = min(max(0, len(prompt_ids) - 1), len(token_ids))
+            for index in range(prompt_length):
+                labels[index] = -100
+            for index in range(len(token_ids), len(labels)):
+                labels[index] = -100
             encoded_rows.append(
                 {
                     "input_ids": padded,
                     "attention_mask": attention,
-                    "labels": list(padded),
+                    "labels": labels,
                 }
             )
         return encoded_rows
@@ -1175,7 +1221,12 @@ def _encode_sft_examples(
     for item in training_examples:
         instruction = str(item.get("instruction") or "")
         chosen = str(item.get("chosen") or "")
-        prompt_text, full_text = _build_sft_prompt_and_text(tokenizer, instruction, chosen)
+        prompt_text, full_text = _build_sft_prompt_and_text(
+            tokenizer,
+            instruction,
+            chosen,
+            messages=item.get("messages"),
+        )
         full = tokenizer(full_text, truncation=True, max_length=max_length, add_special_tokens=False)
         prompt = tokenizer(prompt_text, truncation=True, max_length=max_length, add_special_tokens=False)
         input_ids = [int(token) for token in list(full.get("input_ids") or [])]
@@ -1279,8 +1330,9 @@ def _materialize_toy_peft_job_artifacts(
     runtime_path: str = "toy_local",
     artifact_kind: str = "toy_local_peft",
     manifest_name: str = "peft_job_manifest.json",
-    model_filename: str = "adapter_model.safetensors",
+    model_filename: str = "adapter_metadata.json",
     preserve_existing_adapter_files: bool = False,
+    training_details: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     artifact_dir = output_dir / artifact_subdir
@@ -1301,12 +1353,14 @@ def _materialize_toy_peft_job_artifacts(
         "lora_dropout": 0.05,
         "bias": "none",
     }
+    details = dict(training_details or {})
     train_metrics = {
         "loss": train_loss,
         "num_examples": len(training_examples),
         "execution_mode": execution_mode,
         "status": run_status,
         **preference_summary,
+        **details,
     }
     artifact_payload = {
         "backend": "peft",
@@ -1334,8 +1388,8 @@ def _materialize_toy_peft_job_artifacts(
         json.dumps(
             {
                 "status": run_status,
-                "global_step": max(len(training_examples), 1),
-                "log_history": [{"loss": train_loss, "step": 1}] if train_loss is not None else [],
+                "global_step": int(details.get("steps") or max(len(training_examples), 1)),
+                "log_history": details.get("loss_history") or ([{"loss": train_loss, "step": 1}] if train_loss is not None else []),
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -1357,6 +1411,7 @@ def _materialize_toy_peft_job_artifacts(
                 "adapter_config_path": str(adapter_config_path),
                 "trainer_state_path": str(trainer_state_path),
                 **preference_summary,
+                **details,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -1377,6 +1432,7 @@ def _materialize_toy_peft_job_artifacts(
                 "train_loss": train_loss,
                 "num_examples": len(training_examples),
                 **preference_summary,
+                **details,
             },
             ensure_ascii=False,
             sort_keys=True,
@@ -1418,10 +1474,11 @@ def _materialize_toy_peft_job_artifacts(
         + "\n",
         encoding="utf-8",
     )
+    artifact_key = "adapter_model" if adapter_model_path.suffix in {".safetensors", ".gguf"} else "adapter_metadata"
     return {
         "artifact_dir": str(artifact_dir),
         "artifacts": {
-            "adapter_model": str(adapter_model_path),
+            artifact_key: str(adapter_model_path),
             "adapter_config": str(adapter_config_path),
             "trainer_state": str(trainer_state_path),
             "training_summary": str(summary_path),
@@ -1453,10 +1510,96 @@ def _save_real_peft_adapter(model: Any, artifact_dir: Path) -> dict[str, Any]:
     adapter_config_path = artifact_dir / "adapter_config.json"
     if not adapter_model_path.exists() or not adapter_config_path.exists():
         raise TrainingError("real peft adapter save failed: adapter files were not materialized")
+    from ..adapter_store.quality import validate_adapter_artifact
+
+    validation = validate_adapter_artifact(
+        artifact_dir,
+        {"artifact_name": adapter_model_path.name, "artifact_format": "peft_lora"},
+    )
+    if validation.get("valid") is not True:
+        raise TrainingError(
+            "real peft adapter validation failed: "
+            f"{validation.get('reason') or 'unknown validation error'}"
+        )
     return {
         "adapter_model": str(adapter_model_path),
         "adapter_config": str(adapter_config_path),
+        "adapter_validation": validation,
     }
+
+
+def _trainable_parameter_fingerprint(model: Any) -> dict[str, Any]:
+    digest = hashlib.sha256()
+    parameter_count = 0
+    tensor_count = 0
+    squared_norm = 0.0
+    for name, parameter in model.named_parameters():
+        if not getattr(parameter, "requires_grad", False):
+            continue
+        tensor = parameter.detach().float().cpu().contiguous()
+        digest.update(name.encode("utf-8"))
+        digest.update(tensor.numpy().tobytes())
+        parameter_count += int(tensor.numel())
+        tensor_count += 1
+        squared_norm += float(tensor.square().sum().item())
+    return {
+        "sha256": digest.hexdigest(),
+        "parameter_count": parameter_count,
+        "tensor_count": tensor_count,
+        "l2_norm": round(math.sqrt(max(squared_norm, 0.0)), 8),
+    }
+
+
+def _find_non_finite_trainer_metrics(log_history: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+    problems: list[dict[str, Any]] = []
+    for log_index, item in enumerate(log_history):
+        for key, value in item.items():
+            if key in {"epoch", "step", "num_tokens"}:
+                continue
+            try:
+                numeric = float(value)
+            except (TypeError, ValueError):
+                continue
+            if not math.isfinite(numeric):
+                problems.append({"log_index": log_index, "metric": key, "value": str(value)})
+    return problems
+
+
+def _build_seeded_stratified_training_order(
+    training_examples: list[Mapping[str, Any]],
+    *,
+    seed: int,
+    cycle: int = 0,
+) -> list[int]:
+    """Return a deterministic round-robin order across preference dimensions."""
+
+    groups: dict[str, list[int]] = {}
+    for index, sample in enumerate(training_examples):
+        category = str(
+            sample.get("taxonomy_dimension")
+            or sample.get("category")
+            or sample.get("training_dimension")
+            or "uncategorized"
+        )
+        groups.setdefault(category, []).append(index)
+    randomizer = random.Random(int(seed) + (int(cycle) * 1009))
+    category_order = sorted(groups)
+    randomizer.shuffle(category_order)
+    for category in category_order:
+        randomizer.shuffle(groups[category])
+    result: list[int] = []
+    position = 0
+    while True:
+        added = False
+        for category in category_order:
+            indices = groups[category]
+            if position < len(indices):
+                result.append(indices[position])
+                added = True
+        if not added:
+            break
+        position += 1
+    return result
 
 
 def _run_toy_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
@@ -1594,12 +1737,24 @@ def _run_toy_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
+def _run_real_import_peft_training(
+    job_spec: Mapping[str, Any],
+    *,
+    execution_mode: str = "real_import",
+) -> dict[str, Any]:
     local_source = _resolve_real_local_model_source(job_spec)
     torch = importlib.import_module("torch")
     transformers = importlib.import_module("transformers")
     peft = importlib.import_module("peft")
     accelerate = importlib.import_module("accelerate")
+    recipe = dict(job_spec.get("recipe") or {})
+    training_recipe = dict(recipe.get("training") or {})
+    seed = int(training_recipe.get("seed") or 42)
+    set_seed = getattr(transformers, "set_seed", None)
+    if callable(set_seed):
+        set_seed(seed)
+    elif callable(getattr(torch, "manual_seed", None)):
+        torch.manual_seed(seed)
 
     auto_model_cls = getattr(transformers, "AutoModelForCausalLM", None)
     get_peft_model = getattr(peft, "get_peft_model", None)
@@ -1641,7 +1796,8 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
     model = get_peft_model(model, lora_config)
 
     vocab_size = int(getattr(model.config, "vocab_size", 128) or 128)
-    max_length = _resolve_training_sequence_length(model.config)
+    requested_max_length = int(training_recipe.get("max_length") or 192)
+    max_length = _resolve_training_sequence_length(model.config, default=requested_max_length)
     tokenizer = _load_training_tokenizer(transformers, str(source_path), local_only=local_only)
     encoded_rows = _encode_sft_examples(
         tokenizer=tokenizer,
@@ -1655,20 +1811,46 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
     train_loss: float | None = None
     forward_error: str | None = None
     accelerator = accelerator_cls()
-    optimizer = torch.optim.AdamW([param for param in model.parameters() if getattr(param, "requires_grad", False)], lr=1e-3)
+    learning_rate = float(training_recipe.get("learning_rate") or 1e-3)
+    trainable_parameters = [param for param in model.parameters() if getattr(param, "requires_grad", False)]
+    if not trainable_parameters:
+        raise TrainingError("real peft training has no trainable LoRA parameters")
+    optimizer = torch.optim.AdamW(trainable_parameters, lr=learning_rate)
     try:
         model, optimizer = accelerator.prepare(model, optimizer)
     except Exception:
         pass
+    fingerprint_before = _trainable_parameter_fingerprint(model)
     losses: list[float] = []
-    recipe = dict(job_spec.get("recipe") or {})
-    training_recipe = dict(recipe.get("training") or {})
+    sample_exposure_counts: dict[str, int] = {}
+    category_exposure_counts: dict[str, int] = {}
+    sampling_strategy = str(training_recipe.get("sampling_strategy") or "sequential")
+    exposure_accounting_enabled = len(encoded_rows) == len(training_examples)
     epochs = max(1, int(training_recipe.get("epochs") or 1))
+    requested_steps = training_recipe.get("max_steps")
+    max_steps = max(1, int(requested_steps or (epochs * len(encoded_rows))))
+    started_at = time.perf_counter()
     try:
         model.train()
         device = getattr(accelerator, "device", None)
-        for _epoch in range(epochs):
-            for batch in encoded_rows:
+        cycle = 0
+        if sampling_strategy == "seeded_stratified" and not exposure_accounting_enabled:
+            raise TrainingError(
+                "seeded stratified training requires one encoded row per training example for exposure accounting"
+            )
+        while len(losses) < max_steps:
+            steps_before_cycle = len(losses)
+            if sampling_strategy == "seeded_stratified":
+                order = _build_seeded_stratified_training_order(
+                    training_examples,
+                    seed=seed,
+                    cycle=cycle,
+                )
+            else:
+                order = list(range(len(encoded_rows)))
+            for sample_index in order:
+                batch = encoded_rows[sample_index]
+                sample = training_examples[sample_index] if exposure_accounting_enabled else {}
                 input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
                 attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
                 labels = torch.tensor(batch["labels"], dtype=torch.long).unsqueeze(0)
@@ -1689,7 +1871,25 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
                 else:
                     loss.backward()
                 optimizer.step()
-                losses.append(float(loss.detach().cpu().item()))
+                loss_value = float(loss.detach().cpu().item())
+                if not math.isfinite(loss_value):
+                    raise TrainingError("real peft training produced a non-finite loss")
+                losses.append(loss_value)
+                if exposure_accounting_enabled:
+                    sample_id = str(sample.get("sample_id") or f"sample-{sample_index:04d}")
+                    category = str(
+                        sample.get("taxonomy_dimension")
+                        or sample.get("category")
+                        or sample.get("training_dimension")
+                        or "uncategorized"
+                    )
+                    sample_exposure_counts[sample_id] = sample_exposure_counts.get(sample_id, 0) + 1
+                    category_exposure_counts[category] = category_exposure_counts.get(category, 0) + 1
+                if len(losses) >= max_steps:
+                    break
+            if len(losses) == steps_before_cycle:
+                break
+            cycle += 1
         if losses:
             train_loss = round(float(sum(losses) / len(losses)), 6)
     except Exception as exc:
@@ -1698,6 +1898,12 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
     if train_loss is None:
         reason = forward_error or "model forward pass did not return a loss"
         raise TrainingError(f"real import peft training failed: {reason}")
+
+    duration_seconds = round(time.perf_counter() - started_at, 4)
+    fingerprint_after = _trainable_parameter_fingerprint(model)
+    parameters_updated = fingerprint_before["sha256"] != fingerprint_after["sha256"]
+    if not parameters_updated:
+        raise TrainingError("real peft training completed steps but trainable parameters did not change")
 
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     artifact_dir = output_dir / "peft_lora"
@@ -1709,41 +1915,74 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
         except Exception:
             save_model = model
     saved_artifacts = _save_real_peft_adapter(save_model, artifact_dir)
+    adapter_validation = dict(saved_artifacts.pop("adapter_validation"))
+    loss_history = [
+        {"step": index, "loss": round(value, 6)}
+        for index, value in enumerate(losses, start=1)
+    ]
+    training_details = {
+        "steps": len(losses),
+        "max_steps": max_steps,
+        "learning_rate": learning_rate,
+        "seed": seed,
+        "duration_seconds": duration_seconds,
+        "initial_loss": loss_history[0]["loss"],
+        "final_loss": loss_history[-1]["loss"],
+        "loss_history": loss_history,
+        "trainable_parameter_count": fingerprint_after["parameter_count"],
+        "trainable_tensor_count": fingerprint_after["tensor_count"],
+        "parameter_fingerprint_before": fingerprint_before,
+        "parameter_fingerprint_after": fingerprint_after,
+        "parameters_updated": parameters_updated,
+        "sampling_strategy": sampling_strategy,
+        "exposure_accounting_enabled": exposure_accounting_enabled,
+        "sample_exposure_counts": dict(sorted(sample_exposure_counts.items())),
+        "category_exposure_counts": dict(sorted(category_exposure_counts.items())),
+        "unique_samples_exposed": len(sample_exposure_counts),
+        "unique_categories_exposed": len(category_exposure_counts),
+        "adapter_validation": adapter_validation,
+    }
+    is_local_mode = execution_mode == "real_local"
+    artifact_kind = "real_local_peft" if is_local_mode else "real_peft"
     artifact_bundle = _materialize_toy_peft_job_artifacts(
         output_dir=output_dir,
         job_spec=job_spec,
         training_examples=training_examples,
         train_loss=train_loss,
-        execution_mode="real_import",
+        execution_mode=execution_mode,
         run_status="completed",
         artifact_subdir="peft_lora",
-        runtime_path="real_import",
-        artifact_kind="real_peft",
-        manifest_name="real_peft_job_manifest.json",
+        runtime_path=execution_mode,
+        artifact_kind=artifact_kind,
+        manifest_name="real_local_job_manifest.json" if is_local_mode else "real_peft_job_manifest.json",
+        model_filename="adapter_model.safetensors",
         preserve_existing_adapter_files=True,
+        training_details=training_details,
     )
     return {
         "backend": "peft",
         "dry_run": False,
-        "execution_mode": "real_import",
+        "execution_mode": execution_mode,
         "job_spec": dict(job_spec),
         "recipe": recipe,
         "status": "completed",
         "import_probe": dict(job_spec.get("audit", {}).get("import_probe") or {}),
         "real_execution": {
-            "kind": "real_peft",
-            "path": "real_import",
+            "kind": artifact_kind,
+            "path": execution_mode,
+            "execution_mode": execution_mode,
             "num_examples": len(training_examples),
             "train_loss": train_loss,
             "output_dir": artifact_bundle["artifact_dir"],
             "artifact_dir": artifact_bundle["artifact_dir"],
             "artifacts": {**dict(artifact_bundle["artifacts"]), **saved_artifacts},
+            "adapter_validation": adapter_validation,
             "metrics": dict(artifact_bundle["metrics"]),
             "artifact_manifest_path": artifact_bundle["artifact_manifest_path"],
             "summary_path": artifact_bundle["summary_path"],
             "real_execution_path": artifact_bundle["real_execution_path"],
             "trainer_state_path": artifact_bundle["trainer_state_path"],
-            "runtime_path": artifact_bundle["runtime_path"],
+            "runtime_path": execution_mode,
             "artifact_kind": artifact_bundle["artifact_kind"],
             "source_kind": source_kind,
             "source_path": source_path,
@@ -1753,207 +1992,49 @@ def _run_real_import_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any
             "max_length": max_length,
             "epochs": epochs,
             "steps": len(losses),
+            "max_steps": max_steps,
+            "learning_rate": learning_rate,
+            "seed": seed,
+            "duration_seconds": duration_seconds,
+            "initial_loss": loss_history[0]["loss"],
+            "final_loss": loss_history[-1]["loss"],
+            "loss_history": loss_history,
+            "trainable_parameter_count": fingerprint_after["parameter_count"],
+            "trainable_tensor_count": fingerprint_after["tensor_count"],
+            "parameter_fingerprint_before": fingerprint_before,
+            "parameter_fingerprint_after": fingerprint_after,
+            "parameters_updated": parameters_updated,
+            "sampling_strategy": sampling_strategy,
+            "exposure_accounting_enabled": exposure_accounting_enabled,
+            "sample_exposure_counts": dict(sorted(sample_exposure_counts.items())),
+            "category_exposure_counts": dict(sorted(category_exposure_counts.items())),
+            "unique_samples_exposed": len(sample_exposure_counts),
+            "unique_categories_exposed": len(category_exposure_counts),
             "dependency_ready": True,
             "source_ready": bool(source_path or config_path),
             "executor_ready": True,
             "blocked_by": [],
             "blocking_reasons": [],
             "accelerator": {"class": "Accelerator", "used": True},
+            "device": str(device) if device is not None else "unknown",
             "success": True,
-            "message": "real peft execution completed",
+            "message": f"{artifact_kind} execution completed with optimizer updates",
             "forward_error": forward_error,
         },
     }
 
 
 def _run_real_local_peft_training(job_spec: Mapping[str, Any]) -> dict[str, Any]:
-    local_source = _resolve_real_local_model_source(job_spec)
-    runtime_probe = _probe_real_local_runtime(local_source)
-    if not local_source.get("available"):
-        raise TrainingError("real local training requires a local model/config source")
+    """Run the same real PEFT optimizer path under the local-runtime label."""
 
-    training_examples = list(job_spec.get("training_examples") or [])
-    if not training_examples:
-        raise TrainingError("real local training requires at least one serialized training example")
-
-    if not runtime_probe["dependency_ready"]:
-        output_dir = _resolve_toy_peft_output_dir(job_spec)
-        token_total = sum(
-            len(str(item.get("instruction") or "")) + len(str(item.get("chosen") or ""))
-            for item in training_examples
+    runtime_probe = _probe_real_peft_runtime()
+    if not runtime_probe.get("available"):
+        missing = ", ".join(runtime_probe.get("missing_modules") or []) or "unknown dependencies"
+        raise TrainingError(
+            "real local peft training requires torch, transformers, peft, and accelerate; "
+            f"missing={missing}"
         )
-        train_loss = round(float((token_total + len(training_examples) + 48) / max(len(training_examples), 1)), 6)
-        artifact_bundle = _materialize_toy_peft_job_artifacts(
-            output_dir=output_dir,
-            job_spec=job_spec,
-            training_examples=training_examples,
-            train_loss=train_loss,
-            execution_mode="real_local",
-            run_status="completed",
-            artifact_subdir="real_local_model",
-            runtime_path="real_local",
-            artifact_kind="real_local_peft",
-            manifest_name="real_local_job_manifest.json",
-            model_filename="real_local_model.safetensors",
-        )
-        return {
-            "backend": "peft",
-            "dry_run": False,
-            "execution_mode": "real_local",
-            "job_spec": dict(job_spec),
-            "recipe": dict(job_spec.get("recipe") or {}),
-            "status": "completed",
-            "import_probe": dict(job_spec.get("audit", {}).get("import_probe") or {}),
-            "real_execution": {
-                "kind": "real_local_peft",
-                "path": "real_local",
-                "num_examples": len(training_examples),
-                "train_loss": train_loss,
-                "output_dir": artifact_bundle["artifact_dir"],
-                "artifact_dir": artifact_bundle["artifact_dir"],
-                "artifacts": dict(artifact_bundle["artifacts"]),
-                "metrics": dict(artifact_bundle["metrics"]),
-                "artifact_manifest_path": artifact_bundle["artifact_manifest_path"],
-                "summary_path": artifact_bundle["summary_path"],
-                "real_execution_path": artifact_bundle["real_execution_path"],
-                "trainer_state_path": artifact_bundle["trainer_state_path"],
-                "runtime_path": artifact_bundle["runtime_path"],
-                "artifact_kind": artifact_bundle["artifact_kind"],
-                "source_kind": local_source["source_kind"],
-                "source_path": local_source["source_path"],
-                "config_path": local_source["config_path"],
-                "load_mode": local_source["load_mode"],
-                "dependency_ready": False,
-                "source_ready": True,
-                "executor_ready": True,
-                "blocked_by": list(runtime_probe.get("blocked_by") or []),
-                "blocking_reasons": list(runtime_probe.get("blocking_reasons") or []),
-                "success": True,
-                "message": "real local artifact materialization completed; torch/transformers runtime unavailable",
-            },
-        }
-
-    torch = importlib.import_module("torch")
-    transformers = importlib.import_module("transformers")
-
-    auto_config_cls = getattr(transformers, "AutoConfig", None)
-    auto_model_cls = getattr(transformers, "AutoModelForCausalLM", None)
-    if None in (auto_config_cls, auto_model_cls):
-        raise TrainingError("transformers runtime is missing AutoConfig or AutoModelForCausalLM for local training")
-
-    source_path = local_source.get("source_path")
-    config_path = local_source.get("config_path")
-    model = None
-    load_mode = str(local_source.get("load_mode") or "unavailable")
-    load_kwargs = _build_local_model_load_kwargs(local_only=bool(local_source.get("local_only", True)))
-    if source_path is not None:
-        try:
-            model = auto_model_cls.from_pretrained(source_path, **load_kwargs)
-            load_mode = "from_pretrained"
-        except Exception:
-            model = None
-
-    if model is None:
-        config_candidate = config_path or source_path
-        if config_candidate is None:
-            raise TrainingError("real local training requires a local model directory or config path")
-        config = auto_config_cls.from_pretrained(config_candidate, local_files_only=True)
-        model = auto_model_cls.from_config(config)
-        load_mode = "from_config"
-
-    vocab_size = int(getattr(model.config, "vocab_size", 128) or 128)
-    max_length = _resolve_model_sequence_length(model.config)
-    encoded_rows: list[dict[str, Any]] = []
-    for item in training_examples:
-        instruction = str(item.get("instruction") or "")
-        chosen = str(item.get("chosen") or "")
-        text = (instruction + "\n" + chosen).strip()
-        token_ids = _encode_training_text(text, max_length=max_length, vocab_size=max(vocab_size, 16))
-        padded = token_ids + [0] * (max_length - len(token_ids))
-        attention = [1] * len(token_ids) + [0] * (max_length - len(token_ids))
-        encoded_rows.append(
-            {
-                "input_ids": padded,
-                "attention_mask": attention,
-                "labels": list(padded),
-            }
-        )
-
-    recipe = dict(job_spec.get("recipe") or {})
-    output_dir = _resolve_toy_peft_output_dir(job_spec)
-    output_dir.mkdir(parents=True, exist_ok=True)
-    train_loss: float | None = None
-    forward_error: str | None = None
-    try:
-        batch = encoded_rows[0]
-        input_ids = torch.tensor(batch["input_ids"], dtype=torch.long).unsqueeze(0)
-        attention_mask = torch.tensor(batch["attention_mask"], dtype=torch.long).unsqueeze(0)
-        labels = torch.tensor(batch["labels"], dtype=torch.long).unsqueeze(0)
-        model.eval()
-        with torch.no_grad():
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask, labels=labels)
-        loss = getattr(outputs, "loss", None)
-        if loss is not None:
-            train_loss = float(loss.detach().cpu().item())
-    except Exception as exc:
-        forward_error = f"{exc.__class__.__name__}: {exc}"
-
-    if train_loss is None:
-        reason = forward_error or "model forward pass did not return a loss"
-        raise TrainingError(f"real local peft training failed: {reason}")
-
-    artifact_bundle = _materialize_toy_peft_job_artifacts(
-        output_dir=output_dir,
-        job_spec=job_spec,
-        training_examples=training_examples,
-        train_loss=train_loss,
-        execution_mode="real_local",
-        run_status="completed",
-        artifact_subdir="real_local_model",
-        runtime_path="real_local",
-        artifact_kind="real_local_peft",
-        manifest_name="real_local_job_manifest.json",
-        model_filename="real_local_model.safetensors",
-    )
-    return {
-        "backend": "peft",
-        "dry_run": False,
-        "execution_mode": "real_local",
-        "job_spec": dict(job_spec),
-        "recipe": recipe,
-        "status": "completed",
-        "import_probe": dict(job_spec.get("audit", {}).get("import_probe") or {}),
-        "real_execution": {
-            "kind": "real_local_peft",
-            "path": "real_local",
-            "num_examples": len(training_examples),
-            "train_loss": train_loss,
-            "output_dir": artifact_bundle["artifact_dir"],
-            "artifact_dir": artifact_bundle["artifact_dir"],
-            "artifacts": dict(artifact_bundle["artifacts"]),
-            "metrics": dict(artifact_bundle["metrics"]),
-            "artifact_manifest_path": artifact_bundle["artifact_manifest_path"],
-            "summary_path": artifact_bundle["summary_path"],
-            "real_execution_path": artifact_bundle["real_execution_path"],
-            "trainer_state_path": artifact_bundle["trainer_state_path"],
-            "runtime_path": artifact_bundle["runtime_path"],
-            "artifact_kind": artifact_bundle["artifact_kind"],
-            "source_kind": local_source["source_kind"],
-            "source_path": local_source["source_path"],
-            "config_path": local_source["config_path"],
-            "load_mode": load_mode,
-            "dependency_ready": runtime_probe["available"],
-            "source_ready": bool(local_source.get("available")),
-            "executor_ready": True,
-            "blocked_by": [],
-            "blocking_reasons": [],
-            "success": True,
-            "message": "real local training completed",
-            "forward_error": forward_error,
-        },
-    }
-
-
+    return _run_real_import_peft_training(job_spec, execution_mode="real_local")
 def execute_peft_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -> dict[str, Any]:
     recipe = dict(job_spec.get("recipe") or {})
     import_probe = dict(job_spec.get("audit", {}).get("import_probe") or {})
@@ -2405,6 +2486,82 @@ def run_materialized_training_job_bundle(
     )
 
 
+def resolve_dpo_runtime_config(
+    *,
+    requested_device: str,
+    requested_dtype: str,
+    cuda_available: bool,
+    mps_available: bool,
+) -> dict[str, Any]:
+    """Resolve a DPO runtime without mixing an accelerator dtype with a CPU device."""
+    device_request = str(requested_device or "auto").strip().lower()
+    dtype_request = str(requested_dtype or "auto").strip().lower()
+    if device_request not in {"auto", "cpu", "cuda", "mps"}:
+        raise TrainingError(f"unsupported DPO runtime device: {device_request}")
+    if dtype_request not in {"auto", "float16", "float32", "bfloat16"}:
+        raise TrainingError(f"unsupported DPO runtime dtype: {dtype_request}")
+
+    if device_request == "auto":
+        device = "cuda" if cuda_available else ("mps" if mps_available else "cpu")
+    else:
+        device = device_request
+    if device == "cuda" and not cuda_available:
+        raise TrainingError("requested DPO runtime device cuda is unavailable")
+    if device == "mps" and not mps_available:
+        raise TrainingError("requested DPO runtime device mps is unavailable")
+
+    if dtype_request == "auto":
+        dtype = "float16" if device == "cuda" else "float32"
+    else:
+        dtype = dtype_request
+    if device == "cpu" and dtype == "float16":
+        raise TrainingError("CPU float16 is not allowed for DPO because it is numerically unstable")
+    if device == "mps" and dtype == "bfloat16":
+        raise TrainingError("MPS bfloat16 is not supported by the PFE DPO runtime")
+
+    return {
+        "requested_device": device_request,
+        "requested_dtype": dtype_request,
+        "device": device,
+        "dtype": dtype,
+        "device_map": "auto" if device == "cuda" else {"": device},
+        "use_cpu": device == "cpu",
+    }
+
+
+class _DPOTrainingDiagnosticError(TrainingError):
+    def __init__(self, message: str, diagnostics: Mapping[str, Any]) -> None:
+        super().__init__(message)
+        self.diagnostics = dict(diagnostics)
+
+
+def _model_device_dtype_summary(model: Any) -> dict[str, Any]:
+    devices: dict[str, int] = {}
+    dtypes: dict[str, int] = {}
+    for parameter in model.parameters():
+        device = str(parameter.device)
+        dtype = str(parameter.dtype).removeprefix("torch.")
+        devices[device] = devices.get(device, 0) + int(parameter.numel())
+        dtypes[dtype] = dtypes.get(dtype, 0) + int(parameter.numel())
+    return {
+        "parameter_devices": devices,
+        "parameter_dtypes": dtypes,
+        "parameter_count": sum(devices.values()),
+    }
+
+
+def _runtime_summary_matches(summary: Mapping[str, Any], resolution: Mapping[str, Any]) -> bool:
+    expected_device = str(resolution["device"])
+    expected_dtype = str(resolution["dtype"])
+    devices = list(dict(summary.get("parameter_devices") or {}))
+    dtypes = list(dict(summary.get("parameter_dtypes") or {}))
+    device_matches = all(
+        device == expected_device or device.startswith(f"{expected_device}:")
+        for device in devices
+    )
+    return bool(devices) and device_matches and dtypes == [expected_dtype]
+
+
 def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -> dict[str, Any]:
     """Execute DPO training using trl.DPOTrainer.
 
@@ -2432,6 +2589,31 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
     label_smoothing = dpo_config.get("label_smoothing", 0.0)
     max_length = dpo_config.get("max_length", 2048)
     max_prompt_length = dpo_config.get("max_prompt_length", 1024)
+    lora_config = dict(peft_config.get("lora_config") or {})
+    use_cpu = bool(training.get("use_cpu") or job_spec.get("use_cpu"))
+    requested_device = "cpu" if use_cpu else str(
+        training.get("runtime_device") or job_spec.get("runtime_device") or "auto"
+    )
+    requested_dtype = str(
+        training.get("runtime_dtype") or job_spec.get("runtime_dtype") or "auto"
+    )
+    torch_module = None
+    try:
+        import torch as torch_module
+    except ModuleNotFoundError:
+        if not dry_run:
+            raise
+
+    runtime_resolution = resolve_dpo_runtime_config(
+        requested_device=requested_device,
+        requested_dtype=requested_dtype,
+        cuda_available=bool(torch_module and torch_module.cuda.is_available()),
+        mps_available=bool(
+            torch_module
+            and getattr(torch_module.backends, "mps", None)
+            and torch_module.backends.mps.is_available()
+        ),
+    )
 
     # Extract training examples
     training_examples = list(job_spec.get("training_examples") or [])
@@ -2459,6 +2641,12 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
                 "max_length": max_length,
                 "max_prompt_length": max_prompt_length,
             },
+            "training_config": {
+                "learning_rate": training.get("learning_rate", 5e-5),
+                "lora_config": lora_config,
+                "use_cpu": runtime_resolution["use_cpu"],
+                "runtime_resolution": runtime_resolution,
+            },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
             "num_examples": len(training_examples),
@@ -2475,8 +2663,10 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             label_smoothing=label_smoothing,
             max_length=max_length,
             max_prompt_length=max_prompt_length,
+            runtime_resolution=runtime_resolution,
         )
     except Exception as exc:
+        diagnostics = dict(getattr(exc, "diagnostics", {}) or {})
         return {
             "backend": "dpo",
             "dry_run": False,
@@ -2485,11 +2675,23 @@ def execute_dpo_training(*, job_spec: Mapping[str, Any], dry_run: bool = True) -
             "recipe": recipe,
             "status": "failed",
             "error": f"{exc.__class__.__name__}: {exc}",
+            "failure_diagnostics": diagnostics,
+            "real_execution": {
+                "kind": "real_dpo",
+                "success": False,
+                **diagnostics,
+            },
             "dpo_config": {
                 "beta": beta,
                 "label_smoothing": label_smoothing,
                 "max_length": max_length,
                 "max_prompt_length": max_prompt_length,
+            },
+            "training_config": {
+                "learning_rate": training.get("learning_rate", 5e-5),
+                "lora_config": lora_config,
+                "use_cpu": runtime_resolution["use_cpu"],
+                "runtime_resolution": runtime_resolution,
             },
             "base_model": base_model_name,
             "base_adapter_path": base_adapter_path,
@@ -2507,6 +2709,7 @@ def _run_real_dpo_training(
     label_smoothing: float,
     max_length: int,
     max_prompt_length: int,
+    runtime_resolution: Mapping[str, Any],
 ) -> dict[str, Any]:
     """Run actual DPO training with trl.DPOTrainer.
 
@@ -2531,9 +2734,12 @@ def _run_real_dpo_training(
     if not training_examples:
         raise TrainingError("DPO training requires at least one training example")
 
-    # Determine device and dtype
-    device_map = "auto" if torch.cuda.is_available() else {"": "cpu"}
-    torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    recipe = dict(job_spec.get("recipe") or {})
+    training_recipe = dict(recipe.get("training") or {})
+    peft_recipe = dict(recipe.get("peft") or {})
+    use_cpu = bool(runtime_resolution["use_cpu"])
+    device_map = runtime_resolution["device_map"]
+    torch_dtype = getattr(torch, str(runtime_resolution["dtype"]))
 
     # Load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(base_model_name, trust_remote_code=True)
@@ -2552,6 +2758,7 @@ def _run_real_dpo_training(
     if base_adapter_path and Path(base_adapter_path).exists():
         model = PeftModel.from_pretrained(model, base_adapter_path)
         model = model.merge_and_unload()
+    policy_runtime_before_lora = _model_device_dtype_summary(model)
 
     # Create reference model (frozen copy of base model with SFT adapter)
     ref_model = AutoModelForCausalLM.from_pretrained(
@@ -2563,6 +2770,23 @@ def _run_real_dpo_training(
     if base_adapter_path and Path(base_adapter_path).exists():
         ref_model = PeftModel.from_pretrained(ref_model, base_adapter_path)
         ref_model = ref_model.merge_and_unload()
+    reference_runtime = _model_device_dtype_summary(ref_model)
+    runtime_audit = {
+        "resolved": dict(runtime_resolution),
+        "policy_before_lora": policy_runtime_before_lora,
+        "reference": reference_runtime,
+        "policy_matches_resolution": _runtime_summary_matches(
+            policy_runtime_before_lora, runtime_resolution
+        ),
+        "reference_matches_resolution": _runtime_summary_matches(
+            reference_runtime, runtime_resolution
+        ),
+    }
+    if not runtime_audit["policy_matches_resolution"] or not runtime_audit["reference_matches_resolution"]:
+        raise _DPOTrainingDiagnosticError(
+            "DPO model device/dtype does not match the resolved runtime",
+            {"runtime_audit": runtime_audit, "steps": 0},
+        )
 
     # Determine target modules based on base model architecture
     model_name_lower = base_model_name.lower()
@@ -2573,16 +2797,23 @@ def _run_real_dpo_training(
     else:
         target_modules = ["q_proj", "v_proj"]
 
+    lora_recipe = dict(peft_recipe.get("lora_config") or {})
+    lora_r = int(lora_recipe.get("r", 16))
+    lora_alpha = int(lora_recipe.get("lora_alpha", 32))
+    lora_dropout = float(lora_recipe.get("lora_dropout", 0.05))
+
     # Apply LoRA configuration for DPO training
     lora_config = LoraConfig(
-        r=16,
-        lora_alpha=32,
+        r=lora_r,
+        lora_alpha=lora_alpha,
         target_modules=target_modules,
-        lora_dropout=0.05,
+        lora_dropout=lora_dropout,
         bias="none",
         task_type=TaskType.CAUSAL_LM,
     )
     model = get_peft_model(model, lora_config)
+    runtime_audit["policy_after_lora"] = _model_device_dtype_summary(model)
+    fingerprint_before = _trainable_parameter_fingerprint(model)
 
     # Prepare DPO dataset
     dpo_data = {
@@ -2606,9 +2837,9 @@ def _run_real_dpo_training(
     train_dataset = Dataset.from_dict(dpo_data)
 
     # Setup training arguments
-    recipe = dict(job_spec.get("recipe") or {})
-    training_recipe = dict(recipe.get("training") or {})
     epochs = training_recipe.get("epochs", 3)
+    max_steps = max(1, int(training_recipe.get("max_steps") or (int(epochs) * len(dpo_data["prompt"]))))
+    learning_rate = float(training_recipe.get("learning_rate", 5e-5))
     output_dir = _resolve_toy_peft_output_dir(job_spec)
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -2622,15 +2853,18 @@ def _run_real_dpo_training(
         training_args = DPOConfig(
             output_dir=str(output_dir),
             num_train_epochs=epochs,
+            max_steps=max_steps,
             per_device_train_batch_size=1,
             gradient_accumulation_steps=1,
-            learning_rate=5e-5,
+            learning_rate=learning_rate,
             max_grad_norm=0.3,
             warmup_steps=0,
             lr_scheduler_type="cosine",
             logging_steps=1,
             save_strategy="no",
-            fp16=torch.cuda.is_available(),
+            bf16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "bfloat16",
+            fp16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "float16",
+            use_cpu=use_cpu,
             remove_unused_columns=False,
             dataloader_pin_memory=False,
             run_name="pfe-dpo-training",
@@ -2643,15 +2877,18 @@ def _run_real_dpo_training(
         training_args = TrainingArguments(
             output_dir=str(output_dir),
             num_train_epochs=epochs,
+            max_steps=max_steps,
             per_device_train_batch_size=1,
             gradient_accumulation_steps=4,
-            learning_rate=5e-5,
+            learning_rate=learning_rate,
             max_grad_norm=0.3,
             warmup_ratio=0.03,
             lr_scheduler_type="cosine",
             logging_steps=10,
             save_strategy="epoch",
-            fp16=torch.cuda.is_available(),
+            bf16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "bfloat16",
+            fp16=runtime_resolution["device"] == "cuda" and runtime_resolution["dtype"] == "float16",
+            use_cpu=use_cpu,
             remove_unused_columns=False,
             dataloader_pin_memory=False,
             run_name="pfe-dpo-training",
@@ -2682,8 +2919,41 @@ def _run_real_dpo_training(
     trainer = DPOTrainer(**dpo_kwargs)
 
     # Train
+    started_at = time.perf_counter()
     train_result = trainer.train()
+    duration_seconds = round(time.perf_counter() - started_at, 4)
     train_loss = getattr(train_result, "training_loss", None)
+    fingerprint_after = _trainable_parameter_fingerprint(model)
+    parameters_updated = fingerprint_before["sha256"] != fingerprint_after["sha256"]
+    if not parameters_updated:
+        raise TrainingError("real DPO training completed but trainable parameters did not change")
+    completed_steps = int(getattr(getattr(trainer, "state", None), "global_step", 0) or 0)
+    trainer_log_history = [
+        dict(item)
+        for item in (getattr(getattr(trainer, "state", None), "log_history", None) or [])
+        if isinstance(item, Mapping)
+    ]
+    non_finite_metrics = _find_non_finite_trainer_metrics(trainer_log_history)
+    if non_finite_metrics:
+        first = non_finite_metrics[0]
+        raise _DPOTrainingDiagnosticError(
+            "real DPO training produced non-finite trainer metrics; "
+            f"first={first['metric']}:{first['value']} at log_index={first['log_index']}",
+            {
+                "steps": completed_steps,
+                "max_steps": max_steps,
+                "duration_seconds": duration_seconds,
+                "train_loss": train_loss,
+                "loss_history": trainer_log_history,
+                "non_finite_metrics": non_finite_metrics,
+                "parameter_fingerprint_before": fingerprint_before,
+                "parameter_fingerprint_after": fingerprint_after,
+                "parameters_updated": parameters_updated,
+                "device": runtime_resolution["device"],
+                "dtype": runtime_resolution["dtype"],
+                "runtime_audit": runtime_audit,
+            },
+        )
 
     # Save adapter
     artifact_dir = output_dir / "dpo_adapter"
@@ -2701,7 +2971,17 @@ def _run_real_dpo_training(
         runtime_path="real_dpo",
         artifact_kind="real_dpo",
         manifest_name="dpo_job_manifest.json",
+        model_filename="adapter_model.safetensors",
         preserve_existing_adapter_files=True,
+        training_details={
+            "steps": completed_steps,
+            "max_steps": max_steps,
+            "duration_seconds": duration_seconds,
+            "loss_history": trainer_log_history,
+            "parameter_fingerprint_before": fingerprint_before,
+            "parameter_fingerprint_after": fingerprint_after,
+            "parameters_updated": parameters_updated,
+        },
     )
 
     return {
@@ -2716,6 +2996,20 @@ def _run_real_dpo_training(
             "label_smoothing": label_smoothing,
             "max_length": max_length,
             "max_prompt_length": max_prompt_length,
+        },
+        "training_config": {
+            "learning_rate": learning_rate,
+            "max_steps": max_steps,
+            "completed_steps": completed_steps,
+            "device": runtime_resolution["device"],
+            "dtype": runtime_resolution["dtype"],
+            "runtime_resolution": dict(runtime_resolution),
+            "runtime_audit": runtime_audit,
+            "lora_config": {
+                "r": lora_r,
+                "lora_alpha": lora_alpha,
+                "lora_dropout": lora_dropout,
+            },
         },
         "base_model": base_model_name,
         "base_adapter_path": base_adapter_path,
@@ -2740,6 +3034,16 @@ def _run_real_dpo_training(
             "trainer_state_path": artifact_bundle["trainer_state_path"],
             "runtime_path": artifact_bundle["runtime_path"],
             "artifact_kind": artifact_bundle["artifact_kind"],
+            "duration_seconds": duration_seconds,
+            "max_steps": max_steps,
+            "steps": completed_steps,
+            "device": runtime_resolution["device"],
+            "dtype": runtime_resolution["dtype"],
+            "runtime_audit": runtime_audit,
+            "parameter_fingerprint_before": fingerprint_before,
+            "parameter_fingerprint_after": fingerprint_after,
+            "parameters_updated": parameters_updated,
+            "loss_history": trainer_log_history,
             "success": True,
             "message": "DPO training completed successfully",
         },

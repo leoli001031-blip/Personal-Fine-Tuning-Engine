@@ -1,0 +1,94 @@
+{
+  "calibration_accuracy_gate": 0.97,
+  "calibration_allowed_only_after_preflight_pass": true,
+  "candidate_selection_exact_match_gate": 0.9,
+  "categories": [
+    "separate_atomic_candidates",
+    "shared_atomic_candidate",
+    "postposed_negation_candidates",
+    "reported_claim_exclusion",
+    "operational_fact_exclusion"
+  ],
+  "composer_received_ungrounded_atom_gate": 0,
+  "false_accept_gate_on_reject_cases": 0,
+  "fixture_semantic_ambiguity_gate": 0,
+  "flat_json_schema_template": {
+    "additionalProperties": false,
+    "properties": {
+      "reason": {
+        "type": "string"
+      },
+      "source_registration_candidate_id": {
+        "enum": [
+          "none",
+          "p001"
+        ],
+        "type": "string"
+      },
+      "test_to_user_outcome_relation_candidate_id": {
+        "enum": [
+          "none",
+          "p003"
+        ],
+        "type": "string"
+      },
+      "user_outcome_status_candidate_id": {
+        "enum": [
+          "none",
+          "p002"
+        ],
+        "type": "string"
+      }
+    },
+    "required": [
+      "source_registration_candidate_id",
+      "user_outcome_status_candidate_id",
+      "test_to_user_outcome_relation_candidate_id"
+    ],
+    "type": "object"
+  },
+  "frozen_retry_limit_per_failed_item": 2,
+  "hard_rule_safe_false_positive_gate": 0,
+  "hermes_attachment_allowed": false,
+  "holdout_accuracy_gate": 0.95,
+  "holdout_allowed_only_after_calibration_qualification": true,
+  "holdout_may_be_called_once": true,
+  "invalid_dangerous_atom_gate": 0,
+  "kind": "phase60_frozen_flat_schema_compatibility_protocol",
+  "num_ctx": 4096,
+  "num_predict": 192,
+  "one_independent_call_per_item_per_judge": true,
+  "parallel_worker_count": 4,
+  "per_category_accuracy_gate": 0.9,
+  "per_field_accuracy_gate": 0.95,
+  "phase59_candidate_semantics_changed": false,
+  "phase59_detector_composer_segmenter_changed": false,
+  "phase59_failure_basis": {
+    "failed_judge_alias": "semantic_judge_beta",
+    "failed_judge_item_count": 30,
+    "failure_class": "nested_candidate_schema_protocol_incompatibility",
+    "raw_invalid_responses_were_preserved": false
+  },
+  "post_model_call_tuning_allowed": false,
+  "preflight_all_outputs_must_validate": true,
+  "preflight_expected_judge_item_count": 12,
+  "preflight_item_count": 6,
+  "preflight_scored_as_calibration": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "b0df0ecfcd8240d8cbdf62f9574df5f8b99e760c0cea9d8843c66e06bb4941d3",
+  "raw_schema_failure_capture_required": true,
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "structural_change": "top_level_string_candidate_ids_only",
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "typed_exact_match_gate": 0.9
+}

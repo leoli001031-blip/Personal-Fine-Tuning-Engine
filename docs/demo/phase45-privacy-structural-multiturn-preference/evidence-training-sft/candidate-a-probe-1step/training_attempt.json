@@ -1,0 +1,204 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback": false,
+  "adapter_validation": {
+    "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora/adapter_model.safetensors",
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora",
+    "format": "safetensors",
+    "lora_tensor_count": 504,
+    "parameter_count": 33030144,
+    "parameters_updated": true,
+    "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora/adapter_model.safetensors",
+    "reason": null,
+    "sha256": "eaf3e90665a02c9f4b7bdafd41d750fbce609f8e6edba37b663ab8443fabe46a",
+    "size_bytes": 132187888,
+    "steps": 1,
+    "tensor_count": 504,
+    "valid": true
+  },
+  "auto_promotion_allowed": false,
+  "candidate_eligible": false,
+  "candidate_id": "candidate_a",
+  "duration_seconds": 5.942,
+  "execution": {
+    "accelerator": {
+      "class": "Accelerator",
+      "used": true
+    },
+    "adapter_validation": {
+      "format": "safetensors",
+      "lora_tensor_count": 504,
+      "parameter_count": 33030144,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora/adapter_model.safetensors",
+      "reason": null,
+      "size_bytes": 132187888,
+      "tensor_count": 504,
+      "valid": true
+    },
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora",
+    "artifact_kind": "real_local_peft",
+    "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/real_local_job_manifest.json",
+    "artifacts": {
+      "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora/adapter_config.json",
+      "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora/adapter_model.safetensors",
+      "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/real_local_job_manifest.json",
+      "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/train_metrics.json",
+      "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/real_execution.json",
+      "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/trainer_state.json",
+      "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/training_summary.json"
+    },
+    "blocked_by": [],
+    "blocking_reasons": [],
+    "category_exposure_counts": {
+      "privacy_non_echo": 1
+    },
+    "config_path": null,
+    "dependency_ready": true,
+    "device": "mps",
+    "duration_seconds": 1.1148,
+    "epochs": 1,
+    "execution_mode": "real_local",
+    "executor_ready": true,
+    "exposure_accounting_enabled": true,
+    "final_loss": 9.145088,
+    "forward_error": null,
+    "initial_loss": 9.145088,
+    "kind": "real_local_peft",
+    "learning_rate": 1e-05,
+    "load_mode": "from_pretrained",
+    "loss_history": [
+      {
+        "loss": 9.145088,
+        "step": 1
+      }
+    ],
+    "max_length": 512,
+    "max_steps": 1,
+    "message": "real_local_peft execution completed with optimizer updates",
+    "metrics": {
+      "adapter_validation": {
+        "format": "safetensors",
+        "lora_tensor_count": 504,
+        "parameter_count": 33030144,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "size_bytes": 132187888,
+        "tensor_count": 504,
+        "valid": true
+      },
+      "category_exposure_counts": {
+        "privacy_non_echo": 1
+      },
+      "duration_seconds": 1.1148,
+      "execution_mode": "real_local",
+      "exposure_accounting_enabled": true,
+      "final_loss": 9.145088,
+      "initial_loss": 9.145088,
+      "learning_rate": 1e-05,
+      "loss": 9.145088,
+      "loss_history": [
+        {
+          "loss": 9.145088,
+          "step": 1
+        }
+      ],
+      "max_steps": 1,
+      "num_examples": 160,
+      "parameter_fingerprint_after": {
+        "l2_norm": 36.65598886,
+        "parameter_count": 33030144,
+        "sha256": "c0795d14ea974b536ab6f6cee2a7b3e53239767feac5d704239a6c06dbfee4a6",
+        "tensor_count": 504
+      },
+      "parameter_fingerprint_before": {
+        "l2_norm": 36.65596776,
+        "parameter_count": 33030144,
+        "sha256": "c755b36b7e0caed609fe2553df8863501bb46c03ba9ac8b3beefd4f346035dec",
+        "tensor_count": 504
+      },
+      "parameters_updated": true,
+      "preference_reinforced_fresh_sample_count": 0,
+      "preference_reinforced_fresh_sample_ids": [],
+      "preference_reinforced_fresh_sample_ratio": 0.0,
+      "sample_exposure_counts": {
+        "phase45-sample-019": 1
+      },
+      "sampling_strategy": "seeded_stratified",
+      "seed": 45,
+      "status": "completed",
+      "steps": 1,
+      "trainable_parameter_count": 33030144,
+      "trainable_tensor_count": 504,
+      "unique_categories_exposed": 1,
+      "unique_samples_exposed": 1
+    },
+    "num_examples": 160,
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/peft_lora",
+    "parameter_fingerprint_after": {
+      "l2_norm": 36.65598886,
+      "parameter_count": 33030144,
+      "sha256": "c0795d14ea974b536ab6f6cee2a7b3e53239767feac5d704239a6c06dbfee4a6",
+      "tensor_count": 504
+    },
+    "parameter_fingerprint_before": {
+      "l2_norm": 36.65596776,
+      "parameter_count": 33030144,
+      "sha256": "c755b36b7e0caed609fe2553df8863501bb46c03ba9ac8b3beefd4f346035dec",
+      "tensor_count": 504
+    },
+    "parameters_updated": true,
+    "path": "real_local",
+    "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/real_execution.json",
+    "runtime_path": "real_local",
+    "sample_exposure_counts": {
+      "phase45-sample-019": 1
+    },
+    "sampling_strategy": "seeded_stratified",
+    "seed": 45,
+    "source_kind": "path",
+    "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "source_ready": true,
+    "steps": 1,
+    "success": true,
+    "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/training_summary.json",
+    "tokenizer_loaded": true,
+    "train_loss": 9.145088,
+    "trainable_parameter_count": 33030144,
+    "trainable_tensor_count": 504,
+    "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase45-candidate-a-probe-1step/trainer_state.json",
+    "unique_categories_exposed": 1,
+    "unique_samples_exposed": 1
+  },
+  "exposure": {
+    "actual_step_count": 1,
+    "category_exposure_counts": {
+      "privacy_non_echo": 1
+    },
+    "category_exposure_spread": 0,
+    "eligible_as_final_candidate": false,
+    "full_coverage": false,
+    "kind": "phase45_actual_exposure_report",
+    "maximum_sample_exposure": 1,
+    "minimum_sample_exposure": 1,
+    "requested_steps": 1,
+    "sample_exposure_counts": {
+      "phase45-sample-019": 1
+    },
+    "sampling_strategy": "seeded_stratified",
+    "source_sample_count": 160,
+    "unique_categories_exposed": 1,
+    "unique_samples_exposed": 1
+  },
+  "finished_at": "2026-07-12T13:21:04.773056+00:00",
+  "kind": "phase45_qwen3_4b_sft_training_attempt",
+  "learning_rate": 1e-05,
+  "max_rss_after_bytes": 16534568960,
+  "max_rss_before_bytes": 517013504,
+  "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "real_training": true,
+  "requested_steps": 1,
+  "seed": 45,
+  "simulated_usage": true,
+  "started_at": "2026-07-12T13:20:58.831056+00:00",
+  "status": "completed"
+}

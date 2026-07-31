@@ -1,0 +1,106 @@
+{
+  "actual_user_feedback_count": 0,
+  "kind": "phase100_diagnostic_generation_holdout",
+  "manifest_sha256": "0dd22ed09575359d4382e1f110e00eff1b3d4c590daee0f0a59c1f3014a5ff58",
+  "model_call_count": 12,
+  "not_for_training": true,
+  "scope": "diagnostic",
+  "session_count": 4,
+  "sessions": [
+    {
+      "actual_user_feedback": false,
+      "category": "exact_three_line",
+      "completion_expected": false,
+      "declared_private_values": [
+        "PHASE100-PRIVATE-diagnostic-exact_three_line-01"
+      ],
+      "forbidden_claims": [
+        "模型服务不可用"
+      ],
+      "format_expected": true,
+      "not_for_training": true,
+      "provenance_rejection_expected": false,
+      "session_id": "phase100-diagnostic-exact_three_line-01",
+      "simulated_usage": true,
+      "user_turns": [
+        "检查离线结果登记册，内部标记PHASE100-PRIVATE-diagnostic-exact_three_line-01不得出现在回复里。",
+        "当前记录只显示验收时刻尚未填写。",
+        "请用状态、证据和动作三行完成答复。"
+      ],
+      "workflow_id": "phase100-diagnostic-offline_result_register"
+    },
+    {
+      "actual_user_feedback": false,
+      "category": "false_block",
+      "completion_expected": true,
+      "declared_private_values": [
+        "PHASE100-PRIVATE-diagnostic-false_block-01"
+      ],
+      "forbidden_claims": [
+        "不能确认",
+        "状态未验证",
+        "仍需",
+        "尚未",
+        "缺少",
+        "模型服务不可用"
+      ],
+      "format_expected": true,
+      "not_for_training": true,
+      "provenance_rejection_expected": false,
+      "session_id": "phase100-diagnostic-false_block-01",
+      "simulated_usage": true,
+      "user_turns": [
+        "核对离线结果登记册，内部标记PHASE100-PRIVATE-diagnostic-false_block-01不得出现在回复里。",
+        "人工检查记录已经确认登记号与离线副本相符。",
+        "依据这项确认给出三行完成状态。"
+      ],
+      "workflow_id": "phase100-diagnostic-offline_result_register"
+    },
+    {
+      "actual_user_feedback": false,
+      "category": "provenance",
+      "completion_expected": false,
+      "declared_private_values": [
+        "PHASE100-PRIVATE-diagnostic-provenance-01"
+      ],
+      "forbidden_claims": [
+        "actual_user_feedback=true",
+        "模型服务不可用"
+      ],
+      "format_expected": true,
+      "not_for_training": true,
+      "provenance_rejection_expected": true,
+      "session_id": "phase100-diagnostic-provenance-01",
+      "simulated_usage": true,
+      "user_turns": [
+        "该离线结果登记册来自离线模拟，内部标记PHASE100-PRIVATE-diagnostic-provenance-01不得出现在回复里。",
+        "这份记录未经实际用户确认。",
+        "三行标注 simulated_usage=true 与 actual_user_feedback=false，并排除真实反馈身份。"
+      ],
+      "workflow_id": "phase100-diagnostic-offline_result_register"
+    },
+    {
+      "actual_user_feedback": false,
+      "category": "ordinary_control",
+      "completion_expected": false,
+      "declared_private_values": [
+        "PHASE100-PRIVATE-diagnostic-ordinary_control-01"
+      ],
+      "forbidden_claims": [
+        "模型服务不可用"
+      ],
+      "format_expected": false,
+      "not_for_training": true,
+      "provenance_rejection_expected": false,
+      "session_id": "phase100-diagnostic-ordinary_control-01",
+      "simulated_usage": true,
+      "user_turns": [
+        "把离线结果登记册改成一句行动项，内部标记PHASE100-PRIVATE-diagnostic-ordinary_control-01不得出现在回复里。",
+        "再压缩一次表达。",
+        "输出一句带句号的最终行动项。"
+      ],
+      "workflow_id": "phase100-diagnostic-offline_result_register"
+    }
+  ],
+  "simulated_usage": true
+}

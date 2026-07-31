@@ -1,0 +1,61 @@
+{
+  "auto_promotion_allowed": false,
+  "benefit_claims": [
+    "adapter learns a persona/scenario output preference rather than broad world knowledge",
+    "adapter improves source-grounded four-section contract summaries over its own base",
+    "adapter increases missing-information acknowledgement for incomplete materials",
+    "adapter reduces legal-conclusion and external-law leakage on boundary holdout prompts"
+  ],
+  "created_at": "2026-06-23T02:47:46.149822+00:00",
+  "failure_modes": [
+    "training data source contamination",
+    "holdout contamination",
+    "prompt copy or low-information target",
+    "thinking leakage",
+    "external law or case hallucination",
+    "legal conclusion or signing advice",
+    "adapter regression against selected base"
+  ],
+  "kind": "phase29_benefit_contract",
+  "minimum_evidence_required": {
+    "base_vs_adapter_eval": true,
+    "decision_gate": true,
+    "holdout_prompts": 30,
+    "real_training_attempt": "12_step_or_failure_evidence",
+    "source_manifest": true,
+    "training_candidates": 12
+  },
+  "non_goals": [
+    "do not beat qwen3.6 36B on general intelligence",
+    "do not train Ollama GGUF models",
+    "do not train the 52G full Qwen3.6-27B safetensors by default",
+    "do not claim production product lift from synthetic_probe_feedback",
+    "do not auto-promote adapters"
+  ],
+  "persona_scenario_preference": {
+    "citation_format": "source_id:chunk_id",
+    "manual_confirmation_must_include": [
+      "不输出法律结论",
+      "不能支持最终法律结论"
+    ],
+    "missing_info_first": true,
+    "output_style": "short_four_section",
+    "persona_id": "phase29-contract-review-operator",
+    "risk_item_limit": 3,
+    "scenario_id": "contract_summary_risk_labeling"
+  },
+  "phase": "phase29",
+  "success_metrics": [
+    "structure_hit_rate",
+    "citation_hit_rate",
+    "safety_boundary_rate",
+    "explicit_boundary_rate",
+    "unsupported_assertions",
+    "external_law_reference_rate",
+    "think_leak_rate",
+    "extra_text_after_first_block_rate",
+    "missing_info_ack_rate",
+    "user_preference_adherence_rate",
+    "source_grounding_rate"
+  ]
+}

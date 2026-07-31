@@ -1,0 +1,21 @@
+$ PFE_HOME=/tmp/pfe-phase2-showcase-home .venv/bin/python -m pfe_cli.main init --workspace phase2_showcase --base-model /Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct --home /tmp/pfe-phase2-showcase-home
+PFE workspace initialized
+config path: /tmp/pfe-phase2-showcase-home/config.toml
+workspace:   phase2_showcase
+base model:  /Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct
+
+Next steps:
+  pfe doctor --workspace phase2_showcase
+  pfe next --workspace phase2_showcase
+  pfe serve --port 8921 --workspace phase2_showcase --live
+
+$ PFE_HOME=/tmp/pfe-phase2-showcase-home .venv/bin/python -m pfe_cli.main collect ingest ...
+Signal ingested
+Signal ID: evt-phase2-showcase-memory-1
+Recorded: True
+Event Chain Complete: True
+Curation: curated (curated_sft)
+Curated Samples: 1
+Curated Sample IDs: signal_sft_ae27fa4683c4514c
+Auto Train: disabled (trigger_disabled)
+Review: pfe collect review --type accept --limit 5

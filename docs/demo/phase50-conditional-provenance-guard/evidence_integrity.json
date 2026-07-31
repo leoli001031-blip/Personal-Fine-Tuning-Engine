@@ -1,0 +1,129 @@
+{
+  "actual_human_review_completed": false,
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "auto_promotion_allowed": false,
+  "auto_training_allowed": false,
+  "blind": {
+    "comparison_counts": {
+      "conditional_vs_compact_v1_on_trigger": 32,
+      "conditional_vs_global_v2_on_passthrough": 32
+    },
+    "expected_pair_count": 64,
+    "identity_hidden_from_judge": true,
+    "kind": "phase50_blind_integrity_check",
+    "pair_count": 64,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "router_and_scorer_frozen": true,
+    "source_checks": {
+      "phase45_privacy_source": true,
+      "phase46_generic_scorer_source": true,
+      "phase48_compact_v1_source": true,
+      "phase49_provenance_scorer_source": true,
+      "phase50_router_source": true
+    }
+  },
+  "created_at": "2026-07-13T11:42:40.467091+00:00",
+  "critical_evidence_file_count": 98,
+  "critical_evidence_manifest_sha256": "6d347e0c01b16fa544c667f20cb2d975f5ca3cc8007fd16917a2415645d0813b",
+  "decision": "hold_conditional_provenance_guard_evaluator_unstable",
+  "independent_judge_completed_pair_count": 64,
+  "invalidated_privacy_fixture_attempt": {
+    "failed_privacy_session_ids": [
+      "phase50-formal2-holdout-privacy_non_echo-01",
+      "phase50-formal2-holdout-privacy_non_echo-02"
+    ],
+    "formal_result_eligible": false,
+    "holdout_sha256": "5eed9e5ddb664e408540e4ef645cf0abe6d44758b49cacebdf1f1bbc8d1461c3",
+    "passed": true,
+    "qwen_real_model_calls": 192,
+    "reason": "The fresh synthetic canary used an unsupported prefix, so the frozen privacy transform did not redact it. The run stopped after the first arm and is excluded from formal comparison.",
+    "status": "invalidated_and_preserved"
+  },
+  "invalidated_scorer_attempt": {
+    "formal_result_eligible": false,
+    "gemma_real_model_calls": 64,
+    "holdout_sha256": "c73f3431c4d0f368c2e2eed41f073849189d147101077af00f9d52837754eedd",
+    "passed": true,
+    "qwen_real_model_calls": 576,
+    "reason": "Phase49 scorer missed explicit negated provenance boundaries and accepted generic human-verification language without an actual-user or product-benefit relation.",
+    "status": "invalidated_and_preserved"
+  },
+  "kind": "phase50_evidence_integrity",
+  "passed": true,
+  "phase49_canonical": {
+    "manifest_matches_snapshot": true,
+    "mismatch_count": 0,
+    "mismatches": [],
+    "passed": true,
+    "recommendation": "hold_provenance_compact_v2"
+  },
+  "posthoc_evaluator_audit": {
+    "label_agreement_rate": 0.2188,
+    "posthoc_review_can_promote": false,
+    "review_count": 32,
+    "status": "frozen_scorer_invalidated_for_formal_promotion",
+    "unsafe_source_elevation_count": 7
+  },
+  "premodel_router_status": "passed",
+  "prompt_parity_status": "passed",
+  "provenance_scorer_calibration": {
+    "case_count": 36,
+    "exact_label_accuracy": 1.0,
+    "status": "passed"
+  },
+  "real_router_status": "passed",
+  "router_calibration": {
+    "case_count": 40,
+    "exact_decision_accuracy": 1.0,
+    "status": "passed"
+  },
+  "split_integrity_passed": true,
+  "training_status": "skipped_by_design",
+  "transcripts": [
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase50-conditional-provenance-guard/evidence-real-runtime-ablation/transcripts_base_compact_v1.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "route_sequence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "compact_v1_latest_intent",
+      "sha256": "793d59166e15dc7b519cfb806f17b2880637cd8c76c6b544602228d37a0ff4dc",
+      "unique_session_id_count": 64,
+      "variant": "base_compact_v1"
+    },
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase50-conditional-provenance-guard/evidence-real-runtime-ablation/transcripts_base_global_v2.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "route_sequence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "global_v2_evidence_boundary",
+      "sha256": "465bc1b29983badbca5cc17687b2e3e87166f6d07e3e054b1af9adf5ba9f12fe",
+      "unique_session_id_count": 64,
+      "variant": "base_global_v2"
+    },
+    {
+      "actual_model_call_count": 192,
+      "canary_leak_session_ids": [],
+      "passed": true,
+      "path": "/Users/lichenhao/Desktop/PFE/docs/demo/phase50-conditional-provenance-guard/evidence-real-runtime-ablation/transcripts_base_conditional_guard.jsonl",
+      "placeholder_leak_session_ids": [],
+      "privacy_persistence_failure_ids": [],
+      "route_sequence_failure_ids": [],
+      "row_count": 64,
+      "runtime_mode": "conditional_provenance_router",
+      "sha256": "dcc105e658553d4e2d63396d03b223613d7a8742229143a4b76be361b7d1580e",
+      "unique_session_id_count": 64,
+      "variant": "base_conditional_guard"
+    }
+  ]
+}

@@ -30,6 +30,8 @@
 
 | 文档 | 说明 |
 |------|------|
+| [demo/phase2-demo-runbook.md](demo/phase2-demo-runbook.md) | Phase2 现场 Demo 路径：Studio、记忆样本、训练、自动评估、promote 和 base/local API 对比 |
+| [demo/showcase/phase2-product-showcase.md](demo/showcase/phase2-product-showcase.md) | Phase2 产品展示包：真实 Studio 截图、smoke 输出、eval/promote 证据和 base/local API 对比 |
 | [guides/openai-closed-loop-integration.md](guides/openai-closed-loop-integration.md) | 如何接入 OpenAI 兼容接口并保持闭环 |
 | [guides/auto-loop-policy.md](guides/auto-loop-policy.md) | 自动训练 / 评测 / promote 策略配置 |
 | [guides/chat-collector.md](guides/chat-collector.md) | ChatCollector 的信号采集方式 |

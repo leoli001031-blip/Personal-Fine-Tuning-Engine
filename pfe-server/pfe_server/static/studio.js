@@ -9,6 +9,11 @@ const state = {
   evalStatus: null,
   trainingPreflight: null,
   trainingJobs: null,
+  phase3: null,
+  phase3Plan: null,
+  phase4: null,
+  phase4Candidates: null,
+  phase4Eval: null,
   status: null,
   errors: [],
 };
@@ -178,7 +183,7 @@ function buildHandoffText() {
 
 const issueCopy = {
   needs_local_path: "先选择模型文件夹",
-  real_local_inference_disabled: "点“使用本地模型回复”后生效",
+  real_local_inference_disabled: "点“本地回复”后生效",
   runtime_dependencies_missing: "本机推理依赖未安装",
   missing: "找不到这个模型文件夹",
   model_path_not_found: "找不到这个模型文件夹",
@@ -210,13 +215,13 @@ function summaryTextFor(readiness) {
     return "先选择模型文件夹，然后复制 API 或网页地址。";
   }
   if (blockers.includes("real_local_inference_disabled")) {
-    return "API 和网页地址可用；需要本地模型回复时，点“使用本地模型回复”。";
+    return "API 和网页地址已就绪；需要本地回复时再打开本地模型。";
   }
   if (blockers.includes("runtime_dependencies_missing")) {
     return "API 和网页地址可用；本地模型回复还需要安装推理依赖。";
   }
   if (summary.label === "可继续") {
-    return "本机服务可用，API 和网页地址已就绪。";
+    return "本机服务可用，结果证据和接入地址已整理好。";
   }
   return summary.text || "本机服务已就绪。";
 }
@@ -321,7 +326,7 @@ function renderRealLocalToggle() {
   const button = $("realLocalToggleButton");
   const inference = state.readiness && state.readiness.inference ? state.readiness.inference : null;
   const enabled = Boolean(inference && inference.real_local_enabled);
-  button.textContent = enabled ? "暂停本地模型回复" : "使用本地模型回复";
+  button.textContent = enabled ? "暂停回复" : "本地回复";
   button.disabled = !inference;
 }
 
@@ -494,7 +499,7 @@ function renderAdapters() {
   text("adapterBaseModelValue", adapterShort(adapters.base_model || (current && current.base_model) || (pendingEval && pendingEval.base_model)));
   text("adapterLatestValue", current && current.version ? current.version : "无");
   text("adapterPendingValue", pendingEval && pendingEval.version ? pendingEval.version : "无");
-  text("adapterLoadedValue", adapters.adapter_loaded ? "true" : "false");
+  text("adapterLoadedValue", adapters.adapter_loaded ? "是" : "否");
   const list = $("versionList");
   list.textContent = "";
   const versions = Array.isArray(adapters.versions) ? adapters.versions : [];
@@ -506,7 +511,7 @@ function renderAdapters() {
     pill("adapterStatus", "需确认", "warn");
     return;
   }
-  for (const item of versions.slice(0, 8)) {
+  for (const item of versions.slice(0, 4)) {
     const row = document.createElement("article");
     row.className = "version-item";
     const top = document.createElement("div");
@@ -742,6 +747,234 @@ function renderTrainingPreflight() {
   startButton.disabled = !ready;
 }
 
+function renderPhase3() {
+  const phase3 = state.phase3 || {};
+  const personas = Array.isArray(phase3.personas) ? phase3.personas : [];
+  const scenarios = Array.isArray(phase3.scenarios) ? phase3.scenarios : [];
+  const personaSelect = $("phase3PersonaSelect");
+  const scenarioSelect = $("phase3ScenarioSelect");
+  const previousPersona = personaSelect && personaSelect.value ? personaSelect.value : "";
+  const previousScenario = scenarioSelect && scenarioSelect.value ? scenarioSelect.value : "";
+  if (personaSelect) {
+    personaSelect.textContent = "";
+    for (const persona of personas.length ? personas : [{ persona_id: "ops-analyst", name: "ops-analyst" }]) {
+      const option = document.createElement("option");
+      option.value = persona.persona_id || "";
+      option.textContent = persona.name || persona.persona_id || "-";
+      option.selected = option.value === previousPersona;
+      personaSelect.appendChild(option);
+    }
+    if (!personaSelect.value && personaSelect.options.length) personaSelect.options[0].selected = true;
+  }
+  if (scenarioSelect) {
+    scenarioSelect.textContent = "";
+    for (const scenario of scenarios.length ? scenarios : [{ scenario_id: "contract-risk-summary", name: "contract-risk-summary" }]) {
+      const option = document.createElement("option");
+      option.value = scenario.scenario_id || "";
+      option.textContent = scenario.name || scenario.scenario_id || "-";
+      option.selected = option.value === previousScenario;
+      scenarioSelect.appendChild(option);
+    }
+    if (!scenarioSelect.value && scenarioSelect.options.length) scenarioSelect.options[0].selected = true;
+  }
+  const signals = Array.isArray(phase3.signals) ? phase3.signals : [];
+  const eligibleCount = Number(phase3.eligible_training_count || 0);
+  const plan = state.phase3Plan || phase3.latest_plan || null;
+  text("phase3CandidateValue", plan ? ((plan.candidate_adapter && plan.candidate_adapter.state) || "planned") + " / " + (plan.sample_count || 0) + " samples" : eligibleCount + " 个候选信号");
+  const evalGate = plan && plan.eval_gate ? plan.eval_gate : {};
+  text("phase3EvalValue", evalGate.current_state || (eligibleCount ? "可生成计划" : "等待信号"));
+  pill("phase3Status", eligibleCount ? "有候选" : "采集中", eligibleCount ? "ok" : "warn");
+  const list = $("phase3SignalList");
+  if (!list) return;
+  list.textContent = "";
+  if (!signals.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "还没有 Phase3 信号";
+    list.appendChild(empty);
+    return;
+  }
+  for (const signal of signals.slice(0, 4)) {
+    const row = document.createElement("article");
+    row.className = "signal-row";
+    const top = document.createElement("div");
+    top.className = "signal-top";
+    const type = document.createElement("strong");
+    type.textContent = signal.signal_type || "signal";
+    const badge = document.createElement("span");
+    badge.className = "status-pill " + (signal.eligible_for_training ? "ok" : "warn");
+    badge.textContent = signal.eligible_for_training ? "train" : "review";
+    top.append(type, badge);
+    const meta = document.createElement("div");
+    meta.className = "signal-meta";
+    const route = signal.route || {};
+    const lanes = Array.isArray(route.lanes) ? route.lanes.join(" / ") : "-";
+    meta.textContent = lanes + " / " + (route.reason || route.excluded_reason || "已记录");
+    row.append(top, meta);
+    list.appendChild(row);
+  }
+}
+
+async function addPhase3DemoSignal() {
+  $("phase3AddSignalButton").disabled = true;
+  const selectedScenario = $("phase3ScenarioSelect") && $("phase3ScenarioSelect").value ? $("phase3ScenarioSelect").value : "contract-risk-summary";
+  try {
+    await postJson("/pfe/phase3/signals", {
+      signal_type: "edit",
+      user_input: "请整理合同交付条款：乙方需 7 日内交付，逾期每日按合同总价 1% 承担违约金。",
+      model_output: "该条款没有风险，可以直接签。",
+      corrected_output: "摘要：乙方需 7 日内交付。风险提示：逾期违约金口径和上限需人工确认。本输出不是法律结论。",
+      confidence: 0.9,
+      metadata: {
+        scenario_id: selectedScenario,
+        source: "studio_demo_signal",
+      },
+      scenario_id: selectedScenario,
+    });
+    state.phase3 = await loadJson("/pfe/phase3");
+    toast("已采集示例信号");
+  } catch (error) {
+    toast("采集失败");
+  }
+  $("phase3AddSignalButton").disabled = false;
+  render();
+}
+
+async function buildPhase3Plan() {
+  $("phase3PlanButton").disabled = true;
+  const selectedPersona = $("phase3PersonaSelect") && $("phase3PersonaSelect").value ? $("phase3PersonaSelect").value : "ops-analyst";
+  const selectedScenario = $("phase3ScenarioSelect") && $("phase3ScenarioSelect").value ? $("phase3ScenarioSelect").value : "contract-risk-summary";
+  try {
+    state.phase3Plan = await postJson("/pfe/phase3/candidate-plan", {
+      persona_id: selectedPersona,
+      scenario_id: selectedScenario,
+      limit: 12,
+    });
+    state.phase3 = await loadJson("/pfe/phase3");
+    toast(state.phase3Plan.sample_count ? "训练计划已生成" : "还没有可训练信号");
+  } catch (error) {
+    toast("生成计划失败");
+  }
+  $("phase3PlanButton").disabled = false;
+  render();
+}
+
+function renderPhase4() {
+  const phase4 = state.phase4 || {};
+  const sourceCount = Number(phase4.source_count || 0);
+  const chunkCount = Number(phase4.chunk_count || 0);
+  const candidateCount = Number(phase4.training_candidate_count || 0);
+  const eligibleCount = Number(phase4.eligible_training_candidate_count || 0);
+  const adapter = phase4.candidate_adapter || {};
+  const latestEval = state.phase4Eval || phase4.latest_eval_report || null;
+  const evalGate = (latestEval && latestEval.eval_gate) || phase4.eval_gate || {};
+  const delta = latestEval && latestEval.scores && latestEval.scores.local_delta
+    ? latestEval.scores.local_delta
+    : {};
+  text("phase4SourcesValue", sourceCount);
+  text("phase4ChunksValue", chunkCount);
+  text("phase4CandidatesValue", candidateCount ? candidateCount + " / " + eligibleCount + " train" : "0");
+  text("phase4AdapterValue", adapter.version ? adapter.version + " / " + (adapter.state || "planned") : "未生成");
+  text("phase4EvalDeltaValue", delta.citation_hit_rate != null ? "citation +" + delta.citation_hit_rate : "未评测");
+  text("phase4GateValue", evalGate.status || (eligibleCount ? "可评测" : "等待资料"));
+  const statusLabel = evalGate.status === "pass"
+    ? "通过"
+    : eligibleCount
+      ? "可评测"
+      : sourceCount
+        ? "可生成"
+        : "采集中";
+  const statusTone = evalGate.status === "pass" || eligibleCount ? "ok" : "warn";
+  pill("phase4Status", statusLabel, statusTone);
+
+  const list = $("phase4SourceList");
+  if (list) {
+    list.textContent = "";
+    const sources = Array.isArray(phase4.sources) ? phase4.sources : [];
+    if (!sources.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "还没有 Phase4 资料";
+      list.appendChild(empty);
+    } else {
+      for (const source of sources.slice(0, 3)) {
+        const row = document.createElement("article");
+        row.className = "corpus-row";
+        const top = document.createElement("div");
+        top.className = "signal-top";
+        const name = document.createElement("strong");
+        name.textContent = source.title || source.source_id || "source";
+        const badge = document.createElement("span");
+        badge.className = "status-pill ok";
+        badge.textContent = source.source_type || "source";
+        top.append(name, badge);
+        const meta = document.createElement("div");
+        meta.className = "signal-meta";
+        meta.textContent = [source.source_id, source.license_status].filter(Boolean).join(" / ") || "已采集";
+        row.append(top, meta);
+        list.appendChild(row);
+      }
+    }
+  }
+  const generateButton = $("phase4GenerateButton");
+  const evalButton = $("phase4EvalButton");
+  if (generateButton) generateButton.disabled = !sourceCount;
+  if (evalButton) evalButton.disabled = !eligibleCount;
+}
+
+async function addPhase4DemoSource() {
+  $("phase4AddSourceButton").disabled = true;
+  try {
+    await postJson("/pfe/phase4/sources", { demo: true });
+    state.phase4 = await loadJson("/pfe/phase4");
+    toast("已采集资料");
+  } catch (error) {
+    toast("采集失败");
+  }
+  $("phase4AddSourceButton").disabled = false;
+  render();
+}
+
+async function generatePhase4Candidates() {
+  $("phase4GenerateButton").disabled = true;
+  try {
+    state.phase4Candidates = await postJson("/pfe/phase4/training-candidates", {
+      limit: 12,
+      export: true,
+    });
+    await postJson("/pfe/phase4/candidate-plan", {}).catch(() => null);
+    state.phase4 = await loadJson("/pfe/phase4");
+    toast(state.phase4Candidates.eligible_count ? "训练样本已生成" : "没有可训练样本");
+  } catch (error) {
+    toast("生成失败");
+  }
+  $("phase4GenerateButton").disabled = false;
+  render();
+}
+
+async function runPhase4Eval() {
+  $("phase4EvalButton").disabled = true;
+  try {
+    let adapter = state.phase4 && state.phase4.candidate_adapter ? state.phase4.candidate_adapter : {};
+    if (!adapter.version) {
+      const created = await postJson("/pfe/phase4/candidate-adapter", {});
+      adapter = { version: created.adapter_version, state: created.state };
+      state.adapters = created.adapters || await loadJson("/pfe/adapters");
+    }
+    state.phase4Eval = await postJson("/pfe/phase4/eval", {
+      adapter_version: adapter.version,
+      attach_to_adapter: Boolean(adapter.version),
+    });
+    state.adapters = state.phase4Eval.adapters || await loadJson("/pfe/adapters");
+    state.phase4 = await loadJson("/pfe/phase4");
+    toast("评测完成");
+  } catch (error) {
+    toast("评测失败");
+  }
+  $("phase4EvalButton").disabled = false;
+  render();
+}
+
 async function refreshTrainingJobs() {
   window.clearTimeout(refreshTrainingJobs.timer);
   try {
@@ -889,6 +1122,8 @@ function render() {
   renderAdapters();
   renderHandoff();
   renderTrainingPreflight();
+  renderPhase3();
+  renderPhase4();
   renderStatus();
   renderSummary();
 }
@@ -900,7 +1135,7 @@ async function refresh() {
   pill("modelStatus", "检查中", "");
   pill("adapterStatus", "检查中", "");
   try {
-    const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, status] = await Promise.all([
+    const [runtime, workspaces, models, adapters, handoff, readiness, trainingJobs, evalStatus, phase3, phase4, status] = await Promise.all([
       loadJson("/pfe/runtime"),
       loadJson("/pfe/workspaces"),
       loadJson("/pfe/models"),
@@ -909,6 +1144,8 @@ async function refresh() {
       loadJson("/pfe/readiness"),
       loadJson("/pfe/training/jobs").catch(() => null),
       loadJson("/pfe/eval/status").catch(() => null),
+      loadJson("/pfe/phase3").catch(() => null),
+      loadJson("/pfe/phase4").catch(() => null),
       loadJson("/pfe/status?detail=full").catch(() => null),
     ]);
     state.runtime = runtime;
@@ -919,6 +1156,9 @@ async function refresh() {
     state.readiness = readiness;
     state.trainingJobs = trainingJobs;
     state.evalStatus = evalStatus;
+    state.phase3 = phase3;
+    state.phase4 = phase4;
+    state.phase4Eval = null;
     state.status = status;
     state.handoffTest = null;
   } catch (error) {
@@ -929,6 +1169,8 @@ async function refresh() {
     state.handoff = state.handoff || null;
     state.handoffTest = state.handoffTest || null;
     state.adapters = state.adapters || {};
+    state.phase3 = state.phase3 || null;
+    state.phase4 = state.phase4 || null;
   }
   render();
   const active = state.trainingJobs && state.trainingJobs.active;
@@ -993,6 +1235,11 @@ $("trainingPreflightButton").addEventListener("click", requestTrainingPreflight)
 $("startTrainingButton").addEventListener("click", startTraining);
 $("cancelTrainingButton").addEventListener("click", cancelTraining);
 $("retryTrainingButton").addEventListener("click", retryTraining);
+$("phase3AddSignalButton").addEventListener("click", addPhase3DemoSignal);
+$("phase3PlanButton").addEventListener("click", buildPhase3Plan);
+$("phase4AddSourceButton").addEventListener("click", addPhase4DemoSource);
+$("phase4GenerateButton").addEventListener("click", generatePhase4Candidates);
+$("phase4EvalButton").addEventListener("click", runPhase4Eval);
 $("workspaceInput").addEventListener("keydown", (event) => {
   if (event.key === "Enter") saveWorkspace(event.target.value);
 });

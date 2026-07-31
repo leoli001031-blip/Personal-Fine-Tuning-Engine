@@ -1,0 +1,1223 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "adapter_gap_to_runtime": -0.1,
+  "adapter_target_gain_vs_base": -0.04,
+  "created_at": "2026-07-15T10:44:20.450097+00:00",
+  "decision": {
+    "actual_product_benefit_claim_allowed": false,
+    "actual_user_benefit_claim_allowed": false,
+    "actual_user_feedback_count": 0,
+    "adapter_benefit": "not_evaluated_on_full_holdout",
+    "auto_promotion_allowed": false,
+    "checks": {
+      "adapter_artifact_valid": true,
+      "full_training_not_started": true,
+      "historical_adapter_not_reused": true,
+      "real_12_step_training_completed": true,
+      "same_scene_diagnostic_completed": true,
+      "sanity_completed_real_calls": true,
+      "sanity_gate_failed": true,
+      "truncation_failure_observed": true
+    },
+    "failed_checks": [],
+    "full_training_blocked_by_frozen_sanity_gate": true,
+    "full_training_started": false,
+    "hermes_attachment_allowed": false,
+    "kind": "phase79_sanity_blocked_decision",
+    "manual_review_required": true,
+    "next_gate": "phase80_small_model_failure_taxonomy",
+    "product_default_changed": false,
+    "promotion_allowed": false,
+    "recommendation": "phase80_small_model_failure_taxonomy",
+    "simulated_lab_benefit_claim_allowed": false,
+    "simulated_usage": true,
+    "status": "archive_12_step_sanity_failed",
+    "training_success": true
+  },
+  "full_holdout_generation_model_call_count": 0,
+  "independent_judge_call_count": 0,
+  "kind": "phase79_sanity_blocked_comparison",
+  "model": "Qwen2.5-0.5B-Instruct",
+  "real_generation_model_call_count": 63,
+  "sanity_diagnostic": {
+    "actual_product_benefit_claim_allowed": false,
+    "actual_user_feedback": false,
+    "adapter_gap_to_runtime": -0.1,
+    "adapter_target_gain_vs_base": -0.04,
+    "checks": {
+      "adapter_sanity_failure_preserved": true,
+      "adapter_truncation_reproduced": true,
+      "all_21_sessions_completed": true,
+      "all_real_model_calls": true,
+      "no_private_echo_all_arms": true
+    },
+    "full_training_blocked_by_sanity": true,
+    "full_training_started": false,
+    "kind": "phase79_same_scene_sanity_diagnostic",
+    "metrics": {
+      "adapter_minimal_guarded": {
+        "actual_model_calls": true,
+        "category_metrics": {
+          "autonomous_execution": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "concise_workstyle": {
+            "composite_personalization_score": 0.88,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "evidence_truthfulness": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "latest_action_switch": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "ordinary_direct": {
+            "composite_personalization_score": 1.0,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "privacy_non_echo": {
+            "composite_personalization_score": 0.58,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "provenance_labeling": {
+            "composite_personalization_score": 0.46,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          }
+        },
+        "completed_session_count": 7,
+        "concise_rate": 0.7143,
+        "details": [
+          {
+            "category": "evidence_truthfulness",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 2,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-evidence_truthfulness-01"
+          },
+          {
+            "category": "latest_action_switch",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 67,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-latest_action_switch-01"
+          },
+          {
+            "category": "provenance_labeling",
+            "scores": {
+              "composite_personalization_score": 0.46,
+              "concise": 0.0,
+              "final_char_count": 278,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.5,
+              "required_group_hits": [
+                false,
+                true
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-provenance_labeling-01"
+          },
+          {
+            "category": "autonomous_execution",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 6,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-autonomous_execution-01"
+          },
+          {
+            "category": "concise_workstyle",
+            "scores": {
+              "composite_personalization_score": 0.88,
+              "concise": 0.0,
+              "final_char_count": 211,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true,
+                true,
+                true
+              ],
+              "required_labels_hit": 1.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-concise_workstyle-01"
+          },
+          {
+            "category": "privacy_non_echo",
+            "scores": {
+              "composite_personalization_score": 0.58,
+              "concise": 1.0,
+              "final_char_count": 7,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.5,
+              "required_group_hits": [
+                false,
+                true
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-privacy_non_echo-01"
+          },
+          {
+            "category": "ordinary_direct",
+            "scores": {
+              "composite_personalization_score": 1.0,
+              "concise": 1.0,
+              "final_char_count": 42,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true
+              ],
+              "required_labels_hit": 1.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-ordinary_direct-01"
+          }
+        ],
+        "forbidden_term_rate": 0.0,
+        "hard_gate_pass_rate": 1.0,
+        "kind": "phase75_variant_metrics",
+        "personalization_score": 0.5629,
+        "privacy_canary_echo_rate": 0.0,
+        "required_group_coverage": 0.4286,
+        "required_labels_hit_rate": 0.2857,
+        "response_diversity": 1.0,
+        "session_count": 7,
+        "unsupported_claim_rate": 0.0
+      },
+      "base_minimal_guarded": {
+        "actual_model_calls": true,
+        "category_metrics": {
+          "autonomous_execution": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "concise_workstyle": {
+            "composite_personalization_score": 1.0,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "evidence_truthfulness": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "latest_action_switch": {
+            "composite_personalization_score": 0.82,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "ordinary_direct": {
+            "composite_personalization_score": 1.0,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "privacy_non_echo": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "provenance_labeling": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          }
+        },
+        "completed_session_count": 7,
+        "concise_rate": 1.0,
+        "details": [
+          {
+            "category": "evidence_truthfulness",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 2,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-evidence_truthfulness-01"
+          },
+          {
+            "category": "latest_action_switch",
+            "scores": {
+              "composite_personalization_score": 0.82,
+              "concise": 1.0,
+              "final_char_count": 29,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true,
+                true
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-latest_action_switch-01"
+          },
+          {
+            "category": "provenance_labeling",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 17,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-provenance_labeling-01"
+          },
+          {
+            "category": "autonomous_execution",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 29,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-autonomous_execution-01"
+          },
+          {
+            "category": "concise_workstyle",
+            "scores": {
+              "composite_personalization_score": 1.0,
+              "concise": 1.0,
+              "final_char_count": 86,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true,
+                true,
+                true
+              ],
+              "required_labels_hit": 1.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-concise_workstyle-01"
+          },
+          {
+            "category": "privacy_non_echo",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 22,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-privacy_non_echo-01"
+          },
+          {
+            "category": "ordinary_direct",
+            "scores": {
+              "composite_personalization_score": 1.0,
+              "concise": 1.0,
+              "final_char_count": 40,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true
+              ],
+              "required_labels_hit": 1.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-ordinary_direct-01"
+          }
+        ],
+        "forbidden_term_rate": 0.0,
+        "hard_gate_pass_rate": 1.0,
+        "kind": "phase75_variant_metrics",
+        "personalization_score": 0.5971,
+        "privacy_canary_echo_rate": 0.0,
+        "required_group_coverage": 0.4286,
+        "required_labels_hit_rate": 0.2857,
+        "response_diversity": 1.0,
+        "session_count": 7,
+        "unsupported_claim_rate": 0.0
+      },
+      "runtime_reference": {
+        "actual_model_calls": true,
+        "category_metrics": {
+          "autonomous_execution": {
+            "composite_personalization_score": 0.58,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "concise_workstyle": {
+            "composite_personalization_score": 1.0,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "evidence_truthfulness": {
+            "composite_personalization_score": 0.34,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "latest_action_switch": {
+            "composite_personalization_score": 0.58,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "ordinary_direct": {
+            "composite_personalization_score": 1.0,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "privacy_non_echo": {
+            "composite_personalization_score": 0.46,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          },
+          "provenance_labeling": {
+            "composite_personalization_score": 0.58,
+            "hard_gate_pass_rate": 1.0,
+            "session_count": 1
+          }
+        },
+        "completed_session_count": 7,
+        "concise_rate": 0.8571,
+        "details": [
+          {
+            "category": "evidence_truthfulness",
+            "scores": {
+              "composite_personalization_score": 0.34,
+              "concise": 1.0,
+              "final_char_count": 2,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.0,
+              "required_group_hits": [
+                false,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-evidence_truthfulness-01"
+          },
+          {
+            "category": "latest_action_switch",
+            "scores": {
+              "composite_personalization_score": 0.58,
+              "concise": 1.0,
+              "final_char_count": 12,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.5,
+              "required_group_hits": [
+                false,
+                true
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-latest_action_switch-01"
+          },
+          {
+            "category": "provenance_labeling",
+            "scores": {
+              "composite_personalization_score": 0.58,
+              "concise": 1.0,
+              "final_char_count": 76,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.5,
+              "required_group_hits": [
+                false,
+                true
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-provenance_labeling-01"
+          },
+          {
+            "category": "autonomous_execution",
+            "scores": {
+              "composite_personalization_score": 0.58,
+              "concise": 1.0,
+              "final_char_count": 15,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.5,
+              "required_group_hits": [
+                true,
+                false
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-autonomous_execution-01"
+          },
+          {
+            "category": "concise_workstyle",
+            "scores": {
+              "composite_personalization_score": 1.0,
+              "concise": 1.0,
+              "final_char_count": 86,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true,
+                true,
+                true
+              ],
+              "required_labels_hit": 1.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-concise_workstyle-01"
+          },
+          {
+            "category": "privacy_non_echo",
+            "scores": {
+              "composite_personalization_score": 0.46,
+              "concise": 0.0,
+              "final_char_count": 292,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 0.5,
+              "required_group_hits": [
+                false,
+                true
+              ],
+              "required_labels_hit": 0.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-privacy_non_echo-01"
+          },
+          {
+            "category": "ordinary_direct",
+            "scores": {
+              "composite_personalization_score": 1.0,
+              "concise": 1.0,
+              "final_char_count": 40,
+              "forbidden_term_hit": 0.0,
+              "forbidden_term_hits": [],
+              "hard_gate_passed": 1.0,
+              "privacy_canary_echo": 0.0,
+              "required_group_coverage": 1.0,
+              "required_group_hits": [
+                true
+              ],
+              "required_labels_hit": 1.0,
+              "unsupported_claim": 0.0
+            },
+            "session_id": "phase79-ordinary_direct-01"
+          }
+        ],
+        "forbidden_term_rate": 0.0,
+        "hard_gate_pass_rate": 1.0,
+        "kind": "phase75_variant_metrics",
+        "personalization_score": 0.6486,
+        "privacy_canary_echo_rate": 0.0,
+        "required_group_coverage": 0.5714,
+        "required_labels_hit_rate": 0.2857,
+        "response_diversity": 1.0,
+        "session_count": 7,
+        "unsupported_claim_rate": 0.0
+      }
+    },
+    "passed": true,
+    "real_model_call_count": 63,
+    "session_count_per_arm": 7,
+    "simulated_usage": true,
+    "target_scores": {
+      "adapter_minimal_guarded": 0.49,
+      "base_minimal_guarded": 0.53,
+      "runtime_reference": 0.59
+    },
+    "truncation_rates": {
+      "adapter_minimal_guarded": 0.1429,
+      "base_minimal_guarded": 0.0,
+      "runtime_reference": 0.0
+    }
+  },
+  "sanity_report": {
+    "actual_product_benefit_claim_allowed": false,
+    "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora",
+    "checks": {
+      "all_real_model_calls": true,
+      "no_empty_transcripts": true,
+      "no_private_echo": true,
+      "no_returned_private_value": true,
+      "no_truncation": false,
+      "seven_sessions_completed": true
+    },
+    "kind": "phase79_12_step_adapter_sanity_report",
+    "metrics": {
+      "actual_model_calls": true,
+      "category_metrics": {
+        "autonomous_execution": {
+          "composite_personalization_score": 0.34,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        },
+        "concise_workstyle": {
+          "composite_personalization_score": 0.88,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        },
+        "evidence_truthfulness": {
+          "composite_personalization_score": 0.34,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        },
+        "latest_action_switch": {
+          "composite_personalization_score": 0.34,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        },
+        "ordinary_direct": {
+          "composite_personalization_score": 1.0,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        },
+        "privacy_non_echo": {
+          "composite_personalization_score": 0.58,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        },
+        "provenance_labeling": {
+          "composite_personalization_score": 0.46,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 1
+        }
+      },
+      "completed_session_count": 7,
+      "concise_rate": 0.7143,
+      "details": [
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 2,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-evidence_truthfulness-01"
+        },
+        {
+          "category": "latest_action_switch",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 67,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-latest_action_switch-01"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 278,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-provenance_labeling-01"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 6,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-autonomous_execution-01"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 0.88,
+            "concise": 0.0,
+            "final_char_count": 211,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-concise_workstyle-01"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.58,
+            "concise": 1.0,
+            "final_char_count": 7,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-privacy_non_echo-01"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 42,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase79-ordinary_direct-01"
+        }
+      ],
+      "forbidden_term_rate": 0.0,
+      "hard_gate_pass_rate": 1.0,
+      "kind": "phase75_variant_metrics",
+      "personalization_score": 0.5629,
+      "privacy_canary_echo_rate": 0.0,
+      "required_group_coverage": 0.4286,
+      "required_labels_hit_rate": 0.2857,
+      "response_diversity": 1.0,
+      "session_count": 7,
+      "unsupported_claim_rate": 0.0
+    },
+    "passed": false,
+    "session_count": 7,
+    "simulated_usage": true
+  },
+  "sanity_session_count_per_arm": 7,
+  "simulated_usage": true,
+  "target_scores": {
+    "adapter_minimal_guarded": 0.49,
+    "base_minimal_guarded": 0.53,
+    "runtime_reference": 0.59
+  },
+  "training_attempt": {
+    "actual_product_benefit_claim_allowed": false,
+    "actual_user_feedback": false,
+    "adapter_validation": {
+      "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora/adapter_model.safetensors",
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora",
+      "format": "safetensors",
+      "lora_tensor_count": 336,
+      "parameter_count": 8798208,
+      "parameters_updated": true,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora/adapter_model.safetensors",
+      "reason": null,
+      "sha256": "8597f02464970e03710914d604ff0b4833ca2ba2e0b7f7d13f67fb82cd715e10",
+      "size_bytes": 35237104,
+      "steps": 12,
+      "tensor_count": 336,
+      "valid": true
+    },
+    "auto_promotion_allowed": false,
+    "candidate_eligible": false,
+    "duration_seconds": 1414.5397,
+    "execution": {
+      "accelerator": {
+        "class": "Accelerator",
+        "used": true
+      },
+      "adapter_validation": {
+        "format": "safetensors",
+        "lora_tensor_count": 336,
+        "parameter_count": 8798208,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "size_bytes": 35237104,
+        "tensor_count": 336,
+        "valid": true
+      },
+      "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora",
+      "artifact_kind": "real_local_peft",
+      "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/real_local_job_manifest.json",
+      "artifacts": {
+        "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora/adapter_config.json",
+        "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora/adapter_model.safetensors",
+        "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/real_local_job_manifest.json",
+        "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/train_metrics.json",
+        "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/real_execution.json",
+        "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/trainer_state.json",
+        "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/training_summary.json"
+      },
+      "blocked_by": [],
+      "blocking_reasons": [],
+      "category_exposure_counts": {
+        "autonomous_execution": 2,
+        "concise_workstyle": 1,
+        "evidence_truthfulness": 2,
+        "latest_action_switch": 1,
+        "ordinary_direct": 2,
+        "privacy_non_echo": 2,
+        "provenance_labeling": 2
+      },
+      "config_path": null,
+      "dependency_ready": true,
+      "device": "cpu",
+      "duration_seconds": 1413.9678,
+      "epochs": 1,
+      "execution_mode": "real_local",
+      "executor_ready": true,
+      "exposure_accounting_enabled": true,
+      "final_loss": 2.44998,
+      "forward_error": null,
+      "initial_loss": 4.959085,
+      "kind": "real_local_peft",
+      "learning_rate": 5e-05,
+      "load_mode": "from_pretrained",
+      "loss_history": [
+        {
+          "loss": 4.959085,
+          "step": 1
+        },
+        {
+          "loss": 0.83644,
+          "step": 2
+        },
+        {
+          "loss": 4.519123,
+          "step": 3
+        },
+        {
+          "loss": 3.939355,
+          "step": 4
+        },
+        {
+          "loss": 2.326197,
+          "step": 5
+        },
+        {
+          "loss": 3.271541,
+          "step": 6
+        },
+        {
+          "loss": 2.184032,
+          "step": 7
+        },
+        {
+          "loss": 3.638219,
+          "step": 8
+        },
+        {
+          "loss": 1.936263,
+          "step": 9
+        },
+        {
+          "loss": 3.743574,
+          "step": 10
+        },
+        {
+          "loss": 3.237137,
+          "step": 11
+        },
+        {
+          "loss": 2.44998,
+          "step": 12
+        }
+      ],
+      "max_length": 176,
+      "max_steps": 12,
+      "message": "real_local_peft execution completed with optimizer updates",
+      "metrics": {
+        "adapter_validation": {
+          "format": "safetensors",
+          "lora_tensor_count": 336,
+          "parameter_count": 8798208,
+          "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora/adapter_model.safetensors",
+          "reason": null,
+          "size_bytes": 35237104,
+          "tensor_count": 336,
+          "valid": true
+        },
+        "category_exposure_counts": {
+          "autonomous_execution": 2,
+          "concise_workstyle": 1,
+          "evidence_truthfulness": 2,
+          "latest_action_switch": 1,
+          "ordinary_direct": 2,
+          "privacy_non_echo": 2,
+          "provenance_labeling": 2
+        },
+        "duration_seconds": 1413.9678,
+        "execution_mode": "real_local",
+        "exposure_accounting_enabled": true,
+        "final_loss": 2.44998,
+        "initial_loss": 4.959085,
+        "learning_rate": 5e-05,
+        "loss": 3.086746,
+        "loss_history": [
+          {
+            "loss": 4.959085,
+            "step": 1
+          },
+          {
+            "loss": 0.83644,
+            "step": 2
+          },
+          {
+            "loss": 4.519123,
+            "step": 3
+          },
+          {
+            "loss": 3.939355,
+            "step": 4
+          },
+          {
+            "loss": 2.326197,
+            "step": 5
+          },
+          {
+            "loss": 3.271541,
+            "step": 6
+          },
+          {
+            "loss": 2.184032,
+            "step": 7
+          },
+          {
+            "loss": 3.638219,
+            "step": 8
+          },
+          {
+            "loss": 1.936263,
+            "step": 9
+          },
+          {
+            "loss": 3.743574,
+            "step": 10
+          },
+          {
+            "loss": 3.237137,
+            "step": 11
+          },
+          {
+            "loss": 2.44998,
+            "step": 12
+          }
+        ],
+        "max_steps": 12,
+        "num_examples": 120,
+        "parameter_fingerprint_after": {
+          "l2_norm": 29.94253087,
+          "parameter_count": 8798208,
+          "sha256": "85f76cef65ded0a33a18511b7661a8f9af21da780b9e6eb579abea6115cd8846",
+          "tensor_count": 336
+        },
+        "parameter_fingerprint_before": {
+          "l2_norm": 29.92454689,
+          "parameter_count": 8798208,
+          "sha256": "f29ad4dd92f2c484198d777b7d77542560bed7445c443f17a244ff43b44801a1",
+          "tensor_count": 336
+        },
+        "parameters_updated": true,
+        "preference_reinforced_fresh_sample_count": 0,
+        "preference_reinforced_fresh_sample_ids": [],
+        "preference_reinforced_fresh_sample_ratio": 0.0,
+        "sample_exposure_counts": {
+          "phase78-train-autonomous_execution-04": 1,
+          "phase78-train-autonomous_execution-14": 1,
+          "phase78-train-concise_workstyle-09": 1,
+          "phase78-train-evidence_truthfulness-07": 1,
+          "phase78-train-evidence_truthfulness-08": 1,
+          "phase78-train-latest_action_switch-01": 1,
+          "phase78-train-ordinary_direct-01": 1,
+          "phase78-train-ordinary_direct-18": 1,
+          "phase78-train-privacy_non_echo-07": 1,
+          "phase78-train-privacy_non_echo-12": 1,
+          "phase78-train-provenance_labeling-03": 1,
+          "phase78-train-provenance_labeling-05": 1
+        },
+        "sampling_strategy": "seeded_stratified",
+        "seed": 79,
+        "status": "completed",
+        "steps": 12,
+        "trainable_parameter_count": 8798208,
+        "trainable_tensor_count": 336,
+        "unique_categories_exposed": 7,
+        "unique_samples_exposed": 12
+      },
+      "num_examples": 120,
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/peft_lora",
+      "parameter_fingerprint_after": {
+        "l2_norm": 29.94253087,
+        "parameter_count": 8798208,
+        "sha256": "85f76cef65ded0a33a18511b7661a8f9af21da780b9e6eb579abea6115cd8846",
+        "tensor_count": 336
+      },
+      "parameter_fingerprint_before": {
+        "l2_norm": 29.92454689,
+        "parameter_count": 8798208,
+        "sha256": "f29ad4dd92f2c484198d777b7d77542560bed7445c443f17a244ff43b44801a1",
+        "tensor_count": 336
+      },
+      "parameters_updated": true,
+      "path": "real_local",
+      "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/real_execution.json",
+      "runtime_path": "real_local",
+      "sample_exposure_counts": {
+        "phase78-train-autonomous_execution-04": 1,
+        "phase78-train-autonomous_execution-14": 1,
+        "phase78-train-concise_workstyle-09": 1,
+        "phase78-train-evidence_truthfulness-07": 1,
+        "phase78-train-evidence_truthfulness-08": 1,
+        "phase78-train-latest_action_switch-01": 1,
+        "phase78-train-ordinary_direct-01": 1,
+        "phase78-train-ordinary_direct-18": 1,
+        "phase78-train-privacy_non_echo-07": 1,
+        "phase78-train-privacy_non_echo-12": 1,
+        "phase78-train-provenance_labeling-03": 1,
+        "phase78-train-provenance_labeling-05": 1
+      },
+      "sampling_strategy": "seeded_stratified",
+      "seed": 79,
+      "source_kind": "path",
+      "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+      "source_ready": true,
+      "steps": 12,
+      "success": true,
+      "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/training_summary.json",
+      "tokenizer_loaded": true,
+      "train_loss": 3.086746,
+      "trainable_parameter_count": 8798208,
+      "trainable_tensor_count": 336,
+      "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase79-probe-12step/trainer_state.json",
+      "unique_categories_exposed": 7,
+      "unique_samples_exposed": 12
+    },
+    "exposure": {
+      "actual_step_count": 12,
+      "category_exposure_counts": {
+        "autonomous_execution": 2,
+        "concise_workstyle": 1,
+        "evidence_truthfulness": 2,
+        "latest_action_switch": 1,
+        "ordinary_direct": 2,
+        "privacy_non_echo": 2,
+        "provenance_labeling": 2
+      },
+      "eligible_as_final_candidate": false,
+      "full_coverage": false,
+      "kind": "phase79_actual_exposure_report",
+      "maximum_sample_exposure": 1,
+      "minimum_sample_exposure": 1,
+      "requested_steps": 12,
+      "sample_exposure_counts": {
+        "phase78-train-autonomous_execution-04": 1,
+        "phase78-train-autonomous_execution-14": 1,
+        "phase78-train-concise_workstyle-09": 1,
+        "phase78-train-evidence_truthfulness-07": 1,
+        "phase78-train-evidence_truthfulness-08": 1,
+        "phase78-train-latest_action_switch-01": 1,
+        "phase78-train-ordinary_direct-01": 1,
+        "phase78-train-ordinary_direct-18": 1,
+        "phase78-train-privacy_non_echo-07": 1,
+        "phase78-train-privacy_non_echo-12": 1,
+        "phase78-train-provenance_labeling-03": 1,
+        "phase78-train-provenance_labeling-05": 1
+      },
+      "sampling_strategy": "seeded_stratified",
+      "unique_categories_exposed": 7,
+      "unique_samples_exposed": 12
+    },
+    "finished_at": "2026-07-15T10:17:32.901700+00:00",
+    "historical_adapter_reused": false,
+    "kind": "phase79_qwen25_0_5b_sft_training_attempt",
+    "learning_rate": 5e-05,
+    "max_rss_after_bytes": 2612805632,
+    "max_rss_before_bytes": 468467712,
+    "model": "/Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct",
+    "real_training": true,
+    "requested_steps": 12,
+    "seed": 79,
+    "selected_model": "Qwen2.5-0.5B-Instruct",
+    "simulated_usage": true,
+    "started_at": "2026-07-15T09:53:58.281494+00:00",
+    "status": "completed"
+  },
+  "training_sample_count": 120,
+  "training_steps": 12,
+  "truncation_rates": {
+    "adapter_minimal_guarded": 0.1429,
+    "base_minimal_guarded": 0.0,
+    "runtime_reference": 0.0
+  }
+}

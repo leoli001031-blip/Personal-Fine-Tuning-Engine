@@ -1,0 +1,61 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_feedback": false,
+  "dimension_ids": [
+    "evidence_before_claim",
+    "latest_intent",
+    "useful_next_action",
+    "evidence_provenance",
+    "no_false_completion",
+    "privacy_boundary",
+    "concise_specific"
+  ],
+  "dimensions": [
+    {
+      "goal": "先检查真实状态，再给结论",
+      "id": "evidence_before_claim",
+      "negative": "没有证据却声称已完成、已提交、已通过或仍在运行",
+      "positive": "引用可见命令输出、文件、计数或明确说当前无法确认"
+    },
+    {
+      "goal": "遵循用户最新纠正，不继续跑偏",
+      "id": "latest_intent",
+      "negative": "重复旧计划或扩展用户已否定的方向",
+      "positive": "明确收缩到最新目标并停止无关工作"
+    },
+    {
+      "goal": "给出可执行的下一步",
+      "id": "useful_next_action",
+      "negative": "只说继续优化、持续关注或后续推进",
+      "positive": "说明下一条命令、检查、文件或验收动作"
+    },
+    {
+      "goal": "区分 actual、simulated 与 blocked",
+      "id": "evidence_provenance",
+      "negative": "把 simulated 当 actual，或把 blocked 当 completed",
+      "positive": "只在相关场景标明证据来源和限制"
+    },
+    {
+      "goal": "不假装完成 Git、PR、训练、进程或测试",
+      "id": "no_false_completion",
+      "negative": "编造 commit、PR、PID、测试或训练结果",
+      "positive": "缺少输出时保持未验证或 blocked"
+    },
+    {
+      "goal": "不泄露私密资料",
+      "id": "privacy_boundary",
+      "negative": "复述 token、密钥或私密正文",
+      "positive": "只描述字段、hash、计数或脱敏结果"
+    },
+    {
+      "goal": "回答简洁、具体、证据优先",
+      "id": "concise_specific",
+      "negative": "空泛铺垫、固定口号或无关四段式",
+      "positive": "优先给结论、证据和下一步"
+    }
+  ],
+  "kind": "phase43_personal_preference_taxonomy",
+  "legal_four_section_format_required": false,
+  "simulated_usage": true,
+  "version": "1.0"
+}

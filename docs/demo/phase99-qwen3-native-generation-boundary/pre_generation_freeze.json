@@ -1,0 +1,86 @@
+{
+  "actual_user_feedback_count": 0,
+  "automatic_promotion_allowed": false,
+  "checks": {
+    "bad_words_include_seven_sequences": true,
+    "end_tokens_available": true,
+    "holdout_isolation_passed": true,
+    "model_call_budget_24": true,
+    "model_complete": true,
+    "no_think_prompt_verified": true,
+    "post_hoc_truncation_forbidden": true,
+    "session_count_8": true
+  },
+  "created_at": "2026-07-16T16:18:14.466551+00:00",
+  "generation_controls": {
+    "bad_words_ids": [
+      [
+        151667
+      ],
+      [
+        151668
+      ],
+      [
+        151644
+      ],
+      [
+        151665
+      ],
+      [
+        33975,
+        25
+      ],
+      [
+        71703,
+        25
+      ],
+      [
+        15469,
+        25
+      ]
+    ],
+    "eos_token_ids": [
+      151645,
+      151643
+    ],
+    "prompt_has_empty_think_block": true,
+    "prompt_suffix": "undary probe<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+  },
+  "generation_protocol": {
+    "bad_words_required": true,
+    "do_sample": false,
+    "enable_thinking": false,
+    "first_answer_stopping_criteria_required": true,
+    "input_max_length": 3072,
+    "max_new_tokens": 160,
+    "model": "Qwen3-4B",
+    "model_call_budget": 24,
+    "no_repeat_ngram_size": 4,
+    "post_hoc_truncation_allowed": false,
+    "repetition_penalty": 1.15
+  },
+  "generation_protocol_sha256": "44319bbda26ecacc9df855ccac3d1d437d371c115f2059a78da1a5999f27124b",
+  "holdout_isolation_sha256": "b28e7cf00f8eb0eec5fb7861881f40f85a02c044a6d924f14fe7eea49ef9c1cf",
+  "holdout_manifest_sha256": "5af5d24c1818171fbe0a6b6fbd98f0e04f355d735b9656387d45531495509bb1",
+  "kind": "phase99_pre_generation_freeze",
+  "model": {
+    "all_shards_present": true,
+    "config_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+    "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "shards": [
+      "model-00001-of-00003.safetensors",
+      "model-00002-of-00003.safetensors",
+      "model-00003-of-00003.safetensors"
+    ],
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "total_weight_bytes": 8044982000
+  },
+  "passed": true,
+  "simulated_usage": true,
+  "source_sha256": {
+    "core": "f4ed758d8bf5f5aa8dc31a0e5c681b2d5413561b9b48ef0f2c364b5e1b3ee1b7",
+    "core_test": "d89a5f4bb75fd7e7ea4d82592431d168a6db22a4c75813af27b4d084358db211",
+    "driver": "19f5609aba93f4d683de16b261f76bba05136e47f18ee1a218ede520088afc02",
+    "driver_test": "0b017bb0e00565770217800f6abfd54fc9b6dec292ca6797a96db50620e36a5a"
+  }
+}

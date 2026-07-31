@@ -1,0 +1,180 @@
+{
+  "actual_user_feedback": false,
+  "adapter_validation": {
+    "adapter_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora",
+    "format": "safetensors",
+    "lora_tensor_count": 504,
+    "parameter_count": 33030144,
+    "parameters_updated": true,
+    "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+    "reason": null,
+    "sha256": "71dbc8e26dfd1dfa3067b7f57633b74f550ce5c760323af5057b1302187e777e",
+    "size_bytes": 132187888,
+    "steps": 1,
+    "tensor_count": 504,
+    "valid": true
+  },
+  "automatic_promotion_allowed": false,
+  "duration_seconds": 3.067,
+  "execution": {
+    "accelerator": {
+      "class": "Accelerator",
+      "used": true
+    },
+    "adapter_validation": {
+      "format": "safetensors",
+      "lora_tensor_count": 504,
+      "parameter_count": 33030144,
+      "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+      "reason": null,
+      "size_bytes": 132187888,
+      "tensor_count": 504,
+      "valid": true
+    },
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora",
+    "artifact_kind": "real_local_peft",
+    "artifact_manifest_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/real_local_job_manifest.json",
+    "artifacts": {
+      "adapter_config": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora/adapter_config.json",
+      "adapter_model": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+      "manifest": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/real_local_job_manifest.json",
+      "metrics": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/train_metrics.json",
+      "real_execution": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/real_execution.json",
+      "trainer_state": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/trainer_state.json",
+      "training_summary": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/training_summary.json"
+    },
+    "blocked_by": [],
+    "blocking_reasons": [],
+    "category_exposure_counts": {
+      "uncategorized": 1
+    },
+    "config_path": null,
+    "dependency_ready": true,
+    "device": "mps",
+    "duration_seconds": 0.6363,
+    "epochs": 1,
+    "execution_mode": "real_local",
+    "executor_ready": true,
+    "exposure_accounting_enabled": true,
+    "final_loss": 4.406022,
+    "forward_error": null,
+    "initial_loss": 4.406022,
+    "kind": "real_local_peft",
+    "learning_rate": 5e-05,
+    "load_mode": "from_pretrained",
+    "loss_history": [
+      {
+        "loss": 4.406022,
+        "step": 1
+      }
+    ],
+    "max_length": 256,
+    "max_steps": 1,
+    "message": "real_local_peft execution completed with optimizer updates",
+    "metrics": {
+      "adapter_validation": {
+        "format": "safetensors",
+        "lora_tensor_count": 504,
+        "parameter_count": 33030144,
+        "path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora/adapter_model.safetensors",
+        "reason": null,
+        "size_bytes": 132187888,
+        "tensor_count": 504,
+        "valid": true
+      },
+      "category_exposure_counts": {
+        "uncategorized": 1
+      },
+      "duration_seconds": 0.6363,
+      "execution_mode": "real_local",
+      "exposure_accounting_enabled": true,
+      "final_loss": 4.406022,
+      "initial_loss": 4.406022,
+      "learning_rate": 5e-05,
+      "loss": 4.406022,
+      "loss_history": [
+        {
+          "loss": 4.406022,
+          "step": 1
+        }
+      ],
+      "max_steps": 1,
+      "num_examples": 32,
+      "parameter_fingerprint_after": {
+        "l2_norm": 36.66331748,
+        "parameter_count": 33030144,
+        "sha256": "971134f271224fd26ac71a447c73dedec4310d8155a3c5e27e8acab52f30bb13",
+        "tensor_count": 504
+      },
+      "parameter_fingerprint_before": {
+        "l2_norm": 36.66273134,
+        "parameter_count": 33030144,
+        "sha256": "a32c2443065dd5af4f2ff7700af9595af4d21debc0d54b8220646f3ed4f50341",
+        "tensor_count": 504
+      },
+      "parameters_updated": true,
+      "preference_reinforced_fresh_sample_count": 0,
+      "preference_reinforced_fresh_sample_ids": [],
+      "preference_reinforced_fresh_sample_ratio": 0.0,
+      "sample_exposure_counts": {
+        "phase101-sft-exact-01": 1
+      },
+      "sampling_strategy": "sequential",
+      "seed": 101,
+      "status": "completed",
+      "steps": 1,
+      "trainable_parameter_count": 33030144,
+      "trainable_tensor_count": 504,
+      "unique_categories_exposed": 1,
+      "unique_samples_exposed": 1
+    },
+    "num_examples": 32,
+    "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/peft_lora",
+    "parameter_fingerprint_after": {
+      "l2_norm": 36.66331748,
+      "parameter_count": 33030144,
+      "sha256": "971134f271224fd26ac71a447c73dedec4310d8155a3c5e27e8acab52f30bb13",
+      "tensor_count": 504
+    },
+    "parameter_fingerprint_before": {
+      "l2_norm": 36.66273134,
+      "parameter_count": 33030144,
+      "sha256": "a32c2443065dd5af4f2ff7700af9595af4d21debc0d54b8220646f3ed4f50341",
+      "tensor_count": 504
+    },
+    "parameters_updated": true,
+    "path": "real_local",
+    "real_execution_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/real_execution.json",
+    "runtime_path": "real_local",
+    "sample_exposure_counts": {
+      "phase101-sft-exact-01": 1
+    },
+    "sampling_strategy": "sequential",
+    "seed": 101,
+    "source_kind": "path",
+    "source_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "source_ready": true,
+    "steps": 1,
+    "success": true,
+    "summary_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/training_summary.json",
+    "tokenizer_loaded": true,
+    "train_loss": 4.406022,
+    "trainable_parameter_count": 33030144,
+    "trainable_tensor_count": 504,
+    "trainer_state_path": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step/trainer_state.json",
+    "unique_categories_exposed": 1,
+    "unique_samples_exposed": 1
+  },
+  "finished_at": "2026-07-16T17:23:29.207069+00:00",
+  "kind": "phase101_sft_training_attempt",
+  "max_rss_after_bytes": 16527196160,
+  "max_rss_before_bytes": 511361024,
+  "model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "product_gate_qualified": false,
+  "real_training": true,
+  "requested_steps": 1,
+  "simulated_usage": true,
+  "started_at": "2026-07-16T17:23:26.140170+00:00",
+  "status": "completed"
+}

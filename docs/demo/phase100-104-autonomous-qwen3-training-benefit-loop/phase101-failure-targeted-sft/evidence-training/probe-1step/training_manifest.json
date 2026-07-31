@@ -1,0 +1,334 @@
+{
+  "audit": {
+    "import_probe": {
+      "missing_modules": [],
+      "ready": true
+    }
+  },
+  "backend": "peft",
+  "dry_run": false,
+  "execution_backend": "peft",
+  "execution_executor": "peft",
+  "executor_mode": "real_local",
+  "phase101": {
+    "actual_user_feedback": false,
+    "automatic_promotion_allowed": false,
+    "completion_only_loss_required": true,
+    "failure_targeted": true,
+    "simulated_usage": true,
+    "target_model": "Qwen3-4B"
+  },
+  "phase43": {
+    "actual_user_feedback": false,
+    "auto_promotion_allowed": false,
+    "completion_only_loss_required": true,
+    "simulated_usage": true,
+    "target_model": "Qwen3-4B"
+  },
+  "ready": true,
+  "recipe": {
+    "training": {
+      "base_model": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "base_model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "epochs": 1,
+      "learning_rate": 5e-05,
+      "local_only": true,
+      "max_length": 256,
+      "max_steps": 1,
+      "method": "lora",
+      "output_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase101-qwen3-4b-sft-1step",
+      "seed": 101,
+      "train_type": "sft_completion_only"
+    }
+  },
+  "training_examples": [
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：签收时间尚未填写\n依据：当前记录显示签收时间为空\n下一步：补充签收时间。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有签收时间仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-01",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：校验摘要尚未填写\n依据：当前记录显示校验摘要为空\n下一步：补充校验摘要。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有校验摘要仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-02",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：归档位置尚未填写\n依据：当前记录显示归档位置为空\n下一步：补充归档位置。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有归档位置仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-03",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：复核人员尚未填写\n依据：当前记录显示复核人员为空\n下一步：补充复核人员。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有复核人员仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-04",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：版本编号尚未填写\n依据：当前记录显示版本编号为空\n下一步：补充版本编号。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有版本编号仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-05",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：交接日期尚未填写\n依据：当前记录显示交接日期为空\n下一步：补充交接日期。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有交接日期仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-06",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：验收批次尚未填写\n依据：当前记录显示验收批次为空\n下一步：补充验收批次。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有验收批次仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-07",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：输出索引尚未填写\n依据：当前记录显示输出索引为空\n下一步：补充输出索引。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有输出索引仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-08",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：回执状态尚未填写\n依据：当前记录显示回执状态为空\n下一步：补充回执状态。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有回执状态仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-09",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：同步时间尚未填写\n依据：当前记录显示同步时间为空\n下一步：补充同步时间。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有同步时间仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-10",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：检查记录尚未填写\n依据：当前记录显示检查记录为空\n下一步：补充检查记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有检查记录仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-11",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：确认标记尚未填写\n依据：当前记录显示确认标记为空\n下一步：补充确认标记。",
+      "feedback_source": "simulated_usage",
+      "instruction": "任务记录中只有确认标记仍为空白。只用结论、依据、下一步三行回答。",
+      "rejected": null,
+      "sample_id": "phase101-sft-exact-12",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：签收时间核对已完成\n依据：人工验收确认签收时间与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认签收时间与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-01",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：校验摘要核对已完成\n依据：人工验收确认校验摘要与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认校验摘要与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-02",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：归档位置核对已完成\n依据：人工验收确认归档位置与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认归档位置与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-03",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：复核人员核对已完成\n依据：人工验收确认复核人员与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认复核人员与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-04",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：版本编号核对已完成\n依据：人工验收确认版本编号与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认版本编号与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-05",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：交接日期核对已完成\n依据：人工验收确认交接日期与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认交接日期与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-06",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：验收批次核对已完成\n依据：人工验收确认验收批次与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认验收批次与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-07",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：输出索引核对已完成\n依据：人工验收确认输出索引与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认输出索引与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-08",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：回执状态核对已完成\n依据：人工验收确认回执状态与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认回执状态与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-09",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：同步时间核对已完成\n依据：人工验收确认同步时间与交接副本一致\n下一步：保存本次验收记录。",
+      "feedback_source": "simulated_usage",
+      "instruction": "最新人工验收已经确认同步时间与交接副本一致。按事实输出三行完成状态。",
+      "rejected": null,
+      "sample_id": "phase101-sft-complete-10",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "签收时间记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-01",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "校验摘要记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-02",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "归档位置记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-03",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "复核人员记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-04",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "版本编号记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-05",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "交接日期记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-06",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "验收批次记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-07",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "输出索引记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-08",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "回执状态记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-09",
+      "sample_type": "sft"
+    },
+    {
+      "actual_product_benefit_claim_allowed": false,
+      "chosen": "结论：这是模拟使用记录\n依据：simulated_usage=true，actual_user_feedback=false\n下一步：不能计入真实反馈。",
+      "feedback_source": "simulated_usage",
+      "instruction": "同步时间记录来自模拟评测且没有真实用户确认。三行标注来源边界。",
+      "rejected": null,
+      "sample_id": "phase101-sft-provenance-10",
+      "sample_type": "sft"
+    }
+  ]
+}

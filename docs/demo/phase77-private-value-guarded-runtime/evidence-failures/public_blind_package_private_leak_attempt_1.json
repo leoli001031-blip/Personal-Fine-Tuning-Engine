@@ -1,0 +1,13 @@
+{
+  "detected_at": "2026-07-15T12:22:43+08:00",
+  "kind": "phase77_public_blind_package_private_leak",
+  "status": "invalidated_before_publish",
+  "affected_file": "docs/demo/phase77-private-value-guarded-runtime/evidence-blind-eval/blind_items_public.jsonl",
+  "raw_private_value_pair_count": 6,
+  "actual_private_data_involved": false,
+  "values_were_synthetic_canaries": true,
+  "model_transcripts_contained_raw_values": false,
+  "root_cause": "build_phase77_blind_pairs copied raw holdout prompt fields into the public judge package after generation-time guards had already redacted transcript turns.",
+  "required_recovery": "Redact the complete public payload, add a deterministic package audit to the decision gate, refresh the pre-model source freeze, and rerun both generation arms and both independent judges.",
+  "old_qualified_decision_publishable": false
+}

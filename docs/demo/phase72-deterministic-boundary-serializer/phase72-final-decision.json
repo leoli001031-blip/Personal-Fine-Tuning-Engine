@@ -1,0 +1,35 @@
+{
+  "adapter_created": false,
+  "auto_promote_allowed": false,
+  "blocker": {
+    "expected_model_output_count": 36,
+    "failure_count": 2,
+    "failures": [
+      {
+        "item_id": "phase72-wire-006",
+        "judge_alias": "semantic_judge_beta"
+      },
+      {
+        "item_id": "phase72-wire-016",
+        "judge_alias": "semantic_judge_beta"
+      }
+    ],
+    "observed_invalid_shapes": [
+      "PFE2|s001=exclude_actual@c001|none only|r001=does_not_establish@c002",
+      "PFE2|s001=exclude_actual@c001|u001=suspended_or_negated@c002|none only"
+    ],
+    "raw_failure_attempt_count": 4,
+    "successful_model_output_count": 34
+  },
+  "experiment_status": "blocked_at_wire_preflight",
+  "failed_checks": [
+    "wire_preflight_qualified"
+  ],
+  "hermes_attachment_allowed": false,
+  "kind": "phase72_final_decision",
+  "phase73_nondefault_api_canary_eligible": false,
+  "product_default_change_allowed": false,
+  "recommendation": "hold_phase72_deterministic_boundary_serializer",
+  "status": "hold_phase72_deterministic_boundary_serializer",
+  "training_allowed": false
+}

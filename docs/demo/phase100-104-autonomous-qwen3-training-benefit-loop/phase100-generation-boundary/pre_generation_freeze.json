@@ -1,0 +1,95 @@
+{
+  "actual_user_feedback_count": 0,
+  "automatic_promotion_allowed": false,
+  "checks": {
+    "bad_words_include_seven_sequences": true,
+    "diagnostic_calls_12": true,
+    "diagnostic_isolation_passed": true,
+    "end_tokens_available": true,
+    "final_calls_24": true,
+    "final_isolation_passed": true,
+    "model_complete": true,
+    "no_think_prompt_verified": true,
+    "post_hoc_truncation_forbidden": true
+  },
+  "created_at": "2026-07-16T17:48:21.255515+00:00",
+  "diagnostic_manifest_sha256": "0dd22ed09575359d4382e1f110e00eff1b3d4c590daee0f0a59c1f3014a5ff58",
+  "final_manifest_sha256": "da319230411e3c120ac04c881fe0864fee78db9cae4eff832a63b029dd127217",
+  "generation_controls": {
+    "bad_words_ids": [
+      [
+        151667
+      ],
+      [
+        151668
+      ],
+      [
+        151644
+      ],
+      [
+        151665
+      ],
+      [
+        33975,
+        25
+      ],
+      [
+        71703,
+        25
+      ],
+      [
+        15469,
+        25
+      ]
+    ],
+    "eos_token_ids": [
+      151645,
+      151643
+    ],
+    "premature_eos_suppression": true,
+    "prompt_has_empty_think_block": true,
+    "prompt_suffix": "undary probe<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "provenance_final_guided_target": true,
+    "semantic_first_answer_stopping": true
+  },
+  "generation_protocol": {
+    "bad_words_required": true,
+    "diagnostic_call_budget": 24,
+    "do_sample": false,
+    "enable_thinking": false,
+    "final_gate_call_budget": 24,
+    "input_max_length": 3072,
+    "long_run_total_call_budget": 270,
+    "max_new_tokens": 160,
+    "model": "Qwen3-4B",
+    "no_repeat_ngram_size": 4,
+    "post_hoc_truncation_allowed": false,
+    "premature_eos_suppression_required": true,
+    "provenance_final_guided_target_required": true,
+    "repetition_penalty": 1.15,
+    "semantic_first_answer_stopping_required": true
+  },
+  "generation_protocol_sha256": "321cec8d5ec003fc1f04662927ae440e33f6fb306b2043aa103a705dfeb145e4",
+  "kind": "phase100_pre_generation_freeze",
+  "model": {
+    "all_shards_present": true,
+    "config_sha256": "8ba006f74fecfaaeb392872a60f4a480e7ec9860153d2e1b769ec81f9a147f8a",
+    "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "shards": [
+      "model-00001-of-00003.safetensors",
+      "model-00002-of-00003.safetensors",
+      "model-00003-of-00003.safetensors"
+    ],
+    "tokenizer_config_sha256": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "total_weight_bytes": 8044982000
+  },
+  "passed": true,
+  "simulated_usage": true,
+  "source_sha256": {
+    "core": "b35e074e5ed7570c21f15ea034bb8c0d55ae20e480cc89616e93f1b044bc196e",
+    "core_test": "e416ea42dd4085bf20bee5ee65657c82924343a3b29b8799d9ab21f33f532576",
+    "driver": "28410fcdd135c9f717dcf9d2b9b80bfe37cbedc0dfa8f84566bcb31193aed80e",
+    "driver_test": "c8dace8f4907564f995099e6f0c1f49fed76c4326b731bde144ae26f2d9194a0",
+    "phase99_core": "f4ed758d8bf5f5aa8dc31a0e5c681b2d5413561b9b48ef0f2c364b5e1b3ee1b7"
+  }
+}

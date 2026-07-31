@@ -1,0 +1,93 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "deterministic": {
+    "comparisons": {
+      "sft_vs_base": {
+        "benchmark_wins": 16,
+        "candidate_win_rate": 0.3667,
+        "candidate_wins": 22,
+        "pair_count": 60,
+        "ties": 22
+      },
+      "sft_vs_soft_runtime": {
+        "benchmark_wins": 18,
+        "candidate_win_rate": 0.3,
+        "candidate_wins": 18,
+        "pair_count": 60,
+        "ties": 24
+      },
+      "soft_runtime_vs_base": {
+        "benchmark_wins": 19,
+        "candidate_win_rate": 0.2833,
+        "candidate_wins": 17,
+        "pair_count": 60,
+        "ties": 24
+      }
+    },
+    "invalid_result_count": 0,
+    "judge": "deterministic_phase44_frozen_rubric",
+    "kind": "phase44_blind_result_summary",
+    "status": "completed"
+  },
+  "independent": {
+    "actual_model_calls": true,
+    "comparisons": {
+      "sft_vs_base": {
+        "benchmark_wins": 32,
+        "candidate_win_rate": 0.4167,
+        "candidate_wins": 25,
+        "pair_count": 60,
+        "ties": 3
+      },
+      "sft_vs_soft_runtime": {
+        "benchmark_wins": 37,
+        "candidate_win_rate": 0.3167,
+        "candidate_wins": 19,
+        "pair_count": 60,
+        "ties": 4
+      },
+      "soft_runtime_vs_base": {
+        "benchmark_wins": 16,
+        "candidate_win_rate": 0.5667,
+        "candidate_wins": 34,
+        "pair_count": 60,
+        "ties": 10
+      }
+    },
+    "completed_pair_count": 180,
+    "created_at": "2026-07-12T09:25:19.856425+00:00",
+    "expected_pair_count": 180,
+    "fabricated_scores": false,
+    "failure_count": 0,
+    "failures": [],
+    "identity_hidden_from_judge": true,
+    "invalid_result_count": 0,
+    "judge": "independent_ollama_blind_judge",
+    "judge_model": "gemma4:31b",
+    "kind": "phase44_blind_result_summary",
+    "status": "completed",
+    "think": false
+  },
+  "integrity": {
+    "comparison_counts": {
+      "sft_vs_base": 60,
+      "sft_vs_soft_runtime": 60,
+      "soft_runtime_vs_base": 60
+    },
+    "expected_pair_count": 180,
+    "kind": "phase44_blind_integrity_check",
+    "pair_count": 180,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "required_comparisons": [
+      "soft_runtime_vs_base",
+      "sft_vs_base",
+      "sft_vs_soft_runtime"
+    ],
+    "scorer_frozen": true,
+    "scorer_source_sha256": "0fd85934d4799a118316bd8d11abf6b7004ba7663f18f84dd85371d977c75f7f"
+  },
+  "kind": "phase44_blind_eval_report"
+}

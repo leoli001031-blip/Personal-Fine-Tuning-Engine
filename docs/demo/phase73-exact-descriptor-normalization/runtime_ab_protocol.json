@@ -1,0 +1,38 @@
+{
+  "auto_promote_allowed": false,
+  "decision_gates": {
+    "fresh_preflight_accuracy_min": 1.0,
+    "fresh_preflight_schema_failure_max": 0,
+    "fresh_preflight_status": "qualified",
+    "phase68_regression_accuracy_min": 1.0,
+    "phase68_regression_schema_failure_max": 0,
+    "phase68_regression_status": "qualified"
+  },
+  "historical_replay_counted_as_model_outputs": false,
+  "judge_transport_by_alias": {
+    "semantic_judge_alpha": "phase59_nested_json_schema",
+    "semantic_judge_beta": "phase73_exact_descriptor_normalization"
+  },
+  "kind": "phase73_frozen_exact_descriptor_normalization_protocol",
+  "num_ctx": 4096,
+  "num_predict_by_alias": {
+    "semantic_judge_alpha": 192,
+    "semantic_judge_beta": 64
+  },
+  "parallel_worker_count": 4,
+  "product_default_change_allowed": false,
+  "product_generation_allowed": false,
+  "protocol_sha256": "391ef9b68a676ab38a13c54c3c65e0a135b9d86b04b12f46912e259ce9270643",
+  "retry_limit": 2,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false
+}

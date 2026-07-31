@@ -1,0 +1,49 @@
+{
+  "checks": {
+    "commands_passed": true,
+    "decision_is_truthful": true,
+    "evidence_integrity_passed": true,
+    "evidence_manifest_matches": true,
+    "full_regression_passed": true,
+    "public_blind_package_private_zero": true
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "-m",
+        "py_compile",
+        "/Users/lichenhao/Desktop/PFE/pfe-core/pfe_core/phase77_private_value_guarded_runtime.py",
+        "/Users/lichenhao/Desktop/PFE/tools/phase77_private_value_guarded_runtime.py"
+      ],
+      "duration_seconds": 0.031,
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/pytest",
+        "-q",
+        "tests/test_phase77_private_value_guarded_runtime.py",
+        "tests/test_phase76_conditional_persona_runtime.py",
+        "tests/test_phase75_personalization_benefit_benchmark.py",
+        "tests/test_phase45_privacy_multiturn_preference.py"
+      ],
+      "duration_seconds": 1.647,
+      "exit_code": 0,
+      "output": "....................................                                     [100%]\n36 passed in 1.46s\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "duration_seconds": 0.021,
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "kind": "phase77_validation_summary",
+  "status": "passed"
+}

@@ -15,6 +15,7 @@ from .main_compat import install_command_compat, install_console_compat, install
 from .main_format_compat import install_format_compat
 from .main_registration import register_main_commands
 from .plan_snapshot_helpers import load_latest_adapter_manifest
+from .phase35_commands import register_phase35_commands
 from .result_formatting import format_eval_result, format_train_result
 from .serve_formatting import format_serve
 from .shared_formatting import (
@@ -58,6 +59,8 @@ app.add_typer(eval_trigger_app, name="eval-trigger")
 app.add_typer(candidate_app, name="candidate")
 collect_app = typer.Typer(help="Manage signal collection state.")
 app.add_typer(collect_app, name="collect")
+phase35_app = typer.Typer(help="Phase35 local interaction capture.")
+app.add_typer(phase35_app, name="phase35")
 
 
 _load_service = load_service
@@ -102,6 +105,7 @@ register_main_commands(
     collect_app=collect_app,
     symbols=globals(),
 )
+register_phase35_commands(phase35_app)
 
 
 def main() -> None:

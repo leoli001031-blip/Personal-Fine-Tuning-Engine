@@ -8,7 +8,7 @@ import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Awaitable, Callable, Mapping, Optional, Protocol, Union
+from typing import Any, AsyncIterator, Awaitable, Callable, Mapping, Optional, Protocol, Union
 from uuid import uuid4
 
 from .auth import AccessContext, ServerSecurityConfig, authorize_request, normalize_headers
@@ -74,6 +74,52 @@ from .studio_training_contracts import (
     training_request_from_body as studio_training_request_from_body,
 )
 from .studio_training_service import start_training_job as start_studio_training_job
+from pfe_core.inference.contracts import (
+    BOUNDARY_CONTRACT_ID,
+    PERSONA_CONTRACT_IDS,
+    build_boundary_contract_fallback,
+    build_persona_contract_fallback,
+    resolve_response_contract,
+)
+from pfe_core.inference.provenance import ProvenanceEnvelope, build_provenance_envelope
+from pfe_core.phase77_private_value_guarded_runtime import (
+    guard_phase77_messages,
+    guard_phase77_output,
+)
+from pfe_core.phase23_runtime_contract_loop import (
+    build_runtime_contract_response as build_phase23_runtime_contract_response,
+    signal_record_from_contract_feedback as phase23_signal_record_from_contract_feedback,
+)
+from pfe_core.phase25_actual_user_feedback_loop import (
+    build_phase25_actual_feedback_signal,
+)
+from pfe_core.phase26_actual_feedback_collection_probe import (
+    build_phase26_feedback_batch,
+)
+from pfe_core.phase27_actual_feedback_review_training_loop import (
+    append_phase27_import_batch,
+    apply_phase27_review_decision,
+    build_phase27_collection_pack,
+    build_phase27_import_batch,
+    build_phase27_readiness,
+    load_phase27_state,
+    phase27_payloads_from_csv,
+    phase27_payloads_from_jsonl,
+    phase27_store_path,
+)
+from pfe_core.phase28_real_feedback_loop_engineering import (
+    append_phase28_import_batch,
+    apply_phase28_review_decision,
+    build_phase28_import_batch,
+    build_phase28_loop_state,
+    build_phase28_readiness,
+    build_phase28_task_pack,
+    build_phase28_training_attempt,
+    load_phase28_state,
+    phase28_payloads_from_csv,
+    phase28_payloads_from_jsonl,
+    phase28_store_path,
+)
 
 # ChatCollector integration - import from pfe_core if available
 def _try_import_chat_collector() -> tuple[bool, Any, Any, Any]:
@@ -223,7 +269,7 @@ def _remove_pending_interaction(session_id: str, request_id: str) -> None:
 try:  # FastAPI is optional in the current workspace snapshot.
     from fastapi import FastAPI, Request, Response
     from fastapi.middleware.cors import CORSMiddleware
-    from fastapi.responses import HTMLResponse, JSONResponse
+    from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 
     FASTAPI_AVAILABLE = True
 except ImportError:  # pragma: no cover - exercised in the current environment.
@@ -232,6 +278,7 @@ except ImportError:  # pragma: no cover - exercised in the current environment.
     Response = Any  # type: ignore[assignment]
     HTMLResponse = None  # type: ignore[assignment]
     JSONResponse = None  # type: ignore[assignment]
+    StreamingResponse = None  # type: ignore[assignment]
     CORSMiddleware = None  # type: ignore[assignment]
     FASTAPI_AVAILABLE = False
 
@@ -370,7 +417,26 @@ class MockInferenceService:
             if message.role == "user" and message.content:
                 last_user = message.content
                 break
-        reply = self._build_reply(last_user=last_user, metadata=request.metadata)
+        metadata = dict(request.metadata or {})
+        if request.response_contract:
+            metadata["response_contract"] = request.response_contract
+        reply = self._build_reply(
+            last_user=last_user,
+            metadata=metadata,
+            messages=[message.model_dump(mode="json") for message in request.messages],
+        )
+        declared_private_values = [
+            str(value)
+            for value in metadata.get("declared_private_values") or []
+            if str(value)
+        ]
+        response_metadata = dict(metadata)
+        response_metadata.pop("declared_private_values", None)
+        if declared_private_values:
+            response_metadata["private_value_guard"] = {
+                "declared_private_value_count": len(declared_private_values),
+                "raw_private_value_persisted": False,
+            }
         completion_tokens = max(1, math.ceil(len(reply) / 4))
         prompt_tokens = max(1, math.ceil(sum(len(m.content or "") for m in request.messages) / 4))
         return ChatCompletionResponse(
@@ -390,9 +456,14 @@ class MockInferenceService:
             session_id=request.session_id,
             adapter_version=request.adapter_version,
             served_by="mock",
+            pfe_provenance=build_provenance_envelope(
+                generation_origin="mock",
+                untrusted_metadata=metadata,
+                model_output=reply,
+            ),
             metadata={
                 "note": "OpenAI-compatible inference only; personalization requires /pfe/signal.",
-                "request_metadata": request.metadata,
+                "request_metadata": response_metadata,
             },
         )
 
@@ -447,7 +518,20 @@ class MockInferenceService:
             extraction_rule=f"mock_{action}",
         )]
 
-    def _build_reply(self, last_user: str, metadata: Mapping[str, Any]) -> str:
+    def _build_reply(
+        self,
+        last_user: str,
+        metadata: Mapping[str, Any],
+        messages: list[dict[str, Any]] | None = None,
+    ) -> str:
+        contract = resolve_response_contract(metadata=metadata)
+        if contract == BOUNDARY_CONTRACT_ID:
+            return build_boundary_contract_fallback(messages or [{"role": "user", "content": last_user}], metadata)
+        if contract in PERSONA_CONTRACT_IDS:
+            return build_persona_contract_fallback(
+                messages or [{"role": "user", "content": last_user}],
+                metadata,
+            )
         style = str(metadata.get("style_hint", "helpful")) if metadata else "helpful"
         if last_user:
             return f"[mock-{style}] I heard: {last_user}"
@@ -1267,6 +1351,75 @@ def _load_request_json(body: bytes) -> dict[str, Any]:
     except Exception:
         payload = {}
     return payload if isinstance(payload, dict) else {}
+
+
+def _phase3_store(services: ServiceBundle) -> Any:
+    _ensure_core_import_path()
+    from pfe_core.phase3_signal_loop import Phase3SignalLoopStore
+
+    return Phase3SignalLoopStore(home=_resolve_pfe_home(), workspace=services.workspace)
+
+
+def _phase27_store_file(services: ServiceBundle) -> Path:
+    return phase27_store_path(_resolve_pfe_home(), services.workspace)
+
+
+def _phase28_store_file(services: ServiceBundle) -> Path:
+    return phase28_store_path(_resolve_pfe_home(), services.workspace)
+
+
+def _phase27_local_model_inventory() -> list[dict[str, Any]]:
+    roots = [
+        Path.home() / ".cache" / "huggingface" / "hub",
+        Path.home() / ".cache" / "modelscope" / "hub",
+        Path.home() / ".lmstudio" / "models",
+        _repo_root() / "models",
+        _repo_root() / "local_models",
+    ]
+    candidates: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in list(root.glob("*"))[:300]:
+            lower = str(path).lower()
+            if "qwen" not in lower:
+                continue
+            key = str(path.resolve())
+            if key in seen:
+                continue
+            seen.add(key)
+            non_generative = any(token in lower for token in ("embedding", "reranker", "vl", "tts", "audio", "omni"))
+            oversized = "27b" in lower or "32b" in lower or "72b" in lower
+            quantized = "4bit" in lower or "4-bit" in lower or "awq" in lower or "gguf" in lower
+            trainable_size_hint = any(token in lower for token in ("0.6b", "1.5b", "1.7b", "3b", "4b", "7b", "8b", "14b"))
+            candidates.append(
+                {
+                    "name": path.name,
+                    "path": str(path),
+                    "exists": path.exists(),
+                    "qwen": True,
+                    "non_generative": non_generative,
+                    "looks_quantized": quantized,
+                    "looks_oversized_for_local_training": oversized,
+                    "trainable": bool(trainable_size_hint and not non_generative and not oversized and not lower.endswith(".gguf")),
+                }
+            )
+    return candidates
+
+
+def _phase4_store(services: ServiceBundle) -> Any:
+    _ensure_core_import_path()
+    from pfe_core.phase4_real_corpus import Phase4CorpusStore
+
+    return Phase4CorpusStore(home=_resolve_pfe_home(), workspace=services.workspace)
+
+
+def _phase6_store(services: ServiceBundle) -> Any:
+    _ensure_core_import_path()
+    from pfe_core.phase6_candidate_adapter_trial import Phase6CandidateAdapterTrialStore
+
+    return Phase6CandidateAdapterTrialStore(home=_resolve_pfe_home(), workspace=services.workspace)
 
 
 def _build_training_preflight_payload(
@@ -3040,6 +3193,147 @@ async def _envelope_from_asgi_scope(scope: Mapping[str, Any], receive: Callable[
     )
 
 
+def _sse_data(payload: Mapping[str, Any] | str) -> bytes:
+    if isinstance(payload, str):
+        return f"data: {payload}\n\n".encode("utf-8")
+    return ("data: " + json.dumps(dict(payload), ensure_ascii=False, separators=(",", ":")) + "\n\n").encode("utf-8")
+
+
+def _finalize_runtime_provenance(
+    *,
+    request: ChatCompletionRequest,
+    response: ChatCompletionResponse,
+    model_output: str,
+) -> ProvenanceEnvelope:
+    """Replace provider metadata with runtime-owned, fail-closed provenance."""
+
+    return ProvenanceEnvelope.model_validate(
+        build_provenance_envelope(
+            generation_origin=response.served_by,
+            untrusted_metadata=request.metadata,
+            model_output=model_output,
+        )
+    )
+
+
+async def _chat_completion_sse_events(
+    *,
+    request: ChatCompletionRequest,
+    services: ServiceBundle,
+) -> AsyncIterator[bytes]:
+    """Emit protocol-correct OpenAI SSE around the current buffered backend."""
+
+    stream_id = f"chatcmpl-{uuid4().hex[:12]}"
+    created = int(time.time())
+    session_id = str(request.session_id)
+    request_id = str(request.request_id)
+    base_chunk = {
+        "id": stream_id,
+        "object": "chat.completion.chunk",
+        "created": created,
+        "model": request.model,
+    }
+    yield _sse_data(
+        {
+            **base_chunk,
+            "choices": [{"index": 0, "delta": {"role": "assistant"}, "finish_reason": None}],
+            "pfe": {"streaming_mode": "buffered_backend", "incremental_backend": False},
+        }
+    )
+
+    response_start_time = time.time()
+    task = asyncio.create_task(services.inference.generate_chat_completion(request))
+    try:
+        while not task.done():
+            done, _pending = await asyncio.wait({task}, timeout=2.0)
+            if not done:
+                yield b": keep-alive\n\n"
+        response = task.result()
+    except asyncio.CancelledError:
+        task.cancel()
+        raise
+    except Exception as exc:
+        yield _sse_data(
+            {
+                "error": {
+                    "message": str(exc),
+                    "type": "upstream_error",
+                    "code": exc.__class__.__name__,
+                }
+            }
+        )
+        yield _sse_data("[DONE]")
+        return
+
+    content = ""
+    finish_reason = "stop"
+    if response.choices:
+        content = response.choices[0].message.content or ""
+        finish_reason = response.choices[0].finish_reason or "stop"
+    provenance = _finalize_runtime_provenance(
+        request=request,
+        response=response,
+        model_output=content,
+    )
+    chunk_size = max(1, int(str(os.environ.get("PFE_SSE_CHUNK_CHARS", "24")).strip() or "24"))
+    for index in range(0, len(content), chunk_size):
+        yield _sse_data(
+            {
+                **base_chunk,
+                "choices": [
+                    {
+                        "index": 0,
+                        "delta": {"content": content[index : index + chunk_size]},
+                        "finish_reason": None,
+                    }
+                ],
+            }
+        )
+
+    user_message = ""
+    for message in reversed(request.messages):
+        if message.role == "user" and message.content:
+            user_message = message.content
+            break
+    declared_private_values = [
+        str(value)
+        for value in dict(request.metadata or {}).get("declared_private_values") or []
+        if str(value)
+    ]
+    retained_user_rows, _input_guard = guard_phase77_messages(
+        [{"role": "user", "content": user_message}],
+        declared_private_values,
+    )
+    retained_assistant_message, _output_guard = guard_phase77_output(
+        content,
+        declared_private_values,
+    )
+    _store_pending_interaction(
+        session_id=session_id,
+        request_id=request_id,
+        user_message=str(retained_user_rows[0].get("content") or ""),
+        assistant_message=retained_assistant_message,
+        adapter_version=request.adapter_version,
+        timestamp=response_start_time,
+    )
+    yield _sse_data(
+        {
+            **base_chunk,
+            "choices": [{"index": 0, "delta": {}, "finish_reason": finish_reason}],
+            "usage": response.usage.model_dump(mode="json"),
+            "pfe_provenance": provenance.model_dump(mode="json"),
+            "pfe": {
+                "streaming_mode": "buffered_backend",
+                "incremental_backend": False,
+                "session_id": session_id,
+                "request_id": request_id,
+                "response_time_seconds": round(time.time() - response_start_time, 3),
+            },
+        }
+    )
+    yield _sse_data("[DONE]")
+
+
 async def handle_chat_completions(
     envelope: RequestEnvelope,
     services: ServiceBundle,
@@ -3053,6 +3347,20 @@ async def handle_chat_completions(
         return _json_response(
             _error_payload("invalid chat completion request", "invalid_request", str(exc)),
             status_code=422,
+        )
+    request.session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
+    request.request_id = request.request_id or f"req-{uuid4().hex[:8]}"
+
+    if request.stream:
+        if StreamingResponse is None:
+            return _json_response(
+                _error_payload("streaming requires the FastAPI runtime", "streaming_unavailable"),
+                status_code=501,
+            )
+        return StreamingResponse(
+            _chat_completion_sse_events(request=request, services=services),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )
 
     # Extract user message for signal collection
@@ -3071,16 +3379,35 @@ async def handle_chat_completions(
     assistant_message = ""
     if response.choices and response.choices[0].message:
         assistant_message = response.choices[0].message.content or ""
+    response.pfe_provenance = _finalize_runtime_provenance(
+        request=request,
+        response=response,
+        model_output=assistant_message,
+    )
 
     # Store interaction for potential signal extraction
-    session_id = request.session_id or f"sess-{uuid4().hex[:8]}"
-    request_id = request.request_id or f"req-{uuid4().hex[:8]}"
+    session_id = request.session_id
+    request_id = request.request_id
 
+    declared_private_values = [
+        str(value)
+        for value in dict(request.metadata or {}).get("declared_private_values") or []
+        if str(value)
+    ]
+    retained_user_rows, retained_input_guard = guard_phase77_messages(
+        [{"role": "user", "content": user_message}],
+        declared_private_values,
+    )
+    retained_user_message = str(retained_user_rows[0].get("content") or "")
+    retained_assistant_message, retained_output_guard = guard_phase77_output(
+        assistant_message,
+        declared_private_values,
+    )
     _store_pending_interaction(
         session_id=session_id,
         request_id=request_id,
-        user_message=user_message,
-        assistant_message=assistant_message,
+        user_message=retained_user_message,
+        assistant_message=retained_assistant_message,
         adapter_version=request.adapter_version,
         timestamp=response_start_time,
     )
@@ -3091,6 +3418,9 @@ async def handle_chat_completions(
         "session_id": session_id,
         "request_id": request_id,
         "interaction_stored": True,
+        "declared_private_value_count": len(declared_private_values),
+        "interaction_private_values_redacted": retained_input_guard.get("passed") is True
+        and retained_output_guard.get("passed") is True,
         "response_time_seconds": round(response_time, 3),
     }
     response.metadata = response_metadata
@@ -3115,7 +3445,37 @@ async def handle_signal_ingest(
             status_code=422,
         )
     response = await services.pipeline.ingest_signal(request)
-    return _json_response(response.model_dump(mode="json"), status_code=200)
+    payload = response.model_dump(mode="json")
+    try:
+        metadata = dict(request.metadata or {})
+        user_action = dict(request.user_action or {})
+        phase3_signal = _phase3_store(services).ingest_feedback(
+            signal_id=request.event_id,
+            action=str(user_action.get("type") or request.event_type),
+            persona_id=str(metadata.get("persona_id") or "ops-analyst"),
+            scenario_id=str(metadata.get("scenario_id") or metadata.get("scenario") or "contract-risk-summary"),
+            user_input=request.user_input or "",
+            model_output=request.model_output or "",
+            edited_text=str(user_action.get("edited_text") or user_action.get("final_text") or ""),
+            user_feedback=str(metadata.get("user_feedback") or ""),
+            source="pfe_signal",
+            confidence=float(metadata.get("confidence", 0.7) or 0.7),
+            session_id=request.session_id,
+            request_id=request.request_id,
+            metadata={
+                **metadata,
+                "source_event_ids": list(request.source_event_ids or []),
+                "adapter_version": request.adapter_version,
+            },
+        )
+        payload.setdefault("metadata", {})["phase3"] = {
+            "recorded": True,
+            "eligible_for_training": bool(phase3_signal.get("eligible_for_training")),
+            "route": phase3_signal.get("route") or {},
+        }
+    except Exception as exc:
+        payload.setdefault("metadata", {})["phase3"] = {"recorded": False, "error": str(exc)}
+    return _json_response(payload, status_code=200)
 
 
 async def handle_feedback(
@@ -3157,6 +3517,7 @@ async def handle_feedback(
     )
 
     pipeline_ingest_result: dict[str, Any] | None = None
+    phase3_ingest_result: dict[str, Any] | None = None
 
     if CHAT_COLLECTOR_AVAILABLE and ChatCollector is not None and CollectorConfig is not None and ChatInteraction is not None:
         try:
@@ -3219,6 +3580,31 @@ async def handle_feedback(
     if signal_id is None:
         signal_id = f"sig-{uuid4().hex[:12]}"
 
+    try:
+        feedback_metadata = dict(request.metadata or {})
+        phase3_ingest_result = _phase3_store(services).ingest_feedback(
+            signal_id=signal_id,
+            action=request.action,
+            persona_id=str(feedback_metadata.get("persona_id") or "ops-analyst"),
+            scenario_id=str(feedback_metadata.get("scenario_id") or feedback_metadata.get("scenario") or "contract-risk-summary"),
+            user_input=user_message,
+            model_output=assistant_message,
+            edited_text=request.edited_text,
+            user_feedback=str(feedback_metadata.get("user_feedback") or ""),
+            source="pfe_feedback",
+            confidence=confidence,
+            session_id=request.session_id,
+            request_id=request.request_id,
+            metadata={
+                **feedback_metadata,
+                "extraction_rule": extraction_rule,
+                "response_time_seconds": request.response_time_seconds,
+                "adapter_version": request.adapter_version,
+            },
+        )
+    except Exception as exc:
+        phase3_ingest_result = {"recorded": False, "error": str(exc)}
+
     return _json_response(
         FeedbackResponse(
             success=True,
@@ -3236,6 +3622,15 @@ async def handle_feedback(
                 "collector_available": CHAT_COLLECTOR_AVAILABLE,
                 "pending_found": pending is not None,
                 "pipeline_ingest": pipeline_ingest_result or {},
+                "phase3": {
+                    "recorded": bool(phase3_ingest_result and phase3_ingest_result.get("signal_id")),
+                    "signal_id": phase3_ingest_result.get("signal_id") if isinstance(phase3_ingest_result, Mapping) else None,
+                    "eligible_for_training": bool(phase3_ingest_result.get("eligible_for_training"))
+                    if isinstance(phase3_ingest_result, Mapping)
+                    else False,
+                    "route": phase3_ingest_result.get("route") if isinstance(phase3_ingest_result, Mapping) else {},
+                    "error": phase3_ingest_result.get("error") if isinstance(phase3_ingest_result, Mapping) else None,
+                },
             },
         ).model_dump(mode="json"),
         status_code=200,
@@ -3922,6 +4317,1199 @@ async def handle_signals(
         return _json_response({"signals": signals}, status_code=200)
     except Exception as exc:
         return _json_response({"signals": [], "error": str(exc)}, status_code=500)
+
+
+async def handle_phase3_summary(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        return _json_response(_phase3_store(services).summary(), status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_personas(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        store = _phase3_store(services)
+        return _json_response({"workspace": services.workspace, "personas": store.personas()}, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_scenarios(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        store = _phase3_store(services)
+        return _json_response({"workspace": services.workspace, "scenarios": store.scenarios()}, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_signals(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase3_store(services)
+    if envelope.method == "POST":
+        body = _load_request_json(envelope.body)
+        metadata = dict(body.get("metadata") or {})
+        try:
+            record = store.ingest_feedback(
+                action=str(body.get("signal_type") or body.get("action") or "accept"),
+                persona_id=str(body.get("persona_id") or "ops-analyst"),
+                scenario_id=str(body.get("scenario_id") or "contract-risk-summary"),
+                user_input=str(body.get("user_input") or body.get("context") or ""),
+                model_output=str(body.get("model_output") or ""),
+                edited_text=str(body.get("corrected_output") or body.get("edited_text") or "") or None,
+                user_feedback=str(body.get("user_feedback") or body.get("preference") or ""),
+                source=str(body.get("source") or "phase3_api"),
+                confidence=float(body.get("confidence", 0.7) or 0.7),
+                session_id=str(body.get("session_id") or ""),
+                request_id=str(body.get("request_id") or ""),
+                metadata=metadata,
+                signal_id=str(body.get("signal_id") or "") or None,
+            )
+        except Exception as exc:
+            return _json_response(_error_payload("invalid phase3 signal", "invalid_request", str(exc)), status_code=422)
+        return _json_response({"workspace": services.workspace, "signal": record}, status_code=200)
+
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 50)
+    signal_type = envelope.query_params.get("type") or envelope.query_params.get("signal_type")
+    eligible: bool | None = None
+    if "eligible_for_training" in envelope.query_params:
+        eligible = _query_bool(envelope.query_params, "eligible_for_training")
+    return _json_response(
+        {
+            "workspace": services.workspace,
+            "signals": store.list_signals(
+                signal_type=signal_type,
+                eligible_for_training=eligible,
+                limit=limit,
+            ),
+        },
+        status_code=200,
+    )
+
+
+async def handle_phase3_training_candidates(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 20)
+    try:
+        from pfe_core.phase3_signal_loop import training_sample_from_signal
+
+        store = _phase3_store(services)
+        signals = store.candidate_signals(limit=limit)
+        samples = [training_sample_from_signal(item) for item in signals]
+        return _json_response(
+            {
+                "workspace": services.workspace,
+                "count": len(samples),
+                "signals": [item.to_dict() for item in signals],
+                "samples": samples,
+            },
+            status_code=200,
+        )
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 unavailable", "phase3_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase3_candidate_plan(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    limit = int(body.get("limit") or envelope.query_params.get("limit") or 12)
+    try:
+        plan = _phase3_store(services).build_candidate_plan(
+            persona_id=str(body.get("persona_id") or "ops-analyst"),
+            scenario_id=str(body.get("scenario_id") or "contract-risk-summary"),
+            limit=max(1, limit),
+        )
+        plan["adapters"] = _build_adapters_payload(services)
+        return _json_response(plan, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase3 plan failed", "phase3_plan_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_summary(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        return _json_response(_phase4_store(services).summary(), status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 unavailable", "phase4_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase4_sources(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase4_store(services)
+    if envelope.method == "POST":
+        body = _load_request_json(envelope.body)
+        try:
+            if _body_bool(body, "demo"):
+                demo_path = store.imports_dir / "research-notes-demo.md"
+                demo_path.write_text(
+                    "\n".join(
+                        [
+                            "# Phase4 research notes demo",
+                            "",
+                            "PFE Phase4 collects source material, chunks it with provenance, and generates citation-grounded training candidates.",
+                            "The assistant should summarize only the supplied material, preserve source/chunk citations, and mark open questions.",
+                            "For legal, medical, or financial material, the assistant must avoid conclusions and require human confirmation.",
+                        ]
+                    )
+                    + "\n",
+                    encoding="utf-8",
+                )
+                result = store.ingest_path(
+                    demo_path,
+                    title="Phase4 research notes demo",
+                    license_status="local_demo_material",
+                    metadata={"created_by": "studio_demo_source"},
+                )
+            elif body.get("url"):
+                result = store.ingest_url(
+                    str(body.get("url") or ""),
+                    title=str(body.get("title") or "") or None,
+                    license_status=str(body.get("license_status") or body.get("license") or "") or None,
+                    metadata=dict(body.get("metadata") or {}),
+                )
+            else:
+                result = store.ingest_path(
+                    str(body.get("path") or body.get("source_path") or ""),
+                    title=str(body.get("title") or "") or None,
+                    license_status=str(body.get("license_status") or body.get("license") or "") or None,
+                    metadata=dict(body.get("metadata") or {}),
+                )
+        except Exception as exc:
+            return _json_response(_error_payload("invalid phase4 source", "invalid_request", str(exc)), status_code=422)
+        result["workspace"] = services.workspace
+        return _json_response(result, status_code=200)
+
+    source_type = envelope.query_params.get("source_type")
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 100)
+    return _json_response(
+        {"workspace": services.workspace, "sources": store.list_sources(source_type=source_type, limit=limit)},
+        status_code=200,
+    )
+
+
+async def handle_phase4_chunks(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase4_store(services)
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 200)
+    return _json_response(
+        {
+            "workspace": services.workspace,
+            "chunks": store.list_chunks(
+                source_id=envelope.query_params.get("source_id"),
+                safety_flag=envelope.query_params.get("safety_flag"),
+                limit=limit,
+            ),
+        },
+        status_code=200,
+    )
+
+
+async def handle_phase4_training_candidates(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    store = _phase4_store(services)
+    if envelope.method == "POST":
+        body = _load_request_json(envelope.body)
+        limit = int(body.get("limit") or envelope.query_params.get("limit") or 24)
+        try:
+            result = store.generate_training_candidates(limit=max(1, limit))
+            if _body_bool(body, "export"):
+                result["export"] = store.export_training_candidates(
+                    format=str(body.get("format") or "jsonl"),
+                    path=str(body.get("path") or "") or None,
+                )
+            return _json_response(result, status_code=200)
+        except Exception as exc:
+            return _json_response(_error_payload("phase4 candidate generation failed", "phase4_candidates_failed", str(exc)), status_code=500)
+
+    limit = _parse_positive_query_int(envelope.query_params, "limit", 200)
+    eligible: bool | None = None
+    if "eligible_for_training" in envelope.query_params:
+        eligible = _query_bool(envelope.query_params, "eligible_for_training")
+    return _json_response(
+        {
+            "workspace": services.workspace,
+            "candidates": store.list_training_candidates(eligible_for_training=eligible, limit=limit),
+        },
+        status_code=200,
+    )
+
+
+async def handle_phase4_training_export(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        if str(body.get("target") or "").strip().lower() == "samples_db":
+            result = _phase4_store(services).export_to_training_samples()
+        else:
+            result = _phase4_store(services).export_training_candidates(
+                format=str(body.get("format") or envelope.query_params.get("format") or "jsonl"),
+                path=str(body.get("path") or "") or None,
+            )
+        return _json_response(result, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 export failed", "phase4_export_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_training_plan(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        plan = _phase4_store(services).build_training_plan(
+            base_model=str(body.get("base_model") or _load_config_base_model() or "local-default"),
+        )
+        plan["adapters"] = _build_adapters_payload(services)
+        return _json_response(plan, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 plan failed", "phase4_plan_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_candidate_adapter(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        result = _phase4_store(services).materialize_mock_candidate_adapter(
+            base_model=str(body.get("base_model") or _load_config_base_model() or "local-default"),
+        )
+        result["adapters"] = _build_adapters_payload(services)
+        return _json_response(result, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 candidate adapter failed", "phase4_adapter_failed", str(exc)), status_code=500)
+
+
+async def handle_phase4_eval(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    try:
+        report = _phase4_store(services).build_eval_report(
+            adapter_version=str(body.get("adapter_version") or "") or None,
+            base_model=str(body.get("base_model") or _load_config_base_model() or "local-default"),
+            attach_to_adapter=_body_bool(body, "attach_to_adapter"),
+        )
+        report["adapters"] = _build_adapters_payload(services)
+        return _json_response(report, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase4 eval failed", "phase4_eval_failed", str(exc)), status_code=500)
+
+
+def _phase6_demo_fetch_text(source: Mapping[str, Any]) -> str:
+    title = str(source.get("title") or "Common Paper source")
+    return (
+        f"# {title}\n\n"
+        "1. Service scope. The provider supplies a cloud service for internal business use. "
+        "2. Data use. Customer content may be processed only as needed to provide and improve "
+        "the service, and personal data handling requires a data processing addendum. "
+        "3. Fees, renewal, suspension, and termination rights must be checked against the full agreement. "
+        "4. Boundary. This material supports contract summarization and risk flagging only; "
+        "it does not support final legal conclusions and requires human confirmation. "
+    ) * 3
+
+
+async def handle_phase6_summary(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        return _json_response(_phase6_store(services).summary(), status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 unavailable", "phase6_unavailable", str(exc)), status_code=500)
+
+
+async def handle_phase21_training_candidate_workbench(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase21-training-candidate-workbench"
+        / "evidence"
+        / "api_smoke_payload.json"
+    )
+    payload: dict[str, Any]
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase21_training_candidate_workbench",
+                "status": "blocked",
+                "reason": "phase21_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase21_training_candidate_workbench",
+            "status": "blocked",
+            "reason": "phase21_evidence_not_generated",
+            "candidate_plan": {
+                "preference_signal_count": 0,
+                "trainable_candidate_count": 0,
+                "holdout_isolation_status": "unknown",
+                "selected_model": None,
+                "training_method": None,
+                "sanity_gate_result": "unknown",
+                "degeneration_report_summary": {},
+                "full_eval_summary": {},
+                "final_decision": {"recommendation": "archive"},
+                "auto_promotion_allowed": False,
+            },
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase23_runtime_contract_loop(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase23-runtime-contract-product-loop"
+        / "evidence"
+        / "api_smoke_payload.json"
+    )
+    if envelope.method == "GET":
+        if payload_path.exists():
+            try:
+                payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+            except Exception as exc:
+                payload = {
+                    "kind": "phase23_runtime_contract_product_loop",
+                    "status": "blocked",
+                    "reason": "phase23_payload_read_failed",
+                    "error": str(exc),
+                }
+        else:
+            payload = {
+                "kind": "phase23_runtime_contract_product_loop",
+                "status": "blocked",
+                "reason": "phase23_evidence_not_generated",
+                "runtime_contract": {"decision": {"recommendation": "needs_evidence"}},
+                "training_candidate_plan": {
+                    "source_signal_count": 0,
+                    "trainable_candidate_count": 0,
+                    "excluded_signal_count": 0,
+                    "recommended_action": "archive",
+                    "auto_promotion_allowed": False,
+                },
+                "auto_promotion_allowed": False,
+            }
+        payload["workspace"] = services.workspace
+        payload["source_path"] = str(payload_path)
+        return _json_response(payload, status_code=200)
+
+    body = _load_request_json(envelope.body)
+    raw_messages = body.get("messages")
+    messages = [
+        dict(message)
+        for message in raw_messages
+        if isinstance(message, Mapping)
+    ] if isinstance(raw_messages, list) else []
+    if not messages:
+        prompt = str(body.get("prompt") or body.get("user_input") or "")
+        messages = [{"role": "user", "content": prompt}]
+    metadata = _coerce_json_mapping(body.get("metadata"))
+    mode = str(body.get("mode") or metadata.get("response_contract") or "contract_boundary_summary")
+    runtime_response = build_phase23_runtime_contract_response(
+        messages=messages,
+        metadata={**metadata, "response_contract": mode},
+        mode=mode,
+    )
+    feedback = _coerce_json_mapping(body.get("feedback"))
+    signal_payload: dict[str, Any] | None = None
+    persisted_signal: dict[str, Any] | None = None
+    if feedback:
+        signal_payload = phase23_signal_record_from_contract_feedback(
+            action=str(feedback.get("action") or "accept"),
+            runtime_response=runtime_response,
+            edited_text=str(feedback.get("edited_text") or ""),
+            user_feedback=str(feedback.get("user_feedback") or feedback.get("comment") or ""),
+            confidence=float(feedback.get("confidence", 0.85) or 0.85),
+            session_id=str(body.get("session_id") or feedback.get("session_id") or ""),
+            request_id=str(body.get("request_id") or feedback.get("request_id") or ""),
+            signal_id=str(feedback.get("signal_id") or "") or None,
+            metadata=_coerce_json_mapping(feedback.get("metadata")),
+        )
+        try:
+            from pfe_core.phase3_signal_loop import SignalInboxItem
+
+            persisted_signal = _phase3_store(services).add_signal(SignalInboxItem.from_dict(signal_payload))
+        except Exception as exc:
+            persisted_signal = {"recorded": False, "error": str(exc)}
+    response = {
+        "kind": "phase23_runtime_contract_product_loop_response",
+        "status": "completed",
+        "runtime_contract": runtime_response,
+        "signal": signal_payload,
+        "persisted_signal": persisted_signal,
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase24_review_queue(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase24-real-signal-review-candidate-value-probe"
+        / "evidence-review"
+        / "api_review_queue_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase24_review_queue_surface",
+                "status": "blocked",
+                "reason": "phase24_review_queue_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase24_review_queue_surface",
+            "status": "blocked",
+            "reason": "phase24_evidence_not_generated",
+            "queue": {"queue_count": 0, "items": []},
+            "review_summary": {"reviewed_count": 0, "state_counts": {}},
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase24_training_candidate_value(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase24-real-signal-review-candidate-value-probe"
+        / "evidence"
+        / "api_training_candidate_value_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase24_training_candidate_value",
+                "status": "blocked",
+                "reason": "phase24_training_candidate_value_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase24_training_candidate_value",
+            "status": "blocked",
+            "reason": "phase24_evidence_not_generated",
+            "comparison_summary": {
+                "final_recommendation": "needs_evidence",
+                "auto_promotion_allowed": False,
+            },
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase25_actual_feedback(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    intake = build_phase25_actual_feedback_signal(body)
+    if intake.get("status") == "blocked":
+        intake["workspace"] = services.workspace
+        return _json_response(intake, status_code=422)
+
+    persisted_signal: dict[str, Any] | None = None
+    signal = _coerce_json_mapping(intake.get("signal"))
+    try:
+        from pfe_core.phase3_signal_loop import SignalInboxItem
+
+        persisted_signal = _phase3_store(services).add_signal(SignalInboxItem.from_dict(signal))
+    except Exception as exc:
+        persisted_signal = {"recorded": False, "error": str(exc)}
+    response = {
+        "kind": "phase25_actual_feedback_response",
+        "status": "accepted_pending_review",
+        "intake": intake,
+        "signal": signal,
+        "phase25_route": intake.get("phase25_route"),
+        "persisted_signal": persisted_signal,
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase25_actual_feedback_readiness(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase25-actual-user-feedback-readiness-loop"
+        / "evidence"
+        / "api_actual_feedback_readiness_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase25_actual_feedback_readiness",
+                "status": "blocked",
+                "reason": "phase25_readiness_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase25_actual_feedback_readiness",
+            "status": "blocked",
+            "reason": "phase25_evidence_not_generated",
+            "comparison_summary": {
+                "final_recommendation": "collect_actual_user_feedback",
+                "auto_promotion_allowed": False,
+            },
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase26_feedback_collection_pack(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase26-actual-feedback-collection-training-probe"
+        / "evidence-feedback"
+        / "api_collection_pack_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase26_feedback_collection_pack_surface",
+                "status": "blocked",
+                "reason": "phase26_collection_pack_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase26_feedback_collection_pack_surface",
+            "status": "blocked",
+            "reason": "phase26_evidence_not_generated",
+            "collection_pack": {"collection_count": 0, "items": []},
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase26_actual_feedback_batch(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    raw_items = body.get("items") or body.get("payloads") or []
+    items = [dict(item) for item in raw_items if isinstance(item, Mapping)] if isinstance(raw_items, list) else []
+    batch = build_phase26_feedback_batch(items)
+    persisted: list[dict[str, Any]] = []
+    for signal in batch.get("accepted_signals") or []:
+        if not isinstance(signal, Mapping):
+            continue
+        try:
+            from pfe_core.phase3_signal_loop import SignalInboxItem
+
+            persisted.append(_phase3_store(services).add_signal(SignalInboxItem.from_dict(signal)))
+        except Exception as exc:
+            persisted.append({"recorded": False, "error": str(exc), "signal_id": signal.get("signal_id")})
+    response = {
+        "kind": "phase26_actual_feedback_batch_response",
+        "status": "accepted_pending_review" if batch.get("accepted_pending_review_count") else "blocked",
+        "batch": batch,
+        "persisted_signals": persisted,
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    status_code = 200 if batch.get("accepted_pending_review_count") else 422
+    return _json_response(response, status_code=status_code)
+
+
+async def handle_phase26_training_probe_readiness(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase26-actual-feedback-collection-training-probe"
+        / "evidence"
+        / "api_training_probe_readiness_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase26_training_probe_readiness_surface",
+                "status": "blocked",
+                "reason": "phase26_training_probe_readiness_payload_read_failed",
+                "error": str(exc),
+            }
+    else:
+        payload = {
+            "kind": "phase26_training_probe_readiness_surface",
+            "status": "blocked",
+            "reason": "phase26_evidence_not_generated",
+            "comparison_summary": {
+                "final_recommendation": "collect_and_review_actual_user_feedback",
+                "auto_promotion_allowed": False,
+            },
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+async def handle_phase27_collection_pack(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase27-actual-feedback-review-training-loop"
+        / "evidence-collection"
+        / "api_collection_pack_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase27_collection_pack_surface",
+                "status": "blocked",
+                "reason": "phase27_collection_pack_payload_read_failed",
+                "error": str(exc),
+                "auto_promotion_allowed": False,
+            }
+    else:
+        payload = {
+            "kind": "phase27_collection_pack_surface",
+            "status": "ready",
+            "collection_pack": build_phase27_collection_pack(),
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+def _phase27_payloads_from_body(body: Mapping[str, Any]) -> list[dict[str, Any]]:
+    raw_items = body.get("items") or body.get("payloads")
+    if isinstance(raw_items, list):
+        return [dict(item) for item in raw_items if isinstance(item, Mapping)]
+    jsonl = body.get("jsonl") or body.get("jsonl_text")
+    if isinstance(jsonl, str):
+        return phase27_payloads_from_jsonl(jsonl)
+    csv_text = body.get("csv") or body.get("csv_text")
+    if isinstance(csv_text, str):
+        return phase27_payloads_from_csv(csv_text)
+    return []
+
+
+async def handle_phase27_actual_feedback_batch(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    items = _phase27_payloads_from_body(body)
+    batch = build_phase27_import_batch(items)
+    state = append_phase27_import_batch(_phase27_store_file(services), batch)
+    response = {
+        "kind": "phase27_actual_feedback_batch_response",
+        "status": "accepted_pending_review" if batch.get("accepted_pending_review_count") else "blocked",
+        "batch": batch,
+        "persisted_signal_count": len(state.get("signals") or []),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    status_code = 200 if batch.get("accepted_pending_review_count") else 422
+    return _json_response(response, status_code=status_code)
+
+
+async def handle_phase27_review_queue(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    state = load_phase27_state(_phase27_store_file(services))
+    readiness = build_phase27_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+    response = {
+        "kind": "phase27_review_queue_surface",
+        "status": "ready",
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase27_review_decisions(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    result = apply_phase27_review_decision(_phase27_store_file(services), body)
+    state = load_phase27_state(_phase27_store_file(services))
+    readiness = build_phase27_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+    response = {
+        "kind": "phase27_review_decision_response",
+        "result": result,
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200 if result.get("status") == "completed" else 422)
+
+
+async def handle_phase27_training_readiness(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    state = load_phase27_state(_phase27_store_file(services))
+    readiness = build_phase27_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+    response = {
+        "kind": "phase27_training_readiness_surface",
+        "status": _coerce_json_mapping(readiness.get("training_readiness")).get("status"),
+        "actual_feedback_count": readiness.get("actual_feedback_count", 0),
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "training_job_specs": readiness.get("training_job_specs"),
+        "candidate_manifest": _coerce_json_mapping(readiness.get("candidate_artifacts")).get("candidate_manifest") or {},
+        "holdout_integrity_check": readiness.get("holdout_integrity_check"),
+        "model_selection": readiness.get("model_selection"),
+        "store_path": str(_phase27_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase28_task_pack(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    payload_path = (
+        _repo_root()
+        / "docs"
+        / "demo"
+        / "phase28-real-feedback-loop-engineering"
+        / "evidence-collection"
+        / "api_task_pack_payload.json"
+    )
+    if payload_path.exists():
+        try:
+            payload = _coerce_json_mapping(json.loads(payload_path.read_text(encoding="utf-8")))
+        except Exception as exc:
+            payload = {
+                "kind": "phase28_task_pack_surface",
+                "status": "blocked",
+                "reason": "phase28_task_pack_payload_read_failed",
+                "error": str(exc),
+                "auto_promotion_allowed": False,
+            }
+    else:
+        payload = {
+            "kind": "phase28_task_pack_surface",
+            "status": "ready",
+            "task_pack": build_phase28_task_pack(count=36),
+            "auto_promotion_allowed": False,
+        }
+    payload["workspace"] = services.workspace
+    payload["source_path"] = str(payload_path)
+    return _json_response(payload, status_code=200)
+
+
+def _phase28_payloads_from_body(body: Mapping[str, Any]) -> list[dict[str, Any]]:
+    raw_items = body.get("items") or body.get("payloads")
+    if isinstance(raw_items, list):
+        return [dict(item) for item in raw_items if isinstance(item, Mapping)]
+    jsonl = body.get("jsonl") or body.get("jsonl_text")
+    if isinstance(jsonl, str):
+        return phase28_payloads_from_jsonl(jsonl)
+    csv_text = body.get("csv") or body.get("csv_text")
+    if isinstance(csv_text, str):
+        return phase28_payloads_from_csv(csv_text)
+    return []
+
+
+async def handle_phase28_feedback_batch(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    items = _phase28_payloads_from_body(body)
+    batch = build_phase28_import_batch(items)
+    state = append_phase28_import_batch(_phase28_store_file(services), batch)
+    response = {
+        "kind": "phase28_feedback_batch_response",
+        "status": "accepted_pending_review" if batch.get("accepted_pending_review_count") else "blocked",
+        "batch": batch,
+        "persisted_signal_count": len(state.get("signals") or []),
+        "store_path": str(_phase28_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    status_code = 200 if batch.get("accepted_pending_review_count") else 422
+    return _json_response(response, status_code=status_code)
+
+
+async def _phase28_readiness_from_store(services: ServiceBundle) -> dict[str, Any]:
+    state = load_phase28_state(_phase28_store_file(services))
+    return build_phase28_readiness(
+        signals=[dict(item) for item in state.get("signals") or [] if isinstance(item, Mapping)],
+        review_decisions=[dict(item) for item in state.get("review_decisions") or [] if isinstance(item, Mapping)],
+        local_models=_phase27_local_model_inventory(),
+    )
+
+
+async def handle_phase28_review_queue(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    readiness = await _phase28_readiness_from_store(services)
+    response = {
+        "kind": "phase28_review_queue_surface",
+        "status": "ready",
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "store_path": str(_phase28_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase28_review_decisions(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body)
+    result = apply_phase28_review_decision(_phase28_store_file(services), body)
+    readiness = await _phase28_readiness_from_store(services)
+    response = {
+        "kind": "phase28_review_decision_response",
+        "result": result,
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "store_path": str(_phase28_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200 if result.get("status") == "completed" else 422)
+
+
+async def handle_phase28_loop_state(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    readiness = await _phase28_readiness_from_store(services)
+    attempt = build_phase28_training_attempt(readiness)
+    loop_state = build_phase28_loop_state(
+        readiness_payload=readiness,
+        training_attempt=attempt,
+        evidence_path="runtime_api",
+        import_batch={},
+    )
+    response = {
+        "kind": "phase28_loop_state_surface",
+        "status": loop_state.get("current_state"),
+        "loop_state": loop_state,
+        "training_attempt": attempt,
+        "store_path": str(_phase28_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase28_training_readiness(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    readiness = await _phase28_readiness_from_store(services)
+    attempt = build_phase28_training_attempt(readiness)
+    response = {
+        "kind": "phase28_training_readiness_surface",
+        "status": _coerce_json_mapping(readiness.get("training_readiness")).get("status"),
+        "actual_feedback_count": readiness.get("actual_feedback_count", 0),
+        "review_state": readiness.get("review_state"),
+        "training_readiness": readiness.get("training_readiness"),
+        "training_job_specs": readiness.get("training_job_specs"),
+        "training_attempt": attempt,
+        "candidate_manifest": _coerce_json_mapping(readiness.get("candidate_artifacts")).get("candidate_manifest") or {},
+        "holdout_integrity_check": readiness.get("holdout_integrity_check"),
+        "model_selection": readiness.get("model_selection"),
+        "store_path": str(_phase28_store_file(services)),
+        "auto_promotion_allowed": False,
+        "workspace": services.workspace,
+    }
+    return _json_response(response, status_code=200)
+
+
+async def handle_phase6_preflight(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    body = _load_request_json(envelope.body) if envelope.method == "POST" else {}
+    try:
+        from pfe_core.phase6_candidate_adapter_trial import PHASE6_RECOMMENDED_MODEL, qwen36_mlx_preflight
+
+        report = qwen36_mlx_preflight(
+            model_id=str(body.get("model_id") or envelope.query_params.get("model_id") or PHASE6_RECOMMENDED_MODEL),
+            model_path=str(body.get("model_path") or envelope.query_params.get("model_path") or "") or None,
+            require_local_model=_body_bool(body, "require_local_model")
+            or ("require_local_model" in envelope.query_params and _query_bool(envelope.query_params, "require_local_model")),
+            allow_remote_download=_body_bool(body, "allow_remote_download")
+            or ("allow_remote_download" in envelope.query_params and _query_bool(envelope.query_params, "allow_remote_download")),
+        )
+        report["workspace"] = services.workspace
+        return _json_response(report, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 preflight failed", "phase6_preflight_failed", str(exc)), status_code=500)
+
+
+async def handle_phase6_trial(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    if envelope.method == "GET":
+        return await handle_phase6_summary(envelope, services)
+    body = _load_request_json(envelope.body)
+    try:
+        from pfe_core.phase6_candidate_adapter_trial import PHASE6_RECOMMENDED_MODEL, run_phase6_candidate_adapter_trial
+
+        result = run_phase6_candidate_adapter_trial(
+            home=_resolve_pfe_home(),
+            workspace=services.workspace,
+            model_id=str(body.get("model_id") or PHASE6_RECOMMENDED_MODEL),
+            source_limit=int(body.get("source_limit") or 4 if _body_bool(body, "demo") else body.get("source_limit") or 10),
+            candidate_limit=int(body.get("candidate_limit") or 20 if _body_bool(body, "demo") else body.get("candidate_limit") or 60),
+            holdout_count=int(body.get("holdout_count") or 12 if _body_bool(body, "demo") else body.get("holdout_count") or 16),
+            require_local_model=_body_bool(body, "require_local_model"),
+            allow_remote_download=_body_bool(body, "allow_remote_download"),
+            model_path=str(body.get("model_path") or "") or None,
+            fetch_text=_phase6_demo_fetch_text if _body_bool(body, "demo") else None,
+            real_model_calls=_body_bool(body, "real_model_calls"),
+        )
+        result["adapters"] = _build_adapters_payload(services)
+        return _json_response(result, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 trial failed", "phase6_trial_failed", str(exc)), status_code=500)
+
+
+async def handle_phase6_eval(
+    envelope: RequestEnvelope,
+    services: ServiceBundle,
+) -> Any:
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
+    try:
+        summary = _phase6_store(services).summary()
+        report = dict(summary.get("eval_report") or {})
+        if not report:
+            return _json_response(_error_payload("phase6 eval missing", "phase6_eval_missing", "run /pfe/phase6/trial first"), status_code=404)
+        report["adapters"] = _build_adapters_payload(services)
+        return _json_response(report, status_code=200)
+    except Exception as exc:
+        return _json_response(_error_payload("phase6 eval failed", "phase6_eval_failed", str(exc)), status_code=500)
 
 
 
@@ -5021,7 +6609,9 @@ async def handle_adapters(envelope: RequestEnvelope, services: ServiceBundle) ->
 
 async def handle_dashboard_metrics(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get complete dashboard metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -5032,7 +6622,9 @@ async def handle_dashboard_metrics(envelope: RequestEnvelope, services: ServiceB
 
 async def handle_dashboard_training(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get training metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -5043,7 +6635,9 @@ async def handle_dashboard_training(envelope: RequestEnvelope, services: Service
 
 async def handle_dashboard_signals(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get signal quality metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -5054,7 +6648,9 @@ async def handle_dashboard_signals(envelope: RequestEnvelope, services: ServiceB
 
 async def handle_dashboard_adapters(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get adapter comparison data."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -5065,7 +6661,9 @@ async def handle_dashboard_adapters(envelope: RequestEnvelope, services: Service
 
 async def handle_dashboard_health(envelope: RequestEnvelope, services: ServiceBundle) -> Any:
     """Get system health metrics."""
-    del envelope
+    allowed, denial = _route_access(envelope, security=services.security, endpoint_kind="management")
+    if not allowed:
+        return denial
     try:
         from .dashboard_api import get_dashboard_api
         api = get_dashboard_api(workspace=services.workspace)
@@ -5187,6 +6785,82 @@ class _LiteASGIApp:
             return await handle_signal_ingest(envelope, self.services)
         if envelope.path == "/pfe/feedback" and envelope.method == "POST":
             return await handle_feedback(envelope, self.services)
+        if envelope.path == "/pfe/phase3" and envelope.method == "GET":
+            return await handle_phase3_summary(envelope, self.services)
+        if envelope.path == "/pfe/phase3/personas" and envelope.method == "GET":
+            return await handle_phase3_personas(envelope, self.services)
+        if envelope.path == "/pfe/phase3/scenarios" and envelope.method == "GET":
+            return await handle_phase3_scenarios(envelope, self.services)
+        if envelope.path == "/pfe/phase3/signals" and envelope.method in {"GET", "POST"}:
+            return await handle_phase3_signals(envelope, self.services)
+        if envelope.path == "/pfe/phase3/training-candidates" and envelope.method == "GET":
+            return await handle_phase3_training_candidates(envelope, self.services)
+        if envelope.path == "/pfe/phase3/candidate-plan" and envelope.method == "POST":
+            return await handle_phase3_candidate_plan(envelope, self.services)
+        if envelope.path == "/pfe/phase4" and envelope.method == "GET":
+            return await handle_phase4_summary(envelope, self.services)
+        if envelope.path == "/pfe/phase4/sources" and envelope.method in {"GET", "POST"}:
+            return await handle_phase4_sources(envelope, self.services)
+        if envelope.path == "/pfe/phase4/chunks" and envelope.method == "GET":
+            return await handle_phase4_chunks(envelope, self.services)
+        if envelope.path == "/pfe/phase4/training-candidates" and envelope.method in {"GET", "POST"}:
+            return await handle_phase4_training_candidates(envelope, self.services)
+        if envelope.path == "/pfe/phase4/training-candidates/export" and envelope.method == "POST":
+            return await handle_phase4_training_export(envelope, self.services)
+        if envelope.path == "/pfe/phase4/candidate-plan" and envelope.method == "POST":
+            return await handle_phase4_training_plan(envelope, self.services)
+        if envelope.path == "/pfe/phase4/candidate-adapter" and envelope.method == "POST":
+            return await handle_phase4_candidate_adapter(envelope, self.services)
+        if envelope.path == "/pfe/phase4/eval" and envelope.method == "POST":
+            return await handle_phase4_eval(envelope, self.services)
+        if envelope.path == "/pfe/phase6" and envelope.method == "GET":
+            return await handle_phase6_summary(envelope, self.services)
+        if envelope.path == "/pfe/phase6/preflight" and envelope.method in {"GET", "POST"}:
+            return await handle_phase6_preflight(envelope, self.services)
+        if envelope.path == "/pfe/phase6/trial" and envelope.method in {"GET", "POST"}:
+            return await handle_phase6_trial(envelope, self.services)
+        if envelope.path == "/pfe/phase6/trial/eval" and envelope.method == "POST":
+            return await handle_phase6_eval(envelope, self.services)
+        if envelope.path == "/pfe/phase21/training-candidate-workbench" and envelope.method == "GET":
+            return await handle_phase21_training_candidate_workbench(envelope, self.services)
+        if envelope.path == "/pfe/phase23/runtime-contract-loop" and envelope.method in {"GET", "POST"}:
+            return await handle_phase23_runtime_contract_loop(envelope, self.services)
+        if envelope.path == "/pfe/phase24/review-queue" and envelope.method == "GET":
+            return await handle_phase24_review_queue(envelope, self.services)
+        if envelope.path == "/pfe/phase24/training-candidate-value" and envelope.method == "GET":
+            return await handle_phase24_training_candidate_value(envelope, self.services)
+        if envelope.path == "/pfe/phase25/actual-feedback" and envelope.method == "POST":
+            return await handle_phase25_actual_feedback(envelope, self.services)
+        if envelope.path == "/pfe/phase25/actual-feedback-readiness" and envelope.method == "GET":
+            return await handle_phase25_actual_feedback_readiness(envelope, self.services)
+        if envelope.path == "/pfe/phase26/feedback-collection-pack" and envelope.method == "GET":
+            return await handle_phase26_feedback_collection_pack(envelope, self.services)
+        if envelope.path == "/pfe/phase26/actual-feedback-batch" and envelope.method == "POST":
+            return await handle_phase26_actual_feedback_batch(envelope, self.services)
+        if envelope.path == "/pfe/phase26/training-probe-readiness" and envelope.method == "GET":
+            return await handle_phase26_training_probe_readiness(envelope, self.services)
+        if envelope.path == "/pfe/phase27/collection-pack" and envelope.method == "GET":
+            return await handle_phase27_collection_pack(envelope, self.services)
+        if envelope.path == "/pfe/phase27/actual-feedback-batch" and envelope.method == "POST":
+            return await handle_phase27_actual_feedback_batch(envelope, self.services)
+        if envelope.path == "/pfe/phase27/review-queue" and envelope.method == "GET":
+            return await handle_phase27_review_queue(envelope, self.services)
+        if envelope.path == "/pfe/phase27/review-decisions" and envelope.method == "POST":
+            return await handle_phase27_review_decisions(envelope, self.services)
+        if envelope.path == "/pfe/phase27/training-readiness" and envelope.method == "GET":
+            return await handle_phase27_training_readiness(envelope, self.services)
+        if envelope.path == "/pfe/phase28/task-pack" and envelope.method == "GET":
+            return await handle_phase28_task_pack(envelope, self.services)
+        if envelope.path == "/pfe/phase28/feedback-batch" and envelope.method == "POST":
+            return await handle_phase28_feedback_batch(envelope, self.services)
+        if envelope.path == "/pfe/phase28/review-queue" and envelope.method == "GET":
+            return await handle_phase28_review_queue(envelope, self.services)
+        if envelope.path == "/pfe/phase28/review-decisions" and envelope.method == "POST":
+            return await handle_phase28_review_decisions(envelope, self.services)
+        if envelope.path == "/pfe/phase28/loop-state" and envelope.method == "GET":
+            return await handle_phase28_loop_state(envelope, self.services)
+        if envelope.path == "/pfe/phase28/training-readiness" and envelope.method == "GET":
+            return await handle_phase28_training_readiness(envelope, self.services)
         if envelope.path == "/pfe/distill/run" and envelope.method == "POST":
             return await handle_distill_run(envelope, self.services)
         if envelope.path == "/pfe/auto-train/reset" and envelope.method == "POST":
@@ -5371,6 +7045,182 @@ def create_app(
         @app.post("/pfe/feedback")
         async def pfe_feedback(request: Request) -> Any:
             return await handle_feedback(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3")
+        async def pfe_phase3(request: Request) -> Any:
+            return await handle_phase3_summary(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/personas")
+        async def pfe_phase3_personas(request: Request) -> Any:
+            return await handle_phase3_personas(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/scenarios")
+        async def pfe_phase3_scenarios(request: Request) -> Any:
+            return await handle_phase3_scenarios(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/signals")
+        async def pfe_phase3_signals(request: Request) -> Any:
+            return await handle_phase3_signals(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase3/signals")
+        async def pfe_phase3_signal_ingest(request: Request) -> Any:
+            return await handle_phase3_signals(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase3/training-candidates")
+        async def pfe_phase3_training_candidates(request: Request) -> Any:
+            return await handle_phase3_training_candidates(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase3/candidate-plan")
+        async def pfe_phase3_candidate_plan(request: Request) -> Any:
+            return await handle_phase3_candidate_plan(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4")
+        async def pfe_phase4(request: Request) -> Any:
+            return await handle_phase4_summary(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4/sources")
+        async def pfe_phase4_sources(request: Request) -> Any:
+            return await handle_phase4_sources(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/sources")
+        async def pfe_phase4_source_ingest(request: Request) -> Any:
+            return await handle_phase4_sources(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4/chunks")
+        async def pfe_phase4_chunks(request: Request) -> Any:
+            return await handle_phase4_chunks(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase4/training-candidates")
+        async def pfe_phase4_training_candidates(request: Request) -> Any:
+            return await handle_phase4_training_candidates(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/training-candidates")
+        async def pfe_phase4_training_candidate_generate(request: Request) -> Any:
+            return await handle_phase4_training_candidates(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/training-candidates/export")
+        async def pfe_phase4_training_candidate_export(request: Request) -> Any:
+            return await handle_phase4_training_export(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/candidate-plan")
+        async def pfe_phase4_candidate_plan(request: Request) -> Any:
+            return await handle_phase4_training_plan(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/candidate-adapter")
+        async def pfe_phase4_candidate_adapter(request: Request) -> Any:
+            return await handle_phase4_candidate_adapter(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase4/eval")
+        async def pfe_phase4_eval(request: Request) -> Any:
+            return await handle_phase4_eval(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase6")
+        async def pfe_phase6(request: Request) -> Any:
+            return await handle_phase6_summary(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase6/preflight")
+        async def pfe_phase6_preflight(request: Request) -> Any:
+            return await handle_phase6_preflight(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase6/preflight")
+        async def pfe_phase6_preflight_post(request: Request) -> Any:
+            return await handle_phase6_preflight(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase6/trial")
+        async def pfe_phase6_trial(request: Request) -> Any:
+            return await handle_phase6_trial(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase6/trial")
+        async def pfe_phase6_trial_create(request: Request) -> Any:
+            return await handle_phase6_trial(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase6/trial/eval")
+        async def pfe_phase6_trial_eval(request: Request) -> Any:
+            return await handle_phase6_eval(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase21/training-candidate-workbench")
+        async def pfe_phase21_training_candidate_workbench(request: Request) -> Any:
+            return await handle_phase21_training_candidate_workbench(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase23/runtime-contract-loop")
+        async def pfe_phase23_runtime_contract_loop(request: Request) -> Any:
+            return await handle_phase23_runtime_contract_loop(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase23/runtime-contract-loop")
+        async def pfe_phase23_runtime_contract_loop_post(request: Request) -> Any:
+            return await handle_phase23_runtime_contract_loop(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase24/review-queue")
+        async def pfe_phase24_review_queue(request: Request) -> Any:
+            return await handle_phase24_review_queue(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase24/training-candidate-value")
+        async def pfe_phase24_training_candidate_value(request: Request) -> Any:
+            return await handle_phase24_training_candidate_value(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase25/actual-feedback")
+        async def pfe_phase25_actual_feedback(request: Request) -> Any:
+            return await handle_phase25_actual_feedback(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase25/actual-feedback-readiness")
+        async def pfe_phase25_actual_feedback_readiness(request: Request) -> Any:
+            return await handle_phase25_actual_feedback_readiness(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase26/feedback-collection-pack")
+        async def pfe_phase26_feedback_collection_pack(request: Request) -> Any:
+            return await handle_phase26_feedback_collection_pack(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase26/actual-feedback-batch")
+        async def pfe_phase26_actual_feedback_batch(request: Request) -> Any:
+            return await handle_phase26_actual_feedback_batch(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase26/training-probe-readiness")
+        async def pfe_phase26_training_probe_readiness(request: Request) -> Any:
+            return await handle_phase26_training_probe_readiness(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase27/collection-pack")
+        async def pfe_phase27_collection_pack(request: Request) -> Any:
+            return await handle_phase27_collection_pack(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase27/actual-feedback-batch")
+        async def pfe_phase27_actual_feedback_batch(request: Request) -> Any:
+            return await handle_phase27_actual_feedback_batch(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase27/review-queue")
+        async def pfe_phase27_review_queue(request: Request) -> Any:
+            return await handle_phase27_review_queue(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase27/review-decisions")
+        async def pfe_phase27_review_decisions(request: Request) -> Any:
+            return await handle_phase27_review_decisions(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase27/training-readiness")
+        async def pfe_phase27_training_readiness(request: Request) -> Any:
+            return await handle_phase27_training_readiness(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase28/task-pack")
+        async def pfe_phase28_task_pack(request: Request) -> Any:
+            return await handle_phase28_task_pack(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase28/feedback-batch")
+        async def pfe_phase28_feedback_batch(request: Request) -> Any:
+            return await handle_phase28_feedback_batch(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase28/review-queue")
+        async def pfe_phase28_review_queue(request: Request) -> Any:
+            return await handle_phase28_review_queue(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.post("/pfe/phase28/review-decisions")
+        async def pfe_phase28_review_decisions(request: Request) -> Any:
+            return await handle_phase28_review_decisions(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase28/loop-state")
+        async def pfe_phase28_loop_state(request: Request) -> Any:
+            return await handle_phase28_loop_state(await _envelope_from_fastapi_request(request), bundle)
+
+        @app.get("/pfe/phase28/training-readiness")
+        async def pfe_phase28_training_readiness(request: Request) -> Any:
+            return await handle_phase28_training_readiness(await _envelope_from_fastapi_request(request), bundle)
 
         @app.post("/pfe/distill/run")
         async def pfe_distill_run(request: Request) -> Any:

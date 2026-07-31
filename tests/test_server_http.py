@@ -67,8 +67,9 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(result["status_code"], 200)
         self.assertIn("text/html", result["headers"].get("content-type", ""))
         self.assertIn("PFE / 本地模型工作台", result["text"])
-        self.assertIn("选择模型，拿到本机 API。", result["text"])
+        self.assertIn("本地版本可验证、可接入。", result["text"])
         self.assertIn("当前工作单", result["text"])
+        self.assertIn("效果证据", result["text"])
         self.assertIn("zc / PFE Studio", result["text"])
         self.assertIn("/pfe/static/studio.css", result["text"])
         self.assertIn("/pfe/static/studio.js", result["text"])
@@ -76,6 +77,8 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("/pfe/runtime", js)
         self.assertIn("/pfe/models", js)
         self.assertIn("/pfe/handoff", js)
+        self.assertIn("/pfe/phase3", js)
+        self.assertIn("/pfe/phase4", js)
 
     def test_chat_alias_serves_legacy_operations_frontend(self) -> None:
         result = self._smoke("/chat")
@@ -94,13 +97,15 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertEqual(result["status_code"], 200)
         self.assertIn("text/html", result["headers"].get("content-type", ""))
         self.assertIn("PFE / 本地模型工作台", result["text"])
-        self.assertIn("选择模型，拿到本机 API。", result["text"])
+        self.assertIn("本地版本可验证、可接入。", result["text"])
         self.assertIn("当前工作单", result["text"])
+        self.assertIn("DEMO-PHASE2-042", result["text"])
         self.assertIn("zc / PFE Studio", result["text"])
         self.assertIn("/pfe/static/studio.css", result["text"])
         self.assertIn("/pfe/static/studio.js", result["text"])
         css, js = self._studio_assets()
         self.assertIn(".work-facts", css)
+        self.assertIn(".proof-panel", css)
         self.assertIn(".brand-signature", css)
         self.assertIn("/pfe/runtime", js)
         self.assertIn("/pfe/models", js)
@@ -121,10 +126,10 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("调用示例", result["text"])
         self.assertIn("复制调用示例", result["text"])
         self.assertIn("版本生成", result["text"])
-        self.assertIn("Base model", result["text"])
-        self.assertIn("Latest adapter", result["text"])
-        self.assertIn("Pending eval", result["text"])
-        self.assertIn("Adapter loaded", result["text"])
+        self.assertIn("基座", result["text"])
+        self.assertIn("当前", result["text"])
+        self.assertIn("待评估", result["text"])
+        self.assertIn("已加载", result["text"])
         self.assertIn("检查条件", result["text"])
         self.assertIn("还没有模型版本", js)
         self.assertIn("最近任务", result["text"])
@@ -145,19 +150,215 @@ class ServerHttpSmokeTests(unittest.TestCase):
         self.assertIn("创建并切换", result["text"])
         self.assertIn("模型文件夹", result["text"])
         self.assertIn("保存模型", result["text"])
-        self.assertIn("使用本地模型回复", result["text"])
-        self.assertIn("暂停本地模型回复", js)
+        self.assertIn("本地回复", result["text"])
+        self.assertIn("暂停回复", js)
         self.assertIn("先选择模型文件夹", js)
-        self.assertIn("点“使用本地模型回复”后生效", js)
+        self.assertIn("点“本地回复”后生效", js)
         self.assertIn("本机推理依赖未安装", js)
         self.assertIn("演示回复", js)
         self.assertNotIn("开启真实本地模型", result["text"] + js)
         self.assertIn("/pfe/handoff/test", js)
         self.assertIn("/pfe/config/real-local", js)
+        self.assertIn("信号闭环", result["text"])
+        self.assertIn("Persona", result["text"])
+        self.assertIn("Scenario", result["text"])
+        self.assertIn("phase3PersonaSelect", result["text"])
+        self.assertIn("phase3ScenarioSelect", result["text"])
+        self.assertIn("候选训练", result["text"])
+        self.assertIn("Eval gate", result["text"])
+        self.assertIn("采集示例", result["text"])
+        self.assertIn("生成计划", result["text"])
+        self.assertIn("还没有 Phase3 信号", js)
+        self.assertIn("/pfe/phase3/signals", js)
+        self.assertIn("/pfe/phase3/candidate-plan", js)
+        self.assertIn(".phase3-panel", css)
+        self.assertIn(".signal-row", css)
+        self.assertIn("真实资料闭环", result["text"])
+        self.assertIn("Sources", result["text"])
+        self.assertIn("Chunks", result["text"])
+        self.assertIn("Candidates", result["text"])
+        self.assertIn("采集资料", result["text"])
+        self.assertIn("生成样本", result["text"])
+        self.assertIn("对比评测", result["text"])
+        self.assertIn("还没有 Phase4 资料", js)
+        self.assertIn("/pfe/phase4/sources", js)
+        self.assertIn("/pfe/phase4/training-candidates", js)
+        self.assertIn("/pfe/phase4/eval", js)
+        self.assertIn(".phase4-panel", css)
 
         alias = self._smoke("/pfe/studio")
         self.assertEqual(alias["status_code"], 200)
         self.assertIn("PFE / 本地模型工作台", alias["text"])
+
+    def test_phase3_api_exposes_signal_loop_and_candidate_plan(self) -> None:
+        summary = self._smoke("/pfe/phase3")
+        self.assertEqual(summary["status_code"], 200)
+        self.assertEqual(summary["body"]["kind"], "phase3_signal_loop")
+        self.assertEqual(summary["body"]["personas"][0]["persona_id"], "ops-analyst")
+        self.assertEqual(summary["body"]["scenarios"][0]["scenario_id"], "contract-risk-summary")
+
+        signal = self._smoke(
+            "/pfe/phase3/signals",
+            method="POST",
+            body={
+                "signal_type": "accept",
+                "user_input": "请整理合同付款条款。",
+                "model_output": "摘要：付款节点明确；风险：逾期责任需人工确认。",
+                "confidence": 0.9,
+            },
+        )
+        self.assertEqual(signal["status_code"], 200)
+        self.assertTrue(signal["body"]["signal"]["eligible_for_training"])
+        self.assertEqual(signal["body"]["signal"]["route"]["training_target"], "sft_candidate")
+
+        candidates = self._smoke("/pfe/phase3/training-candidates")
+        self.assertEqual(candidates["status_code"], 200)
+        self.assertEqual(candidates["body"]["count"], 1)
+        self.assertEqual(candidates["body"]["samples"][0]["scenario_id"], "contract-risk-summary")
+
+        plan = self._smoke(
+            "/pfe/phase3/candidate-plan",
+            method="POST",
+            body={"persona_id": "ops-analyst", "scenario_id": "contract-risk-summary"},
+        )
+        self.assertEqual(plan["status_code"], 200)
+        self.assertEqual(plan["body"]["kind"], "phase3_candidate_training_plan")
+        self.assertEqual(plan["body"]["sample_count"], 1)
+        self.assertEqual(plan["body"]["eval_gate"]["current_state"], "ready_for_eval")
+        self.assertEqual(plan["body"]["handoff"]["promote_endpoint"], "/pfe/candidate/promote")
+
+    def test_phase4_api_exposes_real_corpus_candidates_adapter_and_eval(self) -> None:
+        self.app.state.pfe_services.workspace = "user_default"
+        source_path = Path(self.tempdir.name) / "phase4-source.md"
+        source_path.write_text(
+            (
+                "# Phase4 source\n\n"
+                "Phase4 collects real research material, preserves source and chunk provenance, "
+                "generates citation-grounded training candidates, and compares base/local answers. "
+                "Insufficient evidence must be marked as requiring more material or human confirmation."
+            ),
+            encoding="utf-8",
+        )
+
+        summary = self._smoke("/pfe/phase4")
+        self.assertEqual(summary["status_code"], 200)
+        self.assertEqual(summary["body"]["kind"], "phase4_real_corpus_loop")
+        self.assertEqual(summary["body"]["personas"][0]["persona_id"], "research-notes-organizer")
+
+        source = self._smoke(
+            "/pfe/phase4/sources",
+            method="POST",
+            body={"path": str(source_path), "title": "Phase4 source", "license_status": "local_user_provided"},
+        )
+        self.assertEqual(source["status_code"], 200)
+        self.assertGreaterEqual(source["body"]["chunk_count"], 1)
+        self.assertEqual(source["body"]["source"]["source_type"], "md")
+
+        chunks = self._smoke("/pfe/phase4/chunks")
+        self.assertEqual(chunks["status_code"], 200)
+        self.assertGreaterEqual(len(chunks["body"]["chunks"]), 1)
+        self.assertIn("provenance", chunks["body"]["chunks"][0])
+
+        candidates = self._smoke(
+            "/pfe/phase4/training-candidates",
+            method="POST",
+            body={"limit": 5, "export": True},
+        )
+        self.assertEqual(candidates["status_code"], 200)
+        self.assertGreaterEqual(candidates["body"]["eligible_count"], 1)
+        self.assertIn("export", candidates["body"])
+        self.assertTrue(candidates["body"]["candidates"][0]["source_ids"])
+
+        sample_export = self._smoke(
+            "/pfe/phase4/training-candidates/export",
+            method="POST",
+            body={"target": "samples_db"},
+        )
+        self.assertEqual(sample_export["status_code"], 200)
+        self.assertGreaterEqual(sample_export["body"]["saved_samples"], 1)
+
+        plan = self._smoke("/pfe/phase4/candidate-plan", method="POST")
+        self.assertEqual(plan["status_code"], 200)
+        self.assertEqual(plan["body"]["kind"], "phase4_candidate_training_plan")
+        self.assertEqual(plan["body"]["handoff"]["training_endpoint"], "/pfe/training/jobs")
+
+        adapter = self._smoke("/pfe/phase4/candidate-adapter", method="POST")
+        self.assertEqual(adapter["status_code"], 200)
+        self.assertEqual(adapter["body"]["state"], "pending_eval")
+        self.assertEqual(adapter["body"]["training"]["real_training"], "skipped")
+
+        report = self._smoke(
+            "/pfe/phase4/eval",
+            method="POST",
+            body={"adapter_version": adapter["body"]["adapter_version"], "attach_to_adapter": True},
+        )
+        self.assertEqual(report["status_code"], 200)
+        self.assertEqual(report["body"]["kind"], "phase4_eval_report")
+        self.assertIn(report["body"]["eval_gate"]["status"], {"pass", "review"})
+        self.assertGreater(report["body"]["scores"]["local_delta"]["citation_hit_rate"], 0)
+
+    def test_phase6_api_exposes_candidate_adapter_trial_mode(self) -> None:
+        self.app.state.pfe_services.workspace = "user_default"
+
+        preflight = self._smoke(
+            "/pfe/phase6/preflight",
+            method="POST",
+            body={"require_local_model": True, "model_path": str(Path(self.tempdir.name) / "missing-qwen36")},
+        )
+        self.assertEqual(preflight["status_code"], 200)
+        self.assertEqual(preflight["body"]["kind"], "phase6_qwen36_mlx_preflight")
+        self.assertFalse(preflight["body"]["ready_for_real_training"])
+        self.assertIn("local_model_missing", preflight["body"]["blocked_by"])
+
+        trial = self._smoke(
+            "/pfe/phase6/trial",
+            method="POST",
+            body={
+                "demo": True,
+                "require_local_model": True,
+                "model_path": str(Path(self.tempdir.name) / "missing-qwen36"),
+            },
+        )
+        self.assertEqual(trial["status_code"], 200)
+        self.assertEqual(trial["body"]["candidate_samples"]["requires"], ["source", "chunk", "provenance", "signal_id"])
+        self.assertEqual(trial["body"]["eval_gate"]["status"], "blocked")
+        self.assertFalse(trial["body"]["eval_gate"]["promotion_allowed"])
+        self.assertEqual(trial["body"]["decision"]["action"], "archive")
+
+        summary = self._smoke("/pfe/phase6")
+        self.assertEqual(summary["status_code"], 200)
+        self.assertEqual(summary["body"]["kind"], "phase6_candidate_adapter_trial_mode")
+        self.assertEqual(summary["body"]["trial"]["trial_id"], trial["body"]["trial_id"])
+
+        eval_report = self._smoke("/pfe/phase6/trial/eval", method="POST")
+        self.assertEqual(eval_report["status_code"], 200)
+        self.assertEqual(eval_report["body"]["kind"], "phase6_candidate_adapter_trial_eval_report")
+
+    def test_feedback_endpoint_mirrors_phase3_inbox(self) -> None:
+        feedback = self._smoke(
+            "/pfe/feedback",
+            method="POST",
+            body={
+                "session_id": "sess-phase3-feedback",
+                "request_id": "req-phase3-feedback",
+                "action": "edit",
+                "user_message": "请整理合同交付条款。",
+                "assistant_message": "该条款完全没问题。",
+                "edited_text": "摘要：交付期为 7 日；风险：违约金和验收口径需人工确认。",
+                "metadata": {"scenario_id": "contract-risk-summary"},
+            },
+        )
+        self.assertEqual(feedback["status_code"], 200)
+        self.assertTrue(feedback["body"]["metadata"]["phase3"]["recorded"])
+        self.assertTrue(feedback["body"]["metadata"]["phase3"]["eligible_for_training"])
+
+        signals = self._smoke(
+            "/pfe/phase3/signals",
+            query_params={"eligible_for_training": "true"},
+        )
+        self.assertEqual(signals["status_code"], 200)
+        self.assertEqual(len(signals["body"]["signals"]), 1)
+        self.assertEqual(signals["body"]["signals"][0]["signal_type"], "correction")
 
     def test_studio_handoff_surface_exposes_copyable_user_contract(self) -> None:
         config = PFEConfig()

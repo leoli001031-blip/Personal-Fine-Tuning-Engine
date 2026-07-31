@@ -1,0 +1,46 @@
+{
+  "checks": {
+    "all_full_metrics_preserved": true,
+    "all_full_transcripts_preserved": true,
+    "executor_source_unchanged": true,
+    "frozen_thresholds_unchanged": true,
+    "generation_protocol_unchanged": true,
+    "holdout_unchanged": true,
+    "real_12_step_training_preserved": true,
+    "real_4_step_training_preserved": true
+  },
+  "created_at": "2026-07-15T14:46:24.668113+00:00",
+  "current_source_sha256": {
+    "core": "369a54227c2eef2bcd7dc6c7ebf50df53da1d091c8c56cb91df0c1470f1a3e26",
+    "driver": "9ddf8ef0072a3b6b3b896db4504c68f51610c61ff85f52521a7376bb91373582",
+    "executor": "e72cebe768309664613abf2c16bf78f63f0445b3f89dbbb08ace244c529d339e",
+    "test": "89bec8c4f8c9c821aa98d8f7ca436a8e8796ac7ed594c01e3e0e4b3d7ad5875d"
+  },
+  "frozen_source_sha256": {
+    "core": "d279c13bc5456f60986878000b63cfc193d2948c333d82f884d3907d533d7f11",
+    "driver": "eb2c06abdcaef4907ec9e68eae07d3967561cbc3662ec60ead4936d5974a70f6",
+    "executor": "e72cebe768309664613abf2c16bf78f63f0445b3f89dbbb08ace244c529d339e",
+    "test": "d29aaf3ff2e0f9c4bd2870d2e84bae384e65c9c546f030efc76cc1aaa1efbd14"
+  },
+  "full_metrics_sha256": {
+    "metrics_adapter_mid_12step_length_control.json": "32d7df153a2d89b4d5eb5d53ca2266ec190c7b8e4ab24707796687533bef5bcb",
+    "metrics_base_mid_length_control.json": "0be905b3978be3b6eb9c832eb1c38e0449a7e238bd612dc63b10ba3e547bb4ec",
+    "metrics_runtime_mid_length_control.json": "d91e233e68089d6a71e5f422d181f6d7c4dfdf62194eb242b25f1750b3c4d086"
+  },
+  "full_transcripts_sha256": {
+    "transcripts_adapter_mid_12step_length_control.jsonl": "daeee481f96445cd26093a70dfba58b57f4b6d25805157e1fb857c51b2220b7d",
+    "transcripts_base_mid_length_control.jsonl": "663208bd00bc23ac254acb644fb65a85bb1cf7d8abfaf362ad57143c63f6df08",
+    "transcripts_runtime_mid_length_control.jsonl": "a4bf0172c7ac23621f2ce1eec6720a69101585f89f5836ab9a15207a0bd66e51"
+  },
+  "kind": "phase81_post_experiment_decision_taxonomy_amendment",
+  "passed": true,
+  "reason": "The frozen adapter truncation threshold was incorrectly grouped with evidence-completeness checks. It is now a benefit gate, so failure archives the adapter instead of claiming missing evidence. The numeric threshold, training, holdout, generation protocol, outputs, and scores are unchanged.",
+  "regeneration_required": false,
+  "retraining_required": false,
+  "source_change_expected": true,
+  "threshold_or_score_change": false,
+  "training_artifact_sha256": {
+    "probe_12step": "8647fd07d4f294a651cca8ab197d9b85f7ab122b5c5f2f6780364615202b9b92",
+    "probe_4step": "5dd3b60b0aa9e27ed00bad82c9d4b3068977d5f0d97d797ae0f0a4475f45be49"
+  }
+}

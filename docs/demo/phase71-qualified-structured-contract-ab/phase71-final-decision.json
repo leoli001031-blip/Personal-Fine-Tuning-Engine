@@ -1,0 +1,53 @@
+{
+  "adapter_created": false,
+  "auto_promote_allowed": false,
+  "baseline_accept_rate": 0.0556,
+  "candidate_accept_rate": 0.6111,
+  "candidate_accept_rate_delta": 0.5555,
+  "checks": {
+    "all_freezes_passed": true,
+    "all_product_items_completed": false,
+    "candidate_accept_rate_gate": false,
+    "candidate_dangerous_zero": false,
+    "candidate_delta_gate": true,
+    "candidate_exact_structure_gate": false,
+    "json_transport_preflight_passed": true,
+    "ordinary_boundary_leak_zero": true,
+    "ordinary_controls_complete": true,
+    "ordinary_quality_not_lower": true,
+    "phase68_regression_false_accepts_zero": true,
+    "phase68_regression_qualified": true,
+    "phase70_hold_preserved": true,
+    "product_candidate_conflicts_zero": true,
+    "product_schema_failures_zero": false,
+    "single_variable_parity_passed": true
+  },
+  "experiment_status": "blocked_at_product_eval",
+  "failed_checks": [
+    "all_product_items_completed",
+    "candidate_accept_rate_gate",
+    "candidate_exact_structure_gate",
+    "candidate_dangerous_zero",
+    "product_schema_failures_zero"
+  ],
+  "hermes_attachment_allowed": false,
+  "kind": "phase71_final_decision",
+  "phase71_nondefault_api_canary_design_eligible": null,
+  "phase72_nondefault_api_canary_design_eligible": false,
+  "product_default_change_allowed": false,
+  "product_eval_failure": {
+    "expected_model_output_count": 144,
+    "failure_count": 1,
+    "failures": [
+      {
+        "item_id": "phase70-product-052",
+        "judge_alias": "semantic_judge_beta"
+      }
+    ],
+    "raw_failure_attempt_count": 2,
+    "successful_model_output_count": 143
+  },
+  "recommendation": "hold_phase71_qualified_structured_contract_ab",
+  "status": "hold_phase71_qualified_structured_contract_ab",
+  "training_allowed": false
+}

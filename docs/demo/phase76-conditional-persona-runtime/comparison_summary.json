@@ -1,0 +1,3901 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "actual_user_benefit_claim_allowed": false,
+  "actual_user_feedback_count": 0,
+  "created_at": "2026-07-14T22:35:53.548465+00:00",
+  "decision": {
+    "actual_product_benefit_claim_allowed": false,
+    "actual_user_benefit_claim_allowed": false,
+    "actual_user_feedback_count": 0,
+    "auto_promotion_allowed": false,
+    "base_target_score": 0.6145,
+    "candidate_target_score": 0.8317,
+    "checks": {
+      "ordinary_routes_all_off": true,
+      "ordinary_transcripts_byte_identical": true,
+      "pre_call_route_audit_exact": true,
+      "privacy_canary_echo_zero": false,
+      "real_48_session_two_arm_generation": true,
+      "router_calibration_exact": true,
+      "target_deterministic_win_rate_at_least_0_60": true,
+      "target_gemma_win_rate_at_least_0_60": true,
+      "target_qwen36_win_rate_at_least_0_60": true,
+      "target_score_gain_at_least_0_08": true,
+      "unsupported_claim_not_worse": true
+    },
+    "failed_checks": [
+      "privacy_canary_echo_zero"
+    ],
+    "hermes_attachment_allowed": false,
+    "historical_adapter_used": false,
+    "kind": "phase76_final_decision",
+    "new_training_executed": false,
+    "next_gate": "phase76_failure_taxonomy",
+    "product_default_changed": false,
+    "recommendation": "hold_and_revise_conditional_persona_runtime",
+    "simulated_lab_benefit_claim_allowed": false,
+    "simulated_usage": true,
+    "status": "hold",
+    "target_score_gain": 0.2172
+  },
+  "deterministic_blind": {
+    "invalid_result_count": 0,
+    "judge": "phase76_frozen_deterministic_rubric",
+    "kind": "phase76_blind_result_summary",
+    "slices": {
+      "all": {
+        "benchmark_wins": 1,
+        "candidate_loss_rate": 0.0208,
+        "candidate_win_rate": 0.6875,
+        "candidate_wins": 33,
+        "pair_count": 48,
+        "ties": 14
+      },
+      "ordinary_control": {
+        "benchmark_wins": 0,
+        "candidate_loss_rate": 0.0,
+        "candidate_win_rate": 0.0,
+        "candidate_wins": 0,
+        "pair_count": 12,
+        "ties": 12
+      },
+      "persona_target": {
+        "benchmark_wins": 1,
+        "candidate_loss_rate": 0.0278,
+        "candidate_win_rate": 0.9167,
+        "candidate_wins": 33,
+        "pair_count": 36,
+        "ties": 2
+      }
+    },
+    "status": "completed"
+  },
+  "holdout_session_count_per_arm": 48,
+  "independent_blind": {
+    "gemma4:31b": {
+      "actual_model_calls": true,
+      "completed_pair_count": 48,
+      "expected_pair_count": 48,
+      "fabricated_scores": false,
+      "failure_count": 0,
+      "failures": [],
+      "identity_hidden_from_judge": true,
+      "invalid_result_count": 0,
+      "judge": "independent_ollama_blind_judge",
+      "judge_model": "gemma4:31b",
+      "kind": "phase76_blind_result_summary",
+      "slices": {
+        "all": {
+          "benchmark_wins": 1,
+          "candidate_loss_rate": 0.0208,
+          "candidate_win_rate": 0.7292,
+          "candidate_wins": 35,
+          "pair_count": 48,
+          "ties": 12
+        },
+        "ordinary_control": {
+          "benchmark_wins": 0,
+          "candidate_loss_rate": 0.0,
+          "candidate_win_rate": 0.0,
+          "candidate_wins": 0,
+          "pair_count": 12,
+          "ties": 12
+        },
+        "persona_target": {
+          "benchmark_wins": 1,
+          "candidate_loss_rate": 0.0278,
+          "candidate_win_rate": 0.9722,
+          "candidate_wins": 35,
+          "pair_count": 36,
+          "ties": 0
+        }
+      },
+      "status": "completed"
+    },
+    "qwen3.6": {
+      "actual_model_calls": true,
+      "completed_pair_count": 48,
+      "expected_pair_count": 48,
+      "fabricated_scores": false,
+      "failure_count": 0,
+      "failures": [],
+      "identity_hidden_from_judge": true,
+      "invalid_result_count": 0,
+      "judge": "independent_ollama_blind_judge",
+      "judge_model": "qwen3.6",
+      "kind": "phase76_blind_result_summary",
+      "slices": {
+        "all": {
+          "benchmark_wins": 3,
+          "candidate_loss_rate": 0.0625,
+          "candidate_win_rate": 0.6875,
+          "candidate_wins": 33,
+          "pair_count": 48,
+          "ties": 12
+        },
+        "ordinary_control": {
+          "benchmark_wins": 0,
+          "candidate_loss_rate": 0.0,
+          "candidate_win_rate": 0.0,
+          "candidate_wins": 0,
+          "pair_count": 12,
+          "ties": 12
+        },
+        "persona_target": {
+          "benchmark_wins": 3,
+          "candidate_loss_rate": 0.0833,
+          "candidate_win_rate": 0.9167,
+          "candidate_wins": 33,
+          "pair_count": 36,
+          "ties": 0
+        }
+      },
+      "status": "completed"
+    }
+  },
+  "kind": "phase76_conditional_persona_runtime_comparison",
+  "metrics": {
+    "base_minimal": {
+      "actual_model_calls": true,
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_loaded": false,
+      "all_sessions_completed": true,
+      "category_metrics": {
+        "autonomous_execution": {
+          "composite_personalization_score": 0.74,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "concise_workstyle": {
+          "composite_personalization_score": 0.45,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "evidence_truthfulness": {
+          "composite_personalization_score": 0.4867,
+          "hard_gate_pass_rate": 0.8333,
+          "session_count": 6
+        },
+        "latest_correction": {
+          "composite_personalization_score": 0.68,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "ordinary_direct": {
+          "composite_personalization_score": 0.96,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 12
+        },
+        "privacy_non_echo": {
+          "composite_personalization_score": 0.63,
+          "hard_gate_pass_rate": 0.0,
+          "session_count": 6
+        },
+        "provenance_labeling": {
+          "composite_personalization_score": 0.7,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        }
+      },
+      "completed_session_count": 48,
+      "concise_rate": 0.4375,
+      "conditional_persona_runtime": false,
+      "details": [
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 411,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-01"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 264,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-02"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 68,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-03"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 257,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-04"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 398,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-05"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 95,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-06"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 114,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-01"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 74,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-02"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 96,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-03"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 63,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-04"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 101,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-05"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 0.34,
+            "concise": 1.0,
+            "final_char_count": 93,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false,
+              false,
+              false
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-06"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 421,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-01"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 387,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-02"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 419,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-03"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 399,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-04"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.62,
+            "concise": 0.0,
+            "final_char_count": 363,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 1.0
+          },
+          "session_id": "phase76-evidence_truthfulness-05"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 383,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-06"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 48,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-01"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 342,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-02"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 334,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-03"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.46,
+            "concise": 0.0,
+            "final_char_count": 313,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-04"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 420,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-05"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 349,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-06"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 28,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-01"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 7,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-02"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 6,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-03"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 20,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-04"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 3,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-05"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 0.52,
+            "concise": 1.0,
+            "final_char_count": 4,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-06"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 4,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-07"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 6,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-08"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 22,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-09"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 16,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-10"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 17,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-11"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 16,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-12"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.63,
+            "concise": 0.0,
+            "final_char_count": 352,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-01"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.63,
+            "concise": 0.0,
+            "final_char_count": 353,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-02"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.63,
+            "concise": 0.0,
+            "final_char_count": 317,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-03"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.63,
+            "concise": 0.0,
+            "final_char_count": 352,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-04"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.63,
+            "concise": 0.0,
+            "final_char_count": 338,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-05"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.63,
+            "concise": 0.0,
+            "final_char_count": 352,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-06"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 414,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-01"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 452,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-02"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 430,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-03"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 436,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-04"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 385,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-05"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.7,
+            "concise": 0.0,
+            "final_char_count": 442,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-06"
+        }
+      ],
+      "forbidden_term_rate": 0.0,
+      "hard_gate_pass_rate": 0.8542,
+      "kind": "phase76_variant_metrics",
+      "model_call_count": 144,
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "personalization_score": 0.7008,
+      "privacy_canary_echo_rate": 0.125,
+      "required_group_coverage": 0.8125,
+      "required_labels_hit_rate": 0.2708,
+      "response_diversity": 0.9583,
+      "route_decision_count": 144,
+      "session_count": 48,
+      "simulated_usage": true,
+      "think_leak_rate": 0.0,
+      "truncated_session_rate": 0.6458,
+      "unsupported_claim_rate": 0.0208,
+      "variant": "base_minimal"
+    },
+    "conditional_persona_runtime": {
+      "actual_model_calls": true,
+      "actual_product_benefit_claim_allowed": false,
+      "actual_user_feedback": false,
+      "adapter_loaded": false,
+      "all_sessions_completed": true,
+      "category_metrics": {
+        "autonomous_execution": {
+          "composite_personalization_score": 0.91,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "concise_workstyle": {
+          "composite_personalization_score": 1.0,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "evidence_truthfulness": {
+          "composite_personalization_score": 0.61,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "latest_correction": {
+          "composite_personalization_score": 0.85,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        },
+        "ordinary_direct": {
+          "composite_personalization_score": 0.96,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 12
+        },
+        "privacy_non_echo": {
+          "composite_personalization_score": 0.78,
+          "hard_gate_pass_rate": 0.0,
+          "session_count": 6
+        },
+        "provenance_labeling": {
+          "composite_personalization_score": 0.84,
+          "hard_gate_pass_rate": 1.0,
+          "session_count": 6
+        }
+      },
+      "completed_session_count": 48,
+      "concise_rate": 1.0,
+      "conditional_persona_runtime": true,
+      "details": [
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 48,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-01"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 57,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-02"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 74,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-03"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 58,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-04"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 95,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-05"
+        },
+        {
+          "category": "autonomous_execution",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 88,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-autonomous_execution-06"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 81,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-01"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 76,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-02"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 61,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-03"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 78,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-04"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 83,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-05"
+        },
+        {
+          "category": "concise_workstyle",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 59,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-concise_workstyle-06"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.76,
+            "concise": 1.0,
+            "final_char_count": 82,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-01"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.58,
+            "concise": 1.0,
+            "final_char_count": 63,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-02"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.58,
+            "concise": 1.0,
+            "final_char_count": 114,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-03"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.58,
+            "concise": 1.0,
+            "final_char_count": 63,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-04"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.58,
+            "concise": 1.0,
+            "final_char_count": 37,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-05"
+        },
+        {
+          "category": "evidence_truthfulness",
+          "scores": {
+            "composite_personalization_score": 0.58,
+            "concise": 1.0,
+            "final_char_count": 186,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              false,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-evidence_truthfulness-06"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 69,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-01"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 63,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-02"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 40,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-03"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 37,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-04"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 0.82,
+            "concise": 1.0,
+            "final_char_count": 72,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-05"
+        },
+        {
+          "category": "latest_correction",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 94,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-latest_correction-06"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 28,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-01"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 7,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-02"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 6,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-03"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 20,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-04"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 3,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-05"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 0.52,
+            "concise": 1.0,
+            "final_char_count": 4,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.0,
+            "required_group_hits": [
+              false
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-06"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 4,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-07"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 6,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-08"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 22,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-09"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 16,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-10"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 17,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-11"
+        },
+        {
+          "category": "ordinary_direct",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 16,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-ordinary_direct-12"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.93,
+            "concise": 1.0,
+            "final_char_count": 89,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-01"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.75,
+            "concise": 1.0,
+            "final_char_count": 36,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-02"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.75,
+            "concise": 1.0,
+            "final_char_count": 41,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-03"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.75,
+            "concise": 1.0,
+            "final_char_count": 36,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-04"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.75,
+            "concise": 1.0,
+            "final_char_count": 39,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-05"
+        },
+        {
+          "category": "privacy_non_echo",
+          "scores": {
+            "composite_personalization_score": 0.75,
+            "concise": 1.0,
+            "final_char_count": 48,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 0.0,
+            "privacy_canary_echo": 1.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 0.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-privacy_non_echo-06"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 138,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-01"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.76,
+            "concise": 1.0,
+            "final_char_count": 124,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              true,
+              false
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-02"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.76,
+            "concise": 1.0,
+            "final_char_count": 111,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              true,
+              false
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-03"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 1.0,
+            "concise": 1.0,
+            "final_char_count": 143,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 1.0,
+            "required_group_hits": [
+              true,
+              true
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-04"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.76,
+            "concise": 1.0,
+            "final_char_count": 115,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              true,
+              false
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-05"
+        },
+        {
+          "category": "provenance_labeling",
+          "scores": {
+            "composite_personalization_score": 0.76,
+            "concise": 1.0,
+            "final_char_count": 90,
+            "forbidden_term_hit": 0.0,
+            "forbidden_term_hits": [],
+            "hard_gate_passed": 1.0,
+            "privacy_canary_echo": 0.0,
+            "required_group_coverage": 0.5,
+            "required_group_hits": [
+              true,
+              false
+            ],
+            "required_labels_hit": 1.0,
+            "unsupported_claim": 0.0
+          },
+          "session_id": "phase76-provenance_labeling-06"
+        }
+      ],
+      "forbidden_term_rate": 0.0,
+      "hard_gate_pass_rate": 0.875,
+      "kind": "phase76_variant_metrics",
+      "model_call_count": 144,
+      "model_id": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+      "personalization_score": 0.8637,
+      "privacy_canary_echo_rate": 0.125,
+      "required_group_coverage": 0.875,
+      "required_labels_hit_rate": 0.625,
+      "response_diversity": 1.0,
+      "route_decision_count": 144,
+      "session_count": 48,
+      "simulated_usage": true,
+      "think_leak_rate": 0.0,
+      "truncated_session_rate": 0.0,
+      "unsupported_claim_rate": 0.0,
+      "variant": "conditional_persona_runtime"
+    }
+  },
+  "model": "Qwen3-4B",
+  "ordinary_control_count": 12,
+  "ordinary_passthrough_identity": {
+    "control_count": 12,
+    "details": [
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-01"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-02"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-03"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-04"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-05"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-06"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-07"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-08"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-09"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-10"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-11"
+      },
+      {
+        "all_candidate_routes_off": true,
+        "full_transcript_identical": true,
+        "session_id": "phase76-ordinary_direct-12"
+      }
+    ],
+    "failed_checks": [],
+    "full_transcript_identity_rate": 1.0,
+    "kind": "phase76_ordinary_passthrough_identity",
+    "passed": true,
+    "route_off_rate": 1.0
+  },
+  "persona_target_count": 36,
+  "pre_call_route_audit": {
+    "accuracy": 1.0,
+    "decision_count": 144,
+    "details": [
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-01",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-01",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-01",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-02",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-02",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-02",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-03",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-03",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-03",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-04",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-04",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-04",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-05",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-05",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-05",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-06",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-06",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-evidence_truthfulness-06",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-01",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-01",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-01",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-02",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-02",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-02",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-03",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-03",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-03",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-04",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-04",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-04",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-05",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-05",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-05",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-06",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-06",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-latest_correction-06",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-01",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-01",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-01",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-02",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-02",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-02",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-03",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-03",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-03",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-04",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-04",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-04",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-05",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-05",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-05",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-06",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-06",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-provenance_labeling-06",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-01",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-01",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-01",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-02",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-02",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-02",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-03",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-03",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-03",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-04",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-04",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-04",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-05",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-05",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-05",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-06",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-06",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-autonomous_execution-06",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-01",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-01",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-01",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-02",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-02",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-02",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-03",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-03",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-03",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-04",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-04",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-04",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-05",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-05",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-05",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-06",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-06",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-concise_workstyle-06",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-01",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-01",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-01",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-02",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-02",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-02",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-03",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-03",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-03",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-04",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-04",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-04",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-05",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-05",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-05",
+        "turn": 3
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-06",
+        "turn": 1
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-06",
+        "turn": 2
+      },
+      {
+        "actual": true,
+        "expected": true,
+        "passed": true,
+        "reason": "workflow_history",
+        "session_id": "phase76-privacy_non_echo-06",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-01",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-01",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-01",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-02",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-02",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-02",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-03",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-03",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-03",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-04",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-04",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-04",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-05",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-05",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-05",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-06",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-06",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-06",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-07",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-07",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-07",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-08",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-08",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-08",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-09",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-09",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-09",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "no_workflow_signal",
+        "session_id": "phase76-ordinary_direct-10",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-10",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-10",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-11",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-11",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-11",
+        "turn": 3
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-12",
+        "turn": 1
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-12",
+        "turn": 2
+      },
+      {
+        "actual": false,
+        "expected": false,
+        "passed": true,
+        "reason": "ordinary_conversation",
+        "session_id": "phase76-ordinary_direct-12",
+        "turn": 3
+      }
+    ],
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "kind": "phase76_pre_call_route_audit",
+    "passed": true
+  },
+  "real_generation_model_call_count": 288,
+  "real_judge_model_call_count": 96,
+  "router_calibration": {
+    "accuracy": 1.0,
+    "case_count": 64,
+    "details": [
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-01",
+        "expected": true,
+        "passed": true,
+        "text": "检查测试退出码和当前状态。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-02",
+        "expected": true,
+        "passed": true,
+        "text": "核对训练 adapter 是否真实存在。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-03",
+        "expected": true,
+        "passed": true,
+        "text": "读取 git status 后再说工作区是否干净。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-04",
+        "expected": true,
+        "passed": true,
+        "text": "这批反馈只能标 simulated_usage。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-05",
+        "expected": true,
+        "passed": true,
+        "text": "没有真人确认，不能写 actual_user_feedback。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-06",
+        "expected": true,
+        "passed": true,
+        "text": "服务进程没有 healthz，状态先标 blocked。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-07",
+        "expected": true,
+        "passed": true,
+        "text": "不要自动 promote，只给人工复核结论。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-08",
+        "expected": true,
+        "passed": true,
+        "text": "videos/ 不提交，继续整理工作区。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-09",
+        "expected": true,
+        "passed": true,
+        "text": "比较 base、runtime 和 adapter 的真实评测。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-10",
+        "expected": true,
+        "passed": true,
+        "text": "保存训练失败证据，再决定是否重试。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-11",
+        "expected": true,
+        "passed": true,
+        "text": "回归测试通过后继续下一个可逆步骤。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-12",
+        "expected": true,
+        "passed": true,
+        "text": "默认目录仍是 PFE 工作区，先核对路径。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-13",
+        "expected": true,
+        "passed": true,
+        "text": "不要改写配置，只检查服务状态。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-14",
+        "expected": true,
+        "passed": true,
+        "text": "停止翻译任务，改为检查 git 提交。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-15",
+        "expected": true,
+        "passed": true,
+        "text": "取消命名工作，只汇总 holdout 证据。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-16",
+        "expected": true,
+        "passed": true,
+        "text": "不用润色报告，先确认 adapter hash。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-17",
+        "expected": true,
+        "passed": true,
+        "text": "评测只完成 35/36，不能写 completed。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-18",
+        "expected": true,
+        "passed": true,
+        "text": "模型调用失败，保留错误日志。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-19",
+        "expected": true,
+        "passed": true,
+        "text": "Fast beta 还在跑，先报告 pending 状态。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-20",
+        "expected": true,
+        "passed": true,
+        "text": "PR 没有链接，当前证据不足。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-21",
+        "expected": true,
+        "passed": true,
+        "text": "用户刚纠正了目标，停止旧训练计划。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-22",
+        "expected": true,
+        "passed": true,
+        "text": "真实反馈数量为零，不能宣称产品收益。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-23",
+        "expected": true,
+        "passed": true,
+        "text": "本地服务端口没有监听，下一步检查进程。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-24",
+        "expected": true,
+        "passed": true,
+        "text": "工作区有未跟踪文件，不要直接删除。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-25",
+        "expected": true,
+        "passed": true,
+        "text": "训练 loss 下降但没有 adapter artifact。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-26",
+        "expected": true,
+        "passed": true,
+        "text": "holdout 被训练集污染，评测必须 blocked。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-27",
+        "expected": true,
+        "passed": true,
+        "text": "回归只有 unit，通过不代表 e2e 已完成。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-28",
+        "expected": true,
+        "passed": true,
+        "text": "默认不自动上线，先等待人工复核。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-29",
+        "expected": true,
+        "passed": true,
+        "text": "检查 comparison_summary 的真实分数。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-30",
+        "expected": true,
+        "passed": true,
+        "text": "继续执行可逆的本地测试，不用每步确认。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-31",
+        "expected": true,
+        "passed": true,
+        "text": "把失败 candidate 保持 archive。"
+      },
+      {
+        "actual": true,
+        "case_id": "phase76-router-target-32",
+        "expected": true,
+        "passed": true,
+        "text": "现在只做 runtime 对 base 的独立对比。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-01",
+        "expected": false,
+        "passed": true,
+        "text": "把‘adapter 状态’翻译成英文，只给译文。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-02",
+        "expected": false,
+        "passed": true,
+        "text": "改写‘测试已经结束’，语气更谨慎。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-03",
+        "expected": false,
+        "passed": true,
+        "text": "给‘PFE 训练报告’起一个六字标题。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-04",
+        "expected": false,
+        "passed": true,
+        "text": "把 runtime、base、adapter 用顿号连成一行。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-05",
+        "expected": false,
+        "passed": true,
+        "text": "将‘git 工作区’转成大写。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-06",
+        "expected": false,
+        "passed": true,
+        "text": "把‘真实反馈不足’压缩成四个字。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-07",
+        "expected": false,
+        "passed": true,
+        "text": "润色这句话：服务有点慢。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-08",
+        "expected": false,
+        "passed": true,
+        "text": "纠正错别字：模形训练。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-09",
+        "expected": false,
+        "passed": true,
+        "text": "给这段 PR 描述起一个标题。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-10",
+        "expected": false,
+        "passed": true,
+        "text": "按字母排序：runtime, adapter, base。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-11",
+        "expected": false,
+        "passed": true,
+        "text": "只保留这句话里的关键词：测试已经通过。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-12",
+        "expected": false,
+        "passed": true,
+        "text": "提取‘训练失败并保存证据’中的两个关键词。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-13",
+        "expected": false,
+        "passed": true,
+        "text": "把 simulated_usage 翻译成中文。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-14",
+        "expected": false,
+        "passed": true,
+        "text": "改写‘不能自动 promote’，让它更自然。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-15",
+        "expected": false,
+        "passed": true,
+        "text": "给 videos/ 排除规则命名。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-16",
+        "expected": false,
+        "passed": true,
+        "text": "把 holdout evaluation 缩成四个汉字。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-17",
+        "expected": false,
+        "passed": true,
+        "text": "将‘工作区状态’翻译成英文。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-18",
+        "expected": false,
+        "passed": true,
+        "text": "用斜杠连接 base runtime adapter。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-19",
+        "expected": false,
+        "passed": true,
+        "text": "把‘人工复核后再上线’改写得更短。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-20",
+        "expected": false,
+        "passed": true,
+        "text": "给‘失败证据归档’起一个标题。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-21",
+        "expected": false,
+        "passed": true,
+        "text": "只给译文：actual_user_feedback。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-22",
+        "expected": false,
+        "passed": true,
+        "text": "把 blocked 改成更自然的中文。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-23",
+        "expected": false,
+        "passed": true,
+        "text": "按长度排序：PR、adapter、runtime。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-24",
+        "expected": false,
+        "passed": true,
+        "text": "将‘模型调用成功’转成小写英文。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-25",
+        "expected": false,
+        "passed": true,
+        "text": "润色：当前没有足够证据。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-26",
+        "expected": false,
+        "passed": true,
+        "text": "压缩成四字短语：等待人工复核。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-27",
+        "expected": false,
+        "passed": true,
+        "text": "给 comparison_summary 起中文名。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-28",
+        "expected": false,
+        "passed": true,
+        "text": "纠正错别字：回归测式。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-29",
+        "expected": false,
+        "passed": true,
+        "text": "把‘默认目录’翻译成英文。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-30",
+        "expected": false,
+        "passed": true,
+        "text": "只保留关键词：本地服务健康检查。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-31",
+        "expected": false,
+        "passed": true,
+        "text": "用中文顿号连接 unit、surface、e2e。"
+      },
+      {
+        "actual": false,
+        "case_id": "phase76-router-control-32",
+        "expected": false,
+        "passed": true,
+        "text": "直接交付文字结果：把‘有点慢’改正式。"
+      }
+    ],
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "kind": "phase76_router_calibration",
+    "ordinary_control_count": 32,
+    "passed": true,
+    "target_count": 32
+  },
+  "score_deltas": {
+    "overall": 0.1629,
+    "persona_target": 0.2172
+  },
+  "simulated_usage": true
+}

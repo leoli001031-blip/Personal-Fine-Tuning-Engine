@@ -1,0 +1,161 @@
+{
+  "actual_human_review_count": 0,
+  "actual_user_feedback_count": 0,
+  "adapter_created": false,
+  "boundary_clause_design": {
+    "created": false,
+    "status": "not_requested_in_phase54"
+  },
+  "hermes_attached": false,
+  "kind": "phase54_typed_evaluator_comparison",
+  "phase53": {
+    "direct_label_architecture": true,
+    "holdout_accuracy": 0.8519,
+    "recommendation": "hold_phase53_evaluator_scope_recovery"
+  },
+  "phase54": {
+    "calibration_accuracy": 1.0,
+    "calibration_per_category": {
+      "boundary_completeness": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "future_eligibility_condition": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "mixed_test_fact_and_outcome": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "postposed_suspension": {
+        "accuracy": 1.0,
+        "count": 24
+      },
+      "reported_or_quoted_claim": {
+        "accuracy": 1.0,
+        "count": 24
+      }
+    },
+    "calibration_per_field": {
+      "current_benefit_assertion": {
+        "accuracy": 1.0,
+        "count": 240
+      },
+      "explicit_provenance_boundary": {
+        "accuracy": 0.9833,
+        "count": 240
+      },
+      "source_eligibility": {
+        "accuracy": 0.9833,
+        "count": 240
+      },
+      "suspended_or_negated_outcome": {
+        "accuracy": 1.0,
+        "count": 240
+      }
+    },
+    "calibration_real_model_call_count": 240,
+    "calibration_status": "qualified",
+    "calibration_typed_exact_match_rate": 0.9833,
+    "final_label_generated_by_deterministic_composer": true,
+    "holdout_accuracy": 0.9933,
+    "holdout_false_accept_count": 0,
+    "holdout_hard_vs_two_safe_accept_conflict_count": 0,
+    "holdout_judge_direct_label_count": 0,
+    "holdout_per_category": {
+      "boundary_completeness": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "future_eligibility_condition": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "mixed_test_fact_and_outcome": {
+        "accuracy": 0.9667,
+        "count": 30
+      },
+      "postposed_suspension": {
+        "accuracy": 1.0,
+        "count": 30
+      },
+      "reported_or_quoted_claim": {
+        "accuracy": 1.0,
+        "count": 30
+      }
+    },
+    "holdout_per_field": {
+      "current_benefit_assertion": {
+        "accuracy": 1.0,
+        "count": 300
+      },
+      "explicit_provenance_boundary": {
+        "accuracy": 0.9467,
+        "count": 300
+      },
+      "source_eligibility": {
+        "accuracy": 0.9767,
+        "count": 300
+      },
+      "suspended_or_negated_outcome": {
+        "accuracy": 1.0,
+        "count": 300
+      }
+    },
+    "holdout_real_model_call_count": 300,
+    "holdout_status": "not_qualified",
+    "holdout_typed_exact_match_rate": 0.9433,
+    "invalidated_calibration_attempts": [
+      {
+        "accuracy": 0.9083,
+        "attempt": 1,
+        "diagnosis": "source eligibility and explicit provenance boundary were inferred from adjacent cautious language instead of explicit registration or boundary statements",
+        "formal_result_eligible": false,
+        "holdout_model_call_count": 0,
+        "preserved_before_rubric_change": true,
+        "real_model_call_count": 240,
+        "status": "not_qualified",
+        "typed_exact_match_rate": 0.8
+      },
+      {
+        "accuracy": 0.8417,
+        "attempt": 2,
+        "diagnosis": "source inference improved, but Qwen emitted quoted boolean strings and Gemma interpreted provenance boundary more narrowly than the frozen field definition",
+        "diagnostic_model_call_count": 1,
+        "formal_model_call_count": 244,
+        "formal_result_eligible": false,
+        "holdout_model_call_count": 0,
+        "preserved_before_typed-enum_schema_change": true,
+        "schema_failure_item_count": 4,
+        "status": "not_qualified",
+        "typed_exact_match_rate": 0.8263,
+        "valid_typed_result_count": 236
+      },
+      {
+        "accuracy": 1.0,
+        "attempt": 3,
+        "diagnosis": "all 21 remaining source-field errors came from Qwen inferring an unstated source stance from the scenario context",
+        "explicit_provenance_boundary_accuracy": 0.9708,
+        "false_accept_count": 0,
+        "formal_result_eligible": false,
+        "hard_rule_conflict_count": 0,
+        "holdout_model_call_count": 0,
+        "preserved_before_context_removal": true,
+        "real_model_call_count": 240,
+        "source_eligibility_accuracy": 0.9125,
+        "status": "not_qualified",
+        "typed_exact_match_rate": 0.9125
+      }
+    ]
+  },
+  "product_default_changed": false,
+  "recommendation": "hold_phase54_typed_proposition_evaluator",
+  "router_changed": false,
+  "runtime_prompt_changed": false,
+  "runtime_replay": {
+    "real_model_call_count": 0,
+    "status": "not_requested_in_phase54"
+  },
+  "training_executed": false
+}

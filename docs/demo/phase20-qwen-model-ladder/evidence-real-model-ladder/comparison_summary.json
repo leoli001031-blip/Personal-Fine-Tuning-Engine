@@ -1,0 +1,151 @@
+{
+  "candidates": [
+    {
+      "blocked_reasons": [],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct",
+      "eligible_for_probe": true,
+      "estimated_training_memory_gb": 8.0,
+      "local_materialized": true,
+      "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+      "reason": "Phase17/18 proven local CausalLM probe candidate",
+      "role": "trainable_probe",
+      "snapshot_count": 1
+    },
+    {
+      "blocked_reasons": [
+        "model_not_materialized_locally"
+      ],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-0.6B",
+      "eligible_for_probe": false,
+      "estimated_training_memory_gb": 10.0,
+      "local_materialized": false,
+      "model_id": "Qwen/Qwen3-0.6B",
+      "reason": "next small Qwen candidate if downloaded",
+      "role": "trainable_probe",
+      "snapshot_count": 0
+    },
+    {
+      "blocked_reasons": [
+        "model_not_materialized_locally"
+      ],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen2.5-1.5B-Instruct",
+      "eligible_for_probe": false,
+      "estimated_training_memory_gb": 18.0,
+      "local_materialized": false,
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+      "reason": "next quality step once 0.5B is stable",
+      "role": "trainable_probe",
+      "snapshot_count": 0
+    },
+    {
+      "blocked_reasons": [
+        "model_not_materialized_locally"
+      ],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-4B",
+      "eligible_for_probe": false,
+      "estimated_training_memory_gb": 48.0,
+      "local_materialized": false,
+      "model_id": "Qwen/Qwen3-4B",
+      "reason": "larger model, only if materialized and smaller probes are stable",
+      "role": "trainable_probe",
+      "snapshot_count": 0
+    },
+    {
+      "blocked_reasons": [
+        "not_causal_lm_for_dpo"
+      ],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-Embedding-8B",
+      "eligible_for_probe": false,
+      "estimated_training_memory_gb": 0.0,
+      "local_materialized": true,
+      "model_id": "Qwen/Qwen3-Embedding-8B",
+      "reason": "cached but not a CausalLM DPO target",
+      "role": "unsuitable_reference",
+      "snapshot_count": 1
+    },
+    {
+      "blocked_reasons": [
+        "not_causal_lm_for_dpo"
+      ],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-Reranker-8B",
+      "eligible_for_probe": false,
+      "estimated_training_memory_gb": 0.0,
+      "local_materialized": true,
+      "model_id": "Qwen/Qwen3-Reranker-8B",
+      "reason": "cached but not a CausalLM DPO target",
+      "role": "unsuitable_reference",
+      "snapshot_count": 1
+    },
+    {
+      "blocked_reasons": [
+        "reference_only_not_default_training_target"
+      ],
+      "cache_dir": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen3.6-27B-4bit",
+      "eligible_for_probe": false,
+      "estimated_training_memory_gb": 0.0,
+      "local_materialized": false,
+      "model_id": "Qwen3.6-27B-4bit",
+      "reason": "Phase13/12 boundary contract reference ceiling, not default training target",
+      "role": "reference_ceiling",
+      "snapshot_count": 0
+    }
+  ],
+  "created_at": "2026-06-20T20:50:24.182137+00:00",
+  "decision": {
+    "auto_promotion_allowed": false,
+    "created_at": "2026-06-20T20:50:24.182124+00:00",
+    "reason": "available adapters have not beaten base/runtime contract without regression",
+    "recommendation": "keep_0_5b_for_training_format_diagnostics_only"
+  },
+  "kind": "phase20_qwen_model_ladder_summary",
+  "phase17_base_scores": {
+    "citation_hit_rate": 0.567,
+    "explicit_boundary_rate": 0.6,
+    "external_law_reference_rate": 0.067,
+    "extra_text_after_first_block_rate": 0.0,
+    "safety_boundary_rate": 0.6,
+    "structure_hit_rate": 0.633,
+    "think_leak_rate": 0.0,
+    "unsupported_assertions": 14
+  },
+  "phase17_dpo_adapter_scores": {
+    "citation_hit_rate": 0.0,
+    "explicit_boundary_rate": 0.0,
+    "external_law_reference_rate": 0.0,
+    "extra_text_after_first_block_rate": 0.0,
+    "safety_boundary_rate": 0.0,
+    "structure_hit_rate": 0.0,
+    "think_leak_rate": 0.0,
+    "unsupported_assertions": 30
+  },
+  "phase18_conservative_decision": {
+    "auto_promotion_allowed": false,
+    "created_at": "2026-06-20T20:50:24.085865+00:00",
+    "full_eval_allowed": false,
+    "kind": "phase18_sanity_gate_decision",
+    "manual_review_required": false,
+    "reasons": [
+      "sanity_adapter_citation_hit_rate_below_base",
+      "sanity_adapter_explicit_boundary_rate_below_base",
+      "sanity_adapter_external_law_reference_rate_above_zero",
+      "sanity_adapter_safety_boundary_rate_below_base",
+      "sanity_adapter_unsupported_assertions_above_base"
+    ],
+    "recommendation": "archive",
+    "status": "blocked"
+  },
+  "selected_reason": "only materialized general CausalLM Qwen model that has already completed real DPO and eval locally",
+  "selected_trainable_model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "system_profile": {
+    "created_at": "2026-06-20T20:50:24.112899+00:00",
+    "disk_free_gb": 988.23,
+    "memory_gb": 128.0,
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "python_version": "3.11.15",
+    "torch": {
+      "cuda_available": false,
+      "mps_available": true,
+      "version": "2.12.0"
+    }
+  }
+}

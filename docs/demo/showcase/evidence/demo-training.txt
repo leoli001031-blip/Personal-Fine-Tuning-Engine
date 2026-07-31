@@ -1,0 +1,21 @@
+$ PFE_HOME=/tmp/pfe-phase2-showcase-home PFE_WORKSPACE=phase2_showcase PFE_ENABLE_REAL_LOCAL_INFERENCE=1 .venv/bin/python -m pfe_cli.main train --workspace phase2_showcase --base-model /Users/lichenhao/Desktop/PFE/models/Qwen2.5-0.5B-Instruct --backend peft --real-local --epochs 20
+PFE train plan
+request: method=qlora | epochs=20 | train_type=sft | workspace=phase2_showcase
+trainer: runtime_device=mps
+job-execution: status=planned | executor_mode=real | execution_intent=real_local | execution_state=planned
+backend-dispatch: execution_backend=peft | execution_mode=real | runtime_device=mps | requires_export_step=no
+export-write: gguf_export=not_required | write_state=planned | target_artifact_format=peft_lora | execution_intent=real_local | artifact_name=adapter_model.safetensors
+════════════════════════════════════════════════════════════════════════════════
+                             [ TRAINING COMPLETE ]
+════════════════════════════════════════════════════════════════════════════════
+┌──[ TRAINING RESULT ]─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  version:                 20260618-001                                                                                                                                                                 │
+│  path:                    /tmp/pfe-phase2-showcase-home/adapters/phase2_showcase/20260618-001                                                                                                          │
+│  samples:                 1                                                                                                                                                                            │
+│  backend:                 peft | device=mps                                                                                                                                                            │
+│  execution:               executed                                                                                                                                                                     │
+│  export:                  NOT REQUIRED                                                                                                                                                                 │
+│  metrics:                 fresh=1 | replay=0                                                                                                                                                           │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+    [✓] Training job completed successfully

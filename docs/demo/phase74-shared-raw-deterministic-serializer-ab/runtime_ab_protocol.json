@@ -1,0 +1,57 @@
+{
+  "auto_promote_allowed": false,
+  "decision_gates": {
+    "boundary_route_recall_min": 1.0,
+    "candidate_accept_rate_delta_min": 0.5,
+    "candidate_accept_rate_min": 0.95,
+    "candidate_dangerous_max": 0,
+    "candidate_exact_structure_rate_min": 1.0,
+    "ordinary_output_identity_min": 1.0,
+    "ordinary_route_false_positive_max": 0.0,
+    "product_schema_failure_max": 0
+  },
+  "generation": {
+    "do_sample": false,
+    "enable_thinking": false,
+    "generation_protocol_sha256": "2549e9ff4b195cfa94fb6df736e7b24fd42a9f8fd169bd03ae0f93749f5db5f1",
+    "input_max_length": 4096,
+    "latest_intent_runtime_enabled": true,
+    "max_new_tokens": 192,
+    "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+    "privacy_runtime_enabled": true,
+    "raw_runtime_variant": "structured_boundary_contract",
+    "repetition_penalty": 1.05,
+    "shared_raw_generation": true,
+    "turns_per_session": 3
+  },
+  "judge_transport_by_alias": {
+    "semantic_judge_alpha": "phase59_nested_json_schema",
+    "semantic_judge_beta": "phase73_exact_descriptor_normalization"
+  },
+  "kind": "phase74_frozen_shared_raw_serializer_ab_protocol",
+  "num_ctx": 4096,
+  "num_predict_by_alias": {
+    "semantic_judge_alpha": 192,
+    "semantic_judge_beta": 64
+  },
+  "only_ab_variable": "deterministic_boundary_serializer_after_shared_raw_generation",
+  "parallel_worker_count": 4,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "e2ab043d382ad29bcf0f1175bb437f0664bfcda89cc2bd160264f2bd4254cc4f",
+  "retry_limit": 2,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false,
+  "variants": [
+    "structured_prompt_raw",
+    "deterministic_boundary_serializer"
+  ]
+}

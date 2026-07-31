@@ -1,0 +1,127 @@
+{
+  "composer_received_ungrounded_atom_gate": 0,
+  "false_accept_gate": 0,
+  "grounding_validity_gate": 0.95,
+  "hard_reject_vs_two_safe_accept_conflict_gate": 0,
+  "hermes_attachment_allowed": false,
+  "historical_phases": [
+    "phase51",
+    "phase52",
+    "phase53",
+    "phase54",
+    "phase55"
+  ],
+  "historical_replay_may_be_called_once": true,
+  "invalid_dangerous_atom_gate": 0,
+  "judges_receive_gold_label": false,
+  "judges_receive_historical_phase": false,
+  "judges_receive_other_judge_identity": false,
+  "judges_return_direct_label": false,
+  "kind": "phase57_frozen_phase56_historical_replay_protocol",
+  "num_ctx": 4096,
+  "num_predict": 384,
+  "ollama_json_schema": {
+    "additionalProperties": false,
+    "properties": {
+      "reason": {
+        "type": "string"
+      },
+      "source_registration": {
+        "additionalProperties": false,
+        "description": "Only the Agent's current unquoted registration action. Proof/support clauses are never registration. If registration appears only in a rejected quote, use unstated with an empty span.",
+        "properties": {
+          "evidence_span": {
+            "type": "string"
+          },
+          "value": {
+            "enum": [
+              "allow_actual",
+              "exclude_actual",
+              "unstated"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "evidence_span"
+        ],
+        "type": "object"
+      },
+      "test_to_user_outcome_relation": {
+        "additionalProperties": false,
+        "description": "Only an explicit relation from test material to user outcome; registration alone does not create this relation.",
+        "properties": {
+          "evidence_span": {
+            "type": "string"
+          },
+          "value": {
+            "enum": [
+              "establishes",
+              "does_not_establish",
+              "unstated"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "evidence_span"
+        ],
+        "type": "object"
+      },
+      "user_outcome_status": {
+        "additionalProperties": false,
+        "description": "Only the current user or product outcome status. Preserve any negation in the complete supporting clause.",
+        "properties": {
+          "evidence_span": {
+            "type": "string"
+          },
+          "value": {
+            "enum": [
+              "asserted_current",
+              "suspended_or_negated",
+              "unstated"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "evidence_span"
+        ],
+        "type": "object"
+      }
+    },
+    "required": [
+      "source_registration",
+      "user_outcome_status",
+      "test_to_user_outcome_relation"
+    ],
+    "type": "object"
+  },
+  "one_independent_call_per_item_per_judge": true,
+  "overall_accuracy_gate": 0.95,
+  "parallel_dispatch_changes_evaluator_semantics": false,
+  "parallel_worker_count": 4,
+  "per_category_accuracy_gate": 0.9,
+  "per_phase_accuracy_gate": 0.95,
+  "phase56_prompt_schema_grounding_and_composer_unchanged": true,
+  "post_replay_tuning_allowed": false,
+  "product_default_change_allowed": false,
+  "protocol_sha256": "cf48880743895be0a434676542afa7298c66ea65df3ae9023d7bf21040f5e521",
+  "replay_item_count": 558,
+  "runtime_prompt_or_router_change_allowed": false,
+  "runtime_replay_allowed": false,
+  "semantic_judge_aliases": [
+    "semantic_judge_alpha",
+    "semantic_judge_beta"
+  ],
+  "semantic_judge_models_private": {
+    "semantic_judge_alpha": "gemma4:31b",
+    "semantic_judge_beta": "qwen3.6:latest"
+  },
+  "temperature": 0,
+  "think": false,
+  "training_allowed": false
+}

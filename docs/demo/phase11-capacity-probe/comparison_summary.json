@@ -1,0 +1,102 @@
+{
+  "kind": "phase11_capacity_probe_comparison_summary",
+  "created_at": "2026-06-19T19:39:40Z",
+  "training_run": false,
+  "purpose": "Compare Qwen base model capacity before deciding whether larger-model training fits the PFE loop.",
+  "baseline": {
+    "phase": "phase10",
+    "evidence_dir": "docs/demo/phase10-loop-engineering/evidence-qwen3-0.6b-stage-a",
+    "result": "Qwen3-0.6B real adapter training was archived because structure and safety did not improve."
+  },
+  "runs": [
+    {
+      "label": "qwen3_0_6b_phase10_prompt",
+      "model_id": "mlx-community/Qwen3-0.6B-4bit",
+      "prompt_mode": "phase10",
+      "evidence_dir": "docs/demo/phase11-capacity-probe/evidence-qwen3-0.6b-8b-base",
+      "holdout_count": 10,
+      "scores": {
+        "citation_hit_rate": 0.3,
+        "complete_four_section_rate": 0.6,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.6,
+        "unsupported_assertions": 17
+      },
+      "decision": "capacity_probe_failed"
+    },
+    {
+      "label": "qwen3_8b_phase10_prompt",
+      "model_id": "mlx-community/Qwen3-8B-4bit",
+      "prompt_mode": "phase10",
+      "evidence_dir": "docs/demo/phase11-capacity-probe/evidence-qwen3-0.6b-8b-base",
+      "holdout_count": 10,
+      "scores": {
+        "citation_hit_rate": 0.3,
+        "complete_four_section_rate": 1.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 1.0,
+        "unsupported_assertions": 17
+      },
+      "decision": "capacity_probe_failed"
+    },
+    {
+      "label": "qwen36_27b_phase10_prompt",
+      "model_id": "mlx-community/Qwen3.6-27B-4bit",
+      "prompt_mode": "phase10",
+      "evidence_dir": "docs/demo/phase11-capacity-probe/evidence-qwen36-27b-base-full",
+      "holdout_count": 10,
+      "scores": {
+        "citation_hit_rate": 0.2,
+        "complete_four_section_rate": 0.3,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 0.775,
+        "unsupported_assertions": 18
+      },
+      "decision": "capacity_probe_failed"
+    },
+    {
+      "label": "qwen3_8b_no_think_prompt",
+      "model_id": "mlx-community/Qwen3-8B-4bit",
+      "prompt_mode": "no_think_four_line",
+      "evidence_dir": "docs/demo/phase11-capacity-probe/evidence-qwen3-8b-no-think-base",
+      "holdout_count": 10,
+      "scores": {
+        "citation_hit_rate": 0.1,
+        "complete_four_section_rate": 1.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 1.0,
+        "unsupported_assertions": 19
+      },
+      "decision": "capacity_probe_failed"
+    },
+    {
+      "label": "qwen36_27b_no_think_prompt",
+      "model_id": "mlx-community/Qwen3.6-27B-4bit",
+      "prompt_mode": "no_think_four_line",
+      "evidence_dir": "docs/demo/phase11-capacity-probe/evidence-qwen36-27b-no-think-base",
+      "holdout_count": 10,
+      "scores": {
+        "citation_hit_rate": 1.0,
+        "complete_four_section_rate": 1.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 1.0,
+        "unsupported_assertions": 10
+      },
+      "raw_scores": {
+        "citation_hit_rate": 1.0,
+        "complete_four_section_rate": 1.0,
+        "safety_boundary_rate": 0.0,
+        "structure_hit_rate": 1.0,
+        "unsupported_assertions": 15
+      },
+      "decision": "capacity_probe_failed"
+    }
+  ],
+  "findings": [
+    "Qwen3-8B improves visible four-section structure but does not improve exact bracketed citations or safety boundaries.",
+    "Qwen3.6-27B with the original Phase10 prompt is not stable enough because it emits thinking text and misses the exact structure/citation target.",
+    "Qwen3.6-27B with the no-think four-line prompt reaches perfect normalized structure and citation hit rate, but still fails explicit safety-boundary scoring.",
+    "The best current next step is not immediate large-model training. The next loop should first train or prompt for the explicit artificial-confirmation boundary sentence: 不输出法律结论."
+  ],
+  "recommendation": "Use Qwen3.6-27B-4bit only after a boundary-target probe passes; do not promote or train a large adapter from the current targets yet."
+}

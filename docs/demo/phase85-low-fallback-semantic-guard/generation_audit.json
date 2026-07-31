@@ -1,0 +1,39 @@
+{
+  "checks": {
+    "all_three_variants_present": true,
+    "all_turns_exactly_one_backend_attempt": true,
+    "all_variants_exactly_90_api_calls": true,
+    "all_variants_one_api_call_per_turn": true,
+    "all_variants_one_call_per_turn": true,
+    "exact_total_backend_attempt_count": true,
+    "exact_total_model_call_count": true,
+    "no_extra_backend_attempts": true,
+    "no_extra_model_calls": true,
+    "raw_model_output_not_persisted": true
+  },
+  "expected_api_call_count_per_variant": 90,
+  "expected_backend_attempt_count_per_turn": 1,
+  "expected_model_call_count": 270,
+  "expected_total_api_call_count": 270,
+  "extra_backend_attempt_count": 0,
+  "extra_model_call_count": 0,
+  "kind": "phase85_generation_call_and_persistence_audit",
+  "observed_api_call_count_by_variant": {
+    "base_api_length_control_160": 90,
+    "persona_api_contract_v3_fresh": 90,
+    "persona_api_contract_v4": 90
+  },
+  "observed_backend_attempt_count_by_variant": {
+    "base_api_length_control_160": 90,
+    "persona_api_contract_v3_fresh": 90,
+    "persona_api_contract_v4": 90
+  },
+  "observed_backend_runtime_attempt_count": 270,
+  "observed_model_call_count": 270,
+  "observed_total_api_call_count": 270,
+  "one_api_call_per_turn": true,
+  "one_backend_attempt_per_turn": true,
+  "one_model_call_per_turn": true,
+  "passed": true,
+  "raw_model_output_persisted": false
+}

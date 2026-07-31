@@ -1,0 +1,22 @@
+{
+  "attempt": 4,
+  "benchmark_type": "simulated benchmark",
+  "canonical": false,
+  "used_for_decision": false,
+  "invalidated": true,
+  "invalidation_reasons": [
+    "llama prompt was exposed through process argv",
+    "regression output and review cache cleanup were not privacy complete",
+    "source freeze and manual review were not bound end to end",
+    "cross-task acceptance and successful-go-live claims could bypass the guard",
+    "guard calibration was not isolated from the holdout"
+  ],
+  "metrics": {
+    "base_api_length_control_160": {"native": 0.0, "repair": 0.0, "fallback": 1.0, "p95_seconds": 15.238441},
+    "persona_api_contract_v3_fresh": {"native": 0.117647, "repair": 0.176471, "fallback": 0.705882, "p95_seconds": 8.514797},
+    "persona_api_contract_v4": {"native": 0.088235, "repair": 0.161765, "fallback": 0.75, "p95_seconds": 6.640263}
+  },
+  "manual_review_completed": false,
+  "raw_output_persisted": false,
+  "actual_user_feedback_count": 0
+}

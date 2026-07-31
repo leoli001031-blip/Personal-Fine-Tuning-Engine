@@ -1,0 +1,57 @@
+{
+  "architecture": [
+    "Qwen3ForCausalLM"
+  ],
+  "declared_dtype": "bfloat16",
+  "download_performed": false,
+  "dpo_estimated_peak_memory_gib": 72.0,
+  "dpo_memory_preflight_passed": true,
+  "dpo_runtime_note": "Current executor capability must still be checked before a real DPO launch.",
+  "files": [
+    {
+      "name": "model-00001-of-00003.safetensors",
+      "sha256": "328a91d3122359d5547f9d79521205bc0a46e1f79a792dfe650e99fc2d651223",
+      "size_bytes": 3957900840
+    },
+    {
+      "name": "model-00002-of-00003.safetensors",
+      "sha256": "6cd087b316306a68c562436b5492edbcf6e16c6dba3a1308279caa5a58e21ca5",
+      "size_bytes": 3987450520
+    },
+    {
+      "name": "model-00003-of-00003.safetensors",
+      "sha256": "e4bf436957184f4eeb86a80e9db394503f1f56446b2e6b7edeac5b81470f4ca1",
+      "size_bytes": 99630640
+    }
+  ],
+  "full_shard_hashes_computed": true,
+  "hidden_size": 2560,
+  "kind": "phase43_model_selection",
+  "max_position_embeddings": 40960,
+  "model_bundle_sha256": "6486ca88ddcc041f47e9dac359cbfc927e98e8e34d6b16c7360583b89bee83cf",
+  "model_path": "/Users/lichenhao/Desktop/PFE/models/Qwen3-4B",
+  "model_type": "qwen3",
+  "num_hidden_layers": 36,
+  "parameter_scale": "4B",
+  "qwen27b_training_allowed": false,
+  "selected_model": "Qwen3-4B",
+  "selection_reason": "local unquantized Qwen3-4B is complete and fits the 128 GiB host SFT budget",
+  "sft_estimated_peak_memory_gib": 24.0,
+  "sft_memory_preflight_passed": true,
+  "shard_count": 3,
+  "status": "selected",
+  "system_profile": {
+    "created_at": "2026-07-11T21:00:21.468621+00:00",
+    "disk_free_gib": 1000.938,
+    "memory_bytes": 137438953472,
+    "memory_gib": 128.0,
+    "platform": "macOS-26.4-arm64-arm-64bit",
+    "python": "3.11.15",
+    "torch_device": {
+      "cuda_available": false,
+      "mps_available": true
+    }
+  },
+  "weight_size_bytes": 8044936192,
+  "weight_size_gib": 7.492
+}

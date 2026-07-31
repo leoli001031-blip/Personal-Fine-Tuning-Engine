@@ -1,0 +1,91 @@
+{
+  "checks": {
+    "all_rows_simulated": true,
+    "cpu_probe_first": true,
+    "dry_runs_resolve_requested_runtime": true,
+    "exactly_four_probe_rows": true,
+    "legacy_mismatch_reconstructed": true,
+    "no_actual_feedback": true,
+    "parent_adapter_valid": true,
+    "phase91_product_gate_false": true,
+    "phase91_remains_archive": true,
+    "probe_count_within_cap": true
+  },
+  "created_at": "2026-07-16T14:44:32.030843+00:00",
+  "job_spec_sha256": {
+    "cpu_float32": "897abd40263ffe9bd470f13f57e5aff04ec8a37b9472bb5947c2af6f98ed918e",
+    "mps_float32": "18d94bb4152f04c69cd18297b24db489278dd0c01cc1dccb0c1f6aeb9fed3b01",
+    "mps_float32_low_lr": "04f1b36e9a4a72830631f4f3f10aadedc13c9e3f2be24744953974d20ec429b6"
+  },
+  "kind": "phase92_pre_probe_freeze",
+  "legacy_runtime_reconstruction": {
+    "cpu_float16_mismatch": true,
+    "cuda_available": false,
+    "device_report_mismatch": true,
+    "legacy_actual_load_device": "cpu",
+    "legacy_device_map": {
+      "": "cpu"
+    },
+    "legacy_dtype": "float16",
+    "legacy_reported_device": "mps",
+    "legacy_use_cpu": false,
+    "mps_available": true
+  },
+  "limits": {
+    "actual_user_feedback_count": 0,
+    "external_provider_calls_allowed": 0,
+    "maximum_four_step_probes": 3
+  },
+  "parent_adapter": {
+    "actual_sha256": "509a07e84fd0bbc7754177fe797d21c2a3d82b0a64e596747084728dda2c3b02",
+    "artifact_dir": "/Users/lichenhao/Desktop/PFE/trainer_job_outputs/phase87-failure-driven-25step/peft_lora",
+    "expected_sha256": "509a07e84fd0bbc7754177fe797d21c2a3d82b0a64e596747084728dda2c3b02",
+    "valid": true
+  },
+  "passed": true,
+  "phase91_commit": "e99a216b7d19c168910583be33efde6858d74bd4",
+  "phase91_status": "archive_phase91_12step_dpo_non_finite",
+  "probe_matrix": [
+    {
+      "learning_rate": 5e-06,
+      "max_steps": 4,
+      "probe_id": "cpu_float32",
+      "run_condition": "always",
+      "run_order": 1,
+      "runtime_device": "cpu",
+      "runtime_dtype": "float32"
+    },
+    {
+      "learning_rate": 5e-06,
+      "max_steps": 4,
+      "probe_id": "mps_float32",
+      "run_condition": "after_cpu_float32",
+      "run_order": 2,
+      "runtime_device": "mps",
+      "runtime_dtype": "float32"
+    },
+    {
+      "learning_rate": 1e-06,
+      "max_steps": 4,
+      "probe_id": "mps_float32_low_lr",
+      "run_condition": "only_if_cpu_passes_and_mps_base_lr_is_non_finite",
+      "run_order": 3,
+      "runtime_device": "mps",
+      "runtime_dtype": "float32"
+    }
+  ],
+  "runtime_inventory": {
+    "cuda_available": false,
+    "mps_available": true,
+    "torch_version": "2.12.0"
+  },
+  "selected_rows_sha256": "0eacc54ae436648a69a4d3c79d6d0405bfb1ba7737f8ea2b307d056a6a0c358e",
+  "source_sha256": {
+    "driver": "5bc34021aecd81b63c334f2e78f36aec724be00185e63eb891ca9ac0c67aa36b",
+    "driver_test": "974e2aa45cbd957d529116613e8e6b0ac909c8a1128e81b84feca4f3fe997273",
+    "executor": "a1d88831c5dc1311c2e6cf9a46ec93d5ceb85f58b94d0d1ff71be61fb17d84ea",
+    "phase92_core": "449a33ccede089abdea2c819d72c16b29e3dc24ab3caa884562fd9b0ee91ca8c",
+    "phase92_test": "493e9d2ee8cb8a1afdc985b1f370b92581d09fc632a93131f93020279428c1e4",
+    "runtime_test": "5eaed541e758f5771b52e41f0198ee4e6b6ce38db17b8c3d550f6d3ec1c5e543"
+  }
+}

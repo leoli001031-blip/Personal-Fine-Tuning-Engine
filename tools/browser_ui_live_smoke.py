@@ -120,7 +120,7 @@ def _check_studio_click_flow(page: object, base_url: str, *, model_path: str, ti
     ):
         page.click("#realLocalToggleButton")
     page.wait_for_function(
-        "() => document.querySelector('#realLocalToggleButton')?.textContent?.includes('暂停本地模型回复')",
+        "() => document.querySelector('#realLocalToggleButton')?.textContent?.includes('暂停回复')",
         timeout=timeout_ms,
     )
     _assert_no_raw_studio_issue_codes(page, timeout_ms=timeout_ms)

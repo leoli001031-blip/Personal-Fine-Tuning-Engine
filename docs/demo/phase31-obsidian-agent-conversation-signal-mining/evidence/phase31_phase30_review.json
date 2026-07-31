@@ -1,0 +1,58 @@
+{
+  "created_at": "2026-07-02T16:28:23.412971+00:00",
+  "kind": "phase31_phase30_review",
+  "phase30_conclusion": [
+    "simulated feedback quality passed",
+    "Qwen2.5-0.5B DPO probe trained successfully",
+    "adapter did not learn stable four-section behavior",
+    "next step should use richer historical/real user signals instead of more legal-contract simulation"
+  ],
+  "phase30_decision": {
+    "actual_user_feedback_collected": false,
+    "auto_promotion_allowed": false,
+    "created_at": "2026-07-02T13:54:25.681114+00:00",
+    "kind": "phase30_final_decision",
+    "next_step_requires_real_user_feedback": true,
+    "product_benefit_claim_allowed": false,
+    "promotion_allowed": false,
+    "reasons": [],
+    "recommendation": "simulation_quality_ready_for_real_feedback",
+    "simulated_human_perspective_only": true,
+    "status": "ready"
+  },
+  "phase30_training_scores": {
+    "adapter": {
+      "citation_exact_match_rate": 0.35,
+      "concise_output_rate": 0.15,
+      "four_section_exact_rate": 0.0,
+      "hard_negative_contrast_score": 0.0,
+      "manual_confirmation_rate": 0.0,
+      "missing_info_first_rate": 0.7,
+      "no_external_law_rate": 0.9,
+      "no_legal_conclusion_rate": 0.9,
+      "preference_adherence_rate": 0.0
+    },
+    "base": {
+      "citation_exact_match_rate": 0.5,
+      "concise_output_rate": 0.35,
+      "four_section_exact_rate": 0.0,
+      "hard_negative_contrast_score": 0.0,
+      "manual_confirmation_rate": 0.0,
+      "missing_info_first_rate": 0.7,
+      "no_external_law_rate": 0.75,
+      "no_legal_conclusion_rate": 0.9,
+      "preference_adherence_rate": 0.0
+    }
+  },
+  "phase31_response": [
+    "mine AgentMemory/Obsidian conversations as historical user-agent collaboration signals",
+    "label source as historical_user_agent_conversation, not actual_user_feedback",
+    "extract user preferences, corrections, verification habits, and workflow expectations",
+    "redact local paths and quarantine secret-risk conversations before candidates"
+  ],
+  "reviewed_paths": [
+    "docs/demo/phase30-simulated-human-feedback-quality-loop/phase30-final-decision.md",
+    "docs/demo/phase30-simulated-human-feedback-quality-loop/comparison_summary.json",
+    "docs/demo/phase30-simulated-human-feedback-quality-loop/evidence-eval/eval_report.json"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "checks": {
+    "commands_passed": true,
+    "decision_is_truthful": true,
+    "evidence_integrity_passed": true
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/python",
+        "-m",
+        "py_compile",
+        "/Users/lichenhao/Desktop/PFE/pfe-core/pfe_core/phase75_personalization_benefit_benchmark.py",
+        "/Users/lichenhao/Desktop/PFE/tools/phase75_personalization_benefit_benchmark.py"
+      ],
+      "duration_seconds": 0.028,
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "command": [
+        "/Users/lichenhao/Desktop/PFE/.venv/bin/pytest",
+        "-q",
+        "tests/test_phase75_personalization_benefit_benchmark.py",
+        "tests/test_phase74_shared_raw_deterministic_serializer_ab.py",
+        "tests/test_phase45_privacy_multiturn_preference.py"
+      ],
+      "duration_seconds": 3.183,
+      "exit_code": 0,
+      "output": "...........................                                              [100%]\n27 passed in 3.02s\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "duration_seconds": 0.011,
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "full_make_gates_recorded_separately": true,
+  "kind": "phase75_validation_summary",
+  "status": "passed"
+}

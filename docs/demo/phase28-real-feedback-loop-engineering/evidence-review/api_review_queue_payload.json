@@ -1,0 +1,64 @@
+{
+  "auto_promotion_allowed": false,
+  "kind": "phase28_review_queue_surface",
+  "review_state": {
+    "approved_for_candidate_count": 0,
+    "created_at": "2026-06-21T02:18:31.860311+00:00",
+    "excluded_count": 0,
+    "kind": "phase28_review_state",
+    "pending_review_count": 0,
+    "quarantined_count": 0,
+    "queue": {
+      "created_at": "2026-06-21T02:18:31.860305+00:00",
+      "items": [],
+      "kind": "phase25_actual_feedback_review_queue",
+      "queue_count": 0,
+      "state_counts": {}
+    },
+    "review_decision_count": 0,
+    "reviewed": {
+      "created_at": "2026-06-21T02:18:31.860308+00:00",
+      "items": [],
+      "kind": "phase25_reviewed_actual_feedback",
+      "reviewed_count": 0,
+      "state_counts": {}
+    }
+  },
+  "status": "ready",
+  "training_readiness": {
+    "approved_actual_candidate_count": 0,
+    "auto_promotion_allowed": false,
+    "blockers": [
+      "insufficient_approved_actual_user_feedback",
+      "insufficient_sft_candidate_samples",
+      "insufficient_dpo_candidate_pairs"
+    ],
+    "candidate_manifest": {
+      "created_at": "2026-06-21T02:18:31.856682+00:00",
+      "dpo_pair_count": 0,
+      "eligible_signal_count": 0,
+      "excluded_signal_count": 0,
+      "holdout_isolation_required": true,
+      "kind": "phase24_candidate_manifest",
+      "product_value_training_allowed_count": 0,
+      "sample_source_policy": "reviewed_lab_signals_can_generate_candidate_specs_but_not_product_value_training",
+      "sft_sample_count": 0
+    },
+    "created_at": "2026-06-21T02:18:31.860278+00:00",
+    "kind": "phase25_training_readiness_report",
+    "minimum_approved_actual_candidates": 12,
+    "review_state_counts": {},
+    "runtime_recommendation": "primary_product_path",
+    "selected_model": {
+      "exists": true,
+      "looks_oversized_for_local_training": false,
+      "name": "models--Qwen--Qwen3-4B",
+      "non_generative": false,
+      "path": "/Users/lichenhao/.cache/huggingface/hub/models--Qwen--Qwen3-4B",
+      "qwen": true,
+      "selection_note": "local inventory hint only; Phase28 does not auto-train",
+      "trainable": true
+    },
+    "status": "collect_actual_feedback"
+  }
+}

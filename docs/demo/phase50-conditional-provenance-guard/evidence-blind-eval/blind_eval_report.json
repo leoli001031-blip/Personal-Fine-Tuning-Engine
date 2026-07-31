@@ -1,0 +1,84 @@
+{
+  "actual_product_benefit_claim_allowed": false,
+  "auto_promotion_allowed": false,
+  "deterministic": {
+    "comparisons": {
+      "conditional_vs_compact_v1_on_trigger": {
+        "benchmark_wins": 11,
+        "candidate_non_tie_win_rate": 0.3529,
+        "candidate_win_rate": 0.1875,
+        "candidate_wins": 6,
+        "pair_count": 32,
+        "ties": 15
+      },
+      "conditional_vs_global_v2_on_passthrough": {
+        "benchmark_wins": 5,
+        "candidate_non_tie_win_rate": 0.375,
+        "candidate_win_rate": 0.0938,
+        "candidate_wins": 3,
+        "pair_count": 32,
+        "ties": 24
+      }
+    },
+    "invalid_result_count": 0,
+    "judge": "deterministic_phase50_frozen_rubric",
+    "kind": "phase50_blind_result_summary",
+    "status": "completed"
+  },
+  "independent": {
+    "actual_model_calls": true,
+    "comparisons": {
+      "conditional_vs_compact_v1_on_trigger": {
+        "benchmark_wins": 5,
+        "candidate_non_tie_win_rate": 0.75,
+        "candidate_win_rate": 0.4688,
+        "candidate_wins": 15,
+        "pair_count": 32,
+        "ties": 12
+      },
+      "conditional_vs_global_v2_on_passthrough": {
+        "benchmark_wins": 6,
+        "candidate_non_tie_win_rate": 0.6,
+        "candidate_win_rate": 0.2812,
+        "candidate_wins": 9,
+        "pair_count": 32,
+        "ties": 17
+      }
+    },
+    "completed_pair_count": 64,
+    "created_at": "2026-07-13T11:19:08.452972+00:00",
+    "expected_pair_count": 64,
+    "fabricated_scores": false,
+    "failure_count": 0,
+    "failures": [],
+    "identity_hidden_from_judge": true,
+    "invalid_result_count": 0,
+    "judge": "independent_ollama_blind_judge",
+    "judge_model": "gemma4:31b",
+    "kind": "phase50_blind_result_summary",
+    "status": "completed",
+    "think": false
+  },
+  "integrity": {
+    "comparison_counts": {
+      "conditional_vs_compact_v1_on_trigger": 32,
+      "conditional_vs_global_v2_on_passthrough": 32
+    },
+    "expected_pair_count": 64,
+    "identity_hidden_from_judge": true,
+    "kind": "phase50_blind_integrity_check",
+    "pair_count": 64,
+    "pair_ids_are_opaque": true,
+    "passed": true,
+    "public_transcripts_hide_runtime_identity": true,
+    "router_and_scorer_frozen": true,
+    "source_checks": {
+      "phase45_privacy_source": true,
+      "phase46_generic_scorer_source": true,
+      "phase48_compact_v1_source": true,
+      "phase49_provenance_scorer_source": true,
+      "phase50_router_source": true
+    }
+  },
+  "kind": "phase50_blind_eval_report"
+}

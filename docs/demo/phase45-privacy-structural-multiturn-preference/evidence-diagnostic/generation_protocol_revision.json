@@ -1,0 +1,40 @@
+{
+  "kind": "phase45_generation_protocol_revision",
+  "next_action": "rerun all diagnostic arms under the identical v2 protocol",
+  "status": "v2_frozen_for_diagnostic_rerun",
+  "v1_failure": {
+    "created_at": "2026-07-12T13:42:04.745709+00:00",
+    "formal_holdout_started": false,
+    "holdout_changed": false,
+    "kind": "phase45_generation_protocol_v1_failure",
+    "model_call_count": 54,
+    "observed_failure": "verbose heading/table/background expansion continued to the 384-token cap",
+    "required_maximum": 0.05,
+    "scorer_changed": false,
+    "session_count": 18,
+    "status": "failed_preflight",
+    "truncated_response_rate": 0.7222,
+    "unfavorable_outputs_preserved": true,
+    "variant": "base_privacy"
+  },
+  "v2_protocol": {
+    "do_sample": false,
+    "eos_token_from_tokenizer": true,
+    "formal_eval_requires_preflight": true,
+    "holdout_changed": false,
+    "input_max_length": 4096,
+    "kind": "phase45_fair_generation_protocol",
+    "max_new_tokens": 384,
+    "protocol_sha256": "4ac71ef85184f18aff6393b1e9715ff87ea3fe77188e8be634735bda6e7b5eba",
+    "protocol_version": 2,
+    "repetition_penalty": 1.05,
+    "required_all_arm_truncated_response_rate_max": 0.05,
+    "revised_at": "2026-07-12T13:42:04.745937+00:00",
+    "revised_before_formal_holdout": true,
+    "revision_basis": "/Users/lichenhao/Desktop/PFE/docs/demo/phase45-privacy-structural-multiturn-preference/evidence-diagnostic/protocol-v1-failed/failure_summary.json",
+    "scorer_changed": false,
+    "think": false,
+    "uniform_system_contract": "每次回答最多三个短句，总长度不超过120个汉字。只回答当前请求，不使用标题、表格、代码块或背景扩写；给出结论后立即结束。",
+    "uniform_system_contract_applied_to_all_arms": true
+  }
+}
