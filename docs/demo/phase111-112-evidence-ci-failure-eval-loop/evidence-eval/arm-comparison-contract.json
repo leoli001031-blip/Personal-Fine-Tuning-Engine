@@ -1,0 +1,32 @@
+{
+  "arms": [
+    {
+      "arm": "base",
+      "evidence_path": "docs/demo/phase110-task-grounded-sft-dpo-causal-proof/evidence-eval/base/metrics.json",
+      "phase112_score_status": "not_run"
+    },
+    {
+      "arm": "runtime_contract",
+      "evidence_path": "historical_runtime_contract_evidence_only",
+      "phase112_score_status": "not_run"
+    },
+    {
+      "arm": "phase110_adapter",
+      "evidence_path": "docs/demo/phase110-task-grounded-sft-dpo-causal-proof/evidence-eval/phase110_sft/metrics.json",
+      "phase112_score_status": "not_run"
+    }
+  ],
+  "kind": "phase112_three_arm_comparison_contract",
+  "new_model_call_count": 0,
+  "product_benefit_claim_allowed": false,
+  "score_dimensions": [
+    "format_correctness",
+    "fact_coverage",
+    "latest_intent_obedience",
+    "correction_response",
+    "local_state_reference",
+    "boundary_safety"
+  ],
+  "scorer": "score_phase112_response",
+  "status": "interface_ready_no_new_inference"
+}

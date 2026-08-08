@@ -1,0 +1,11 @@
+{
+  "gate_threshold_changed": false,
+  "historical_linux_failure": "test_safe_clean_directory_allows_only_strict_allowlisted_descendants",
+  "kind": "phase111_cross_platform_pytest_temp_contract",
+  "mitigation": "Fast beta pytest basetemp is under github.workspace, outside OS temp allowlists",
+  "phase85_frozen_sha256": "02de4e86e2d4b018b4a100cfc310b47c6782cae33790e70814dcea8ff425139f",
+  "phase85_frozen_test_unchanged": true,
+  "phase85_test_sha256": "02de4e86e2d4b018b4a100cfc310b47c6782cae33790e70814dcea8ff425139f",
+  "root_cause": "pytest tmp_path was a descendant of the production /tmp cleanup allowlist",
+  "test_assertion_changed": false
+}
