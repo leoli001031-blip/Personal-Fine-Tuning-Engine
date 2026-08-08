@@ -168,6 +168,12 @@ def generate(source_root: Path, evidence_root: Path, *, clean: bool) -> dict[str
         "gate_threshold_changed": False,
         "test_assertion_changed": False,
     }
+    remote_ci_path = evidence_root / "evidence-ci/remote-fast-beta.json"
+    remote_ci = _read_json(remote_ci_path) if remote_ci_path.is_file() else None
+    if remote_ci is not None and (
+        remote_ci.get("status") != "pass" or not remote_ci.get("run_url")
+    ):
+        raise ValueError(f"invalid remote Fast beta evidence: {remote_ci}")
     schema_report = {
         "kind": "phase111_112_schema_report",
         "claim_ledger": claim_report,
@@ -184,7 +190,12 @@ def generate(source_root: Path, evidence_root: Path, *, clean: bool) -> dict[str
         "status": "phase111_112_evidence_eval_ready_no_training",
         "recommendation": "proceed_to_phase113_only_after_manual_review",
         "phase110_frozen_decision": phase110,
-        "phase111_ci_status": "local_reproduction_fixed_remote_gate_pending",
+        "phase111_ci_status": (
+            "remote_fast_beta_pass"
+            if remote_ci is not None
+            else "local_reproduction_fixed_remote_gate_pending"
+        ),
+        "remote_fast_beta": remote_ci,
         "phase112_eval_status": "deterministic_contract_ready_no_new_inference",
         "model_call_count": 0,
         "training_run_count": 0,

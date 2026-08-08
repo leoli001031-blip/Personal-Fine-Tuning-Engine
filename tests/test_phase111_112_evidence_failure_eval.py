@@ -217,3 +217,28 @@ def test_phase111_112_generator_round_trip_without_model_calls(tmp_path: Path) -
     assert validation["eval_manifest"]["eval_count"] == 30
     assert validation["phase112_cases"]["case_count"] == 70
     assert validation["holdout_integrity"]["collision_count"] == 0
+
+
+def test_phase111_generator_preserves_verified_remote_fast_beta_overlay(
+    tmp_path: Path,
+) -> None:
+    source = _write_source_pack(tmp_path / "source")
+    evidence_root = tmp_path / "evidence"
+    remote_path = evidence_root / "evidence-ci/remote-fast-beta.json"
+    remote_path.parent.mkdir(parents=True)
+    remote_path.write_text(
+        json.dumps(
+            {
+                "status": "pass",
+                "run_id": 31274453714,
+                "run_url": "https://example.invalid/actions/runs/31274453714",
+                "commit": "fixture-commit",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    decision = driver.generate(source, evidence_root, clean=False)
+
+    assert decision["phase111_ci_status"] == "remote_fast_beta_pass"
+    assert decision["remote_fast_beta"]["status"] == "pass"

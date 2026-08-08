@@ -26,3 +26,4 @@ Reverse evidence-class check: historical -> authorized_real failed closed for PF
 Focused checks: Phase111-112/Phase85 33 passed; Phase110 regression 11 passed.
 Local gates: test-unit 1858 passed/30 deselected; surface 162 passed; e2e-mock 13 passed/22 deselected; smoke-beta passed.
 The first sandboxed e2e attempt failed only on denied loopback bind; the authorized loopback rerun passed without code changes.
+Remote CI round 1: Fast beta passed on commit `5f800c6` in 3m30s; run 31274453714. Strict release gate remained policy-skipped.

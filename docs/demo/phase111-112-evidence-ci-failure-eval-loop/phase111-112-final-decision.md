@@ -12,6 +12,9 @@ Phase111 reproduced the Linux `/tmp` failure locally and removed the platform
 dependency by placing Fast-gate pytest fixtures under the GitHub workspace. The
 Phase85 frozen test and hash remain byte-identical.
 
+GitHub Fast beta run `31274453714` passed on Linux in `3m30s`. The Strict release
+gate was skipped by pull-request policy and is not described as a pass.
+
 Phase112 imported 28 claims and 30 eval briefs as narrow, class-preserving
 metadata. It provides 70 unique `simulated_usage` cases across seven failure
 categories, six separately reported score dimensions, and zero holdout/training
