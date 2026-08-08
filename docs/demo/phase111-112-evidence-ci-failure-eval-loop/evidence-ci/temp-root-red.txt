@@ -1,0 +1,12 @@
+Command:
+env PYTEST_ADDOPTS=--basetemp=/tmp/pfe-phase111-linux-red .venv/bin/python -m pytest -p no:cacheprovider tests/test_phase85_driver_safety.py::test_safe_clean_directory_allows_only_strict_allowlisted_descendants -q
+
+Exit: 1
+Result:
+FAILED tests/test_phase85_driver_safety.py::test_safe_clean_directory_allows_only_strict_allowlisted_descendants
+Failed: DID NOT RAISE <class 'ValueError'>
+1 failed in 0.41s
+
+Interpretation:
+When pytest tmp_path is under /tmp, the test's synthetic external path is also
+inside the production temp cleanup allowlist. This reproduces the Linux CI failure.

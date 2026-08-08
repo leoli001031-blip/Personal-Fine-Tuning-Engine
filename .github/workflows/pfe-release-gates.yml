@@ -19,6 +19,10 @@ jobs:
   fast-gate:
     name: Fast beta gate
     runs-on: ubuntu-latest
+    env:
+      # Keep pytest fixtures outside the OS temp allowlist so safety tests remain
+      # semantically identical on Linux (/tmp) and macOS (/private/tmp).
+      PYTEST_ADDOPTS: "--basetemp=${{ github.workspace }}/.pytest-tmp"
     steps:
       - uses: actions/checkout@v5
 

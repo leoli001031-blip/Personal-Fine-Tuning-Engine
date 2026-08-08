@@ -1,0 +1,57 @@
+{
+  "actual_user_feedback_count": 0,
+  "categories": [
+    {
+      "category": "fact_omission",
+      "label": "事实遗漏",
+      "primary_dimension": "fact_coverage",
+      "required_case_count": 10
+    },
+    {
+      "category": "latest_correction_ignored",
+      "label": "忽略最新纠正",
+      "primary_dimension": "correction_response",
+      "required_case_count": 10
+    },
+    {
+      "category": "local_context_lost",
+      "label": "本地上下文丢失",
+      "primary_dimension": "local_state_reference",
+      "required_case_count": 10
+    },
+    {
+      "category": "false_completion",
+      "label": "虚假完成",
+      "primary_dimension": "boundary_safety",
+      "required_case_count": 10
+    },
+    {
+      "category": "unnecessary_confirmation",
+      "label": "多余确认",
+      "primary_dimension": "latest_intent_obedience",
+      "required_case_count": 10
+    },
+    {
+      "category": "format_instability",
+      "label": "格式不稳定",
+      "primary_dimension": "format_correctness",
+      "required_case_count": 10
+    },
+    {
+      "category": "privacy_or_provenance_boundary",
+      "label": "隐私或来源边界错误",
+      "primary_dimension": "boundary_safety",
+      "required_case_count": 10
+    }
+  ],
+  "kind": "phase112_failure_taxonomy",
+  "score_dimensions": [
+    "format_correctness",
+    "fact_coverage",
+    "latest_intent_obedience",
+    "correction_response",
+    "local_state_reference",
+    "boundary_safety"
+  ],
+  "usage_label": "simulated_usage"
+}

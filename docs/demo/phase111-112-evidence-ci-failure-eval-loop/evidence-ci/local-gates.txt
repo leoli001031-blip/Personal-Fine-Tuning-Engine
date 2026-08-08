@@ -1,0 +1,19 @@
+Phase111-112 local validation, 2026-08-09
+
+Focused Phase85 + Phase111-112:
+- 33 passed in 0.51s
+
+Phase110 regression:
+- 11 passed in 1.11s
+
+Fast beta components:
+- test-unit: 1858 passed, 30 deselected, 1 warning in 63.84s
+- test-surface: 162 passed in 27.12s
+- test-e2e-mock: 13 passed, 22 deselected in 53.69s
+- smoke-beta: passed
+
+Execution note:
+The first sandboxed E2E attempt produced two PermissionError failures when the
+sandbox denied binding 127.0.0.1. The same unchanged tests passed in the
+authorized local-loopback environment. This was an execution-boundary failure,
+not a test assertion or product behavior failure.
